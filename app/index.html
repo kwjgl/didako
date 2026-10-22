@@ -1,0 +1,668 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>디다코</title>
+<meta name="theme-color" content="#2B6A62">
+<!-- 홈 화면 앱(PWA): 홈 화면에 두면 주소창 없이 앱처럼 열린다. 아이폰은 apple- 줄들을 본다 -->
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" type="image/png" sizes="32x32" href="icons/favicon-32.png">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="디다코">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Gowun+Batang:wght@400;700&family=IBM+Plex+Sans+KR:wght@400;500;600&display=swap">
+<script>
+// 저장된 화면 설정을 그림이 그려지기 전에 먼저 입힌다(밝은 화면이 잠깐 번쩍이지 않게). 읽을 수 없으면 기기 설정을 따른다
+try {
+  const d = JSON.parse(localStorage.getItem('didako-display') || '{}'), r = document.documentElement;
+  if (d.mode === 'light' || d.mode === 'dark') r.setAttribute('data-mode', d.mode);
+  if (['amber', 'blue', 'rose', 'ink'].includes(d.accent)) r.setAttribute('data-accent', d.accent);
+  if (['neu', 'skeu', 'glass'].includes(d.style)) r.setAttribute('data-style', d.style);
+  if (d.big === true) r.setAttribute('data-big', '');
+} catch (e) {}
+</script>
+<style>
+/* 디다코 앱. 색 변수와 상단 바·하단 탭·설정 창은 시안(prototype/week.html)과 같은 것을 옮겼고, 코이데 app/index.html의 값을 그대로 쓴다.
+   화면 모드는 코이데처럼 data-mode를 쓴다. 이름과 내용은 모두 지어낸 데모 예시다. */
+:root {
+  --page: #F3F5F2; --surface: #FFFFFF; --surface-2: #EEF2EF;
+  --ink: #1B2523; --ink-2: #5B6965; --line: #DDE4E0; --line-strong: #B9C4BF;
+  --accent: #2B6A62; --accent-mid: #8DBDB5; --accent-soft: #DCEBE7; --on-accent: #FFFFFF;
+  --leader: #62519E; --leader-soft: #ECE7F7; --private: #E8ECEA;
+  --warn: #9A5A14; --warn-soft: #F5E8D6; --shadow: rgba(20, 35, 32, .14);
+  --neu-hi: rgba(255, 255, 255, .9); --neu-lo: rgba(20, 35, 32, .17);
+  --base: 16px;
+  --wood: #B98756;   /* 함께 짜는 그물(3D)의 수틀 나무색. 기도 노트와 같은 색 */
+  --f-display: 'Gowun Batang', 'AppleMyungjo', 'Batang', serif;
+  --f-body: 'IBM Plex Sans KR', 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-mode="light"]) {
+  --page: #141B19; --surface: #1C2522; --surface-2: #232D2A;
+  --ink: #E5ECE9; --ink-2: #9CAAA5; --line: #2D3935; --line-strong: #4A5853;
+  --accent: #7CC2B7; --accent-mid: #3F7C73; --accent-soft: #1E3934; --on-accent: #0F1A18;
+  --leader: #B6A8EA; --leader-soft: #2A2442; --private: #252E2B;
+  --warn: #E2A563; --warn-soft: #3A2C1B; --shadow: rgba(0, 0, 0, .5); --neu-hi: rgba(255, 255, 255, .06); --neu-lo: rgba(0, 0, 0, .6); --wood: #7A5636; color-scheme: dark; } }
+/* 화면 모드: 기기 설정이면 기기를 따르고, '밝게'·'어둡게'를 고르면 그대로(data-mode) */
+:root[data-mode="dark"] {
+  --page: #141B19; --surface: #1C2522; --surface-2: #232D2A;
+  --ink: #E5ECE9; --ink-2: #9CAAA5; --line: #2D3935; --line-strong: #4A5853;
+  --accent: #7CC2B7; --accent-mid: #3F7C73; --accent-soft: #1E3934; --on-accent: #0F1A18;
+  --leader: #B6A8EA; --leader-soft: #2A2442; --private: #252E2B;
+  --warn: #E2A563; --warn-soft: #3A2C1B; --shadow: rgba(0, 0, 0, .5); --neu-hi: rgba(255, 255, 255, .06); --neu-lo: rgba(0, 0, 0, .6); --wood: #7A5636; color-scheme: dark; }
+/* 글씨: 휴대폰·태블릿 16px, PC 15px. 큰 글씨 모드는 약 1.2배 */
+@media (min-width: 1000px) { :root { --base: 15px; } }
+:root[data-big] { --base: 19px; }
+@media (min-width: 1000px) { :root[data-big] { --base: 18px; } }
+/* 색 테마(초록은 위 기본값). 시안의 THEMES와 같은 값: 밝은 화면 / 어두운 화면 */
+:root[data-accent="amber"] { --page:#F7F2EA;--surface:#FFFDF9;--surface-2:#F1EADF;--ink:#2A221B;--ink-2:#6E6155;--line:#E6DCCD;--line-strong:#C9B9A3;--accent:#A9561B;--accent-mid:#E2B07F;--accent-soft:#F6E3CF;--on-accent:#FFFFFF;--private:#EFE8DE; }
+@media (prefers-color-scheme: dark) { :root[data-accent="amber"]:not([data-mode="light"]) { --page:#1A1612;--surface:#231E19;--surface-2:#2B241E;--ink:#EEE6DC;--ink-2:#AE9F8E;--line:#3A3129;--line-strong:#5A4D41;--accent:#E9A066;--accent-mid:#8A5A32;--accent-soft:#3A2818;--on-accent:#1E140C;--private:#2E2721; } }
+:root[data-accent="amber"][data-mode="dark"] { --page:#1A1612;--surface:#231E19;--surface-2:#2B241E;--ink:#EEE6DC;--ink-2:#AE9F8E;--line:#3A3129;--line-strong:#5A4D41;--accent:#E9A066;--accent-mid:#8A5A32;--accent-soft:#3A2818;--on-accent:#1E140C;--private:#2E2721; }
+:root[data-accent="blue"] { --page:#F2F4F8;--surface:#FFFFFF;--surface-2:#EAEEF4;--ink:#1B2230;--ink-2:#5A6475;--line:#DCE2EB;--line-strong:#B6C0CF;--accent:#2F5D95;--accent-mid:#93AFD3;--accent-soft:#DCE6F3;--on-accent:#FFFFFF;--private:#E8EBF0; }
+@media (prefers-color-scheme: dark) { :root[data-accent="blue"]:not([data-mode="light"]) { --page:#12161D;--surface:#1A2029;--surface-2:#212833;--ink:#E4E9F0;--ink-2:#9AA5B5;--line:#2C3542;--line-strong:#485466;--accent:#8EB4E6;--accent-mid:#3C5B85;--accent-soft:#1D2C42;--on-accent:#0E1622;--private:#232A35; } }
+:root[data-accent="blue"][data-mode="dark"] { --page:#12161D;--surface:#1A2029;--surface-2:#212833;--ink:#E4E9F0;--ink-2:#9AA5B5;--line:#2C3542;--line-strong:#485466;--accent:#8EB4E6;--accent-mid:#3C5B85;--accent-soft:#1D2C42;--on-accent:#0E1622;--private:#232A35; }
+:root[data-accent="rose"] { --page:#F8F2F3;--surface:#FFFDFD;--surface-2:#F2E8EA;--ink:#2A1E21;--ink-2:#6E5B60;--line:#E8DADD;--line-strong:#CDB6BC;--accent:#A8435C;--accent-mid:#DDA2B1;--accent-soft:#F5DFE5;--on-accent:#FFFFFF;--private:#F0E7E9; }
+@media (prefers-color-scheme: dark) { :root[data-accent="rose"]:not([data-mode="light"]) { --page:#1A1416;--surface:#231B1E;--surface-2:#2B2226;--ink:#EEE3E6;--ink-2:#B09CA2;--line:#3A2D31;--line-strong:#5A464C;--accent:#E896AB;--accent-mid:#86475A;--accent-soft:#3B2029;--on-accent:#200E14;--private:#2E2428; } }
+:root[data-accent="rose"][data-mode="dark"] { --page:#1A1416;--surface:#231B1E;--surface-2:#2B2226;--ink:#EEE3E6;--ink-2:#B09CA2;--line:#3A2D31;--line-strong:#5A464C;--accent:#E896AB;--accent-mid:#86475A;--accent-soft:#3B2029;--on-accent:#200E14;--private:#2E2428; }
+:root[data-accent="ink"] { --page:#F4F4F2;--surface:#FFFFFF;--surface-2:#EDEDEA;--ink:#1D1D1B;--ink-2:#62625E;--line:#E0E0DC;--line-strong:#BDBDB7;--accent:#33332F;--accent-mid:#A3A39C;--accent-soft:#E6E6E1;--on-accent:#FFFFFF;--private:#ECECE8; }
+@media (prefers-color-scheme: dark) { :root[data-accent="ink"]:not([data-mode="light"]) { --page:#141414;--surface:#1D1D1C;--surface-2:#252524;--ink:#ECECE8;--ink-2:#A3A39E;--line:#30302E;--line-strong:#4D4D4A;--accent:#E2E2DC;--accent-mid:#6A6A65;--accent-soft:#2E2E2C;--on-accent:#141414;--private:#262625; } }
+:root[data-accent="ink"][data-mode="dark"] { --page:#141414;--surface:#1D1D1C;--surface-2:#252524;--ink:#ECECE8;--ink-2:#A3A39E;--line:#30302E;--line-strong:#4D4D4A;--accent:#E2E2DC;--accent-mid:#6A6A65;--accent-soft:#2E2E2C;--on-accent:#141414;--private:#262625; }
+* { box-sizing: border-box; }
+html, body { margin: 0; }
+/* 휴대폰을 가로로 돌려도 브라우저가 글씨를 저절로 키우지 않게 */
+html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
+body { background: var(--page); color: var(--ink); font-family: var(--f-body); font-size: var(--base); line-height: 1.55; -webkit-tap-highlight-color: transparent; word-break: keep-all; overflow-wrap: anywhere; }
+button, input, textarea, select { font: inherit; color: inherit; }
+/* 아이폰에서 빠르게 두세 번 눌러도 화면이 확대되지 않게(두 손가락으로 벌려 확대하는 것은 그대로). 캔버스·3D 무대는 건드리지 않는다 */
+button, a, label, summary, select, input, [role="button"], [data-act], .brand { touch-action: manipulation; }
+/* 틀(시안과 같게): 휴대폰·태블릿은 상단 바(배지·설정) + 하단 바(아이콘만), PC(1000px 이상)는 메뉴가 상단 바로 올라가고 2단 */
+.ic { width: 1em; height: 1em; fill: none; stroke: currentColor; stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round; flex: none; }
+.wrap { width: 100%; max-width: 1160px; margin: 0 auto; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
+.topbar { position: sticky; top: 0; z-index: 20; background: var(--surface); border-bottom: 1px solid var(--line); padding-top: env(safe-area-inset-top, 0px); transition: transform .25s ease; }
+.topbar .wrap { display: flex; align-items: center; gap: .6em; min-height: 3.4em; position: relative; }
+.brand { display: inline-flex; align-items: center; gap: .45em; background: none; border: 0; padding: .3em 0; color: var(--ink); cursor: pointer; min-height: 44px; }
+.brand-mark { width: 1.6em; height: 1.6em; border-radius: 50%; background: var(--accent); color: var(--on-accent); display: grid; place-items: center; }
+.brand-mark .ic { width: .95em; height: .95em; }
+.brand-name { font-family: var(--f-display); font-size: 1.05em; font-weight: 700; white-space: nowrap; }
+.topnav { display: none; gap: .2em; margin-left: 1.2em; }
+.topnav :is(button, a) { text-decoration: none; font-size: .92em; background: none; border: 0; color: var(--ink-2); padding: .5em .9em; border-radius: 10px; cursor: pointer; min-height: 40px; }
+.topnav :is(button, a).on { background: var(--accent-soft); color: var(--accent); font-weight: 600; }
+.spacer { flex: 1; }
+.badge-btn { display: inline-flex; align-items: center; gap: .4em; font-size: .8em; font-weight: 600; color: var(--ink); background: var(--surface-2); border: 1px solid var(--line); border-radius: 999px; padding: .35em .5em .35em .85em; min-height: 38px; cursor: pointer; white-space: nowrap; }
+.role-tag { font-size: .86em; padding: .15em .6em; border-radius: 999px; background: var(--surface); color: var(--ink-2); border: 1px solid var(--line); }
+.role-tag.leader { color: var(--leader); border-color: var(--leader); background: var(--leader-soft); }
+.role-tag.admin { color: var(--on-accent); background: var(--accent); border-color: var(--accent); }
+.icon-btn { width: 44px; height: 44px; display: grid; place-items: center; background: none; border: 0; border-radius: 12px; color: var(--ink); cursor: pointer; flex: none; }
+.icon-btn .ic { width: 1.35em; height: 1.35em; }
+.icon-btn[aria-expanded="true"] { background: var(--surface-2); }
+.menu { position: absolute; top: calc(100% + 6px); right: max(16px, env(safe-area-inset-right, 0px)); width: min(300px, calc(100vw - 32px)); background: var(--surface); border: 1px solid var(--line); border-radius: 16px; box-shadow: 0 16px 40px -12px var(--shadow); padding: .5em; display: flex; flex-direction: column; gap: .1em; z-index: 25; }
+.mlabel { font-size: .72em; font-weight: 600; color: var(--ink-2); margin: .6em .7em .3em; }
+.mitem { display: flex; justify-content: space-between; align-items: center; gap: .6em; width: 100%; text-align: left; font-size: .9em; color: var(--ink); background: none; border: 0; border-radius: 10px; padding: .55em .7em; min-height: 44px; cursor: pointer; text-decoration: none; }
+.mitem:hover { background: var(--surface-2); }
+.mitem.static { cursor: default; flex-direction: column; align-items: flex-start; gap: .1em; }
+.mitem.static:hover { background: none; }
+.mitem small { font-size: .82em; color: var(--ink-2); }
+.swatches { display: flex; gap: .55em; margin: .2em .4em .4em; flex-wrap: wrap; }
+.swatch { width: 40px; height: 40px; border-radius: 50%; padding: 0; border: 2px solid transparent; background: none; cursor: pointer; display: grid; place-items: center; }
+.swatch i { width: 28px; height: 28px; border-radius: 50%; display: block; box-shadow: inset 0 0 0 1px rgba(0, 0, 0, .12); }
+.swatch.on { border-color: var(--ink); }
+.menu .seg { margin: 0 .3em .3em; }
+.card .swatches { margin: .6em 0 0; }
+.set-row { display: flex; justify-content: space-between; align-items: center; gap: 12px; }
+.mdiv { height: 1px; background: var(--line); margin: .35em .3em; }
+@media (max-width: 420px) { .brand-name { display: none; } }
+@media (prefers-reduced-motion: reduce) { .topbar, .tabs { transition: none; } }
+h1 { font-family: var(--f-display); font-size: 1.65em; line-height: 1.3; margin: .3em 0 .2em; }
+h2 { font-size: 1.05em; margin: 0; }
+.eyebrow { font-size: .8em; color: var(--ink-2); margin: 1em 0 0; }
+.hint { font-size: .82em; color: var(--ink-2); margin: .4em 0 0; }
+.card { background: var(--surface); border: 1px solid var(--line); border-radius: 16px; padding: 16px; margin: 12px 0; }
+.row { display: flex; justify-content: space-between; align-items: center; gap: .6em; }
+.btn { display: inline-flex; align-items: center; justify-content: center; gap: .4em; min-height: 44px; padding: 0 1.1em; border-radius: 12px; border: 1px solid var(--accent); background: var(--accent); color: var(--on-accent); font-weight: 600; cursor: pointer; }
+.btn.ghost { background: transparent; color: var(--accent); }
+.btn.small { min-height: 36px; padding: 0 .8em; font-size: .88em; border-radius: 10px; }
+.btn.wide { width: 100%; }
+.btn:disabled { opacity: .5; cursor: default; }
+.field { width: 100%; min-height: 44px; padding: .5em .75em; border-radius: 10px; border: 1px solid var(--line-strong); background: var(--surface); }
+textarea.field { resize: vertical; line-height: 1.55; overflow-y: hidden; }
+.tabs[hidden] { display: none !important; }
+.tabs { position: fixed; left: 0; right: 0; bottom: 0; display: grid; grid-template-columns: repeat(5, 1fr); background: var(--surface); border-top: 1px solid var(--line); padding: 0 env(safe-area-inset-right, 0px) max(6px, env(safe-area-inset-bottom, 0px)) env(safe-area-inset-left, 0px); z-index: 10; transition: transform .25s ease; }
+.tabs :is(button, a) { text-decoration: none; background: none; border: 0; color: var(--ink-2); display: grid; place-items: center; padding: .55em 0; min-height: 56px; cursor: pointer; position: relative; }
+.tabs .ic { width: 28px; height: 28px; stroke-width: 1.4; }
+.tabs :is(button, a).on { color: var(--accent); }
+.tabs :is(button, a).on .ic { stroke-width: 1.8; }
+.tabs :is(button, a).on::after { content: ''; position: absolute; bottom: 6px; width: 5px; height: 5px; border-radius: 50%; background: var(--accent); }
+.tabs :is(button, a).pray-tab .ic { width: 44px; height: 44px; padding: 8px; border-radius: 50%; background: var(--accent-soft); color: var(--accent); }
+.tabs :is(button, a).pray-tab.on .ic { background: var(--accent); color: var(--on-accent); }
+.tabs :is(button, a).pray-tab.on::after { content: none; }
+.seg { display: grid; grid-template-columns: repeat(var(--n, 3), 1fr); gap: 3px; padding: 3px; background: var(--surface-2); border-radius: 12px; margin-top: 6px; }
+.seg button { font: inherit; font-size: .86em; word-break: keep-all; padding: 0 4px; border: 0; border-radius: 9px; min-height: 44px; background: transparent; color: var(--ink-2); cursor: pointer; }
+.seg button.on { background: var(--surface); color: var(--ink); font-weight: 600; box-shadow: 0 1px 3px rgba(0,0,0,.12); }
+.toast { pointer-events: none; position: fixed; left: 50%; bottom: 90px; transform: translateX(-50%); background: var(--ink); color: var(--page); padding: .6em 1em; border-radius: 10px; font-size: .88em; z-index: 20; max-width: calc(100% - 32px); }
+.pop { position: fixed; inset: 0; z-index: 40; display: flex; align-items: flex-end; justify-content: center; }
+.pop[hidden] { display: none; }
+.pop-scrim { position: absolute; inset: 0; background: rgb(0 0 0 / .4); animation: pop-fade .2s ease-out; }
+.pop-sheet { position: relative; width: 100%; max-width: 480px; max-height: 85vh; overflow-y: auto; border-radius: 18px 18px 0 0; padding: 1.1em 1.1em max(1.1em, env(safe-area-inset-bottom)); box-shadow: 0 -6px 24px rgb(0 0 0 / .18); animation: pop-up .25s ease-out; }
+@media (min-width: 640px) { .pop { align-items: center; } .pop-sheet { border-radius: 18px; } }
+@keyframes pop-up { from { transform: translateY(24px); opacity: 0; } }
+@keyframes pop-fade { from { opacity: 0; } }
+@media (prefers-reduced-motion: reduce) { .pop-scrim, .pop-sheet { animation: none; } }
+body.pop-open { overflow: hidden; }
+
+
+</style>
+<link rel="stylesheet" href="design-styles.css">
+<style>
+/* ── 이 시안에만 있는 것 ── */
+[hidden] { display: none !important; }
+html, body { min-height: 100%; }
+@media (max-width: 420px) { .brand-name { display: inline; } }
+body { overflow-x: hidden; }
+.sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+button:focus-visible, input:focus-visible, textarea:focus-visible, [tabindex]:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.demo-tag { font-size: .72em; font-weight: 600; color: var(--warn); background: var(--warn-soft); border-radius: 999px; padding: .15em .7em; white-space: nowrap; }
+.topbar .wrap { padding-right: max(8px, env(safe-area-inset-right, 0px)); }
+main.wrap { padding-top: 14px; padding-bottom: calc(110px + env(safe-area-inset-bottom, 0px)); }
+.menu { max-height: calc(100vh - 90px); max-height: calc(100dvh - 90px); overflow-y: auto; }
+.menu .set-note { font-size: .78em; color: var(--ink-2); margin: .2em .7em .5em; line-height: 1.5; }
+.menu .mlabel { margin-top: .9em; }
+.menu .mlabel:first-of-type { margin-top: .4em; }
+.menu .seg button { font-size: .8em; }
+.tabs { padding-bottom: max(6px, env(safe-area-inset-bottom, 0px)); }
+.tabs :is(button, a) { color: var(--ink-2); }
+@media (min-width: 1000px) { .topnav { display: flex; } .tabs { display: none !important; } main.wrap { padding-top: 28px; padding-bottom: 56px; } h1 { font-size: 2em; } }
+.topnav :is(button, a) { display: inline-flex; align-items: center; }
+
+
+/* 나눔하기 시안에서 그대로 옮긴 것: 과 카드, 교재 이름표, 알약, 안내 글, 내 생각 상자 */
+.lesson-book { margin: 0; }
+.lesson-title { font-family: var(--f-display); font-size: 1.55em; line-height: 1.35; margin: .15em 0 .5em; word-break: keep-all; }
+.passage-chip { display: inline-flex; align-items: center; gap: .4em; font-family: var(--f-display); font-weight: 700; background: var(--accent-soft); color: var(--accent); border-radius: 999px; padding: .3em .95em; font-size: 1.02em; }
+.opt-name { font-weight: 600; margin: 0; }
+.fine { font-size: .84em; color: var(--ink-2); margin: .8em 0 0; line-height: 1.55; word-break: keep-all; }
+.book-l { display: inline-flex; align-items: center; gap: .5em; margin: 0; }
+.book-l .mk { width: 1.6em; height: 1.6em; flex: none; --cord-bg: var(--surface); }
+/* 상단 바 로고: 코이데와 같은 테마색 동그라미(1.6em) 안에 마크 */
+.brand-mark .mk { width: 1.5em; height: 1.5em; display: block; --s1: var(--on-accent); --s2: color-mix(in srgb, var(--on-accent) 72%, var(--accent)); --s3: color-mix(in srgb, var(--on-accent) 48%, var(--accent)); --cord-bg: var(--accent); }
+.book-l b { font-family: var(--f-display); font-weight: 700; font-size: 1.05em; }
+.book-l span { font-size: .84em; color: var(--ink-2); }
+.lesson-title { margin-top: .35em !important; }
+/* 위쪽 진행 알약: 단계 이름 + 질문 점, 지난 시간 */
+.pill { flex: none; display: inline-flex; align-items: center; gap: .55em; font-size: .76em; line-height: 1; min-height: 30px; padding: 0 .95em; border-radius: 999px; white-space: nowrap; border: 1px solid transparent; font-variant-numeric: tabular-nums; }
+.pill .ic { width: 1.2em; height: 1.2em; }
+.pill-p { background: var(--accent-soft); color: var(--accent); }
+.pill-p b { font-weight: 600; }
+:root[data-style="neu"] .pill { border-color: transparent; box-shadow: var(--press-sm); }
+:root[data-style="skeu"] .pill { box-shadow: inset 0 1px 2px rgba(0, 0, 0, .15), 0 1px 0 rgba(255, 255, 255, .6); }
+:root[data-style="glass"] .pill-p { background: color-mix(in srgb, var(--accent-soft) 70%, transparent); border-color: color-mix(in srgb, var(--surface) 65%, transparent); }
+.pn { border-radius: 14px; padding: .75em 1em; line-height: 1.65; word-break: keep-all; }
+.pn .lab { display: flex; align-items: center; gap: .45em; font-size: .86em; font-weight: 600; color: var(--ink-2); margin: 0 0 .25em; }
+.pn p.t { margin: 0; }
+.pn .ic { width: 1.1em; height: 1.1em; }
+.pn.mine, .pn.memo { background: var(--private); border: 1px solid var(--line); }
+.toast { z-index: 60; }
+
+/* ── 이 시안에만 있는 것 ── */
+/* 카드 배치: 휴대폰은 한 줄, 태블릿(640px 이상)부터 카드 2열. 왼쪽은 과, 오른쪽은 지난주와 이번 주 실천 */
+.week-top .card { margin: 12px 0 0; }
+.week-grid { display: grid; gap: 14px; align-items: start; margin-top: 12px; }
+.week-grid .col { display: flex; flex-direction: column; gap: 14px; min-width: 0; }
+.week-grid .col:empty { display: none; }
+.week-grid:has(#colR:empty) { grid-template-columns: minmax(0, 1fr); }
+.week-grid .card { margin: 0; min-width: 0; }
+@media (min-width: 640px) { .week-grid { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); } }
+.lesson-top { align-items: center; }
+.lesson-date { font-size: .84em; color: var(--ink-2); white-space: nowrap; }
+.lesson-intro { margin: .8em 0 0; line-height: 1.7; }
+.act-row { display: flex; gap: 10px; margin-top: 10px; }
+.act-row .btn { flex: 1; text-decoration: none; }
+.read-btn { margin-top: 16px; min-height: 52px; font-size: 1.05em; text-decoration: none; }
+.status-row { display: flex; flex-wrap: wrap; gap: 6px; margin-top: .7em; }
+.status-row { align-items: center; gap: .3em; }
+.status-row .st-off, .status-row .st-sep { font-size: .84em; color: var(--ink-2); }
+.quiet-link { display: inline-block; margin: .1em 0 0; padding: 0; background: none; border: 0; color: var(--ink-2); font-size: .84em; min-height: 36px; cursor: pointer; text-decoration: underline; text-underline-offset: 3px; }
+.sub-h { font-weight: 600; margin: 0; }
+.lw-act { margin-top: .7em; }
+.lw-form { margin-top: .7em; }
+.lw-form label { display: block; font-size: .92em; font-weight: 600; margin-bottom: .3em; }
+.keep-sen { margin: .7em 0 0; font-family: var(--f-display); line-height: 1.7; word-break: keep-all; }
+.keep-act { margin: .5em 0 0; font-family: var(--f-display); font-weight: 700; font-size: 1.15em; line-height: 1.55; word-break: keep-all; }
+
+a:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+
+/* ── 코이데에서 그대로 옮긴 것: 첫 화면(.welcome), 카카오 버튼 ── */
+.topbar[hidden] { display: none !important; }
+/* 첫 화면에서는 코이데처럼 상단 바 없이 시작한다. 시안 설정(톱니)만 오른쪽 위에 조용히 남긴다 */
+.topbar.bare { background: transparent; border-bottom-color: transparent; box-shadow: none; position: absolute; left: 0; right: 0; }
+:root[data-style="neu"] .topbar.bare, :root[data-style="glass"] .topbar.bare { background: transparent; box-shadow: none; backdrop-filter: none; border-color: transparent; }
+.topbar.bare .brand { visibility: hidden; }
+.welcome { display: grid; gap: 18px; max-width: 30rem; margin: 0 auto; padding: 1.2em 0 2em; }
+.ab-mark { width: 64px; height: 64px; border-radius: 50%; background: var(--accent); color: var(--on-accent); display: grid; place-items: center; }
+.ab-mark svg { width: 38px; height: 38px; }
+.ab-mark .mk { --s1: var(--on-accent); --s2: color-mix(in srgb, var(--on-accent) 72%, var(--accent)); --s3: color-mix(in srgb, var(--on-accent) 48%, var(--accent)); --cord-bg: var(--accent); }
+.ab-words { display: flex; align-items: center; justify-content: center; gap: .5em; margin: .6em 0 .2em; }
+.ab-words span { display: flex; flex-direction: column; align-items: center; gap: .1em; padding: .5em .7em; border: 1px solid var(--line); border-radius: 12px; background: var(--page); min-width: 6.4em; }
+.ab-words b { font-weight: 600; }
+.ab-words i { font-style: normal; font-family: var(--f-display); color: var(--accent); }
+.ab-words small { font-size: .74em; color: var(--ink-2); }
+.ab-words em { font-style: normal; color: var(--ink-2); }
+.wl-hero { display: flex; flex-direction: column; align-items: center; text-align: center; gap: .35em; padding: 1.2em 0 .2em; }
+.wl-mark { width: 76px; height: 76px; margin-bottom: .3em; }
+.wl-mark svg { width: 46px; height: 46px; }
+.wl-name { font-family: var(--f-display); font-size: 2.1em; margin: 0; letter-spacing: .02em; }
+.wl-tag { margin: 0; font-family: var(--f-display); font-size: 1.15em; line-height: 1.55; color: var(--ink-2); }
+.wl-act { display: flex; flex-direction: column; gap: 10px; }
+.wl-act .hint { margin: 0; }
+.wl-once { text-align: center; word-break: keep-all; }
+.wl-or { display: flex; align-items: center; gap: .8em; margin: 6px 0 0; color: var(--ink-2); font-size: .8em; }
+.wl-or::before, .wl-or::after { content: ''; flex: 1; border-top: 1px solid var(--line); }
+.wl-alt { display: flex; flex-direction: column; gap: 8px; }
+.wl-alt-btn { display: grid; grid-template-columns: 1fr auto; align-items: center; column-gap: .6em; padding: .75em .9em; border: 1px solid var(--line); border-radius: 12px; background: var(--page); color: var(--ink); text-align: left; text-decoration: none; font: inherit; cursor: pointer; }
+.wl-alt-btn b { font-weight: 600; font-size: .95em; }
+.wl-alt-btn small { grid-column: 1; color: var(--ink-2); font-size: .8em; }
+.wl-alt-btn svg { grid-column: 2; grid-row: 1 / span 2; color: var(--ink-2); }
+.wl-alt-btn:hover { border-color: var(--line-strong); }
+.wl-feat { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 14px; }
+.wl-feat li { display: flex; gap: 12px; align-items: flex-start; }
+.wl-ico { flex: none; width: 38px; height: 38px; border-radius: 50%; background: var(--accent-soft); color: var(--accent); display: grid; place-items: center; }
+.wl-ico svg { width: 20px; height: 20px; }
+.wl-feat div { display: flex; flex-direction: column; gap: .15em; }
+.wl-feat b { font-weight: 600; }
+.wl-feat div span { color: var(--ink-2); font-size: .9em; line-height: 1.55; word-break: keep-all; }
+.wl-name-note { text-align: center; border-top: 1px solid var(--line); padding-top: 1em; }
+.wl-name-note .hint { margin: .4em 0 0; }
+@media (min-width: 860px) {
+  .welcome { max-width: 58rem; grid-template-columns: 1fr 24rem; grid-template-areas: "hero act" "feat act" "name name"; column-gap: 56px; align-items: start; padding-top: 3em; }
+  .wl-hero { grid-area: hero; align-items: flex-start; text-align: left; padding-top: .4em; }
+  .wl-name { font-size: 2.6em; }
+  .wl-act { grid-area: act; }
+  .wl-feat { grid-area: feat; }
+  .wl-name-note { grid-area: name; }
+}
+.kakao { display: flex; align-items: center; justify-content: center; gap: .5em; width: 100%; min-height: 52px; border: 0; border-radius: 12px; background: #FEE500; color: rgba(0,0,0,.85); font-weight: 600; cursor: pointer; }
+a.btn { text-decoration: none; }
+a:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+
+/* ── 디다코 앱에서 더한 것: 데모 표시, 설정 창 단추, 아직 없는 화면 ── */
+.soft { color: var(--ink-2); }
+.demo-tag { font: inherit; font-size: .72em; font-weight: 600; color: var(--warn); background: var(--warn-soft); border: 0; border-radius: 999px; padding: 0 .9em; min-height: 36px; display: inline-flex; align-items: center; white-space: nowrap; cursor: pointer; }
+.demo-tag.static { min-height: 0; padding: .15em .7em; cursor: default; }
+span.badge-btn { cursor: default; }
+.menu .set-btns { display: flex; gap: 6px; margin: 0 .3em .3em; }
+.menu .set-btns .btn { flex: 1; }
+.pop-sheet.card { margin: 0; }
+.pop-sheet h2 { font-family: var(--f-display); font-size: 1.25em; margin: 0 0 .4em; }
+.pop-sheet .btn.wide { margin-top: 1em; }
+.pop-sheet .set-btns { display: flex; gap: 8px; margin-top: 1em; }
+.pop-sheet .set-btns .btn { flex: 1; }
+.kakao:disabled, .wl-alt-btn:disabled { opacity: .5; cursor: default; }
+.wl-alt-btn:disabled:hover { border-color: var(--line); }
+.calm { display: flex; flex-direction: column; gap: .7em; align-items: flex-start; }
+.calm-t { font-family: var(--f-display); font-size: 1.3em; margin: 0; }
+@media (max-width: 420px) { .topbar .wrap { gap: .4em; } :root[data-big] .brand-name { display: none; } }
+
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <symbol id="i-week" viewBox="0 0 24 24"><rect x="4" y="5" width="16" height="15" rx="3"/><path d="M4 10h16M9 3v4M15 3v4"/></symbol>
+    <symbol id="i-shelf" viewBox="0 0 24 24"><path d="M5 4h4v16H5zM10 7h4v13h-4z"/><path d="M15.5 6.5l3.8-1 3 13-3.8 1z" transform="translate(-2 0)"/></symbol>
+    <symbol id="i-share" viewBox="0 0 24 24"><circle cx="9" cy="9" r="3.4"/><circle cx="16.5" cy="10" r="2.8"/><path d="M3.5 19c.5-3.2 2.7-5 5.5-5s5 1.8 5.5 5M15 14.4c2.6-.3 4.8 1.2 5.5 4.6"/></symbol>
+    <symbol id="i-log" viewBox="0 0 24 24"><path d="M6 4h11a1.5 1.5 0 0 1 1.5 1.5v13A1.5 1.5 0 0 1 17 20H6z"/><path d="M6 4v16M10 9h5M10 13h4"/></symbol>
+    <symbol id="i-more" viewBox="0 0 24 24"><circle cx="6" cy="12" r="1.3"/><circle cx="12" cy="12" r="1.3"/><circle cx="18" cy="12" r="1.3"/></symbol>
+    <symbol id="i-gear" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M12 3.5v2.2M12 18.3v2.2M3.5 12h2.2M18.3 12h2.2M6 6l1.6 1.6M16.4 16.4L18 18M18 6l-1.6 1.6M7.6 16.4L6 18"/></symbol>
+    <symbol id="i-lock" viewBox="0 0 24 24"><rect x="5" y="11" width="14" height="9" rx="2.5"/><path d="M8.5 11V8a3.5 3.5 0 0 1 7 0v3"/></symbol>
+    <symbol id="i-check" viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5"/></symbol>
+    <symbol id="i-people" viewBox="0 0 16 16"><circle cx="6" cy="5.5" r="2"/><path d="M2.5 13c0-2 1.6-3.5 3.5-3.5s3.5 1.5 3.5 3.5"/><circle cx="11.2" cy="6" r="1.6"/><path d="M10.5 9.6c1.8 0 3 1.3 3 3.1"/></symbol>
+    <symbol id="i-book" viewBox="0 0 16 16"><rect x="3" y="2.5" width="10" height="11" rx="1.5"/><path d="M5.8 5.5h4.4M5.8 8h4.4M5.8 10.5h2.5"/></symbol>
+    <symbol id="i-chevr" viewBox="0 0 16 16"><path d="M6 3.5L10.5 8 6 12.5"/></symbol>
+    <!-- 디다코 짧은 마크: 위에 작은 고리, 짧은 끈, 세 줄무늬 책갈피(아래 V 홈). 테마색 동그라미 안에 넣어 쓴다.
+         가닥 색은 --s1·--s2·--s3로 바꾼다(기본은 --accent, --accent-mid, --ink-2). 동그라미 안에서는 --on-accent 계열로 바꾼다 -->
+    <symbol id="i-didako" viewBox="0 0 16 16"><g fill="none">
+      <circle cx="8" cy="2.6" r="1.5" stroke="var(--s1, var(--accent))" stroke-width="1.4"/><path d="M8 4.2V5.8" stroke="var(--s1, var(--accent))" stroke-width="1.2"/>
+      <clipPath id="didako-clip"><path d="M4.2 5.6H11.8V14.8L8 11.8L4.2 14.8Z"/></clipPath>
+      <g clip-path="url(#didako-clip)" stroke="none"><rect x="4.2" y="4.6" width="2.53" height="12" fill="var(--s1, var(--accent))"/><rect x="6.73" y="4.6" width="2.54" height="12" fill="var(--s2, var(--accent-mid))"/><rect x="9.27" y="4.6" width="2.53" height="12" fill="var(--s3, var(--ink-2))"/>
+      <path d="M6.73 4.6V15M9.27 4.6V15" stroke="var(--cord-bg, var(--page))" stroke-width=".5"/></g></g></symbol>
+  </defs>
+</svg>
+
+<header class="topbar" id="topbar">
+  <div class="wrap">
+    <button class="brand" type="button" data-act="home" aria-label="디다코 · 이번 주로 가기">
+      <span class="brand-mark"><svg class="mk" aria-hidden="true"><use href="#i-didako"/></svg></span>
+      <span class="brand-name">디다코</span>
+    </button>
+    <nav class="topnav" id="topnav" aria-label="메뉴">
+      <a href="#week" data-tab="week">이번 주</a>
+      <a href="#shelf" data-tab="shelf">책장</a>
+      <a href="#share" data-tab="share">나눔</a>
+      <a href="#record" data-tab="record">나의 기록</a>
+      <a href="#more" data-tab="more">더보기</a>
+    </nav>
+    <span class="spacer"></span>
+    <button class="demo-tag" type="button" data-act="demo-info" aria-label="데모예요. 눌러서 안내 보기">데모</button>
+    <span class="badge-btn" id="badge"></span>
+    <button class="icon-btn" type="button" id="gearBtn" data-act="gear" aria-expanded="false" aria-label="설정"><svg class="ic" aria-hidden="true"><use href="#i-gear"/></svg></button>
+    <div class="menu" id="settings" hidden></div>
+  </div>
+</header>
+
+<main class="wrap" id="view" tabindex="-1"></main>
+
+<nav class="tabs" id="tabs" aria-label="메뉴">
+  <a href="#week" data-tab="week" aria-label="이번 주"><svg class="ic" aria-hidden="true"><use href="#i-week"/></svg></a>
+  <a href="#shelf" data-tab="shelf" aria-label="책장"><svg class="ic" aria-hidden="true"><use href="#i-shelf"/></svg></a>
+  <a class="pray-tab" href="#share" data-tab="share" aria-label="나눔"><svg class="ic" aria-hidden="true"><use href="#i-share"/></svg></a>
+  <a href="#record" data-tab="record" aria-label="나의 기록"><svg class="ic" aria-hidden="true"><use href="#i-log"/></svg></a>
+  <a href="#more" data-tab="more" aria-label="더보기"><svg class="ic" aria-hidden="true"><use href="#i-more"/></svg></a>
+</nav>
+
+<div class="toast" id="toast" role="status" aria-live="polite" hidden></div>
+<div class="pop" id="pop" hidden>
+  <div class="pop-scrim" data-act="pop-close"></div>
+  <div class="pop-sheet card" id="popSheet" role="dialog" aria-modal="true" aria-labelledby="popT"></div>
+</div>
+
+<script src="demo-data.js"></script>
+<script>
+(() => {
+'use strict';
+// 지금은 데모만 있다. 서버를 잇는 2단계에서 설정 파일(config.js)의 주소가 비었는지로 바꾼다.
+// 데모에서는 아무것도 밖으로 보내지 않고, 쓴 것은 이 기기(localStorage)에만 남는다
+const DEMO = true;
+const DATA = window.DIDAKO_DEMO;
+
+// ── 도구 ──
+const $ = (s, r) => (r || document).querySelector(s);
+const $$ = (s, r) => Array.from((r || document).querySelectorAll(s));
+const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]);
+// 저장소를 못 쓰는 브라우저(비공개 창 등)에서도 화면은 그대로 돌아가야 해서 모두 try/catch로 감싼다. set은 성공 여부를 돌려준다
+const ls = {
+  get(k) { try { return localStorage.getItem(k); } catch (e) { return null; } },
+  set(k, v) { try { localStorage.setItem(k, v); return true; } catch (e) { return false; } },
+  del(k) { try { localStorage.removeItem(k); } catch (e) {} }
+};
+const readJson = k => { try { const v = JSON.parse(ls.get(k) || 'null'); return v && typeof v === 'object' ? v : {}; } catch (e) { return {}; } };
+const ic = (n, c) => `<svg class="ic ${c || ''}" aria-hidden="true"><use href="#i-${n}"/></svg>`;
+const root = document.documentElement;
+const BUBBLE = '<svg viewBox="0 0 18 18" width="18" height="18" aria-hidden="true"><path fill="currentColor" d="M9 2.2c-4.1 0-7.4 2.6-7.4 5.8 0 2.1 1.4 3.9 3.5 4.9l-.8 2.9c-.1.3.2.5.4.3l3.4-2.3h.9c4.1 0 7.4-2.6 7.4-5.8S13.1 2.2 9 2.2z"/></svg>';
+
+// ── 저장 자리 ──
+// 화면 설정(화면 모드·색 테마·디자인·큰 글씨)은 한 자리에만 적는다. 데모 설정과 쓴 글은 따로 둔다
+const K = { display: 'didako-display', demo: 'didako-demo', reflect: 'didako-reflect', keep: 'didako-keep' };
+const MODES = ['auto', 'light', 'dark'], ACCENTS = ['green', 'amber', 'blue', 'rose', 'ink'], STYLES = ['basic', 'neu', 'skeu', 'glass'];
+const ROLES = [['member', '회원'], ['leader', '리더'], ['pastor', '목사님'], ['admin', '관리자']];
+const STATUS = [['draft', '준비 중'], ['leader', '리더까지'], ['all', '모두']];
+const pick = (v, list, d) => (list.includes(v) ? v : d);
+const S = { mode: 'auto', accent: 'green', style: 'basic', big: false };
+const D = { entered: false, role: 'member', status: 'all', lastWeek: true, bookmark: false, before: false, alt: false };
+function loadState() {
+  const a = readJson(K.display), b = readJson(K.demo);
+  S.mode = pick(a.mode, MODES, 'auto'); S.accent = pick(a.accent, ACCENTS, 'green'); S.style = pick(a.style, STYLES, 'basic'); S.big = a.big === true;
+  D.entered = b.entered === true; D.role = pick(b.role, ROLES.map(r => r[0]), 'member'); D.status = pick(b.status, STATUS.map(r => r[0]), 'all');
+  D.lastWeek = b.lastWeek !== false; D.bookmark = b.bookmark === true; D.before = b.before === true; D.alt = b.alt === true;
+}
+const saveDisplay = () => ls.set(K.display, JSON.stringify(S));
+const saveDemo = () => ls.set(K.demo, JSON.stringify(D));
+loadState();
+
+const STYLE_ATTR = { basic: null, neu: 'neu', skeu: 'skeu', glass: 'glass' };
+function applySettings() {
+  S.mode === 'auto' ? root.removeAttribute('data-mode') : root.setAttribute('data-mode', S.mode);
+  S.accent === 'green' ? root.removeAttribute('data-accent') : root.setAttribute('data-accent', S.accent);
+  STYLE_ATTR[S.style] ? root.setAttribute('data-style', STYLE_ATTR[S.style]) : root.removeAttribute('data-style');
+  S.big ? root.setAttribute('data-big', '') : root.removeAttribute('data-big');
+}
+
+// ── 역할과 위쪽 배지 ──
+// 배지 규칙: 회원·리더는 "2-20 사랑방", 목사님·관리자는 "청장년부" + 역할 이름표
+const isTop = () => D.role === 'pastor' || D.role === 'admin';
+const groupName = () => (isTop() ? DATA.church.dept : DATA.church.room);
+const roleName = () => ROLES.find(x => x[0] === D.role)[1];
+function paintBadge() {
+  $('#badge').innerHTML = `${esc(groupName())} <span class="role-tag${D.role === 'leader' ? ' leader' : isTop() ? ' admin' : ''}">${roleName()}</span>`;
+}
+
+// ── 알림과 아래에서 올라오는 창 ──
+let toastT = 0;
+function toast(msg) { const t = $('#toast'); t.textContent = msg; t.hidden = false; clearTimeout(toastT); toastT = setTimeout(() => { t.hidden = true; }, 2600); }
+let sheetFrom = null;
+function openSheet(html) {
+  $('#popSheet').innerHTML = html; $('#pop').hidden = false; document.body.classList.add('pop-open');
+  sheetFrom = document.activeElement;
+  const f = $('#popSheet [data-focus]'); if (f) f.focus();
+}
+function closeSheet() {
+  $('#pop').hidden = true; document.body.classList.remove('pop-open');
+  if (sheetFrom && sheetFrom.focus) sheetFrom.focus();
+  sheetFrom = null;
+}
+
+// ── 설정 창: 화면 설정(한 번만 기억) + 데모용 ──
+const seg = (key, opts, cur) => `<div class="seg" style="--n:${opts.length}">${opts.map(([v, l]) => `<button type="button" data-set="${key}:${v}" class="${String(cur) === String(v) ? 'on' : ''}" aria-pressed="${String(cur) === String(v)}">${l}</button>`).join('')}</div>`;
+const onoff = (key, cur) => seg(key, [['0', '끄기'], ['1', '켜기']], cur ? 1 : 0);
+const DISPLAY_KEYS = ['mode', 'accent', 'style', 'big'];
+function renderSettings() {
+  const sw = [['green', '#2B6A62', '초록'], ['amber', '#A9561B', '주황'], ['blue', '#2F5D95', '파랑'], ['rose', '#A8435C', '장미'], ['ink', '#33332F', '먹색']];
+  const inApp = currentView() !== 'start';
+  $('#settings').innerHTML = `
+    <p class="mlabel" style="margin-top:.3em">화면 모드</p>${seg('mode', [['auto', '기기'], ['light', '밝게'], ['dark', '어둡게']], S.mode)}
+    <p class="mlabel">색 테마</p><div class="swatches">${sw.map(([k, c, n]) => `<button type="button" class="swatch ${S.accent === k ? 'on' : ''}" data-set="accent:${k}" aria-label="${n}" aria-pressed="${S.accent === k}"><i style="background:${c}"></i></button>`).join('')}</div>
+    <p class="mlabel">디자인</p>${seg('style', [['basic', 'basic'], ['neu', 'new'], ['skeu', 'classic'], ['glass', 'glass']], S.style)}
+    <p class="mlabel">큰 글씨</p>${seg('big', [['0', '끄기'], ['1', '켜기']], S.big ? 1 : 0)}
+    <div class="mdiv"></div>
+    <p class="mlabel">데모용 <span class="demo-tag static">데모</span></p>
+    <p class="set-note">실제 앱에는 없는 설정이에요. 이 기기에만 기억해요.</p>
+    <p class="mlabel">역할</p>${seg('role', ROLES, D.role)}
+    ${inApp && D.role === 'pastor' ? `<p class="mlabel">공개 범위</p>${seg('status', STATUS, D.status)}` : ''}
+    ${inApp ? `<p class="mlabel">지난주 작은 실천 있음</p>${onoff('lastWeek', D.lastWeek)}
+    <p class="mlabel">책갈피 있음</p>${onoff('bookmark', D.bookmark)}
+    <p class="mlabel">이번 주 과 배포 전</p>${onoff('before', D.before)}
+    <p class="mlabel">교재 번갈아 쓰기 예시</p>${onoff('alt', D.alt)}
+    <p class="set-note">켜면 창세기도 열려 있고, 이번 주는 창세기 과 하나만 보여요.</p>
+    <p class="mlabel">이번 주 작은 실천(오늘 남길 것)</p>
+    <div class="set-btns"><button type="button" class="btn ghost small" data-act="keep-fill">예시 채우기</button><button type="button" class="btn ghost small" data-act="keep-clear">비우기</button></div>` : ''}
+    <div class="mdiv"></div>
+    <div class="set-btns"><button type="button" class="btn ghost small" data-act="demo-reset-ask">데모 처음으로</button></div>`;
+}
+function closeMenu() { const m = $('#settings'); m.hidden = true; $('#gearBtn').setAttribute('aria-expanded', 'false'); }
+
+// ── 화면 이름표 ──
+// 아직 만들지 않은 화면은 차분한 안내 한 장으로 연다(막다른 길이 없게 이번 주로 가는 링크를 둔다)
+const PLACE = {
+  read: ['펼치기', 'week'], share: ['나눔', 'share'], shelf: ['책장', 'shelf'], record: ['나의 기록', 'record'], more: ['더보기', 'more'],
+  church: ['우리 사랑방', 'more'], prep: ['진행 준비', 'week'], manage: ['교재 관리', 'more']
+};
+const VIEWS = ['start', 'week'].concat(Object.keys(PLACE));
+const currentView = () => { const h = location.hash.replace(/^#/, ''); return VIEWS.includes(h) ? h : null; };
+
+// ── 이번 주 ──
+function lessonOf(sel) {
+  const b = DATA.books.find(x => x.id === sel.book), l = b.lessons.find(x => x.no === sel.no);
+  return { book: b.title, period: b.period, no: l.no, title: `제${l.no}과 · ${l.name}`, ref: l.ref, date: l.date, intro: l.intro || '' };
+}
+const thisLesson = () => lessonOf(D.alt ? DATA.thisWeek.alt : DATA.thisWeek.main);
+function lessonCard() {
+  if (D.before) {
+    return `<section class="card today" aria-labelledby="lessonTitle">
+      <h2 class="lesson-title" id="lessonTitle">이번 주 과를 준비하고 있어요</h2>
+      <p class="soft" style="margin:0">준비가 끝나면 이곳에 보여요. 그동안 책장에서 지난 교재를 볼 수 있어요.</p>
+      <a class="btn wide read-btn" href="#shelf">${ic('shelf')}책장 보기</a>
+    </section>`;
+  }
+  const L = thisLesson(), more = D.role === 'leader' || D.role === 'pastor';
+  return `<section class="card today" aria-labelledby="lessonTitle">
+    <div class="row lesson-top"><p class="lesson-book"><span class="book-l"><svg class="mk" aria-hidden="true"><use href="#i-didako"/></svg><b>${esc(L.book)}</b><span>${esc(L.period)}</span></span></p><span class="lesson-date">${esc(L.date)}</span></div>
+    <h2 class="lesson-title" id="lessonTitle">${esc(L.title)}</h2>
+    <span class="passage-chip">${esc(L.ref)}</span>
+    <p class="soft lesson-intro">${esc(L.intro)}</p>
+    <a class="btn wide read-btn" href="#read">${D.bookmark ? '이어서 펼치기' : '펼치기'}</a>
+    ${D.bookmark ? '<p class="fine" style="margin-top:.6em">책갈피가 꽂힌 질문에서 이어서 펼쳐요.</p>' : ''}
+    <div class="act-row"><a class="btn ghost" href="#share">나눔하기</a>${more ? '<button class="btn ghost" type="button" data-act="prep">진행 준비</button>' : ''}</div>
+  </section>`;
+}
+function lastWeekCard() {
+  if (!D.lastWeek) return '';
+  const v = ls.get(K.reflect) || '';
+  return `<section class="card" aria-labelledby="lwT">
+    <h2 id="lwT">지난주 작은 실천, 어땠나요?</h2>
+    <div class="pn mine lw-act"><p class="lab">${ic('lock')}${esc(DATA.lastWeek.lesson)} · 내가 남긴 실천</p><p class="t">${esc(DATA.lastWeek.action)}</p></div>
+    <div class="lw-form"><label for="lwInput">한 줄 돌아보기</label><input class="field" id="lwInput" maxlength="120" placeholder="떠오르는 대로 한 줄만 적어요" value="${esc(v)}" autocomplete="off"></div>
+  </section>`;
+}
+function keepCard() {
+  const k = readJson(K.keep);
+  if (!k.sentence && !k.action) return '';
+  return `<section class="card" aria-labelledby="kpT">
+    <h2 id="kpT">이번 주 작은 실천</h2>
+    ${k.action ? `<p class="keep-act">${esc(k.action)}</p>` : ''}
+    ${k.sentence ? `<p class="keep-sen">${esc(k.sentence)}</p>` : ''}
+  </section>`;
+}
+function statusCard() {
+  if (D.role !== 'pastor') return '';
+  const L = thisLesson(), cur = STATUS.find(x => x[0] === D.status)[1];
+  return `<section class="card" aria-label="공개 범위">
+    <p class="opt-name">제${L.no}과 공개 범위</p>
+    <p class="status-row" aria-label="공개 범위: ${esc(cur)}">${STATUS.map(([v, l], i) => (i ? '<span class="st-sep" aria-hidden="true">›</span>' : '') + (v === D.status ? `<span class="pill pill-p">${ic('check')}<b>${l}</b></span>` : `<span class="st-off">${l}</span>`)).join('')}</p>
+    <p class="fine" style="margin-top:.6em">해설과 진행 안내는 늘 리더에게만 보여요.</p>
+    <button class="quiet-link" type="button" data-act="later">교재 관리에서 바꾸기</button>
+  </section>`;
+}
+function weekView() {
+  return `<div class="page-top"><h1>이번 주</h1></div>
+    <p class="eyebrow" style="margin-top:0">${esc(groupName())}</p>
+    <div class="week-top">${statusCard()}</div>
+    <div class="week-grid"><div class="col">${lessonCard()}</div><div class="col" id="colR">${lastWeekCard() + keepCard()}</div></div>`;
+}
+
+// ── 첫 화면(C-01): 데모에서는 카카오 대신 "데모로 둘러보기" ──
+function startView() {
+  return `<div class="welcome">
+      <section class="wl-hero">
+        <span class="ab-mark wl-mark" aria-hidden="true"><svg class="mk"><use href="#i-didako"/></svg></span>
+        <h1 class="wl-name">디다코</h1>
+        <p class="wl-tag">말씀을 함께 읽고<br>나누고 간직해요</p>
+      </section>
+      <section class="wl-act card">
+        <button class="btn wide read-btn" type="button" data-act="demo-enter" style="margin-top:0">데모로 둘러보기</button>
+        <p class="hint wl-once">로그인 없이 예시 내용으로 둘러봐요.<br>쓴 것은 이 기기에만 남고, 어디로도 보내지 않아요.</p>
+        <p class="wl-or"><span>실제 앱에서는</span></p>
+        <button class="kakao" type="button" disabled>${BUBBLE}카카오로 시작하기</button>
+        <p class="hint wl-once">실제 앱에서 열려요</p>
+        <div class="wl-alt">
+          <button class="wl-alt-btn" type="button" disabled><b>코드로 들어오기</b><small>실제 앱에서 열려요</small>${ic('chevr')}</button>
+        </div>
+      </section>
+      <ul class="wl-feat">
+        <li><span class="wl-ico">${ic('book')}</span><div><b>말씀을 함께 읽어요</b><span>교회가 낸 교재로 이번 주 말씀을 펼쳐요.</span></div></li>
+        <li><span class="wl-ico">${ic('people')}</span><div><b>함께 나눠요</b><span>모임에서는 화면을 내려놓고 서로를 바라봐요.</span></div></li>
+        <li><span class="wl-ico">${ic('lock')}</span><div><b>기록은 지켜져요</b><span>실제 앱에서는 내 기록을 암호화하여 보관해요. 운영자·목사님·리더도 볼 수 없어요.</span></div></li>
+      </ul>
+      <footer class="wl-name-note">
+        <div class="ab-words" aria-hidden="true"><span><b>디다케</b><i>διδαχή</i><small>가르침</small></span><em>+</em><span><b>코이노니아</b><i>κοινωνία</i><small>교제</small></span></div>
+        <p class="hint">말씀을 배우고 함께 나누는 자리예요.</p>
+      </footer>
+    </div>`;
+}
+
+// ── 아직 없는 화면 ──
+function placeView(v) {
+  return `<div class="page-top"><h1>${esc(PLACE[v][0])}</h1></div>
+    <section class="card calm">
+      <p class="calm-t">곧 만들어요</p>
+      <p class="soft" style="margin:0">이 화면은 다음 단계에서 열려요.</p>
+      <a class="btn ghost" href="#week">이번 주로 돌아가기</a>
+    </section>`;
+}
+
+// ── 길 찾기(# 주소) ──
+function route(moved) {
+  let v = currentView();
+  // 모르는 주소이거나 데모로 들어오기 전이면 첫 화면(들어온 뒤의 빈 주소는 이번 주)
+  if (!v) v = D.entered ? 'week' : 'start';
+  else if (v !== 'start' && !D.entered) v = 'start';
+  if (location.hash !== '#' + v) history.replaceState(null, '', '#' + v);
+  if (moved) { closeMenu(); $('#toast').hidden = true; }
+  const start = v === 'start';
+  $('#topbar').classList.toggle('bare', start);
+  $('#topnav').hidden = start; $('#tabs').hidden = start;
+  document.body.dataset.view = v;
+  $('#view').innerHTML = start ? startView() : v === 'week' ? weekView() : placeView(v);
+  const tab = start ? '' : v === 'week' ? 'week' : PLACE[v][1];
+  $$('[data-tab]').forEach(a => { const on = a.dataset.tab === tab; a.classList.toggle('on', on); on ? a.setAttribute('aria-current', 'page') : a.removeAttribute('aria-current'); });
+  document.title = start ? '디다코' : (v === 'week' ? '이번 주' : PLACE[v][0]) + ' · 디다코';
+  paintBadge(); $('#badge').hidden = start;
+  if (moved) {
+    window.scrollTo(0, 0);
+    const h = $('h1', $('#view')); if (h) { h.setAttribute('tabindex', '-1'); h.focus({ preventScroll: true }); }
+  }
+}
+function rerender() { applySettings(); route(false); if (!$('#settings').hidden) renderSettings(); }
+
+// ── 눌림 처리 ──
+const acts = {
+  home() { location.hash = '#week'; },
+  gear(e, el) { const m = $('#settings'); m.hidden = !m.hidden; el.setAttribute('aria-expanded', String(!m.hidden)); if (!m.hidden) renderSettings(); },
+  'demo-enter'() { D.entered = true; saveDemo(); location.hash = '#week'; },
+  'demo-info'() {
+    openSheet(`<h2 id="popT">데모로 열었어요</h2>
+      <p class="soft">실제 서버가 없는 둘러보기용이에요. 아무것도 밖으로 보내지 않고, 쓴 것은 이 기기에만 남아요. 이름과 내용은 모두 지어낸 예시예요.</p>
+      <button class="btn wide" type="button" data-act="pop-close" data-focus>알겠어요</button>`);
+  },
+  'demo-reset-ask'() {
+    closeMenu();
+    openSheet(`<h2 id="popT">데모를 처음으로 돌릴까요?</h2>
+      <p class="soft">데모에서 바꾼 설정과 쓴 글을 지우고 첫 화면으로 가요. 화면 모드·색 테마 같은 화면 설정은 그대로 둬요.</p>
+      <div class="set-btns" style="margin:0"><button class="btn ghost" type="button" data-act="pop-close" data-focus>그대로 둘게요</button><button class="btn" type="button" data-act="demo-reset">처음으로</button></div>`);
+  },
+  'demo-reset'() {
+    closeSheet();
+    ls.del(K.demo); ls.del(K.reflect); ls.del(K.keep); loadState();
+    if (location.hash === '#start') route(true); else location.hash = '#start';
+  },
+  'pop-close'() { closeSheet(); },
+  prep() { toast('다음 단계에서 열려요'); },
+  later() { toast('다음 단계에서 열려요'); },
+  'keep-fill'() { ls.set(K.keep, JSON.stringify(Object.assign({ at: Date.now() }, DATA.sampleKeep))); rerender(); toast('예시를 채웠어요'); },
+  'keep-clear'() { ls.del(K.keep); rerender(); toast('비웠어요'); }
+};
+document.addEventListener('click', e => {
+  const set = e.target.closest('[data-set]');
+  if (set) {
+    const [k, v] = set.dataset.set.split(':');
+    if (DISPLAY_KEYS.includes(k)) { S[k] = k === 'big' ? v === '1' : v; saveDisplay(); }
+    else { D[k] = ['lastWeek', 'bookmark', 'before', 'alt'].includes(k) ? v === '1' : v; saveDemo(); }
+    rerender();
+    return;
+  }
+  const el = e.target.closest('[data-act]');
+  if (el && acts[el.dataset.act]) { e.preventDefault(); acts[el.dataset.act](e, el); return; }
+  const menu = $('#settings');
+  if (!menu.hidden && !e.target.closest('#settings')) closeMenu();
+});
+document.addEventListener('keydown', e => {
+  if (e.key !== 'Escape') return;
+  if (!$('#pop').hidden) closeSheet(); else closeMenu();
+});
+// 한 줄 돌아보기: 쓰는 대로 기기에 남기고, 칸을 벗어날 때 "저장했어요"를 잠깐 보인다(실패하면 그때만 알린다)
+document.addEventListener('input', e => { if (e.target.id === 'lwInput') ls.set(K.reflect, e.target.value); });
+document.addEventListener('change', e => {
+  if (e.target.id === 'lwInput') toast(ls.set(K.reflect, e.target.value) ? '저장했어요' : '저장하지 못했어요 · 다시 시도');
+});
+window.addEventListener('hashchange', () => route(true));
+
+applySettings(); route(false);
+// 홈 화면 앱: 한 번 열어 두면 인터넷이 없어도 열린다
+if ('serviceWorker' in navigator && (location.protocol === 'https:' || location.hostname === 'localhost')) navigator.serviceWorker.register('sw.js').catch(() => { /* 없어도 앱은 그대로 */ });
+})();
+</script>
+</body>
+</html>
