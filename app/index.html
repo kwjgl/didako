@@ -307,11 +307,246 @@ span.badge-btn { cursor: default; }
 .calm-t { font-family: var(--f-display); font-size: 1.3em; margin: 0; }
 @media (max-width: 420px) { .topbar .wrap { gap: .4em; } :root[data-big] .brand-name { display: none; } }
 
+/* ── 펼치기·나눔하기 시안(read.html, sharing.html)에서 그대로 옮긴 것 ── */
+.switch { width: 48px; height: 28px; border-radius: 999px; border: 0; background: var(--line-strong); position: relative; flex: none; padding: 0; cursor: pointer; }
+.switch > span { position: absolute; top: 3px; left: 3px; width: 22px; height: 22px; border-radius: 50%; background: var(--surface); transition: left .2s; }
+.switch.on { background: var(--accent); }
+.switch.on > span { left: 23px; }
+.close-ask { display: flex; flex-direction: column; gap: 10px; margin-top: .8em; }
+.nudge-t { margin: 0 0 .4em; font-family: var(--f-display); font-size: 1.15em; }
+.sh p { margin: 0; line-height: 1.7; word-break: keep-all; }
+.sh .soft, .read-wrap .soft, .stage .soft { line-height: 1.7; }
+.sheet-h { display: flex; justify-content: space-between; align-items: center; gap: 8px; margin: 0 0 .6em; }
+.sheet-h h3 { margin: 0; font-family: var(--f-display); font-size: 1.15em; }
+.sheet-x { width: 44px; height: 44px; border-radius: 12px; background: none; border: 0; color: var(--ink-2); cursor: pointer; display: grid; place-items: center; flex: none; }
+.jump { display: flex; flex-direction: column; gap: 6px; }
+.jump .grp { font-size: .8em; font-weight: 600; color: var(--ink-2); margin: .7em 0 .1em; }
+.jump button { text-align: left; min-height: 48px; border-radius: 12px; border: 1px solid var(--line); background: var(--surface); padding: .5em .9em; cursor: pointer; line-height: 1.5; word-break: keep-all; }
+.jump button.here { border-color: var(--accent); background: var(--accent-soft); }
+.pill .dots { display: inline-flex; gap: 4px; }
+.pill .dots i { width: 7px; height: 7px; border-radius: 50%; border: 1.5px solid var(--accent); }
+.pill .dots i.on { background: var(--accent); }
+.pill .dv { width: 1px; height: 1.1em; background: currentColor; opacity: .35; }
+.pill-t { background: var(--surface-2); color: var(--ink-2); }
+:root[data-style="glass"] .pill-t { background: var(--glass-soft); border-color: color-mix(in srgb, var(--surface) 65%, transparent); }
+.st-prog { flex: 1; min-width: 0; display: flex; justify-content: center; align-items: center; gap: 6px; }
+@media (max-width: 420px) { .st-pill.ico { width: 44px; padding: 0; justify-content: center; } .st-pill.ico .lbl { display: none; } }
+@media (max-width: 360px) { .pill .pn-n, .pill .dv { display: none; } }
+.stage.big .st-top { font-size: calc(var(--base) / 1.35); }
+.stage.big .pill { font-size: .88em; min-height: 34px; }
+@media (max-width: 420px) { .stage.big .pill .pn-n, .stage.big .pill .dv { display: none; } }
+/* 도움말, 해설, 관련 구절, 말씀을 열며 */
+.help-btn { align-self: center; display: inline-flex; align-items: center; gap: .4em; font: inherit; font-size: .9em; min-height: 44px; padding: 0 .8em; background: none; border: 0; color: var(--ink-2); cursor: pointer; border-radius: 10px; }
+.help-btn .ic { width: 1.15em; height: 1.15em; }
+.help-btn.on { color: var(--ink); }
+.more .verse { background: none; color: var(--ink-2); font-family: inherit; font-weight: 400; padding: 0; }
+.more .verse + .verse::before { content: '·'; margin-right: .45em; }
+.pn.lead { background: var(--leader-soft); border-left: 5px solid var(--leader); }
+.pn.lead .lab { color: var(--leader); margin: 0; }
+.pn.lead .pn-h { display: flex; justify-content: space-between; align-items: center; gap: 8px; }
+.pn.lead .fold { font: inherit; font-size: .9em; font-weight: 600; min-height: 44px; margin: -.6em -.6em -.6em 0; padding: 0 .8em; background: none; border: 0; color: var(--leader); cursor: pointer; border-radius: 10px; }
+.pn.lead .t { margin-top: .25em; }
+.pn.lead.closed .t { display: none; }
+.pn.lead .empty { color: var(--ink-2); }
+.pn textarea.field { min-height: 3.4em; font-size: 1em; margin-top: .3em; background: var(--surface); }
+.more { margin-top: .9em; display: flex; flex-direction: column; gap: .8em; }
+.more[hidden] { display: none; }
+.more p { margin: 0; line-height: 1.7; word-break: keep-all; }
+.verse-row { display: flex; flex-wrap: wrap; gap: .45em; align-items: center; }
+.verse-row .lab { font-size: .84em; color: var(--ink-2); }
+.verse { font-family: var(--f-display); font-weight: 700; font-size: .95em; background: var(--accent-soft); color: var(--accent); border-radius: 999px; padding: .2em .85em; }
+.wo { display: flex; flex-direction: column; align-items: center; gap: 14px; text-align: center; max-width: 30em; margin: 0 auto; cursor: pointer; }
+.wo-cord { position: relative; width: 240px; max-width: 100%; height: 64px; margin-bottom: .6em; }
+.wo-cord svg { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; fill: none; stroke-linecap: round; stroke-linejoin: round; }
+.wo-par path { stroke-dasharray: 1; stroke-width: 4; animation: wo-draw .8s ease-out both; }
+.wo-par path:nth-child(1) { animation-delay: .4s; } .wo-par path:nth-child(2) { animation-delay: 1.4s; } .wo-par path:nth-child(3) { animation-delay: 2.4s; }
+.wo-par { animation: wo-fade 1.4s linear 3.4s both; }
+.wo-braid { clip-path: inset(0 100% 0 0); animation: wo-wipe 1.4s cubic-bezier(.4, 0, .2, 1) 3.4s both; }
+@keyframes wo-draw { from { stroke-dashoffset: 1; opacity: 0; } 1% { opacity: 1; } to { stroke-dashoffset: 0; opacity: 1; } }
+@keyframes wo-fade { to { opacity: 0; } }
+@keyframes wo-wipe { to { clip-path: inset(0 0 0 0); } }
+.wo-lines { display: flex; flex-direction: column; gap: .35em; }
+.wo-lines p { margin: 0; font-family: var(--f-display); font-size: clamp(1.35em, 5.4vmin, 1.9em); line-height: 1.5; word-break: keep-all; animation: wo-in .7s ease-out calc(.4s + var(--i) * 1s) both; }
+.wo-lines p:nth-child(2) { --i: 1; } .wo-lines p:nth-child(3) { --i: 2; } .wo-lines p:nth-child(1) { --i: 0; }
+.wo-eyebrow { font-size: .84em; color: var(--ink-2); margin: 0; }
+.wo-skip { font-size: .8em; color: var(--ink-2); margin: 1.4em 0 0; animation: wo-in .7s ease-out 1.5s both; }
+@keyframes wo-in { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+.opening { position: fixed; inset: 0; z-index: 45; background: var(--page); display: flex; align-items: center; justify-content: center; padding: 24px; cursor: pointer; overflow-y: auto; }
+.opening[hidden] { display: none !important; }
+.opening .wo { cursor: pointer; outline: none; }
+
+/* 펼치기 (read.html) */
+.read-wrap { max-width: 680px; margin: 0 auto; }
+@media (min-width: 1000px) { .read-wrap { max-width: 968px; } }
+.back-link { display: inline-flex; align-items: center; gap: .3em; min-height: 44px; margin: -8px 0 0 -4px; padding: 0 4px; color: var(--ink-2); text-decoration: none; font-size: .92em; }
+.back-link:hover { color: var(--ink); }
+.read-grid { display: grid; grid-template-columns: minmax(0, 1fr); gap: 12px; align-items: start; margin-top: 4px; }
+.read-grid > * { min-width: 0; }
+.rg-head { grid-area: head; } .rg-toc { grid-area: toc; } .rg-body { grid-area: body; }
+.read-grid { grid-template-areas: "head" "toc" "body"; }
+@media (min-width: 1000px) {
+  .read-grid { grid-template-columns: 260px minmax(0, 680px); grid-template-areas: "toc head" "toc body"; column-gap: 28px; }
+  .rg-toc { position: sticky; top: 84px; max-height: calc(100vh - 110px); overflow-y: auto; }
+}
+.read-head { margin: 0; }
+.read-head .fine { margin-top: .9em; }
+.toc { margin: 0; padding: 0; overflow: hidden; }
+.toc-btn { display: flex; width: 100%; align-items: center; justify-content: space-between; gap: .6em; min-height: 52px; padding: 0 16px; background: none; border: 0; font-weight: 600; color: var(--ink); cursor: pointer; text-align: left; }
+.toc-btn .l { display: inline-flex; align-items: center; gap: .5em; }
+.toc-btn .ch { transition: transform .2s; }
+.toc-btn[aria-expanded="true"] .ch { transform: rotate(180deg); }
+.toc-list { padding: 0 8px 10px; display: flex; flex-direction: column; gap: 2px; }
+.toc-list[hidden] { display: none !important; }
+.toc-grp { font-size: .8em; font-weight: 600; color: var(--ink-2); margin: .9em 8px .2em; }
+.toc-grp:first-child { margin-top: .2em; }
+.toc-q { display: grid; grid-template-columns: 1.6em minmax(0, 1fr) 1.4em; gap: .4em; align-items: start; width: 100%; text-align: left; min-height: 44px; padding: .5em .6em; border: 0; border-radius: 10px; background: none; cursor: pointer; line-height: 1.5; word-break: keep-all; font-size: .92em; }
+.toc-q:hover { background: var(--surface-2); }
+.toc-q .tn { color: var(--ink-2); font-variant-numeric: tabular-nums; }
+.toc-q .tt { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+.toc-q .tb { display: none; }
+.toc-q.has-bm { background: var(--accent-soft); }
+.toc-q.has-bm .tb { display: block; }
+.toc-q .tb .mk, .bm .mk { width: 1.3em; height: 1.3em; display: block; --cord-bg: var(--surface); }
+@media (min-width: 1000px) { .toc-btn { cursor: default; } .toc-btn .ch { display: none; } .toc-list[hidden] { display: flex !important; } }
+.stage-sec { display: flex; flex-direction: column; gap: 12px; margin-top: 10px; }
+.stage-sec:first-child { margin-top: 0; }
+.stage-h { font-family: var(--f-display); font-size: 1.1em; margin: 12px 2px 0; }
+.stage-sec:first-child .stage-h { margin-top: 2px; }
+.qcard { margin: 0; scroll-margin-top: 84px; }
+.q-meta { display: flex; justify-content: space-between; align-items: center; gap: .6em; min-height: 1.6em; }
+.q-eyebrow { font-size: .8em; color: var(--ink-2); }
+.bm { display: inline-flex; align-items: center; gap: .35em; font-size: .78em; font-weight: 600; color: var(--accent); }
+.bm[hidden] { display: none !important; }
+.q-t { font-family: var(--f-display); font-weight: 700; font-size: 1.15em; line-height: 1.55; margin: .15em 0 .2em; word-break: keep-all; }
+.qcard .help-btn { align-self: flex-start; margin-left: -.8em; }
+.qcard .more { margin-top: .2em; margin-bottom: .4em; }
+.qcard .pn.lead { font-size: .88em; margin-top: .5em; }
+.think-btn { display: inline-flex; align-items: center; gap: .4em; font: inherit; font-size: .9em; min-height: 44px; padding: 0 .8em; margin-left: -.8em; background: none; border: 0; color: var(--ink-2); cursor: pointer; border-radius: 10px; }
+.think-btn .ic { width: 1.15em; height: 1.15em; }
+.think-btn:hover { color: var(--ink); }
+.ans { margin-top: .3em; }
+.ans .pn { margin-bottom: .1em; }
+.ans .pn .t { white-space: pre-wrap; display: -webkit-box; -webkit-line-clamp: 3; line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
+.ans .pn .t.open { display: block; -webkit-line-clamp: unset; line-clamp: unset; overflow: visible; }
+.ans .pn .quiet-link { margin: 0 0 -.4em; }
+.ans .pn.edit .lab { margin-bottom: .1em; }
+.ans-foot { display: flex; justify-content: space-between; align-items: center; gap: .6em; margin-top: .3em; }
+.ans-foot .hint { margin: 0; }
+.ans-foot .quiet-link { margin: 0; }
+.ans-foot .retry { color: var(--warn); }
+.deep { margin: 10px 0 0; scroll-margin-top: 84px; }
+.deep .d-lead { font-family: var(--f-display); font-size: 1.15em; line-height: 1.55; margin: .2em 0 0; word-break: keep-all; }
+.deep-cord { position: relative; width: 240px; max-width: 100%; height: 40px; margin: .7em auto .2em; }
+.deep-cord svg { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; fill: none; stroke-linecap: round; stroke-linejoin: round; }
+.deep-cord .dc-line { stroke-width: 4; }
+.deep-cord .dc-off { stroke: var(--line-strong); stroke-width: 2.5; stroke-dasharray: 2 7; }
+.deep-cord .dc-on { animation: dc-in .6s ease-out both; }
+.deep-cord .dc-braid { animation: wo-wipe 1.2s cubic-bezier(.4, 0, .2, 1) both; clip-path: inset(0 100% 0 0); }
+@keyframes dc-in { from { opacity: 0; } to { opacity: 1; } }
+.tri-item { padding: .9em 0 .2em; border-top: 1px solid var(--line); scroll-margin-top: 84px; }
+.tri-item:first-of-type { border-top: 0; }
+.tri-item .q-meta { justify-content: flex-start; gap: .6em; }
+.who { font-weight: 600; font-size: .86em; color: var(--accent); background: var(--accent-soft); border-radius: 999px; padding: .15em .8em; }
+.tri-item .q-t { font-size: 1.06em; margin-top: .45em; }
+.wrapup { margin: 10px 0 0; scroll-margin-top: 84px; }
+.wrapup .keep-form { margin-top: .9em; }
+.wrapup label { font-weight: 600; font-size: .92em; display: block; margin-bottom: .3em; }
+.wrapup .field { font-size: 1em; }
+.end-btns { display: flex; flex-direction: column; gap: 10px; margin-top: 12px; }
+.end-btns .btn { min-height: 52px; text-decoration: none; }
+@media (min-width: 640px) { .end-btns { flex-direction: row-reverse; } .end-btns .btn { flex: 1; } }
+.keep-form { display: flex; flex-direction: column; gap: 14px; margin-top: 1.1em; }
+.keep-form label { font-weight: 600; font-size: .92em; display: block; margin-bottom: .3em; }
+.keep-form .field { font-size: 1em; }
+
+/* 나눔하기 (sharing.html) */
+.start-grid { display: grid; gap: 14px; align-items: start; margin-top: 12px; }
+@media (min-width: 760px) { .start-grid { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); } }
+.start-grid .card { margin: 0; min-width: 0; }
+.opt { padding: .8em 0; border-top: 1px solid var(--line); }
+.opt:first-of-type { border-top: 0; padding-top: .2em; }
+.opt-sub { font-size: .84em; color: var(--ink-2); margin: .1em 0 0; line-height: 1.5; }
+.opt .row { align-items: center; }
+.stage-checks { display: flex; flex-direction: column; gap: 6px; margin-top: .6em; }
+.chk { display: flex; align-items: center; gap: .7em; min-height: 46px; padding: 0 .9em; border: 1px solid var(--line); border-radius: 12px; background: var(--surface); cursor: pointer; text-align: left; width: 100%; }
+.chk .box { width: 22px; height: 22px; border-radius: 6px; border: 1.5px solid var(--line-strong); display: grid; place-items: center; flex: none; color: var(--on-accent); }
+.chk .box .ic { width: 15px; height: 15px; stroke-width: 2.4; opacity: 0; }
+.chk.on { border-color: var(--accent); background: var(--accent-soft); }
+.chk.on .box { background: var(--accent); border-color: var(--accent); }
+.chk.on .box .ic { opacity: 1; }
+.chk small { margin-left: auto; color: var(--ink-2); font-size: .8em; }
+.start-btn { margin-top: 16px; min-height: 52px; font-size: 1.05em; }
+.stage { position: fixed; inset: 0; z-index: 30; background: var(--page); color: var(--ink); display: flex; flex-direction: column; }
+.stage[hidden] { display: none !important; }
+body.sharing { overflow: hidden; }
+.st-top { flex: none; display: flex; align-items: center; gap: .4em; min-height: 56px; padding: max(6px, env(safe-area-inset-top, 0px)) max(8px, env(safe-area-inset-right, 0px)) 6px max(8px, env(safe-area-inset-left, 0px)); }
+.st-top[hidden] { display: none; }
+.st-pill { font: inherit; font-size: .84em; font-weight: 600; background: var(--surface); color: var(--ink-2); border: 1px solid var(--line); border-radius: 999px; padding: 0 .95em; min-height: 44px; display: inline-flex; align-items: center; gap: .4em; cursor: pointer; white-space: nowrap; }
+.st-body { flex: 1; min-height: 0; overflow-y: auto; display: flex; flex-direction: column; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); position: relative; }
+.st-in { margin: auto; width: 100%; max-width: 680px; padding: 12px 0 20px; min-width: 0; }
+.st-foot { flex: none; padding: 8px max(16px, env(safe-area-inset-right, 0px)) max(14px, env(safe-area-inset-bottom, 0px)) max(16px, env(safe-area-inset-left, 0px)); }
+.st-foot[hidden] { display: none; }
+.st-nav { display: grid; grid-template-columns: 1fr 1.4fr; gap: 10px; max-width: 680px; margin: 0 auto; }
+.st-nav .btn { min-height: 52px; font-size: 1.02em; }
+.st-nav.one { grid-template-columns: 1fr; }
+.st-skip { display: block; margin: 0 auto 6px; background: none; border: 0; color: var(--ink-2); font-size: .9em; min-height: 44px; padding: 0 1em; cursor: pointer; text-decoration: underline; text-underline-offset: 3px; }
+.st-eyebrow { font-size: .84em; color: var(--ink-2); margin: 0 0 .7em; text-align: center; }
+.st-body.qmode { overflow: hidden; }
+.q-top { flex: none; min-height: 36vh; min-height: 36dvh; display: flex; align-items: center; justify-content: center; padding: 8px 0; }
+.q-core { width: 100%; max-width: 680px; min-width: 0; }
+.q-aux { flex: 1 1 0; min-height: 0; overflow-y: auto; width: 100%; max-width: 680px; margin: 0 auto; padding: 2px 0 16px; display: flex; flex-direction: column; gap: 10px; font-size: .88em; }
+.q-aux .more { margin: 0; align-items: center; text-align: center; color: var(--ink-2); }
+.q-text { text-align: center; position: relative; z-index: 9; transition: color .15s ease-out; font-family: var(--f-display); font-weight: 700; font-size: clamp(1.55em, 6vmin, 2.5em); line-height: 1.5; margin: 0; word-break: keep-all; text-wrap: balance; }
+.passage-big { font-family: var(--f-display); font-weight: 700; font-size: clamp(2.2em, 10vmin, 4em); line-height: 1.3; margin: .1em 0 .5em; text-align: center; word-break: keep-all; }
+.center { text-align: center; }
+.cover-name { font-family: var(--f-display); font-weight: 700; font-size: clamp(2em, 8.5vmin, 3.2em); line-height: 1.35; text-align: center; margin: 0; }
+.cover-sub { text-align: center; color: var(--ink-2); margin: .6em 0 0; font-size: 1.05em; }
+.cover-mark { display: block; margin: 0 auto 1.2em; width: 120px; height: 30px; opacity: .9; }
+.triple { display: flex; flex-direction: column; gap: 0; padding: .4em 1.1em; }
+.tri { padding: 1em 0; border-top: 1px solid var(--line); display: grid; grid-template-columns: auto 1fr; gap: .4em 1em; align-items: baseline; }
+.tri:first-child { border-top: 0; }
+.tri .who { align-self: start; margin-top: .3em; }
+.tri p { margin: 0; font-family: var(--f-display); font-weight: 700; font-size: 1.2em; line-height: 1.55; word-break: keep-all; }
+.h2d.tri-lead { white-space: nowrap; font-size: clamp(14px, calc((100vw - 32px) / 20.5), 2em); }
+:root[data-big] .h2d.tri-lead, .stage.big .h2d.tri-lead { white-space: normal; font-size: clamp(1.4em, 5.5vmin, 2.1em); }
+.h2d { font-family: var(--f-display); font-size: clamp(1.5em, 5.5vmin, 2.1em); line-height: 1.4; margin: 0 0 .4em; word-break: keep-all; }
+.bless { display: flex; flex-direction: column; gap: .5em; align-items: center; text-align: center; }
+.bless p { margin: 0; font-family: var(--f-display); font-weight: 700; font-size: clamp(1.6em, 6.6vmin, 2.5em); line-height: 1.5; word-break: keep-all; animation: wo-in .8s ease-out calc(.3s + var(--i) * 1s) both; }
+.bless p.lastline { margin-top: .3em; color: var(--accent); }
+.bless .bl-lead { margin: 0 0 .6em; }
+.bless .bl-ref { margin-top: 1em; animation: wo-in .8s ease-out 4.3s both; }
+.done-mark { display: block; margin: .6em auto 1em; height: 170px; width: 52px; max-width: 100%; }
+.done-btns { display: flex; flex-direction: column; gap: 10px; max-width: 420px; margin: 1.4em auto 0; }
+.done-btns .btn { min-height: 52px; }
+/* 화면 내려놓기: 카드 전체 위에 어두운 한 겹(.dimmer)을 얹고 그 한 겹만 바뀐다. 질문(.q-text)은 이 겹 위로 올라와 같은 때에 흰색이 된다.
+   어두워질 때 0.8초, 밝아질 때 0.15초. 어두운 색은 테마와 상관없이 고정이다 */
+.dimmer { position: absolute; inset: 0; z-index: 8; background: #090d0c; opacity: 0; pointer-events: none; transition: opacity .15s ease-out; display: flex; flex-direction: column; align-items: center; justify-content: flex-end; gap: .35em; padding: 0 24px max(8vh, env(safe-area-inset-bottom, 0px)); text-align: center; }
+.stage.dim .dimmer { opacity: 1; pointer-events: auto; transition-duration: .8s; transition-timing-function: ease-in; }
+.stage.dim .q-text { color: #fff; transition-duration: .8s; transition-timing-function: ease-in; }
+.stage.nt .dimmer, .stage.nt .q-text { transition: none !important; }
+.dimmer p { word-break: keep-all; text-wrap: balance; margin: 0; }
+.dimmer .dm-msg { font-family: var(--f-display); font-weight: 700; font-size: 1.15em; color: #fff; }
+.dimmer .dm-sub { font-size: .88em; color: #c9d3cf; }
+.stage.big .dimmer .dm-msg { font-size: 1em; }
+.stage.big { font-size: calc(var(--base) * 1.35); }
+.stage.big .q-text { font-size: clamp(2.1em, 8.5vmin, 4.4em); }
+.stage.big .st-in { max-width: 1100px; }
+.stage.big .tri p { font-size: 1.5em; }
+.stage.big .passage-big { font-size: clamp(3em, 14vmin, 6em); }
+.stage.big .st-nav { max-width: 1100px; }
+@media (prefers-reduced-motion: reduce) {
+  .wo-par path, .wo-lines p, .wo-skip, .bless p, .bless .bl-ref { animation: none; }
+  .wo-par { animation: none; opacity: 0; }
+  .wo-braid { animation: none; clip-path: none; }
+  .deep-cord .dc-on { animation: none; } .deep-cord .dc-braid { animation: none; clip-path: none; }
+  .dimmer, .q-text, .stage.dim .dimmer, .stage.dim .q-text { transition-duration: .2s; }
+}
+
 </style>
 </head>
 <body>
 <svg width="0" height="0" style="position:absolute" aria-hidden="true">
-  <defs>
+  <defs id="spriteDefs">
     <symbol id="i-week" viewBox="0 0 24 24"><rect x="4" y="5" width="16" height="15" rx="3"/><path d="M4 10h16M9 3v4M15 3v4"/></symbol>
     <symbol id="i-shelf" viewBox="0 0 24 24"><path d="M5 4h4v16H5zM10 7h4v13h-4z"/><path d="M15.5 6.5l3.8-1 3 13-3.8 1z" transform="translate(-2 0)"/></symbol>
     <symbol id="i-share" viewBox="0 0 24 24"><circle cx="9" cy="9" r="3.4"/><circle cx="16.5" cy="10" r="2.8"/><path d="M3.5 19c.5-3.2 2.7-5 5.5-5s5 1.8 5.5 5M15 14.4c2.6-.3 4.8 1.2 5.5 4.6"/></symbol>
@@ -322,6 +557,14 @@ span.badge-btn { cursor: default; }
     <symbol id="i-check" viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5"/></symbol>
     <symbol id="i-people" viewBox="0 0 16 16"><circle cx="6" cy="5.5" r="2"/><path d="M2.5 13c0-2 1.6-3.5 3.5-3.5s3.5 1.5 3.5 3.5"/><circle cx="11.2" cy="6" r="1.6"/><path d="M10.5 9.6c1.8 0 3 1.3 3 3.1"/></symbol>
     <symbol id="i-book" viewBox="0 0 16 16"><rect x="3" y="2.5" width="10" height="11" rx="1.5"/><path d="M5.8 5.5h4.4M5.8 8h4.4M5.8 10.5h2.5"/></symbol>
+    <symbol id="i-info" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><path d="M12 11v5.2"/><circle cx="12" cy="7.9" r=".5"/></symbol>
+    <symbol id="i-list" viewBox="0 0 24 24"><path d="M8 7h11M8 12h11M8 17h11"/><circle cx="4.5" cy="7" r=".6"/><circle cx="4.5" cy="12" r=".6"/><circle cx="4.5" cy="17" r=".6"/></symbol>
+    <symbol id="i-note" viewBox="0 0 24 24"><path d="M5 19l1-4 10-10 3 3-10 10z"/><path d="M14.5 6.5l3 3"/></symbol>
+    <symbol id="i-chev" viewBox="0 0 24 24"><path d="M7 10l5 5 5-5"/></symbol>
+    <symbol id="i-back" viewBox="0 0 24 24"><path d="M14.5 6l-6 6 6 6"/></symbol>
+    <symbol id="i-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><path d="M12 7.5V12l3 2"/></symbol>
+    <symbol id="i-x" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></symbol>
+    <symbol id="i-cord" viewBox="0 0 16 12"><path d="M.5 8.5h3.8c1.2 0 1.7-1.5 1.7-2.8C6 3.7 7.3 2.5 9 2.5s3 1.2 3 3.1-1.8 3.1-4 3.3"/><path d="M5.6 10.1C7.6 9 9.6 8.5 15.5 8.5"/></symbol>
     <symbol id="i-chevr" viewBox="0 0 16 16"><path d="M6 3.5L10.5 8 6 12.5"/></symbol>
     <!-- 디다코 짧은 마크: 위에 작은 고리, 짧은 끈, 세 줄무늬 책갈피(아래 V 홈). 테마색 동그라미 안에 넣어 쓴다.
          가닥 색은 --s1·--s2·--s3로 바꾼다(기본은 --accent, --accent-mid, --ink-2). 동그라미 안에서는 --on-accent 계열로 바꾼다 -->
@@ -364,6 +607,13 @@ span.badge-btn { cursor: default; }
   <a href="#more" data-tab="more" aria-label="더보기"><svg class="ic" aria-hidden="true"><use href="#i-more"/></svg></a>
 </nav>
 
+<div class="opening" id="opening" role="dialog" aria-label="말씀을 열며" hidden></div>
+<div class="stage pss" id="stage" hidden role="dialog" aria-label="나눔하기">
+  <div class="st-top" id="stTop"></div>
+  <div class="st-body" id="stBody"></div>
+  <div class="st-foot" id="stFoot"></div>
+  <div class="dimmer" id="dimmer" aria-hidden="true"><p class="dm-msg">서로의 이야기에 귀 기울이는 시간</p><p class="dm-sub">화면을 누르면 다시 밝아져요</p></div>
+</div>
 <div class="toast" id="toast" role="status" aria-live="polite" hidden></div>
 <div class="pop" id="pop" hidden>
   <div class="pop-scrim" data-act="pop-close"></div>
@@ -396,18 +646,20 @@ const BUBBLE = '<svg viewBox="0 0 18 18" width="18" height="18" aria-hidden="tru
 
 // ── 저장 자리 ──
 // 화면 설정(화면 모드·색 테마·디자인·큰 글씨)은 한 자리에만 적는다. 데모 설정과 쓴 글은 따로 둔다
-const K = { display: 'didako-display', demo: 'didako-demo', reflect: 'didako-reflect', keep: 'didako-keep' };
+// answers 내 생각(펼치기), bookmark 책갈피(펼치기), memo 리더의 내 진행 메모(나눔하기), leadopen 해설 접기/펼치기, keep 오늘 남길 것(펼치기·나눔하기가 같이 쓴다)
+const K = { display: 'didako-display', demo: 'didako-demo', reflect: 'didako-reflect', keep: 'didako-keep', answers: 'didako-read-answers', bookmark: 'didako-read-bookmark', memo: 'didako-share-memo', leadopen: 'didako-leadopen' };
 const MODES = ['auto', 'light', 'dark'], ACCENTS = ['green', 'amber', 'blue', 'rose', 'ink'], STYLES = ['basic', 'neu', 'skeu', 'glass'];
 const ROLES = [['member', '회원'], ['leader', '리더'], ['pastor', '목사님'], ['admin', '관리자']];
 const STATUS = [['draft', '준비 중'], ['leader', '리더까지'], ['all', '모두']];
 const pick = (v, list, d) => (list.includes(v) ? v : d);
 const S = { mode: 'auto', accent: 'green', style: 'basic', big: false };
-const D = { entered: false, role: 'member', status: 'all', lastWeek: true, bookmark: false, before: false, alt: false };
+const D = { entered: false, role: 'member', status: 'all', lastWeek: true, before: false, alt: false, readOpen: true, readTriple: true, dimSec: 15 };
 function loadState() {
   const a = readJson(K.display), b = readJson(K.demo);
   S.mode = pick(a.mode, MODES, 'auto'); S.accent = pick(a.accent, ACCENTS, 'green'); S.style = pick(a.style, STYLES, 'basic'); S.big = a.big === true;
   D.entered = b.entered === true; D.role = pick(b.role, ROLES.map(r => r[0]), 'member'); D.status = pick(b.status, STATUS.map(r => r[0]), 'all');
-  D.lastWeek = b.lastWeek !== false; D.bookmark = b.bookmark === true; D.before = b.before === true; D.alt = b.alt === true;
+  D.lastWeek = b.lastWeek !== false; D.before = b.before === true; D.alt = b.alt === true;
+  D.readOpen = b.readOpen !== false; D.readTriple = b.readTriple !== false; D.dimSec = b.dimSec === 5 ? 5 : 15;
 }
 const saveDisplay = () => ls.set(K.display, JSON.stringify(S));
 const saveDemo = () => ls.set(K.demo, JSON.stringify(D));
@@ -433,16 +685,17 @@ function paintBadge() {
 // ── 알림과 아래에서 올라오는 창 ──
 let toastT = 0;
 function toast(msg) { const t = $('#toast'); t.textContent = msg; t.hidden = false; clearTimeout(toastT); toastT = setTimeout(() => { t.hidden = true; }, 2600); }
-let sheetFrom = null;
+let sheetFrom = null, shareSheet = false;
 function openSheet(html) {
   $('#popSheet').innerHTML = html; $('#pop').hidden = false; document.body.classList.add('pop-open');
   sheetFrom = document.activeElement;
   const f = $('#popSheet [data-focus]'); if (f) f.focus();
 }
 function closeSheet() {
-  $('#pop').hidden = true; document.body.classList.remove('pop-open');
+  $('#pop').hidden = true; document.body.classList.remove('pop-open'); $('#popSheet').classList.remove('sh');
   if (sheetFrom && sheetFrom.focus) sheetFrom.focus();
   sheetFrom = null;
+  if (shareSheet) { shareSheet = false; armDim(); }   // 나눔하기 중에 열었던 창이면 화면 내려놓기를 다시 건다
 }
 
 // ── 설정 창: 화면 설정(한 번만 기억) + 데모용 ──
@@ -463,19 +716,24 @@ function renderSettings() {
     <p class="mlabel">역할</p>${seg('role', ROLES, D.role)}
     ${inApp && D.role === 'pastor' ? `<p class="mlabel">공개 범위</p>${seg('status', STATUS, D.status)}` : ''}
     ${inApp ? `<p class="mlabel">지난주 작은 실천 있음</p>${onoff('lastWeek', D.lastWeek)}
-    <p class="mlabel">책갈피 있음</p>${onoff('bookmark', D.bookmark)}
+    <p class="mlabel">책갈피 있음</p>${onoff('bookmark', hasBm())}
     <p class="mlabel">이번 주 과 배포 전</p>${onoff('before', D.before)}
     <p class="mlabel">교재 번갈아 쓰기 예시</p>${onoff('alt', D.alt)}
     <p class="set-note">켜면 창세기도 열려 있고, 이번 주는 창세기 과 하나만 보여요.</p>
     <p class="mlabel">이번 주 작은 실천(오늘 남길 것)</p>
     <div class="set-btns"><button type="button" class="btn ghost small" data-act="keep-fill">예시 채우기</button><button type="button" class="btn ghost small" data-act="keep-clear">비우기</button></div>` : ''}
+    ${currentView() === 'read' ? `<p class="mlabel">말씀을 열며</p>${onoff('readOpen', D.readOpen)}
+    <p class="mlabel">깊이 묵상하기</p>${onoff('readTriple', D.readTriple)}
+    <p class="mlabel">내 생각</p>
+    <div class="set-btns"><button type="button" class="btn ghost small" data-act="ans-fill">예시 채우기</button><button type="button" class="btn ghost small" data-act="ans-clear">비우기</button></div>` : ''}
+    ${currentView() === 'share' ? `<p class="mlabel">화면 내려놓기 시간</p>${seg('dimSec', [['15', '15초'], ['5', '데모용 5초']], D.dimSec)}` : ''}
     <div class="mdiv"></div>
     <div class="set-btns"><button type="button" class="btn ghost small" data-act="demo-reset-ask">데모 처음으로</button></div>`;
 }
 function closeMenu() { const m = $('#settings'); m.hidden = true; $('#gearBtn').setAttribute('aria-expanded', 'false'); }
 
 // ── 화면 이름표 ──
-// 아직 만들지 않은 화면은 차분한 안내 한 장으로 연다(막다른 길이 없게 이번 주로 가는 링크를 둔다)
+// 이름표와 어느 탭이 켜지는지는 여기에 모아 둔다. 아직 만들지 않은 화면은 차분한 안내 한 장으로 연다(막다른 길이 없게 이번 주로 가는 링크를 둔다)
 const PLACE = {
   read: ['펼치기', 'week'], share: ['나눔', 'share'], shelf: ['책장', 'shelf'], record: ['나의 기록', 'record'], more: ['더보기', 'more'],
   church: ['우리 사랑방', 'more'], prep: ['진행 준비', 'week'], manage: ['교재 관리', 'more']
@@ -486,7 +744,7 @@ const currentView = () => { const h = location.hash.replace(/^#/, ''); return VI
 // ── 이번 주 ──
 function lessonOf(sel) {
   const b = DATA.books.find(x => x.id === sel.book), l = b.lessons.find(x => x.no === sel.no);
-  return { book: b.title, period: b.period, no: l.no, title: `제${l.no}과 · ${l.name}`, ref: l.ref, date: l.date, intro: l.intro || '' };
+  return { id: sel.book + ':' + l.no, book: b.title, period: b.period, no: l.no, title: `제${l.no}과 · ${l.name}`, ref: l.ref, date: l.date, intro: l.intro || '' };
 }
 const thisLesson = () => lessonOf(D.alt ? DATA.thisWeek.alt : DATA.thisWeek.main);
 function lessonCard() {
@@ -503,8 +761,8 @@ function lessonCard() {
     <h2 class="lesson-title" id="lessonTitle">${esc(L.title)}</h2>
     <span class="passage-chip">${esc(L.ref)}</span>
     <p class="soft lesson-intro">${esc(L.intro)}</p>
-    <a class="btn wide read-btn" href="#read">${D.bookmark ? '이어서 펼치기' : '펼치기'}</a>
-    ${D.bookmark ? '<p class="fine" style="margin-top:.6em">책갈피가 꽂힌 질문에서 이어서 펼쳐요.</p>' : ''}
+    <a class="btn wide read-btn" href="#read" data-act="read-go" data-resume="1">${hasBm() ? '이어서 펼치기' : '펼치기'}</a>
+    ${hasBm() ? '<p class="fine" style="margin-top:.6em">책갈피가 꽂힌 질문에서 이어서 펼쳐요.</p>' : ''}
     <div class="act-row"><a class="btn ghost" href="#share">나눔하기</a>${more ? '<button class="btn ghost" type="button" data-act="prep">진행 준비</button>' : ''}</div>
   </section>`;
 }
@@ -583,8 +841,451 @@ function placeView(v) {
     </section>`;
 }
 
+// ── 말씀 내용(펼치기·나눔하기가 같이 쓴다) ──
+// 질문 자료는 demo-data.js의 guides에 있다. 배포 전이거나 데모에 질문 예시가 없는 과(교재 번갈아 쓰기 예시의 창세기)는 안내 한 장을 보인다.
+// 성경 본문은 싣지 않고 장절만 쓴다
+let G = null;
+const readyGuide = () => (D.before ? null : DATA.guides[thisLesson().id] || null);
+function noGuideView(name) {
+  return `<div class="page-top"><h1>${esc(name)}</h1></div>
+    <section class="card calm">
+      <p class="calm-t">${D.before ? '이번 주 과를 준비하고 있어요' : '이 과는 데모에 질문 예시가 없어요'}</p>
+      <p class="soft" style="margin:0">${D.before ? '준비가 끝나면 열려요.' : '요한복음 제3과로 돌아가면 걸어 볼 수 있어요.'}</p>
+      <a class="btn ghost" href="#week">이번 주로 돌아가기</a>
+    </section>`;
+}
+const bookHtml = noMark => { const L = thisLesson(); return `<span class="book-l">${noMark ? '' : '<svg class="mk" aria-hidden="true"><use href="#i-didako"/></svg>'}<b>${esc(L.book)}</b><span>${esc(L.period)}</span></span>`; };
+const mkIc = () => '<svg class="mk" aria-hidden="true"><use href="#i-didako"/></svg>';
+const calm = () => { try { return matchMedia('(prefers-reduced-motion: reduce)').matches; } catch (e) { return false; } };
+const isLead = () => D.role === 'leader' || D.role === 'pastor';
+const NOLEAD = '등록된 해설이 없어요';
+// 해설 접기/펼치기: 고른 것은 이 기기에 기억하고 모든 질문에 적용한다(기본은 펼침)
+const leadOpen = () => ls.get(K.leadopen) !== '0';
+const helpHtml = q => (q.sub || q.vs) ? `<button class="help-btn" type="button" data-act="more" aria-expanded="false">${ic('info')}도움말</button>
+  <div class="more" hidden>${q.sub ? `<p class="soft">${esc(q.sub)}</p>` : ''}${q.vs ? `<div class="verse-row"><span class="lab">관련 구절</span>${q.vs.map(v => `<span class="verse">${esc(v)}</span>`).join('')}</div>` : ''}</div>` : '';
+const leadHtml = q => `<div class="pn lead${leadOpen() ? '' : ' closed'}"><div class="pn-h"><p class="lab">리더·목사님</p><button class="fold" type="button" data-act="fold" aria-expanded="${leadOpen()}">${leadOpen() ? '접기' : '펼치기'}</button></div>${q.lead ? `<p class="t">${esc(q.lead)}</p>` : `<p class="t empty">${NOLEAD}</p>`}</div>`;
+
+// ── 세 가닥을 엮은 줄(시안과 같은 그림) ──
+const STRAND = ['var(--accent)', 'var(--accent-mid)', 'var(--ink-2)'];
+function braidPaths(len, amp, periods, vert, sw, ol, cols, n, sub) {
+  ol = ol == null ? 3 : ol; cols = cols || STRAND; n = n || periods * 22; sub = sub || 1;
+  const ph = [0, 2 * Math.PI / 3, 4 * Math.PI / 3], out = [], f = v => v.toFixed(2);
+  for (let i = 0; i < n; i++) {
+    ph.map((p, k) => {
+      const pts = [];
+      for (let m = 0; m <= sub; m++) { const t = (i + m / sub) / n; pts.push([len * t, amp * Math.sin(t * periods * 2 * Math.PI + p)]); }
+      const tm = (i + .5) / n;
+      return { k, pts, z: Math.cos(tm * periods * 2 * Math.PI + p) };
+    }).sort((a, b) => a.z - b.z).forEach(o => {
+      const d = o.pts.map((q, m) => (m ? 'L' : 'M') + (vert ? `${f(q[1])} ${f(q[0])}` : `${f(q[0])} ${f(q[1])}`)).join('');
+      out.push(`<path d="${d}" stroke="var(--cord-bg, var(--page))" stroke-width="${sw + ol}" stroke-linecap="butt"/><path d="${d}" stroke="${cols[o.k]}" stroke-width="${sw}" stroke-linecap="round"/>`);
+    });
+  }
+  return out.join('');
+}
+const braidH = (w, h, per, sw) => `<svg viewBox="0 ${-h / 2} ${w} ${h}" aria-hidden="true">${braidPaths(w, h / 2 - sw, per, false, sw)}</svg>`;
+function parallelSvg() {
+  return `<svg class="wo-par" viewBox="0 -32 240 64" aria-hidden="true">${[-14, 0, 14].map((y, k) => `<path pathLength="1" d="M4 ${y}Q64 ${y - 9} 120 ${y}T236 ${y}" stroke="${STRAND[k]}"/>`).join('')}</svg>`;
+}
+// 마친 화면의 큰 세 겹 책갈피(짧은 마크 #i-didako의 식구). 끈을 엮는 그림이라 코드로 그려서 그림 모음에 더한다
+$('#spriteDefs').insertAdjacentHTML('beforeend', `<symbol id="i-didako-tall" viewBox="-30 -8 60 190"><circle cx="0" cy="4" r="6" fill="none" stroke="var(--accent)" stroke-width="3.2"/><g transform="translate(0 10)">${braidPaths(138, 10, 3, true, 6.6)}</g><g stroke-linecap="round" stroke-width="6.6" fill="none"><path d="M-9 150l-4 22" stroke="var(--accent)"/><path d="M0 150v26" stroke="var(--accent-mid)"/><path d="M9 150l4 22" stroke="var(--ink-2)"/></g></symbol>`);
+
+// ── 말씀을 열며(펼치기 첫 장) ──
+let openT = 0;
+function showOpening() {
+  const o = $('#opening');
+  o.innerHTML = `<div class="wo" tabindex="0" aria-label="말씀을 열며. 누르면 넘어가요">
+      <div class="wo-cord" aria-hidden="true">${parallelSvg()}<div class="wo-braid" style="position:absolute;inset:0">${braidH(240, 64, 2.5, 5)}</div></div>
+      <p class="wo-eyebrow">말씀을 열며</p>
+      <div class="wo-lines">${DATA.openLines.map(l => `<p>${esc(l)}</p>`).join('')}</div>
+      <p class="wo-skip">화면을 누르면 바로 넘어가요</p></div>`;
+  o.hidden = false; $('#view').inert = true; document.body.classList.add('pop-open');
+  const w = $('.wo', o); if (w) w.focus({ preventScroll: true });
+  openT = setTimeout(hideOpening, calm() ? 3000 : 6000);
+}
+function hideOpening(quiet) {
+  clearTimeout(openT); const o = $('#opening'); if (o.hidden) return;
+  o.hidden = true; o.innerHTML = ''; $('#view').inert = false; document.body.classList.remove('pop-open');
+  if (quiet !== true) window.scrollTo(0, 0);
+}
+
+// ── 오늘 남길 것(펼치기 끝의 "모임에 가지 못했다면"과 나눔하기의 "오늘 남길 것"이 같은 자리 K.keep을 쓴다) ──
+function putKeep(sentence, action) {
+  if (sentence || action) return ls.set(K.keep, JSON.stringify({ sentence, action, ref: thisLesson().ref, at: Date.now() }));
+  ls.del(K.keep); return true;
+}
+let keepT = 0;
+function saveKeepRead(fromBlur) {
+  clearTimeout(keepT); keepT = 0;
+  const a = $('#kSentence'), b = $('#kAction'); if (!a || !b) return;
+  const sentence = a.value.trim(), action = b.value.trim(), st = $('#kStatus');
+  const ok = putKeep(sentence, action);
+  st.hidden = ok;
+  if (ok && (sentence || action) && fromBlur) toast('저장했어요');
+}
+
+// ══ 펼치기(#read) ══
+// 이 기기에 두는 것(데모는 기기에만 둔다. 실제 앱에서는 잠근 덩어리로 서버에 맡긴다): 내 생각 {질문 ID: 글}, 책갈피 {id, at}
+let answers = {}, BM = null, readResume = false, reflow = false;
+const editing = new Set(), status = {}, timers = {}, expanded = new Set();
+let cordDone = false, jumpedAt = 0, lastInput = 0, scrollT = 0;
+const allQs = () => G.stages.flatMap(s => s.qs).concat(D.readTriple ? G.triple : []);
+const readBm = () => { const v = readJson(K.bookmark); return v.id ? v : null; };
+const hasBm = () => !!readBm();
+function setBookmark(id) {
+  if (!id || (BM && BM.id === id)) return;
+  BM = { id, at: Date.now() }; ls.set(K.bookmark, JSON.stringify(BM)); paintBookmark();
+}
+function paintBookmark() {
+  $$('[data-qid]').forEach(el => { const on = !!BM && el.dataset.qid === BM.id; el.classList.toggle('has-bm', on); const b = $('.bm', el); if (b) b.hidden = !on; });
+  $$('.toc-q').forEach(el => el.classList.toggle('has-bm', !!BM && el.dataset.id === BM.id));
+}
+function qHtml(st, qi, q) {
+  return `<article class="card qcard" id="q-${q.id}" data-qid="${q.id}" aria-labelledby="qt-${q.id}">
+    <div class="q-meta"><span class="q-eyebrow">${esc(st.name)} · ${qi + 1}</span><span class="bm" hidden>${mkIc()}책갈피</span></div>
+    <h3 class="q-t" id="qt-${q.id}">${esc(q.t)}</h3>
+    ${helpHtml(q)}${isLead() ? leadHtml(q) : ''}
+    <div class="ans" data-ans="${q.id}"></div></article>`;
+}
+function deepHtml() {
+  return `<section class="card deep" id="deep" aria-labelledby="deepT">
+    <p class="eyebrow" style="margin:0">깊이 묵상하기</p>
+    <h2 class="d-lead" id="deepT">오늘 말씀에서 삼위일체 하나님을 묵상해요.</h2>
+    <div class="deep-cord" id="deepCord" style="--cord-bg: var(--surface)" role="img" aria-label="세 가닥 끈"></div>
+    ${G.triple.map(t => `<div class="tri-item" id="q-${t.id}" data-qid="${t.id}"><div class="q-meta"><span class="who">${esc(t.who)}</span><span class="bm" hidden>${mkIc()}책갈피</span></div><h3 class="q-t">${esc(t.t)}</h3><div class="ans" data-ans="${t.id}"></div></div>`).join('')}
+  </section>`;
+}
+function wrapHtml() {
+  const k = readJson(K.keep);
+  return `<section class="card wrapup" id="wrapup" aria-labelledby="wrapT">
+    <h2 id="wrapT">모임에 가지 못했다면</h2>
+    <p class="soft" style="margin:.3em 0 0">혼자 읽었다면 마음에 남은 말과 작은 실천을 남길 수 있어요. 둘 다 비워 두어도 괜찮아요. 모임에 함께했다면 나눔하기 끝에서 남기면 돼요.</p>
+    <div class="keep-form">
+      <div><label for="kSentence">한 문장</label><textarea class="field" id="kSentence" rows="2" maxlength="200" placeholder="마음에 남은 말을 짧게">${esc(k.sentence || '')}</textarea></div>
+      <div><label for="kAction">이번 주 작은 실천</label><input class="field" id="kAction" maxlength="120" placeholder="하나만 적어요" value="${esc(k.action || '')}" autocomplete="off"></div>
+      <p class="hint" id="kStatus" aria-live="polite" hidden><button type="button" class="quiet-link retry" data-act="keep-retry">저장하지 못했어요 · 다시 시도</button></p>
+    </div>
+  </section>
+  <div class="end-btns"><a class="btn" href="#week">돌아가기</a><a class="btn ghost" href="#share">나눔하기</a></div>`;
+}
+function tocHtml() {
+  let h = '';
+  G.stages.forEach(st => {
+    h += `<p class="toc-grp">${esc(st.name)}</p>`;
+    st.qs.forEach((q, i) => { h += `<button type="button" class="toc-q" data-act="goto" data-to="q-${q.id}" data-id="${q.id}"><span class="tn">${i + 1}</span><span class="tt">${esc(q.t)}</span><span class="tb" role="img" aria-label="책갈피">${mkIc()}</span></button>`; });
+  });
+  if (D.readTriple) h += `<p class="toc-grp">깊이 묵상하기</p><button type="button" class="toc-q" data-act="goto" data-to="deep"><span class="tn"></span><span class="tt">아버지 · 아들 · 성령</span><span></span></button>`;
+  h += `<p class="toc-grp">마무리</p><button type="button" class="toc-q" data-act="goto" data-to="wrapup"><span class="tn"></span><span class="tt">모임에 가지 못했다면</span><span></span></button>`;
+  return h;
+}
+function readView() {
+  G = readyGuide(); if (!G) return noGuideView('펼치기');
+  const L = thisLesson();
+  return `<div class="read-wrap">
+    <a class="back-link" href="#week">${ic('back')}<span>이번 주</span></a>
+    <div class="page-top"><h1>펼치기</h1></div>
+    <p class="eyebrow" style="margin-top:0">${esc(groupName())} · 이번 주</p>
+    <div class="read-grid">
+      <section class="card today read-head rg-head" aria-labelledby="lessonTitle">
+        <p class="lesson-book">${bookHtml()}</p>
+        <h2 class="lesson-title" id="lessonTitle">${esc(L.title)}</h2>
+        <span class="passage-chip">${esc(L.ref)}</span>
+        <p class="fine">쓰지 않아도 괜찮아요. 미리 생각을 남기고 싶은 질문에만 남겨요.</p>
+      </section>
+      <section class="card toc rg-toc" aria-label="단계 목록">
+        <button class="toc-btn" type="button" id="tocBtn" data-act="toc" aria-expanded="false" aria-controls="tocList"><span class="l">${ic('list')}단계 목록</span>${ic('chev', 'ch')}</button>
+        <div class="toc-list" id="tocList" hidden></div>
+      </section>
+      <div class="rg-body" id="rbody"></div>
+    </div>
+  </div>`;
+}
+function renderAll() {
+  flushAll();
+  $('#rbody').innerHTML = G.stages.map(st => `<section class="stage-sec" aria-label="${esc(st.name)}"><h2 class="stage-h">${esc(st.name)}</h2>${st.qs.map((q, i) => qHtml(st, i, q)).join('')}</section>`).join('')
+    + (D.readTriple ? deepHtml() : '') + wrapHtml();
+  $('#tocList').innerHTML = tocHtml();
+  allQs().forEach(q => renderAns(q.id));
+  cordDone = false; paintCord(); paintBookmark();
+}
+// 내 생각(질문마다 조용한 버튼 → 입력창, 자동 저장)
+function persistAnswers() { return ls.set(K.answers, JSON.stringify(answers)); }
+function renderAns(id) {
+  const box = $(`[data-ans="${id}"]`); if (!box) return;
+  const a = answers[id], ed = editing.has(id);
+  if (ed) {
+    const st = status[id] || { ok: true };
+    box.innerHTML = `<div class="pn mine edit"><label class="lab" for="ta-${id}">${ic('lock')}내 생각</label>
+      <textarea class="field" id="ta-${id}" data-id="${id}" rows="3" maxlength="1000" placeholder="떠오르는 대로 적어요. 비워 두어도 괜찮아요.">${esc(a || '')}</textarea>
+      <div class="ans-foot">${st.ok ? `<span data-st></span>` : `<button type="button" class="quiet-link retry" data-act="retry" data-id="${id}" data-st>저장하지 못했어요 · 다시 시도</button>`}<button type="button" class="btn ghost small" data-act="done" data-id="${id}">다 썼어요</button></div></div>`;
+    sizeTa($('textarea', box));
+  } else if (a) {
+    box.innerHTML = `<div class="pn mine"><p class="lab">${ic('lock')}내 생각</p><p class="t${expanded.has(id) ? ' open' : ''}">${esc(a)}</p><button type="button" class="quiet-link" data-act="ans-more" data-id="${id}" aria-expanded="${expanded.has(id)}" hidden>${expanded.has(id) ? '접기' : '더 보기'}</button></div><button type="button" class="think-btn" data-act="think" data-id="${id}">${ic('note')}고치기</button>`;
+    measureMore(box);
+  } else {
+    box.innerHTML = `<button type="button" class="think-btn" data-act="think" data-id="${id}">${ic('note')}생각 남기기</button>`;
+  }
+}
+// 3줄을 넘는 글에만 "더 보기"를 보인다. 글꼴이 늦게 와도, 화면 폭이 바뀌어도 다시 잰다
+function measureMore(box) {
+  const t = $('.pn .t', box), b = $('.quiet-link[data-act="ans-more"]', box); if (!t || !b) return;
+  b.hidden = !(expanded.has(box.dataset.ans) || t.scrollHeight > t.clientHeight + 1);
+}
+function measureAll() { $$('[data-ans]').forEach(measureMore); }
+function sizeTa(t) { if (!t) return; t.style.height = 'auto'; t.style.height = Math.min(t.scrollHeight + 2, 360) + 'px'; }
+function setStatus(id, ok) {
+  const was = !status[id] || status[id].ok; status[id] = { ok };
+  if (ok && was) return;   // 성공이 이어지면 화면을 다시 그리지 않는다(입력·버튼 누름을 방해하지 않게)
+  const box = $(`[data-ans="${id}"]`); if (!box || !editing.has(id)) return;
+  const keep = $('textarea', box), v = keep && keep.value, hadFocus = keep && document.activeElement === keep;
+  renderAns(id); const t = $('textarea', box); if (t) { t.value = v; if (hadFocus) t.focus({ preventScroll: true }); sizeTa(t); }
+}
+function saveAns(id, ta) {
+  clearTimeout(timers[id]); delete timers[id];
+  const v = ta.value;
+  if (v.trim()) answers[id] = v; else delete answers[id];
+  const ok = persistAnswers(); setStatus(id, ok); if (id.startsWith('tri-')) paintCord();
+}
+function flushAll() { Object.keys(timers).forEach(id => { const ta = $(`#ta-${id}`); if (ta) saveAns(id, ta); }); }
+function paintCord() {
+  const el = $('#deepCord'); if (!el) return;
+  const on = G.triple.map(t => !!(answers[t.id] || '').trim()), all = on.every(Boolean);
+  if (all && cordDone) return;
+  cordDone = all;
+  el.innerHTML = all
+    ? `<div class="dc-braid" style="position:absolute;inset:0">${braidH(240, 40, 2.5, 4)}</div>`
+    : `<svg viewBox="0 -20 240 40" aria-hidden="true">${on.map((w, k) => { const y = (k - 1) * 10; return w ? `<path class="dc-line dc-on" d="M4 ${y}Q64 ${y - 6} 120 ${y}T236 ${y}" stroke="${STRAND[k]}"/>` : `<path class="dc-off" d="M4 ${y}H236"/>`; }).join('')}</svg>`;
+}
+function goTo(elId) {
+  const el = document.getElementById(elId); if (!el) return;
+  jumpedAt = Date.now();
+  el.scrollIntoView({ behavior: calm() ? 'auto' : 'smooth', block: 'start' });
+}
+// 스크롤이 멈추면, 화면 위쪽 3분의 1쯤에 있는 질문에 책갈피를 꽂는다(손으로 스크롤했을 때만)
+['wheel', 'touchmove', 'keydown', 'pointerdown'].forEach(ev => window.addEventListener(ev, () => { lastInput = Date.now(); }, { passive: true }));
+window.addEventListener('scroll', () => {
+  clearTimeout(scrollT);
+  if (currentView() !== 'read' || !G || Date.now() - lastInput > 1500) return;
+  scrollT = setTimeout(() => {
+    if (window.scrollY < 80 || Date.now() - jumpedAt < 1200) return;
+    const line = innerHeight * .35, els = $$('[data-qid]');
+    const hit = els.find(e => { const r = e.getBoundingClientRect(); return r.top <= line && r.bottom > line; }) || els.find(e => e.getBoundingClientRect().top > line);
+    if (hit) setBookmark(hit.dataset.qid);
+  }, 1500);
+}, { passive: true });
+window.addEventListener('resize', () => { if (currentView() === 'read') measureAll(); });
+if (document.fonts && document.fonts.ready) document.fonts.ready.then(() => { if (currentView() === 'read') measureAll(); });
+function readInit() {
+  if (!G) return;
+  answers = readJson(K.answers); BM = readBm();
+  if (BM && !allQs().concat(G.triple).some(q => q.id === BM.id)) BM = null;
+  editing.clear(); expanded.clear();
+  renderAll();
+  // 이번 주의 '이어서 펼치기'로 오면 말씀을 열며 없이 책갈피가 꽂힌 질문으로 간다. 설정을 바꿔 다시 그릴 때는 말씀을 열며를 다시 띄우지 않는다
+  const target = readResume && BM ? document.getElementById('q-' + BM.id) : null;
+  readResume = false;
+  if (target) { jumpedAt = Date.now(); target.scrollIntoView({ block: 'start' }); }
+  else if (D.readOpen && !reflow) showOpening();
+}
+
+// ══ 나눔하기(#share) ══
+// ▼▼▼ 축복 본문 자리: 고린도후서 13:13 ▼▼▼
+// 개역개정 원문이다. 저작권이 있는 번역임을 알고 사용자가 2026-10-21에 정한 예외다(AGENTS.md 글과 주석, design.md 결정 기록).
+// 이 장 밖의 성경 문장은 개역 원문을 쓰지 않는다(쉬운 풀이·장절만). 바꿀 때는 이 네 줄(BLESS_LINES)만 고친다.
+const BLESS_REF = '고린도후서 13:13'; // 화면에는 장절만 보인다. 본문은 개역개정이다(위 설명)
+const BLESS_LINES = ['주 예수 그리스도의 은혜와', '하나님의 사랑과', '성령의 교통하심이', '너희 무리와 함께 있을지어다'];
+// ▲▲▲ 여기까지 ▲▲▲
+// 설정은 시작 화면에서 고르고 나눔 시작을 누르면 그대로 걷는다(이 기기 안, 저장하지 않는다)
+const R = { stages: [], open: true, triple: true, dim: true, view: 'phone', on: false, steps: [], pos: 0 };
+const stage = $('#stage');
+let autoT = 0, dimT = 0, wl = null, t0 = 0, tickT = 0;
+const readMemo = () => readJson(K.memo);
+function shareView() {
+  G = readyGuide(); if (!G) return noGuideView('나눔하기');
+  const L = thisLesson();
+  return `<div class="page-top"><h1>나눔하기</h1></div>
+  <p class="eyebrow" style="margin-top:0">${esc(groupName())} · 이번 주</p>
+  <div class="start-grid">
+    <section class="card today" aria-labelledby="lessonTitle">
+      <p class="lesson-book">${bookHtml()}</p>
+      <h2 class="lesson-title" id="lessonTitle">${esc(L.title)}</h2>
+      <span class="passage-chip">${esc(L.ref)}</span>
+      <p class="fine">화면에서 눈을 뗄 시간이에요. 함께 질문과 답을 나눕니다.</p>
+    </section>
+    <section class="card" aria-label="나눔 설정">
+      <div class="opt">
+        <p class="opt-name">나눌 단계</p>
+        <p class="opt-sub">모두 나누거나, 한 단계만 뺄 수 있어요.</p>
+        <div class="stage-checks" id="stageChecks"></div>
+      </div>
+      <div class="opt"><div class="row"><div><p class="opt-name">말씀을 열며</p><p class="opt-sub">삼위일체 하나님께 간구하며 시작해요.</p></div><button class="switch on" type="button" role="switch" aria-checked="true" aria-label="말씀을 열며" id="swOpen" data-act="sw-open"><span></span></button></div></div>
+      <div class="opt"><div class="row"><div><p class="opt-name">깊이 묵상하기</p><p class="opt-sub">맨 끝에 삼위일체 하나님을 묵상해요.</p></div><button class="switch on" type="button" role="switch" aria-checked="true" aria-label="깊이 묵상하기" id="swTriple" data-act="sw-triple"><span></span></button></div></div>
+      <div class="opt"><div class="row"><div><p class="opt-name">화면 내려놓기</p><p class="opt-sub">질문을 연 지 얼마 뒤 화면이 어두워져요.</p></div><button class="switch on" type="button" role="switch" aria-checked="true" aria-label="화면 내려놓기" id="swDim" data-act="sw-dim"><span></span></button></div></div>
+      <div class="opt"><p class="opt-name">보는 방법</p><div class="seg" id="segView" style="--n:2"></div></div>
+      <button class="btn wide start-btn" type="button" id="startBtn" data-act="share-start">나눔 시작</button>
+    </section>
+  </div>`;
+}
+function renderStart() {
+  $('#stageChecks').innerHTML = G.stages.map((s, i) => `<button type="button" class="chk ${R.stages[i] ? 'on' : ''}" role="checkbox" aria-checked="${R.stages[i]}" data-act="stage" data-i="${i}"><span class="box">${ic('check')}</span>${esc(s.name)}<small>질문 ${s.qs.length}개</small></button>`).join('');
+  $('#segView').innerHTML = [['phone', '각자 휴대폰'], ['big', '한 화면 크게']].map(([v, l]) => `<button type="button" data-sview="${v}" class="${R.view === v ? 'on' : ''}" aria-pressed="${R.view === v}">${l}</button>`).join('');
+  for (const [id, k] of [['swOpen', 'open'], ['swTriple', 'triple'], ['swDim', 'dim']]) { const b = $('#' + id); b.classList.toggle('on', R[k]); b.setAttribute('aria-checked', R[k]); }
+}
+function shareInit() {
+  if (!G) return;
+  if (R.stages.length !== G.stages.length) R.stages = G.stages.map(() => true);
+  renderStart();
+}
+function buildSteps() {
+  const st = [];
+  if (R.open) st.push({ t: 'open' });
+  st.push({ t: 'passage' });
+  const inc = G.stages.map((s, i) => i).filter(i => R.stages[i]);
+  const total = inc.reduce((a, i) => a + G.stages[i].qs.length, 0);
+  let n = 0;
+  inc.forEach(si => { st.push({ t: 'cover', si }); G.stages[si].qs.forEach((q, qi) => { n++; st.push({ t: 'q', si, qi, n, total }); }); });
+  if (R.triple) st.push({ t: 'triple' });
+  st.push({ t: 'keep' }, { t: 'bless' }, { t: 'done' });
+  return st;
+}
+const cur = () => R.steps[R.pos];
+// 나눔을 시작한 뒤 지난 시간(올라가며 센다. 저장하지 않고, 마친 화면에는 보이지 않는다)
+function elapsed() { const m = Math.floor((Date.now() - t0) / 60000); return m < 1 ? '방금 시작' : m + '분'; }
+function progHtml() {
+  const s = cur(); if (!s) return '';
+  const time = `<span class="pill pill-t">${ic('clock')}<span class="tm">${elapsed()}</span></span>`;
+  if (s.t === 'q') {
+    const sg = G.stages[s.si], n = sg.qs.length;
+    const dots = sg.qs.map((x, k) => `<i class="${k === s.qi ? 'on' : ''}"></i>`).join('');
+    return `<span class="pill pill-p" aria-label="${esc(sg.name)} ${s.qi + 1}/${n}, 전체 ${s.n}/${s.total}"><b>${esc(sg.name)}</b><span class="dots" aria-hidden="true">${dots}</span><span class="dv" aria-hidden="true"></span><span class="pn-n">${s.n}/${s.total}</span></span>${time}`;
+  }
+  return ['passage', 'cover', 'triple', 'keep'].includes(s.t) ? time : '';
+}
+function tick() { if (R.on) $$('.tm').forEach(e => { e.textContent = elapsed(); }); }
+function clearTimers() { clearTimeout(autoT); clearTimeout(dimT); clearInterval(tickT); autoT = dimT = tickT = 0; }
+function startShare() {
+  R.steps = buildSteps(); R.pos = 0; R.on = true; t0 = Date.now(); clearInterval(tickT); tickT = setInterval(tick, 30000);
+  stage.hidden = false; document.body.classList.add('sharing');
+  stage.classList.toggle('big', R.view === 'big'); stage.classList.remove('dim');
+  requestWake(); renderStep();
+}
+function exitShare() {
+  R.on = false; clearTimers(); closeSheet(); stage.hidden = true; stage.classList.remove('dim', 'nt');
+  document.body.classList.remove('sharing'); releaseWake(); window.scrollTo(0, 0);
+}
+function go(d) {
+  undim();
+  const to = R.pos + d;
+  if (to < 0 || to >= R.steps.length) return;
+  if (R.steps[to].t === 'open') return;
+  R.pos = to; renderStep();
+}
+// 나눔하는 동안 화면이 꺼지지 않게(지원하는 기기에서만, 실패해도 그냥 넘어간다)
+async function requestWake() { try { if ('wakeLock' in navigator && !wl) { wl = await navigator.wakeLock.request('screen'); wl.addEventListener('release', () => { wl = null; }); } } catch (e) { wl = null; } }
+function releaseWake() { try { if (wl) wl.release(); } catch (e) {} wl = null; }
+document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible' && R.on) requestWake(); });
+// 화면 내려놓기: 이전·다음 같은 이동은 어두운 상태를 전환 없이 곧바로 풀고, 새 장은 늘 밝게 시작한다
+function undim() {
+  stage.classList.add('nt'); stage.classList.remove('dim'); void stage.offsetWidth;
+  requestAnimationFrame(() => stage.classList.remove('nt'));
+}
+function armDim() {
+  clearTimeout(dimT); dimT = 0;
+  const s = cur();
+  if (!R.on || !R.dim || !s || s.t !== 'q' || shareSheet) return;
+  dimT = setTimeout(() => { if (!shareSheet) stage.classList.add('dim'); }, D.dimSec * 1000);
+}
+stage.addEventListener('pointerdown', () => { if (stage.classList.contains('dim')) stage.classList.remove('dim'); armDim(); });
+stage.addEventListener('keydown', () => { undim(); armDim(); });
+// 아래에서 올라오는 창은 앱의 것(#pop)을 같이 쓰고, 열려 있는 동안에는 화면이 어두워지지 않는다
+function shareOpenSheet(html) {
+  clearTimeout(dimT); shareSheet = true; openSheet(html); $('#popSheet').classList.add('sh');
+}
+const sheetHead = title => `<div class="sheet-h"><h3 id="popT">${title}</h3><button class="sheet-x" type="button" data-act="pop-close" data-focus aria-label="닫기">${ic('x')}</button></div>`;
+const bookmarkSvg = () => '<svg class="done-mark" role="img" aria-label="세 겹 책갈피"><use href="#i-didako-tall"/></svg>';
+function topHtml(s) {
+  if (s.t === 'open' || s.t === 'done') return '';
+  const x = `<button class="st-pill" type="button" data-act="ask-close">${ic('x')}닫기</button>`;
+  const list = `<button class="st-pill ico" type="button" data-act="jump" aria-label="단계 목록">${ic('list')}<span class="lbl">단계 목록</span></button>`;
+  if (s.t === 'q') return `${x}<div class="st-prog">${progHtml()}</div>${list}`;
+  return `${x}<div class="st-prog">${progHtml()}</div>${['passage', 'cover'].includes(s.t) ? list : ''}`;
+}
+function renderStep() {
+  clearTimeout(autoT); clearTimeout(dimT); undim();
+  const s = cur(), body = $('#stBody'), foot = $('#stFoot'), top = $('#stTop'), L = thisLesson();
+  top.innerHTML = topHtml(s); top.hidden = !top.innerHTML;
+  let html = '', nav = '';
+  const first = R.pos === 0 || (R.steps[0].t === 'open' && R.pos === 1);
+  const prev = `<button class="btn ghost" type="button" data-act="prev" ${first ? 'disabled' : ''}>이전</button>`;
+  const next = l => `<button class="btn" type="button" data-act="next">${l || '다음'}</button>`;
+  if (s.t === 'open') {
+    html = `<div class="st-in"><div class="wo" data-act="next" role="button" tabindex="0" aria-label="말씀을 열며. 누르면 넘어가요">
+      <div class="wo-cord" aria-hidden="true">${parallelSvg()}<div class="wo-braid" style="position:absolute;inset:0">${braidH(240, 64, 2.5, 5)}</div></div>
+      <p class="wo-eyebrow">말씀을 열며</p>
+      <div class="wo-lines">${DATA.openLines.map(l => `<p>${esc(l)}</p>`).join('')}</div>
+      <p class="wo-skip">화면을 누르면 바로 넘어가요</p></div></div>`;
+    autoT = setTimeout(() => { if (cur() === s) go(1); }, calm() ? 3000 : 6000);
+  } else if (s.t === 'passage') {
+    html = `<div class="st-in center"><p class="st-eyebrow">${esc(L.title)}</p><p class="passage-big">${esc(L.ref)}</p><p class="soft">각자 성경을 펴서 함께 읽어요</p></div>`;
+    nav = prev + next();
+  } else if (s.t === 'cover') {
+    const sg = G.stages[s.si];
+    html = `<div class="st-in" data-act="next" style="cursor:pointer"><svg class="cover-mark" viewBox="0 -20 240 40" aria-hidden="true">${braidPaths(240, 8, 5, false, 4)}</svg><h2 class="cover-name">${esc(sg.name)}</h2><p class="cover-sub">질문 ${sg.qs.length}개</p></div>`;
+    nav = prev + next();
+  } else if (s.t === 'q') {
+    const q = G.stages[s.si].qs[s.qi], panels = R.view !== 'big', leader = isLead() && panels;
+    const hasMore = q.sub || q.vs, key = s.si + '-' + s.qi, mine = (readJson(K.answers)[q.id] || '');
+    html = `<div class="q-top"><div class="q-core"><p class="st-eyebrow">${esc(G.stages[s.si].name)}</p><h2 class="q-text">${esc(q.t)}</h2></div></div>
+      <div class="q-aux">
+      ${hasMore ? `<button class="help-btn" type="button" data-act="more" aria-expanded="false">${ic('info')}도움말</button>
+      <div class="more" hidden>${q.sub ? `<p class="soft">${esc(q.sub)}</p>` : ''}${q.vs ? `<div class="verse-row"><span class="lab">관련 구절</span>${q.vs.map(v => `<span class="verse">${esc(v)}</span>`).join('')}</div>` : ''}</div>` : ''}
+      ${panels && mine ? `<div class="pn mine"><p class="lab">${ic('lock')}내 생각</p><p class="t">${esc(mine)}</p></div>` : ''}
+      ${leader ? `${leadHtml(q)}
+      <div class="pn memo"><label class="lab" for="memoText">${ic('lock')}내 메모</label><textarea class="field" id="memoText" rows="2" data-key="${key}" placeholder="진행하며 기억할 것">${esc(readMemo()[key] || '')}</textarea></div>` : ''}
+      </div>`;
+    $('#stBody').className = 'st-body qmode';
+    nav = prev + next();
+    armDim();
+  } else if (s.t === 'triple') {
+    html = `<div class="st-in"><p class="st-eyebrow">깊이 묵상하기</p><h2 class="h2d tri-lead">오늘 말씀에서 삼위일체 하나님을 묵상해요.</h2><div class="card triple">${G.triple.map(t => `<div class="tri"><span class="who">${esc(t.who)}</span><p>${esc(t.t)}</p></div>`).join('')}</div></div>`;
+    nav = prev + next();
+  } else if (s.t === 'keep') {
+    const sv = readJson(K.keep);
+    html = `<div class="st-in"><p class="st-eyebrow">오늘 남길 것</p><h2 class="h2d">오늘 마음에 남은 한 문장을 각자 품고 가요.</h2>
+      <div class="keep-form"><div><label for="kSentence">한 문장</label><textarea class="field" id="kSentence" rows="2" maxlength="200" placeholder="마음에 남은 말을 짧게">${esc(sv.sentence || '')}</textarea></div>
+      <div><label for="kAction">이번 주 작은 실천</label><input class="field" id="kAction" maxlength="120" placeholder="하나만 적어요" value="${esc(sv.action || '')}" autocomplete="off"></div></div></div>`;
+    nav = '\u0001' + prev + next('남기고 다음');
+  } else if (s.t === 'bless') {
+    html = `<div class="st-in"><div class="bless" aria-live="polite"><div class="st-eyebrow bl-lead">함께 읽어요</div>${BLESS_LINES.map((l, i) => `<p class="${i === BLESS_LINES.length - 1 ? 'lastline' : ''}" style="--i:${i}">${esc(l)}</p>`).join('')}<span class="verse bl-ref">${esc(BLESS_REF)}</span></div></div>`;
+    nav = prev + next();
+  } else if (s.t === 'done') {
+    html = `<div class="st-in center">${bookmarkSvg()}<div class="center">${bookHtml(true)}</div><h1 class="h2d" style="margin:.5em 0 0;font-size:1.2em">오늘 나눈 말씀 · ${esc(L.ref)}</h1>
+      <div class="done-btns"><button class="btn" type="button" data-act="pray">${ic('cord')}함께 기도하기 → 코이데로 이동</button><button class="btn ghost" type="button" data-act="finish">마치기</button></div></div>`;
+  }
+  if (s.t !== 'q') body.className = 'st-body';
+  body.innerHTML = html; body.scrollTop = 0;
+  // nav 조각 풀기: \u0001 = 건너뛰기 줄이 붙는 버튼 줄
+  let skip = '', btns = nav;
+  if (nav.startsWith('\u0001')) { skip = `<button class="st-skip" type="button" data-act="skip-keep">남기지 않고 건너뛰기</button>`; btns = nav.slice(1); }
+  foot.innerHTML = btns ? skip + `<div class="st-nav">${btns}</div>` : '';
+  foot.hidden = !btns;
+  if (s.t === 'keep' || s.t === 'bless') { const b = foot.querySelector('.btn:not(.ghost)'); if (b) b.blur(); }
+}
+function saveKeepShare() {
+  const a = $('#kSentence'), b = $('#kAction'); if (!a || !b) return;
+  const sentence = a.value.trim(), action = b.value.trim();
+  if (sentence || action) toast(putKeep(sentence, action) ? '저장했어요' : '저장하지 못했어요 · 다시 시도');
+}
+// 다른 화면으로 옮기기 전에 쓰던 것을 정리한다(내 생각 저장, 말씀을 열며 닫기, 나눔하기 마치기)
+function teardown() {
+  flushAll(); if (keepT) saveKeepRead();
+  hideOpening(true);
+  if (R.on) exitShare();
+}
+
 // ── 길 찾기(# 주소) ──
 function route(moved) {
+  teardown();
   let v = currentView();
   // 모르는 주소이거나 데모로 들어오기 전이면 첫 화면(들어온 뒤의 빈 주소는 이번 주)
   if (!v) v = D.entered ? 'week' : 'start';
@@ -595,7 +1296,7 @@ function route(moved) {
   $('#topbar').classList.toggle('bare', start);
   $('#topnav').hidden = start; $('#tabs').hidden = start;
   document.body.dataset.view = v;
-  $('#view').innerHTML = start ? startView() : v === 'week' ? weekView() : placeView(v);
+  $('#view').innerHTML = start ? startView() : v === 'week' ? weekView() : v === 'read' ? readView() : v === 'share' ? shareView() : placeView(v);
   const tab = start ? '' : v === 'week' ? 'week' : PLACE[v][1];
   $$('[data-tab]').forEach(a => { const on = a.dataset.tab === tab; a.classList.toggle('on', on); on ? a.setAttribute('aria-current', 'page') : a.removeAttribute('aria-current'); });
   document.title = start ? '디다코' : (v === 'week' ? '이번 주' : PLACE[v][0]) + ' · 디다코';
@@ -604,8 +1305,14 @@ function route(moved) {
     window.scrollTo(0, 0);
     const h = $('h1', $('#view')); if (h) { h.setAttribute('tabindex', '-1'); h.focus({ preventScroll: true }); }
   }
+  if (v === 'read') readInit(); else if (v === 'share') shareInit();
 }
-function rerender() { applySettings(); route(false); if (!$('#settings').hidden) renderSettings(); }
+// 설정을 바꿔 다시 그릴 때는 보던 자리를 지키고, 말씀을 열며를 다시 띄우지 않는다
+function rerender() {
+  const y = window.scrollY; applySettings(); reflow = true; route(false); reflow = false;
+  if (currentView() === 'read') window.scrollTo(0, y);
+  if (!$('#settings').hidden) renderSettings();
+}
 
 // ── 눌림 처리 ──
 const acts = {
@@ -625,35 +1332,113 @@ const acts = {
   },
   'demo-reset'() {
     closeSheet();
-    ls.del(K.demo); ls.del(K.reflect); ls.del(K.keep); loadState();
+    ls.del(K.demo); ls.del(K.reflect); ls.del(K.keep); ls.del(K.answers); ls.del(K.bookmark); ls.del(K.memo); ls.del(K.leadopen); loadState();
     if (location.hash === '#start') route(true); else location.hash = '#start';
   },
   'pop-close'() { closeSheet(); },
+  'read-go'(e, el) { readResume = el.dataset.resume === '1'; if (location.hash === '#read') route(true); else location.hash = '#read'; },
   prep() { toast('다음 단계에서 열려요'); },
   later() { toast('다음 단계에서 열려요'); },
   'keep-fill'() { ls.set(K.keep, JSON.stringify(Object.assign({ at: Date.now() }, DATA.sampleKeep))); rerender(); toast('예시를 채웠어요'); },
-  'keep-clear'() { ls.del(K.keep); rerender(); toast('비웠어요'); }
+  'keep-clear'() { ls.del(K.keep); rerender(); toast('비웠어요'); },
+  // 펼치기
+  toc(e, el) { const l = $('#tocList'); l.hidden = !l.hidden; el.setAttribute('aria-expanded', String(!l.hidden)); },
+  goto(e, el) {
+    if (el.dataset.id) setBookmark(el.dataset.id);
+    if (matchMedia('(max-width: 999px)').matches) { $('#tocList').hidden = true; $('#tocBtn').setAttribute('aria-expanded', 'false'); }
+    goTo(el.dataset.to);
+  },
+  more(e, el) {
+    const m = el.nextElementSibling; m.hidden = !m.hidden; el.classList.toggle('on', !m.hidden); el.setAttribute('aria-expanded', String(!m.hidden));
+    const q = el.closest('[data-qid]'); if (q) setBookmark(q.dataset.qid);   // 펼치기에서만 책갈피를 꽂는다
+  },
+  fold() {
+    const open = !leadOpen(); ls.set(K.leadopen, open ? '1' : '0');
+    $$('.pn.lead').forEach(p => { p.classList.toggle('closed', !open); const b = $('.fold', p); b.textContent = open ? '접기' : '펼치기'; b.setAttribute('aria-expanded', String(open)); });
+  },
+  'ans-more'(e, el) { const id = el.dataset.id; if (expanded.has(id)) expanded.delete(id); else expanded.add(id); renderAns(id); },
+  think(e, el) { const id = el.dataset.id; editing.add(id); renderAns(id); const t = $(`#ta-${id}`); if (t) { t.focus(); t.setSelectionRange(t.value.length, t.value.length); } setBookmark(id); },
+  done(e, el) {
+    const id = el.dataset.id, t = $(`#ta-${id}`); if (t) saveAns(id, t);
+    if (!(status[id] && status[id].ok)) return;
+    editing.delete(id); renderAns(id); toast('저장했어요');
+  },
+  retry(e, el) { const t = $(`#ta-${el.dataset.id}`); if (t) saveAns(el.dataset.id, t); },
+  'keep-retry'() { saveKeepRead(); },
+  'ans-fill'() { allQs().forEach(q => { if (q.sample && !answers[q.id]) answers[q.id] = q.sample; }); persistAnswers(); editing.clear(); renderAll(); toast('예시를 채웠어요'); },
+  'ans-clear'() { answers = {}; ls.del(K.answers); editing.clear(); renderAll(); toast('비웠어요'); },
+  // 나눔하기
+  'sw-open'() { R.open = !R.open; renderStart(); },
+  'sw-triple'() { R.triple = !R.triple; renderStart(); },
+  'sw-dim'() { R.dim = !R.dim; renderStart(); },
+  stage(e, el) {
+    const i = +el.dataset.i, off = R.stages.map((v, k) => (v ? -1 : k)).filter(k => k >= 0);
+    if (R.stages[i]) { if (off.length >= 1) { toast('한 단계만 뺄 수 있어요'); return; } R.stages[i] = false; } else R.stages[i] = true;
+    renderStart();
+  },
+  'share-start'() { startShare(); },
+  next() { go(1); }, prev() { go(-1); },
+  'skip-keep'() { go(1); },
+  pray() { toast('데모에서는 코이데로 이어지지 않아요'); },
+  finish() { exitShare(); },
+  'ask-close'() {
+    shareOpenSheet(`${sheetHead('나눔을 마칠까요?')}<p class="soft">처음 화면으로 돌아가요.</p><div class="close-ask"><button class="btn" type="button" data-act="pop-close">계속 나누기</button><button class="btn ghost" type="button" data-act="exit">나가기</button></div>`);
+  },
+  exit() { exitShare(); },
+  jump() {
+    const s = cur(); let html = sheetHead('단계 목록') + '<div class="jump">';
+    html += `<button type="button" data-act="jump-to" data-p="${R.steps.findIndex(x => x.t === 'passage')}" class="${s.t === 'passage' ? 'here' : ''}">본문 · ${esc(thisLesson().ref)}</button>`;
+    R.steps.forEach((x, p) => {
+      if (x.t === 'cover') html += `<p class="grp">${esc(G.stages[x.si].name)}</p>`;
+      if (x.t === 'q') html += `<button type="button" data-act="jump-to" data-p="${p}" class="${R.pos === p ? 'here' : ''}">${esc(G.stages[x.si].qs[x.qi].t)}</button>`;
+    });
+    html += '</div>';
+    shareOpenSheet(html);
+  },
+  'jump-to'(e, el) { const p = +el.dataset.p; closeSheet(); R.pos = p; renderStep(); }
 };
 document.addEventListener('click', e => {
+  if (e.target.closest('#opening')) { hideOpening(); return; }
   const set = e.target.closest('[data-set]');
   if (set) {
     const [k, v] = set.dataset.set.split(':');
     if (DISPLAY_KEYS.includes(k)) { S[k] = k === 'big' ? v === '1' : v; saveDisplay(); }
-    else { D[k] = ['lastWeek', 'bookmark', 'before', 'alt'].includes(k) ? v === '1' : v; saveDemo(); }
+    else if (k === 'bookmark') { if (v === '1') { if (!hasBm()) ls.set(K.bookmark, JSON.stringify({ id: 'o2', at: Date.now() })); } else ls.del(K.bookmark); }   // 책갈피는 펼치기가 꽂는 것과 같은 자리
+    else { D[k] = ['lastWeek', 'before', 'alt', 'readOpen', 'readTriple'].includes(k) ? v === '1' : k === 'dimSec' ? (v === '5' ? 5 : 15) : v; saveDemo(); }
     rerender();
     return;
   }
+  const sview = e.target.closest('[data-sview]');
+  if (sview) { R.view = sview.dataset.sview; renderStart(); return; }
   const el = e.target.closest('[data-act]');
   if (el && acts[el.dataset.act]) { e.preventDefault(); acts[el.dataset.act](e, el); return; }
   const menu = $('#settings');
   if (!menu.hidden && !e.target.closest('#settings')) closeMenu();
 });
 document.addEventListener('keydown', e => {
+  // 말씀을 열며(펼치기·나눔하기)의 글을 키보드로 눌러 넘기기
+  if ((e.key === 'Enter' || e.key === ' ') && e.target.classList && e.target.classList.contains('wo')) {
+    e.preventDefault(); if (e.target.closest('#opening')) hideOpening(); else if (R.on) go(1); return;
+  }
   if (e.key !== 'Escape') return;
-  if (!$('#pop').hidden) closeSheet(); else closeMenu();
+  if (!$('#pop').hidden) closeSheet(); else if (!$('#opening').hidden) hideOpening(); else closeMenu();
 });
 // 한 줄 돌아보기: 쓰는 대로 기기에 남기고, 칸을 벗어날 때 "저장했어요"를 잠깐 보인다(실패하면 그때만 알린다)
-document.addEventListener('input', e => { if (e.target.id === 'lwInput') ls.set(K.reflect, e.target.value); });
+document.addEventListener('input', e => {
+  const t = e.target;
+  if (t.id === 'lwInput') ls.set(K.reflect, t.value);
+  else if (t.matches && t.matches('textarea[data-id]')) { const id = t.dataset.id; sizeTa(t); setBookmark(id); clearTimeout(timers[id]); timers[id] = setTimeout(() => saveAns(id, t), 450); }
+  else if ((t.id === 'kSentence' || t.id === 'kAction') && currentView() === 'read') { clearTimeout(keepT); keepT = setTimeout(saveKeepRead, 450); }
+  else if (t.id === 'memoText') { const m = readMemo(); m[t.dataset.key] = t.value; ls.set(K.memo, JSON.stringify(m)); }   // 리더의 내 진행 메모
+});
+document.addEventListener('focusout', e => {
+  const t = e.target;
+  if (t.matches && t.matches('textarea[data-id]') && timers[t.dataset.id]) saveAns(t.dataset.id, t);
+  else if ((t.id === 'kSentence' || t.id === 'kAction') && keepT) saveKeepRead(true);
+});
+window.addEventListener('pagehide', () => { flushAll(); if (keepT) saveKeepRead(); });
+// 남기고 다음: 눌러서 넘어가기 전에 나눔하기의 오늘 남길 것을 저장
+document.addEventListener('click', e => { const el = e.target.closest('[data-act="next"]'); if (el && R.on && cur().t === 'keep') saveKeepShare(); }, true);
 document.addEventListener('change', e => {
   if (e.target.id === 'lwInput') toast(ls.set(K.reflect, e.target.value) ? '저장했어요' : '저장하지 못했어요 · 다시 시도');
 });
