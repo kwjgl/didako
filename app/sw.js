@@ -4,7 +4,7 @@
  * 아래 CACHE 번호는 남겨 둔 사본의 이름표다. 번호를 올리면 예전 사본을 지운다(AGENTS.md 서비스워커 캐시).
  * 데모에는 서버가 없다. 같은 주소의 파일만 다루고, 글꼴 같은 다른 주소의 요청은 건드리지 않는다.
  */
-const CACHE = 'didako-v2';
+const CACHE = 'didako-v3';
 const SHELL = ['./', 'index.html', 'design-styles.css', 'demo-data.js', 'manifest.webmanifest', 'icons/icon-192.png', 'icons/icon-512.png', 'icons/icon-maskable-512.png', 'icons/apple-touch-icon.png', 'icons/favicon-32.png'];
 
 self.addEventListener('install', e => {

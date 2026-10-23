@@ -542,6 +542,164 @@ body.sharing { overflow: hidden; }
   .dimmer, .q-text, .stage.dim .dimmer, .stage.dim .q-text { transition-duration: .2s; }
 }
 
+
+/* ══ 책장·나의 기록 ══ */
+/* ── 책장(#shelf) ── 시안 shelf.html의 것을 옮겼다. 앱에 이미 있는 이름(.toc-list, .bm, .back-link)과 겹치는 것만 이름을 바꾸거나 범위를 좁혔다 */
+/* 배치: 휴대폰은 한 줄. 640px 이상은 가운데 읽는 폭에 넓게, 1000px 이상은 책 목차를 조금 더 넓게 둔다 */
+.shelf-wrap { max-width: 760px; margin: 0 auto; }
+@media (min-width: 1000px) { .shelf-wrap { max-width: 880px; } }
+.shelf-wrap h1, .record-wrap h1 { word-break: keep-all; overflow-wrap: anywhere; }
+.sec-h { font-family: var(--f-display); font-size: 1.15em; margin: 1.4em 0 .5em; }
+.sec-h:first-child { margin-top: .4em; }
+
+/* 검색 */
+.search { position: relative; margin-top: 10px; }
+.search .ic { position: absolute; left: .8em; top: 50%; transform: translateY(-50%); color: var(--ink-2); pointer-events: none; }
+.search .field { padding-left: 2.5em; }
+.hit-list { list-style: none; margin: 0; padding: 0; }
+.hit-list li + li { border-top: 1px solid var(--line); }
+.hit { display: block; width: 100%; text-align: left; background: none; border: 0; padding: .8em 0; min-height: 44px; cursor: pointer; }
+.hit .hit-book { display: block; font-size: .8em; color: var(--ink-2); }
+.hit b { display: block; word-break: keep-all; overflow-wrap: anywhere; font-family: var(--f-display); font-size: 1.05em; margin-top: .1em; }
+.hit .hit-ref { font-size: .84em; color: var(--accent); font-family: var(--f-display); font-weight: 700; }
+.hit .hit-body { display: block; font-size: .86em; color: var(--ink-2); margin-top: .15em; line-height: 1.55; }
+
+/* 표지: 새 색 없이 --surface, 제목은 Gowun Batang. 위쪽 띠(.cover-pat)에 무늬가 들어간다. 무늬 8가지는 스크립트의 PATTERNS에 있다.
+   책마다 book.pattern 으로 고르고, 없으면 COVER.pattern(기본 'none', 띠 없음)을 따른다. 새 무늬는 PATTERNS['이름']에 SVG 글을 더하면 된다 */
+.now { display: flex; gap: 16px; align-items: flex-start; }
+.now-item { flex: 0 1 250px; min-width: 0; }
+.cover-wrap { position: relative; margin-top: 7px; container-type: inline-size; }
+.cover { position: relative; display: flex; flex-direction: column; align-items: stretch; width: 100%; min-height: 133.3cqw; text-align: left; overflow: clip; padding: 0;
+  border-radius: 6px 14px 14px 6px; background: var(--surface); border: 1px solid var(--line-strong); color: var(--ink); cursor: pointer; box-shadow: 0 10px 22px -12px var(--shadow); }
+.cover::before { content: ""; position: absolute; inset: 0 auto 0 0; width: 1.1em; background: linear-gradient(90deg, color-mix(in srgb, var(--ink) 12%, transparent), transparent); border-right: 1px solid var(--line); pointer-events: none; z-index: 2; }
+.cover-pat { flex: none; display: block; height: 46cqw; margin-left: 1.1em; background: var(--accent-soft); border-bottom: 1px solid var(--line); overflow: hidden; pointer-events: none; }
+.cover-pat[data-pattern="none"] { display: none; }
+.pat { display: block; width: 100%; height: 100%; }
+.cover-body { flex: 1; min-height: 0; display: flex; flex-direction: column; justify-content: space-between; gap: .5em; padding: .9em 1em 1em 1.7em; }
+.cover-type { display: flex; align-items: center; gap: .4em; font-size: .78em; color: var(--ink-2); }
+.cover-title { display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 3; overflow: hidden; font-family: var(--f-display); font-weight: 700; font-size: clamp(1.1em, 11cqw, 1.9em); line-height: 1.25; word-break: keep-all; overflow-wrap: anywhere; }
+.cover-title.t-m { font-size: clamp(1.05em, 8.5cqw, 1.5em); }
+.cover-title.t-l { font-size: clamp(1em, 7cqw, 1.25em); }
+.cover-period { display: block; font-size: .84em; color: var(--ink-2); margin-top: .3em; }
+.cover-range { align-self: flex-start; font-family: var(--f-display); font-size: clamp(.7em, 6.4cqw, .82em); font-weight: 700; color: var(--accent); background: var(--accent-soft); border-radius: 10px; padding: .15em .7em; word-break: keep-all; max-width: 90%; line-height: 1.4; }
+/* 세 겹 책갈피: 표지 위쪽 모서리에서 나와(위로 살짝 내밀고) 오른쪽 위에 드리워진다. 아래 끝은 V 홈. 길이(--len, 표지 높이의 %)만 늘어나고 몇 개인지는 어디에도 적지 않는다.
+   길이에는 상한이 있어 위쪽 무늬 띠 안팎에서 끝나므로 제목을 가리지 않는다 */
+.ribbon { position: absolute; top: -7px; right: 9%; width: 20px; height: calc(var(--len, 20) * 1% + 7px); z-index: 3; pointer-events: none; transition: height .3s ease;
+  background: linear-gradient(90deg, var(--accent) 0 calc(33.33% - .5px), transparent 0 calc(33.33% + .5px), var(--accent-mid) 0 calc(66.66% - .5px), transparent 0 calc(66.66% + .5px), var(--ink-2) 0);
+  clip-path: polygon(0 0, 100% 0, 100% 100%, 50% calc(100% - 9px), 0 100%); }
+@media (prefers-reduced-motion: reduce) { .ribbon { transition: none; } }
+.now-cap { font-size: .84em; color: var(--ink-2); margin: .4em 0 0; line-height: 1.5; word-break: keep-all; }
+.now-cap b { font-family: var(--f-display); color: var(--ink); }
+
+/* 책장: 코이데 선반의 나무 색(--wood). 지난 교재는 책등이 보인다 */
+.kind-h { display: flex; align-items: center; gap: .45em; font-size: .86em; font-weight: 600; color: var(--ink-2); margin: .2em 0 .7em; }
+.kind-h + .board { margin-bottom: 1.2em; }
+/* 책장: 코이데 선반의 나무 색(--wood). 지난 교재는 책등이 보인다 */
+.board { position: relative; display: flex; align-items: flex-end; gap: 6px; flex-wrap: wrap; padding: 0 10px 0; min-height: 60px; }
+.board::after { content: ""; position: absolute; left: -4px; right: -4px; bottom: -12px; height: 14px; border-radius: 3px; background: linear-gradient(180deg, color-mix(in srgb, var(--wood) 80%, #fff), var(--wood) 40%, color-mix(in srgb, var(--wood) 85%, #000)); box-shadow: 0 8px 12px -8px var(--shadow); }
+.spine { position: relative; display: flex; flex-direction: column; align-items: center; justify-content: space-between; gap: 8px; width: 48px; min-height: 44px; height: var(--h, 160px); padding: 10px 0 10px; border-radius: 4px 4px 0 0; background: var(--surface); border: 1px solid var(--line-strong); border-bottom: 0; color: var(--ink); cursor: pointer; z-index: 1; overflow: hidden; }
+.spine .band { display: block; width: calc(100% + 2px); margin: -10px -1px 0; height: 40px; background: var(--accent-soft); border-bottom: 1px solid var(--line); flex: none; overflow: hidden; }
+.spine .band[data-pattern="none"] { height: 8px; }
+.spine .sp-title { display: block; writing-mode: vertical-rl; font-family: var(--f-display); font-weight: 700; font-size: .94em; line-height: 1.2; letter-spacing: .04em; flex: 1; min-height: 0; max-width: 1.3em; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
+.spine .sp-period { writing-mode: vertical-rl; font-size: .72em; color: var(--ink-2); white-space: nowrap; flex: none; }
+.spine:hover { transform: translateY(-4px); }
+.spine { transition: transform .15s ease; }
+@media (prefers-reduced-motion: reduce) { .spine { transition: none; } }
+
+/* 책 안(목차) */
+.book-head .book-l { margin: 0; }
+.book-head h2.book-t { font-family: var(--f-display); font-size: 1.55em; margin: .3em 0 .4em; word-break: keep-all; }
+.book-head .passage-chip { font-size: .96em; }
+.les-list { list-style: none; margin: 0; padding: 0; }
+.les { padding: .9em 0; border-top: 1px solid var(--line); scroll-margin-top: 84px; }
+.les:first-child { border-top: 0; padding-top: .2em; }
+.les-head { display: flex; align-items: center; gap: .6em; width: 100%; min-height: 44px; text-align: left; background: none; border: 0; padding: 0; color: var(--ink); text-decoration: none; cursor: pointer; }
+.les-head .les-txt { flex: 1; min-width: 0; }
+.les-head .ic { color: var(--ink-2); }
+.les-date { display: block; font-size: .8em; color: var(--ink-2); }
+.les-t { display: block; overflow-wrap: anywhere; font-family: var(--f-display); font-weight: 700; font-size: 1.1em; line-height: 1.4; word-break: keep-all; }
+.les-ref { display: block; font-size: .84em; color: var(--accent); font-family: var(--f-display); font-weight: 700; }
+.les .bm { display: inline-flex; align-items: center; gap: .3em; font-size: .76em; font-weight: 600; color: var(--accent); background: var(--accent-soft); border-radius: 999px; padding: .1em .7em .1em .4em; margin-top: .3em; }
+.les .bm .mk { width: 1.4em; height: 1.4em; --cord-bg: var(--accent-soft); }
+.les.has-bm { border-left: 3px solid var(--accent); padding-left: .8em; margin-left: -.2em; }
+
+/* 책을 덮는 마지막 장: 남긴 한 문장들이 한 장에 모인다. 숫자도 순위도 없다 */
+.last-page { text-align: center; }
+.last-page .done-mark { width: 26px; height: 72px; display: block; margin: 0 auto .4em; }
+.last-page h2 { font-family: var(--f-display); font-size: 1.25em; }
+.last-page .ls { list-style: none; margin: 1em 0 0; padding: 0; text-align: left; }
+.last-page .ls li { padding: .8em 0; border-top: 1px solid var(--line); }
+.last-page .ls li:first-child { border-top: 0; }
+.last-page .ls p { margin: 0; font-family: var(--f-display); line-height: 1.7; word-break: keep-all; }
+.last-page .ls small { display: block; margin-top: .15em; font-size: .78em; color: var(--ink-2); }
+
+/* 책 없음 */
+.card.empty { text-align: center; padding: 28px 16px; }
+.card.empty .ic { width: 2.4em; height: 2.4em; color: var(--ink-2); stroke-width: 1.2; }
+.card.empty h2 { font-family: var(--f-display); font-size: 1.2em; margin: .5em 0 .3em; }
+.card.empty .btn { margin-top: 14px; text-decoration: none; }
+
+/* 표지·책등·목차 줄도 디자인 스타일(basic·new·classic·glass)을 따른다 */
+:root[data-style="neu"] .cover, :root[data-style="neu"] .spine { background-color: var(--card); border-color: transparent; box-shadow: var(--raise-sm); }
+:root[data-style="neu"] .field { border-color: transparent; }
+:root[data-style="skeu"] .cover, :root[data-style="skeu"] .spine { background: linear-gradient(180deg, var(--paper-hi), var(--paper-lo)); box-shadow: inset 0 1px 0 rgba(255,255,255,.6), 0 8px 18px -8px rgba(0,0,0,.35); }
+:root[data-style="glass"] .cover, :root[data-style="glass"] .spine { background: var(--glass-strong); border-color: color-mix(in srgb, var(--surface) 65%, transparent); }
+
+/* ── 나의 기록(#record) ── 시안 record.html의 것을 옮겼다 */
+/* 돌아봄 리포트와 상세 */
+.record-wrap { max-width:760px; margin:0 auto; }
+.record-top { display:flex; align-items:center; gap:10px; }
+.record-top h1 { margin-right:auto; }
+.month-nav { display:grid; grid-template-columns:44px 1fr 44px; align-items:center; gap:8px; margin:.8em 0; }
+.month-nav button { min-height:44px; border:1px solid var(--line); border-radius:12px; background:var(--surface); color:var(--ink); cursor:pointer; }
+.month-nav .month-label { min-width:0; min-height:44px; padding:0 .25em; border:0; border-radius:10px; background:transparent; color:var(--ink); text-align:center; font-family:var(--f-display); font-weight:700; font-size:1.28em; cursor:pointer; } .month-nav .month-label:hover, .month-nav .month-label:active { background:var(--surface-2); } .sort-switch { font-size:.82em; } .sort-switch button { min-height:36px; } .month-nav button:disabled { opacity:.45; cursor:default; }
+.report-grid { display:grid; gap:12px; }
+.report-card { margin:0; min-width:0; }
+.report-card h2 { font-family:var(--f-display); margin:0 0 .6em; }
+.report-line { padding:.55em 0; border:0; } .report-card .report-line { padding:0; border-radius:12px; margin:0 -.7em 6px; } .report-card .report-line:last-child { margin-bottom:0; } .report-card .keep-open:hover, .date-row button:hover { background:var(--surface-2); } .report-card .keep-open:active, .date-row button:active { background:var(--surface-2); } :root[data-style="neu"] .report-card .keep-open:active, :root[data-style="neu"] .date-row button:active { background:transparent; box-shadow:var(--press-sm); }
+.keep-quote { border:0; margin:0; padding:.3em 0; }
+.keep-meta { display:block; margin:.2em 0 0; }
+.keep-open { display:block; width:100%; background:none; border:0; border-radius:12px; text-align:left; padding:.8em .7em; cursor:pointer; }
+.thread { padding:.55em 0; } .thread + .thread { margin-top:.5em; }
+.thread-name { margin:0 0 .2em; }
+.thread-name span { font-weight:400; }
+.thread p { margin:.25em 0; }
+.path-item { padding:.55em 0; } .path-item + .path-item { margin-top:.25em; } .more-practices { display:block; min-height:44px; margin:4px auto 0; padding:0 .7em; border:0; border-radius:10px; color:var(--ink-2); background:transparent; font:inherit; cursor:pointer; } .more-practices:hover { background:var(--surface-2); }
+.path-item strong { display:block; }
+.reflection { margin:.2em 0 0; }
+.keep-quote, .thread p:not(.thread-name), .path-item strong { font-family:var(--f-display); font-size:1.05em; font-weight:400; line-height:1.7; color:var(--ink); word-break:keep-all; }
+.thread-name { font-family:var(--f-body); font-size:.88em; font-weight:600; color:var(--ink-2); }
+.keep-meta, .reflection { font-family:var(--f-body); font-size:.8em; color:var(--ink-2); }
+.period-options { display:grid; gap:4px; margin-top:10px; } .period-option { display:flex; align-items:center; justify-content:space-between; width:100%; min-height:48px; padding:.6em .75em; border:0; border-radius:10px; background:transparent; color:var(--ink); text-align:left; font:inherit; cursor:pointer; } .period-option:hover, .period-option:active { background:var(--surface-2); } .period-option[aria-pressed="true"] { background:var(--surface-2); } .period-option[aria-pressed="true"] span { color:var(--accent); font-size:.72em; }
+.tab-switch { margin:8px 0 12px; }
+.date-row { display:grid; grid-template-columns:1fr; gap:6px; padding:0; margin:0 -.7em 6px; border:0; border-radius:12px; }
+.date-row button { position:relative; display:grid; grid-template-columns:5.8em minmax(0,1fr); align-items:center; gap:10px; width:100%; min-height:44px; text-align:left; background:none; border:0; border-radius:12px; padding:.8em .7em; color:inherit; cursor:pointer; }
+.date-row .date-copy { min-width:0; padding-right:28px; }
+.date-row .date-title { display:block; font-family:var(--f-display); font-weight:700; }
+.date-row .date-ref { display:block; font-size:.78em; color:var(--ink-2); }
+.date-row .date-description { display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; font-size:.86em; color:var(--ink-2); line-height:1.45; }
+.date-row .ic { position:absolute; right:0; top:50%; transform:translateY(-50%); color:var(--ink-2); }
+.month-card h2 { margin-bottom:.3em; font-family:var(--f-display); }
+.date-stamp { color:var(--ink-2); font-size:.86em; }
+.date-content { min-width:0; }
+.date-content strong { font-family:var(--f-display); }
+.date-content p { margin:.25em 0; }
+.record-wrap .set-btns { display:flex; justify-content:flex-end; gap:12px; margin-top:.6em; }
+.detail-head { margin-bottom:12px; }
+.detail-head h1 { margin:.1em 0; }
+.detail-meta { color:var(--ink-2); font-size:.88em; }
+.field-head { display:flex; justify-content:space-between; align-items:center; gap:8px; }
+.field-head .quiet-link { margin:0; }
+.del-record { text-align:center; margin:18px 0 8px; }
+.del-list { margin:.6em 0 0; padding-left:1.3em; line-height:1.9; }
+.detail-quote { font-family:var(--f-display); font-size:1.25em; line-height:1.75; margin:.2em 0; word-break:keep-all; }
+.reflection-form { margin-top:10px; }
+.reflection-form textarea { min-height:90px; }
+.reflection-entry { padding:.55em 0; } .reflection-entry + .reflection-entry { margin-top:.25em; }
+@media(min-width:680px) { .report-grid.two { grid-template-columns:repeat(2,minmax(0,1fr)); } }
+.record-wrap .set-btns .delete-answer { min-height:44px; padding:0 .8em; border:0; border-radius:10px; background:none; color:var(--ink-2); font:inherit; cursor:pointer; }
+.ps-topics { margin-top: 8px; padding: 8px 10px; border-radius: 12px; background: var(--surface-2); }
+.menu select.field { margin: 0 .3em .3em; width: calc(100% - .6em); }
 </style>
 </head>
 <body>
@@ -573,6 +731,59 @@ body.sharing { overflow: hidden; }
       <clipPath id="didako-clip"><path d="M4.2 5.6H11.8V14.8L8 11.8L4.2 14.8Z"/></clipPath>
       <g clip-path="url(#didako-clip)" stroke="none"><rect x="4.2" y="4.6" width="2.53" height="12" fill="var(--s1, var(--accent))"/><rect x="6.73" y="4.6" width="2.54" height="12" fill="var(--s2, var(--accent-mid))"/><rect x="9.27" y="4.6" width="2.53" height="12" fill="var(--s3, var(--ink-2))"/>
       <path d="M6.73 4.6V15M9.27 4.6V15" stroke="var(--cord-bg, var(--page))" stroke-width=".5"/></g></g></symbol>
+    <symbol id="i-fwd" viewBox="0 0 24 24"><path d="M9.5 6l6 6-6 6"/></symbol>
+    <symbol id="i-search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="6"/><path d="M15.5 15.5L20 20"/></symbol>
+    <!-- 책을 덮는 마지막 장의 작은 책갈피: 세 줄무늬 리본 + 아래 V 홈 (나눔하기 마친 화면의 긴 책갈피와 같은 색) -->
+    <symbol id="i-ribbon" viewBox="0 0 26 72"><clipPath id="rib-clip"><path d="M0 0H26V72L13 62L0 72Z"/></clipPath><g clip-path="url(#rib-clip)"><rect x="0" y="0" width="8.67" height="72" fill="var(--accent)"/><rect x="8.67" y="0" width="8.66" height="72" fill="var(--accent-mid)"/><rect x="17.33" y="0" width="8.67" height="72" fill="var(--ink-2)"/></g></symbol>
+    <!-- 표지 무늬 8가지(표지 무늬 후보 시안과 같은 그림). 색은 테마 변수만 쓴다 -->
+    <style>
+      .m1 { fill: none; stroke: var(--accent-mid); stroke-width: 1.3; stroke-linecap: round; stroke-linejoin: round; }
+      .m2 { fill: none; stroke: var(--ink-2); stroke-width: 1; stroke-opacity: .4; stroke-linecap: round; stroke-linejoin: round; }
+      .f1 { fill: var(--accent-mid); }
+      .f2 { fill: var(--ink-2); fill-opacity: .4; }
+    </style>
+    <!-- 1 가는 줄 -->
+    <pattern id="p1" width="12" height="9" patternUnits="userSpaceOnUse"><path class="m1" d="M0 4.5H12"/><path class="m2" d="M0 8.5H12"/></pattern>
+    <!-- 2 격자(리넨) -->
+    <pattern id="p2" width="12" height="12" patternUnits="userSpaceOnUse"><path class="m1" d="M0 0.5H12M0.5 0V12" style="stroke-opacity:.8"/><path class="m2" d="M0 6.5H12M6.5 0V12"/></pattern>
+    <!-- 3 물결 -->
+    <pattern id="p3" width="28" height="12" patternUnits="userSpaceOnUse"><path class="m1" d="M0 6Q7 -0.5 14 6T28 6"/><path class="m2" d="M-7 11Q0 4.5 7 11T21 11T35 11"/></pattern>
+    <!-- 4 점(씨앗) -->
+    <pattern id="p4" width="12" height="12" patternUnits="userSpaceOnUse"><ellipse class="f1" cx="3" cy="3" rx="1.5" ry="2.1" transform="rotate(-30 3 3)"/><ellipse class="f2" cx="9" cy="9" rx="1.5" ry="2.1" transform="rotate(30 9 9)"/></pattern>
+    <!-- 5 포도 잎·넝쿨 -->
+    <pattern id="p5" width="30" height="26" patternUnits="userSpaceOnUse">
+      <path class="m1" d="M0 13Q7.5 5 15 13T30 13"/>
+      <path class="m1" d="M7.5 8 L2.5 5 L4 2 L7.5 3.2 L11 2 L12.5 5Z" style="fill:var(--accent-mid);fill-opacity:.5"/>
+      <path class="m1" d="M22.5 18 L17.5 21 L19 24 L22.5 22.8 L26 24 L27.5 21Z" style="fill:var(--accent-mid);fill-opacity:.5"/>
+      <circle class="f2" cx="15" cy="17" r="1.5"/><circle class="f2" cx="12.8" cy="19.6" r="1.5"/><circle class="f2" cx="17.2" cy="19.6" r="1.5"/>
+      <path class="m2" d="M15 13V15.5"/>
+      <path class="m2" d="M2 6q3 -3 5 0"/>
+    </pattern>
+    <!-- 6 밀 이삭 -->
+    <g id="ear"><path class="m1" d="M0 -9V10"/>
+      <ellipse class="f1" cx="-2.6" cy="-4" rx="1.1" ry="2.5" transform="rotate(-35 -2.6 -4)" style="fill-opacity:.55"/><ellipse class="f1" cx="2.6" cy="-4" rx="1.1" ry="2.5" transform="rotate(35 2.6 -4)" style="fill-opacity:.55"/>
+      <ellipse class="f1" cx="-2.6" cy="0" rx="1.1" ry="2.5" transform="rotate(-35 -2.6 0)" style="fill-opacity:.55"/><ellipse class="f1" cx="2.6" cy="0" rx="1.1" ry="2.5" transform="rotate(35 2.6 0)" style="fill-opacity:.55"/>
+      <ellipse class="f1" cx="-2.6" cy="4" rx="1.1" ry="2.5" transform="rotate(-35 -2.6 4)" style="fill-opacity:.55"/><ellipse class="f1" cx="2.6" cy="4" rx="1.1" ry="2.5" transform="rotate(35 2.6 4)" style="fill-opacity:.55"/>
+      <ellipse class="f1" cx="0" cy="-10" rx="1.1" ry="2.5" style="fill-opacity:.55"/></g>
+    <pattern id="p6" width="24" height="28" patternUnits="userSpaceOnUse">
+      <use href="#ear" transform="translate(6 14)"/><use href="#ear" transform="translate(18 0)"/><use href="#ear" transform="translate(18 28)"/>
+    </pattern>
+    <!-- 7 세 겹 끈 -->
+    <pattern id="p7" width="24" height="14" patternUnits="userSpaceOnUse">
+      <path d="M-24 7Q-18 1 -12 7T0 7T12 7T24 7T36 7T48 7" fill="none" stroke="var(--accent-mid)" stroke-width="1.7" stroke-linecap="round"/>
+      <path d="M-24 7Q-18 1 -12 7T0 7T12 7T24 7T36 7T48 7" transform="translate(8 0)" fill="none" stroke="var(--ink-2)" stroke-opacity=".45" stroke-width="1.7" stroke-linecap="round"/>
+      <path d="M-24 7Q-18 1 -12 7T0 7T12 7T24 7T36 7T48 7" transform="translate(16 0)" fill="none" stroke="var(--accent)" stroke-opacity=".75" stroke-width="1.7" stroke-linecap="round"/>
+    </pattern>
+    <!-- 8 올리브 가지 -->
+    <pattern id="p8" width="32" height="18" patternUnits="userSpaceOnUse">
+      <path class="m1" d="M0 9Q8 7 16 9T32 9"/>
+      <ellipse class="f1" cx="6" cy="5.4" rx="3.6" ry="1.4" transform="rotate(-30 6 5.4)" style="fill-opacity:.555"/>
+      <ellipse class="f1" cx="14" cy="12.8" rx="3.6" ry="1.4" transform="rotate(30 14 12.8)" style="fill-opacity:.555"/>
+      <ellipse class="f1" cx="22" cy="5.6" rx="3.6" ry="1.4" transform="rotate(-30 22 5.6)" style="fill-opacity:.555"/>
+      <ellipse class="f1" cx="30" cy="12.8" rx="3.6" ry="1.4" transform="rotate(30 30 12.8)" style="fill-opacity:.555"/>
+      <circle class="f2" cx="26" cy="11" r="1.4"/>
+    </pattern>
+    <symbol id="i-sprout" viewBox="0 0 24 24"><path d="M12 20v-8M12 12c0-3.5-2.5-5.5-6-5.5 0 3.5 2.5 5.5 6 5.5zM12 14c0-3 2-5 5.5-5 0 3-2 5-5.5 5z"/></symbol>
   </defs>
 </svg>
 
@@ -647,19 +858,23 @@ const BUBBLE = '<svg viewBox="0 0 18 18" width="18" height="18" aria-hidden="tru
 // ── 저장 자리 ──
 // 화면 설정(화면 모드·색 테마·디자인·큰 글씨)은 한 자리에만 적는다. 데모 설정과 쓴 글은 따로 둔다
 // answers 내 생각(펼치기), bookmark 책갈피(펼치기), memo 리더의 내 진행 메모(나눔하기), leadopen 해설 접기/펼치기, keep 오늘 남길 것(펼치기·나눔하기가 같이 쓴다)
-const K = { display: 'didako-display', demo: 'didako-demo', reflect: 'didako-reflect', keep: 'didako-keep', answers: 'didako-read-answers', bookmark: 'didako-read-bookmark', memo: 'didako-share-memo', leadopen: 'didako-leadopen' };
+// shareDone 나눔하기를 끝까지 넘겼는지(나의 기록에 이번 주 기록이 나타나는 때), record… 나의 기록에서 고친 글·돌아보기·지운 기록·비워 둔 상태
+const K = { display: 'didako-display', demo: 'didako-demo', reflect: 'didako-reflect', keep: 'didako-keep', answers: 'didako-read-answers', bookmark: 'didako-read-bookmark', memo: 'didako-share-memo', leadopen: 'didako-leadopen',
+  shareDone: 'didako-share-done', recRefl: 'didako-record-reflections', recAns: 'didako-record-answers', recEdit: 'didako-record-edits', recDel: 'didako-record-deleted', recHide: 'didako-record-hidden' };
 const MODES = ['auto', 'light', 'dark'], ACCENTS = ['green', 'amber', 'blue', 'rose', 'ink'], STYLES = ['basic', 'neu', 'skeu', 'glass'];
 const ROLES = [['member', '회원'], ['leader', '리더'], ['pastor', '목사님'], ['admin', '관리자']];
 const STATUS = [['draft', '준비 중'], ['leader', '리더까지'], ['all', '모두']];
 const pick = (v, list, d) => (list.includes(v) ? v : d);
 const S = { mode: 'auto', accent: 'green', style: 'basic', big: false };
-const D = { entered: false, role: 'member', status: 'all', lastWeek: true, before: false, alt: false, readOpen: true, readTriple: true, dimSec: 15 };
+const D = { entered: false, role: 'member', status: 'all', lastWeek: true, before: false, alt: false, readOpen: true, readTriple: true, dimSec: 15, two: false, noBooks: false, longTitle: false, jpat: 'vine', newcomer: false };
+const JPATS = ['none', 'line', 'grid', 'wave', 'dot', 'vine', 'wheat', 'braid', 'olive'];
 function loadState() {
   const a = readJson(K.display), b = readJson(K.demo);
   S.mode = pick(a.mode, MODES, 'auto'); S.accent = pick(a.accent, ACCENTS, 'green'); S.style = pick(a.style, STYLES, 'basic'); S.big = a.big === true;
   D.entered = b.entered === true; D.role = pick(b.role, ROLES.map(r => r[0]), 'member'); D.status = pick(b.status, STATUS.map(r => r[0]), 'all');
   D.lastWeek = b.lastWeek !== false; D.before = b.before === true; D.alt = b.alt === true;
   D.readOpen = b.readOpen !== false; D.readTriple = b.readTriple !== false; D.dimSec = b.dimSec === 5 ? 5 : 15;
+  D.two = b.two === true; D.noBooks = b.noBooks === true; D.longTitle = b.longTitle === true; D.jpat = pick(b.jpat, JPATS, 'vine'); D.newcomer = b.newcomer === true;
 }
 const saveDisplay = () => ls.set(K.display, JSON.stringify(S));
 const saveDemo = () => ls.set(K.demo, JSON.stringify(D));
@@ -726,6 +941,18 @@ function renderSettings() {
     <p class="mlabel">깊이 묵상하기</p>${onoff('readTriple', D.readTriple)}
     <p class="mlabel">내 생각</p>
     <div class="set-btns"><button type="button" class="btn ghost small" data-act="ans-fill">예시 채우기</button><button type="button" class="btn ghost small" data-act="ans-clear">비우기</button></div>` : ''}
+    ${currentView() === 'shelf' ? `<p class="mlabel">이번 주 과 둘</p>${onoff('two', D.two)}
+    <p class="set-note">켜면 새가족반도 지금 읽는 책에 나란히 놓여요.</p>
+    <p class="mlabel">책 없음</p>${onoff('noBooks', D.noBooks)}
+    <p class="mlabel">긴 제목 예시</p>${onoff('longTitle', D.longTitle)}
+    <p class="mlabel">요한복음 표지 무늬</p>
+    <select class="field" id="jpat" aria-label="요한복음 표지 무늬"><option value="none"${D.jpat === 'none' ? ' selected' : ''}>없음</option>${PATTERN_LIST.map(([k, n]) => `<option value="${k}"${D.jpat === k ? ' selected' : ''}>${n}</option>`).join('')}</select>
+    <p class="set-note">실제 앱에서는 목사님이나 교재 담당이 교재를 만들 때 고르는 방향이에요.</p>` : ''}
+    ${currentView() === 'record' ? `<p class="mlabel">새가족반 기록</p>${seg('newcomer', [['0', '숨기기'], ['1', '보이기']], D.newcomer ? 1 : 0)}
+    <p class="mlabel">예시 기록</p>
+    <div class="set-btns"><button type="button" class="btn ghost small" data-act="rec-restore">예시 기록 되살리기</button></div>
+    <div class="set-btns"><button type="button" class="btn ghost small" data-act="rec-hide">기록 비우기</button></div>
+    <p class="set-note">비우면 기록이 하나도 없는 화면을 볼 수 있어요. 예시 기록 되살리기로 되돌려요. 이번 주에 쓴 글은 나눔하기를 마치면 맨 위 기록으로 더해져요.</p>` : ''}
     ${currentView() === 'share' ? `<p class="mlabel">화면 내려놓기 시간</p>${seg('dimSec', [['15', '15초'], ['5', '데모용 5초']], D.dimSec)}` : ''}
     <div class="mdiv"></div>
     <div class="set-btns"><button type="button" class="btn ghost small" data-act="demo-reset-ask">데모 처음으로</button></div>`;
@@ -739,7 +966,14 @@ const PLACE = {
   church: ['우리 사랑방', 'more'], prep: ['진행 준비', 'week'], manage: ['교재 관리', 'more']
 };
 const VIEWS = ['start', 'week'].concat(Object.keys(PLACE));
-const currentView = () => { const h = location.hash.replace(/^#/, ''); return VIEWS.includes(h) ? h : null; };
+// 책 안(#book-교재)과 기록 상세(#rec-기록)는 책장·나의 기록 안의 화면이다
+function parseHash() {
+  const h = location.hash.replace(/^#/, ''), m = /^(book|rec)-([\w-]+)$/.exec(h);
+  if (m) return { v: m[1] === 'book' ? 'shelf' : 'record', arg: m[2] };
+  return { v: VIEWS.includes(h) ? h : null, arg: '' };
+}
+const hashFor = (v, arg) => '#' + (arg ? (v === 'shelf' ? 'book-' : 'rec-') + arg : v);
+const currentView = () => parseHash().v;
 
 // ── 이번 주 ──
 function lessonOf(sel) {
@@ -927,6 +1161,9 @@ function saveKeepRead(fromBlur) {
 // ══ 펼치기(#read) ══
 // 이 기기에 두는 것(데모는 기기에만 둔다. 실제 앱에서는 잠근 덩어리로 서버에 맡긴다): 내 생각 {질문 ID: 글}, 책갈피 {id, at}
 let answers = {}, BM = null, readResume = false, reflow = false;
+// 책장에서 펼치면 어느 책에서 왔는지(교재 id). 위쪽 돌아가기와 맨 끝의 돌아가기가 그 책의 과 목차로 이어진다(설계서 M-04). 이번 주에서 오면 비어 있고 이번 주로 돌아간다
+let readFrom = '';
+const readBack = () => { const b = readFrom && DATA.books.find(x => x.id === readFrom); return b ? { href: '#book-' + b.id, name: bTitle(b) } : { href: '#week', name: '이번 주' }; };
 const editing = new Set(), status = {}, timers = {}, expanded = new Set();
 let cordDone = false, jumpedAt = 0, lastInput = 0, scrollT = 0;
 const allQs = () => G.stages.flatMap(s => s.qs).concat(D.readTriple ? G.triple : []);
@@ -966,7 +1203,7 @@ function wrapHtml() {
       <p class="hint" id="kStatus" aria-live="polite" hidden><button type="button" class="quiet-link retry" data-act="keep-retry">저장하지 못했어요 · 다시 시도</button></p>
     </div>
   </section>
-  <div class="end-btns"><a class="btn" href="#week">돌아가기</a><a class="btn ghost" href="#share">나눔하기</a></div>`;
+  <div class="end-btns"><a class="btn" href="${readBack().href}">돌아가기</a><a class="btn ghost" href="#share">나눔하기</a></div>`;
 }
 function tocHtml() {
   let h = '';
@@ -982,7 +1219,7 @@ function readView() {
   G = readyGuide(); if (!G) return noGuideView('펼치기');
   const L = thisLesson();
   return `<div class="read-wrap">
-    <a class="back-link" href="#week">${ic('back')}<span>이번 주</span></a>
+    <a class="back-link" href="${readBack().href}">${ic('back')}<span>${esc(readBack().name)}</span></a>
     <div class="page-top"><h1>펼치기</h1></div>
     <p class="eyebrow" style="margin-top:0">${esc(groupName())} · 이번 주</p>
     <div class="read-grid">
@@ -1259,6 +1496,7 @@ function renderStep() {
     html = `<div class="st-in"><div class="bless" aria-live="polite"><div class="st-eyebrow bl-lead">함께 읽어요</div>${BLESS_LINES.map((l, i) => `<p class="${i === BLESS_LINES.length - 1 ? 'lastline' : ''}" style="--i:${i}">${esc(l)}</p>`).join('')}<span class="verse bl-ref">${esc(BLESS_REF)}</span></div></div>`;
     nav = prev + next();
   } else if (s.t === 'done') {
+    ls.set(K.shareDone, '1');   // 나눔하기를 끝까지 넘겼다: 이때부터 나의 기록에 이번 주 기록이 나타난다
     html = `<div class="st-in center">${bookmarkSvg()}<div class="center">${bookHtml(true)}</div><h1 class="h2d" style="margin:.5em 0 0;font-size:1.2em">오늘 나눈 말씀 · ${esc(L.ref)}</h1>
       <div class="done-btns"><button class="btn" type="button" data-act="pray">${ic('cord')}함께 기도하기 → 코이데로 이동</button><button class="btn ghost" type="button" data-act="finish">마치기</button></div></div>`;
   }
@@ -1283,34 +1521,326 @@ function teardown() {
   if (R.on) exitShare();
 }
 
+// ══ 책장(#shelf) ══
+// 시안 shelf.html을 옮겼다. 책 자료(종류, 표지 무늬, 과 풀이, 남긴 한 문장)는 demo-data.js의 books에 있다.
+// 이 기기에 남은 책갈피(K.bookmark)와 오늘 남길 것(K.keep)을 읽어서 표지의 세 겹 책갈피 길이와 목차의 책갈피 표시를 정한다(숫자는 어디에도 적지 않는다)
+const PATTERN_LIST = [['line', '가는 줄'], ['grid', '격자'], ['wave', '물결'], ['dot', '점'], ['vine', '포도 잎과 넝쿨'], ['wheat', '밀 이삭'], ['braid', '세 겹 끈'], ['olive', '올리브 가지']];
+const PATTERNS = {}; PATTERN_LIST.forEach(([k], i) => { PATTERNS[k] = `<svg class="pat" aria-hidden="true"><rect width="100%" height="100%" fill="url(#p${i + 1})"/></svg>`; });
+const LONG_JOHN = '요한복음 — 예수님께 붙어 있는 삶, 열매 맺는 제자';
+const KIND_ICON = { 'GBS': 'share', '새가족반': 'sprout' };
+const kindIcon = k => ic(KIND_ICON[k] || 'shelf');
+const weekSel = () => (D.alt ? DATA.thisWeek.alt : DATA.thisWeek.main);
+// 교재를 번갈아 쓰는 예시(slot 'alt')는 그 설정을 켰을 때만 책장에 놓인다
+const shelfBooks = () => DATA.books.filter(b => b.slot !== 'alt' || D.alt);
+const bookById = id => shelfBooks().find(b => b.id === id);
+const bTitle = b => (b.id === 'john' && D.longTitle ? LONG_JOHN : b.title);
+const bPat = b => (b.id === 'john' ? D.jpat : b.pattern || 'none');
+const patSvg = p => (p !== 'none' && PATTERNS[p]) ? PATTERNS[p] : '';
+const patternHtml = b => { const p = bPat(b); return `<span class="cover-pat" data-pattern="${esc(p)}" aria-hidden="true">${patSvg(p)}</span>`; };
+const bandHtml = b => { const p = bPat(b); return `<span class="band" data-pattern="${esc(p)}" aria-hidden="true">${patSvg(p)}</span>`; };
+// 책갈피 끈의 길이(표지 높이의 %): 오늘 남길 것을 남긴 과가 쌓인 만큼 한 마디씩, 상한이 있다. 이번 주 책에는 지금 남긴 한 문장·작은 실천도 더한다
+const keptCount = b => b.lessons.filter(l => l.keep).length + (b.id === weekSel().book && (readJson(K.keep).sentence || readJson(K.keep).action) ? 1 : 0);
+const lenOf = b => 16 + Math.min(keptCount(b), 8) * 3;
+// 지금 읽는 책: 이번 주 과가 있는 책(과 둘이면 둘). 교재를 번갈아 쓰면 쓰는 교재가 모두 나란히 놓이고, 이번 주 과가 있는 책에만 "이번 주"가 붙고 다른 책에는 "다음" 과가 보인다
+const nowBooks = () => shelfBooks().filter(b => b.slot === 'now').slice(0, D.two ? 2 : 1).concat(D.alt ? shelfBooks().filter(b => b.slot === 'alt') : []);
+const pastBooks = () => shelfBooks().filter(b => b.slot === 'done');
+function capOf(b) {
+  const w = weekSel();
+  if (D.alt && b.id !== w.book) { const n = b.lessons.find(l => l.state === 'prep' || l.state === 'upcoming'); return n ? { lead: '다음', text: `제${n.no}과 · ${n.name}`, date: n.date } : null; }
+  const c = b.id === w.book ? b.lessons.find(l => l.no === w.no) : b.lessons.find(l => l.state === 'now');
+  return c ? { lead: '이번 주', text: `제${c.no}과 · ${c.name}`, date: DATA.thisWeek.date } : null;
+}
+// 아직 회원에게 열리지 않은 과(준비 중)는 목차에 넣지 않는다
+const tocLessons = b => b.lessons.filter(l => l.state !== 'prep');
+const titleCls = t => (t.length > 14 ? 't-l' : t.length > 8 ? 't-m' : '');
+function coverHtml(b) {
+  const c = capOf(b);
+  return `<div class="now-item">
+    <div class="cover-wrap" style="--len:${lenOf(b)}">
+      <div class="cover" role="button" tabindex="0" data-act="open-book" data-book="${b.id}" title="${esc(bTitle(b))}" aria-label="${esc(bTitle(b))} ${esc(b.period)} 책 열기">
+        ${patternHtml(b)}
+        <span class="cover-body">
+          <span class="cover-type">${kindIcon(b.kind)}${esc(b.kind)}</span>
+          <span><span class="cover-title ${titleCls(bTitle(b))}">${esc(bTitle(b))}</span><span class="cover-period">${esc(b.period)}</span></span>
+          <span class="cover-range">${esc(b.range)}</span>
+        </span>
+      </div>
+      <span class="ribbon" aria-hidden="true"></span>
+    </div>
+    ${c ? `<p class="now-cap">${esc(c.lead)} <b>${esc(c.text)}</b><br>${esc(c.date)}</p>` : ''}
+  </div>`;
+}
+// 책등에는 부제를 뺀 앞부분만 쓴다(" — ", " · ", ": " 앞). 전체 제목은 title·aria-label에 있다
+const spineTitle = t => t.split(/\s[—·]\s|:\s/)[0];
+const spineHtml = b => `<button class="spine" type="button" style="--h:${b.h || 156}px" data-act="open-book" data-book="${b.id}" title="${esc(bTitle(b))}" aria-label="${esc(bTitle(b))} ${esc(b.period)} 책 열기">
+    ${bandHtml(b)}<span class="sp-title">${esc(spineTitle(bTitle(b)))}</span><span class="sp-period">${esc(b.period)}</span></button>`;
+function browseHtml() {
+  if (D.noBooks) {
+    return `<section class="card empty" aria-labelledby="emT">${ic('shelf')}<h2 id="emT">아직 책장에 꽂힌 책이 없어요</h2>
+      <p class="soft" style="margin:0">이번 주 과가 배포되면 이곳에 책이 놓여요.</p>
+      <a class="btn" href="#week">이번 주 보기</a></section>`;
+  }
+  const kinds = [...new Set(pastBooks().map(b => b.kind))];
+  return `<h2 class="sec-h">지금 읽는 책</h2>
+    <div class="now">${nowBooks().map(coverHtml).join('')}</div>
+    <h2 class="sec-h">책장</h2>
+    <section class="card" aria-label="지난 교재">
+      ${kinds.map(k => `<p class="kind-h">${kindIcon(k)}${esc(k)}</p><div class="board">${pastBooks().filter(b => b.kind === k).map(spineHtml).join('')}</div>`).join('')}
+    </section>`;
+}
+// 검색(제목·본문): 책 제목과 과 제목·장절·풀이를 훑는다. 내 기록은 훑지 않는다
+function searchHtml(q) {
+  const w = q.trim().toLowerCase(); if (!w) return '';
+  const rows = [];
+  shelfBooks().forEach(b => {
+    if ((bTitle(b) + ' ' + b.period + ' ' + b.range).toLowerCase().includes(w)) rows.push(`<li><button class="hit" type="button" data-act="open-book" data-book="${b.id}"><span class="hit-book">${esc(b.kind)}</span><b>${esc(bTitle(b))} · ${esc(b.period)}</b><span class="hit-body">책 열기</span></button></li>`);
+    tocLessons(b).forEach(l => {
+      if ((`제${l.no}과 ` + l.name + ' ' + l.ref + ' ' + (l.body || '')).toLowerCase().includes(w)) rows.push(`<li><button class="hit" type="button" data-act="open-book" data-book="${b.id}" data-lesson="${l.no}"><span class="hit-book">${esc(bTitle(b))} · ${esc(b.period)}</span><b>제${l.no}과 · ${esc(l.name)}</b><span class="hit-ref">${esc(l.ref)}</span><span class="hit-body">${esc(l.body || '')}</span></button></li>`);
+    });
+  });
+  if (!rows.length) return `<section class="card" role="status"><p class="opt-name">찾는 글이 없어요</p><p class="soft" style="margin:.3em 0 0">검색어를 바꿔 보세요.</p></section>`;
+  return `<section class="card" aria-label="검색 결과"><ul class="hit-list">${rows.join('')}</ul></section>`;
+}
+function runShelfSearch() {
+  const q = $('#shelfQ'); if (!q) return;
+  const on = !!q.value.trim();
+  $('#shelfResults').hidden = !on; $('#shelfBrowse').hidden = on;
+  $('#shelfResults').innerHTML = searchHtml(q.value);
+}
+// 책 안: 과 목차. 이번 주 과만 펼치기로 이어지고(책갈피가 있으면 그 질문으로), 어디서 왔는지(data-from)를 알려서 펼치기의 돌아가는 길이 이 책 목차로 이어지게 한다
+function lessonLi(b, l) {
+  const live = `${b.id}:${l.no}` === thisLesson().id, mark = live && hasBm();
+  const head = `<span class="les-txt"><span class="les-date">${esc(l.date)}</span><span class="les-t">제${l.no}과 · ${esc(l.name)}</span><span class="les-ref">${esc(l.ref)}</span>${mark ? `<span class="bm">${mkIc()}책갈피</span>` : ''}</span>${ic('fwd')}`;
+  return `<li class="les${mark ? ' has-bm' : ''}" id="les-${b.id}-${l.no}">${live
+    ? `<a class="les-head" href="#read" data-act="read-go" data-resume="1" data-from="${b.id}">${head}</a>`
+    : `<button class="les-head" type="button" data-act="lesson-other">${head}</button>`}</li>`;
+}
+// 책을 덮는 마지막 장: 남긴 한 문장들이 한 장에 모인다. 숫자도 순위도 없다
+function lastPageHtml(b) {
+  const items = b.lessons.filter(l => l.mine);
+  return `<section class="card last-page" aria-labelledby="lpT">
+    <svg class="done-mark" role="img" aria-label="세 겹 책갈피"><use href="#i-ribbon"/></svg>
+    <h2 id="lpT">책을 덮는 마지막 장</h2>
+    <p class="soft" style="margin:.3em 0 0">${esc(bTitle(b))} · ${esc(b.period)} — 그동안 남긴 한 문장들이에요.</p>
+    <ul class="ls">${items.map(l => `<li><p>${esc(l.mine)}</p><small>제${l.no}과 · ${esc(l.ref)}</small></li>`).join('')}</ul>
+  </section>`;
+}
+function bookPage(b) {
+  return `<div class="shelf-wrap">
+    <a class="back-link" href="#shelf">${ic('back')}<span>책장</span></a>
+    <div class="page-top"><h1>${esc(bTitle(b))}</h1></div>
+    <p class="eyebrow" style="margin-top:0">${esc(b.kind)} · ${esc(b.period)}</p>
+    <section class="card today book-head" aria-label="책 소개">
+      <p class="book-l" style="margin-bottom:.7em">${mkIc()}<b>${esc(b.kind)}</b><span>${esc(b.period)}</span></p>
+      <div><span class="passage-chip">${esc(b.range)}</span></div>
+      ${b.closed ? '<p class="fine">교재를 닫아서 책장에 꽂혀 있어요.</p>' : ''}
+    </section>
+    <section class="card" aria-label="과 목차"><ol class="les-list">${tocLessons(b).map(l => lessonLi(b, l)).join('')}</ol></section>
+    ${b.closed ? lastPageHtml(b) : ''}
+  </div>`;
+}
+function shelfView(arg) {
+  const b = arg ? bookById(arg) : null;
+  if (b) return bookPage(b);
+  return `<div class="shelf-wrap">
+    <div class="page-top"><h1>책장</h1></div>
+    <p class="eyebrow" style="margin-top:0">${esc(groupName())}</p>
+    ${D.noBooks ? '' : `<div class="search">${ic('search')}<input class="field" id="shelfQ" type="search" placeholder="제목이나 본문으로 찾기" aria-label="책장 검색" autocomplete="off"></div><div id="shelfResults" hidden></div>`}
+    <div id="shelfBrowse">${browseHtml()}</div>
+  </div>`;
+}
+let shelfLesson = '';
+// 검색 결과에서 과를 눌러 들어오면 그 과가 목차 맨 위로 오게 한다
+function shelfInit(arg) {
+  if (!arg) return;
+  const n = shelfLesson; shelfLesson = '';
+  const li = n && document.getElementById(`les-${arg}-${n}`);
+  if (li) li.scrollIntoView({ block: 'start' });
+}
+
+// ══ 나의 기록(#record) ══
+// 시안 record.html을 옮겼다. 지난 기록은 demo-data.js의 records(지어낸 예시)이고, 그 위에 이번 주에 직접 쓴 것이 맨 위 기록으로 더해진다.
+// 이번 주 기록은 나눔하기를 마쳤을 때(K.shareDone) 기기에 남은 글(오늘 남길 것, 펼치기에서 쓴 내 생각)을 모아 만든다. 쓴 것이 없으면 나타나지 않는다.
+// 기록을 고치고, 지우고, 돌아보기를 남긴 것은 didako-record-… 자리에 따로 둔다(예시를 고쳐도 원본은 그대로)
+const THIS_YEAR = 2026;   // 데모의 오늘은 2026년이다. 올해 기록의 제목에는 연도를 붙이지 않는다
+const dayOf = e => Number((String(e.date).match(/(\d+)(?!.*\d)/) || [0])[0]);
+const stamp = e => e.year * 10000 + e.month * 100 + dayOf(e);
+const recNewest = es => es.slice().sort((a, b) => stamp(b) - stamp(a));
+const WHO = ['아버지', '아들', '성령'];
+const recLabel = e => `${esc(e.book)}${e.ref ? ` · ${esc(e.ref)}` : ''}`;
+const recDeleted = () => { const v = readJson(K.recDel); return Array.isArray(v) ? v : []; };
+// 깊이 묵상하기 질문 글. 기록마다 당시 질문 글을 함께 담아 둔다(M-06): 나중에 과의 질문이 바뀌어도 내 기록에는 그때 질문이 남는다
+const tqOf = id => { const g = DATA.guides[id] || DATA.guides['john:3'], o = {}; if (g) g.triple.forEach(t => { o[t.who] = t.t; }); return o; };
+function liveEntry() {
+  if (ls.get(K.shareDone) !== '1') return null;
+  const L = thisLesson(), g = DATA.guides[L.id], k = readJson(K.keep), ans = readJson(K.answers);
+  const sentence = String(k.sentence || '').trim(), action = String(k.action || '').trim(), answers = [], threads = {};
+  if (g) {
+    g.stages.forEach(st => st.qs.forEach(q => { if (String(ans[q.id] || '').trim()) answers.push({ q: q.t, a: ans[q.id] }); }));
+    g.triple.forEach(t => { if (String(ans[t.id] || '').trim()) threads[t.who] = [ans[t.id]]; });
+  }
+  if (!sentence && !action && !answers.length && !Object.keys(threads).length) return null;
+  const bk = DATA.books.find(b => b.id === weekSel().book), ls0 = bk.lessons.find(l => l.no === weekSel().no), md = /(\d+)월\s*(\d+)일/.exec(DATA.thisWeek.date);
+  return { id: 'live-' + L.id.replace(':', '-'), live: true, year: THIS_YEAR, month: Number(md[1]), date: `${md[1]}월 ${md[2]}일`, title: ls0.name, ref: L.ref, book: `${L.book} · ${L.period}`, keep: sentence, action, answers, threads, tq: tqOf(L.id) };
+}
+// 보이는 기록 모두(지운 것, 숨긴 것 빼고). 고친 글과 돌아보기를 입혀서 돌려준다
+function recRows() {
+  if (ls.get(K.recHide) === '1') return [];
+  const del = recDeleted(), ed = readJson(K.recEdit), refl = readJson(K.recRefl), tq = tqOf('john:3');
+  const rows = DATA.records.flatMap(m => m.entries.map(e => Object.assign({ tq }, e, { year: m.year, month: m.month, book: m.book })));
+  const live = liveEntry(); if (live) rows.push(live);
+  return rows.filter(e => !del.includes(e.id) && (D.newcomer || !e.book.startsWith('새가족반 ·')))
+    .map(e => {
+      const x = Object.assign({}, e, ed[e.id] || {}), rr = Array.isArray(refl[e.id]) ? refl[e.id] : [], last = rr[rr.length - 1] || null;
+      return Object.assign(x, { reflections: rr, reflection: last ? last.text : e.reflection, reflectionDate: last ? last.date : null });
+    });
+}
+const recById = id => recRows().find(x => x.id === id);
+const savedAns = () => readJson(K.recAns);
+const answersOf = e => { const s = savedAns()[e.id]; return Array.isArray(s) ? s : (e.answers || []); };
+// 보는 자리는 이 화면에 있는 동안 기억한다(상세를 열고 돌아와도 같은 달·같은 칸·같은 검색어)
+const rec = { view: 'report', year: false, key: 0, more: false, q: '', action: null };
+const recPeriods = rows => { const m = new Map(); rows.forEach(e => m.set(e.year * 100 + e.month, { year: e.year, month: e.month })); return [...m.keys()].sort((a, b) => a - b).map(k => m.get(k)); };
+const periodKey = p => p.year * 100 + p.month;
+const curPeriod = ps => ps.find(p => periodKey(p) === rec.key) || ps[ps.length - 1];
+function monthNav(ps, p) {
+  const yrs = [...new Set(ps.map(x => x.year))], first = rec.year ? yrs.indexOf(p.year) <= 0 : ps.indexOf(p) <= 0, last = rec.year ? yrs.indexOf(p.year) >= yrs.length - 1 : ps.indexOf(p) >= ps.length - 1;
+  const title = rec.year ? `${p.year}년의 돌아봄` : `${p.year === THIS_YEAR ? '' : p.year + '년 '}${p.month}월의 돌아봄`;
+  return `<div class="month-nav"><button type="button" data-act="rec-prev" aria-label="이전 ${rec.year ? '해' : '달'}" ${first ? 'disabled aria-disabled="true"' : ''}>‹</button><button type="button" class="month-label" data-act="rec-period" aria-haspopup="dialog">${title} ▾</button><button type="button" data-act="rec-next" aria-label="다음 ${rec.year ? '해' : '달'}" ${last ? 'disabled aria-disabled="true"' : ''}>›</button></div>`;
+}
+const emptyCard = () => `<section class="card empty"><h2>아직 남긴 기록이 없어요</h2><p class="soft" style="margin:0">이번 주 과가 끝나면 이곳에 모여요.</p><a class="btn" href="#week">이번 주 보기</a></section>`;
+const recSection = (title, body) => (body ? `<section class="card report-card"><h2>${title}</h2>${body}</section>` : '');
+// 돌아봄: 간직한 말씀 · 삼위일체 하나님 묵상(한 해 보기에서는 나의 고백) · 작은 실천의 길. 그달에 내용이 없는 구역은 보이지 않고, 숫자는 어디에도 없다. 모두 최근 것이 위에 온다
+function reportHtml() {
+  const all = recRows(), ps = recPeriods(all);
+  if (!ps.length) return emptyCard();
+  const p = curPeriod(ps), es = recNewest(all.filter(e => (rec.year ? e.year === p.year : e.year === p.year && e.month === p.month)));
+  const withKeep = es.filter(e => e.keep);
+  // 한 해 보기의 간직한 말씀은 달마다 가장 최근 한 문장
+  const keepRows = rec.year ? withKeep.filter(e => withKeep.find(x => x.month === e.month) === e) : withKeep;
+  const keeps = keepRows.map(e => `<div class="report-line"><button type="button" class="keep-open" data-act="rec-open" data-id="${e.id}"><blockquote class="keep-quote">${esc(e.keep)}</blockquote><p class="keep-meta">${esc(e.book)} · ${esc(e.title)}${e.ref ? ` · ${esc(e.ref)}` : ''}</p></button></div>`).join('');
+  const threads = WHO.map((k, i) => { const a = es.flatMap(e => (e.threads && e.threads[k]) || []); return a.length ? `<div class="thread"><p class="thread-name ${['father', 'son', 'spirit'][i]}">${k}</p>${a.map(x => `<p>${esc(x)}</p>`).join('')}</div>` : ''; }).join('');
+  const prac = es.filter(e => e.action);
+  const acts = prac.slice(0, rec.more ? prac.length : 3).map(e => `<div class="path-item"><strong>${esc(e.action)}</strong><p class="reflection">${e.reflectionDate ? `<small>${esc(e.reflectionDate)} · </small>` : ''}${e.reflection ? esc(e.reflection) : '아직 돌아보지 않았어요'}</p></div>`).join('')
+    + (prac.length > 3 ? `<button type="button" class="more-practices" data-act="rec-more">${rec.more ? '접기' : '더 보기 ↓'}</button>` : '');
+  return monthNav(ps, p) + `<p class="eyebrow" style="margin:.2em 0 .6em">${esc(DATA.church.room)}과 함께</p><div class="report-grid">${recSection(rec.year ? '간직한 말씀 · 달마다 한 문장' : '간직한 말씀', keeps)}${recSection(rec.year ? '나의 고백' : '삼위일체 하나님 묵상', threads)}${recSection('작은 실천의 길', acts)}</div>`;
+}
+function listRows(es) {
+  if (!es.length) return `<section class="card"><p style="margin:0">찾는 기록이 없어요. 검색어를 바꿔 보세요.</p></section>`;
+  const sorted = recNewest(es), keys = [...new Set(sorted.map(e => e.year * 100 + e.month))];
+  return keys.map(key => {
+    const group = sorted.filter(e => e.year * 100 + e.month === key), e0 = group[0];
+    return `<section class="card month-card"><h2>${e0.year}년 ${e0.month}월</h2>${group.map(e => `<div class="date-row"><button type="button" data-act="rec-open" data-id="${e.id}"><span class="date-stamp">${esc(e.date)}</span><span class="date-copy"><strong class="date-title">${esc(e.title)}</strong><small class="date-ref">${recLabel(e)}</small><span class="date-description">${esc(e.keep || e.action || '')}</span></span>${ic('fwd')}</button></div>`).join('')}</section>`;
+  }).join('');
+}
+const recText = e => [e.title, e.ref, e.book, e.keep, e.action, Object.values(e.threads || {}).flat().join(' '), answersOf(e).map(a => a.a).join(' ')].join(' ').toLowerCase();
+function recSearch() { const q = rec.q.trim().toLowerCase(); return listRows(q ? recRows().filter(e => recText(e).includes(q)) : recRows()); }
+function listHtml() {
+  if (!recRows().length) return emptyCard();
+  return `<div class="search">${ic('search')}<input class="field" id="recQ" type="search" placeholder="제목, 본문, 내 답으로 찾기" aria-label="기록 검색" value="${esc(rec.q)}" autocomplete="off"></div><div id="recResults">${recSearch()}</div>`;
+}
+// 기록 상세(M-06): 교재·과·날짜·장절, 한 문장, 작은 실천, 깊이 묵상하기 답(그때 질문과 함께), 미리 쓴 답, 돌아보기, 기록 지우기
+function detailHtml(e) {
+  const ans = answersOf(e), has = Object.keys(e.threads || {}).length;
+  const ansHtml = ans.length ? `<section class="card"><h2>미리 쓴 답</h2>${ans.map((a, i) => `<div class="report-line"><b>${esc(a.q)}</b><p>${esc(a.a)}</p><div class="set-btns"><button type="button" class="btn ghost small" data-act="rec-ans-edit" data-i="${i}" data-id="${e.id}">수정하기</button><button type="button" class="delete-answer" data-act="rec-ans-del" data-i="${i}" data-id="${e.id}">삭제</button></div></div>`).join('')}</section>` : '';
+  const thr = has ? Object.entries(e.threads).map(([k, vs]) => `<div class="report-line"><b>${esc(k)}${e.tq && e.tq[k] ? ` · ${esc(e.tq[k])}` : ''}</b><p>${vs.map(esc).join('<br>')}</p></div>`).join('') : '';
+  return `<div class="record-wrap">
+    <a class="back-link" href="#record">${ic('back')}<span>나의 기록</span></a>
+    <div class="record-top"><h1>기록 상세</h1></div>
+    <section class="card detail-head"><p class="detail-meta">${esc(e.date)} · ${esc(e.book)}</p><h2 class="detail-title">${esc(e.title)}</h2>${e.ref ? `<p class="detail-meta">${esc(e.ref)}</p>` : ''}</section>
+    <section class="card">
+      <div class="field-head"><p class="eyebrow" style="margin:0">오늘 남긴 한 문장</p><button type="button" class="quiet-link" data-act="rec-field-edit" data-field="keep" data-id="${e.id}">고치기</button></div>
+      ${e.keep ? `<p class="detail-quote">${esc(e.keep)}</p>` : '<p class="soft" style="margin:.4em 0">남기지 않았어요</p>'}
+      <div class="field-head" style="margin-top:1em"><p class="eyebrow" style="margin:0">작은 실천</p><button type="button" class="quiet-link" data-act="rec-field-edit" data-field="action" data-id="${e.id}">고치기</button></div>
+      ${e.action ? `<p style="margin:.2em 0 0">${esc(e.action)}</p>` : '<p class="soft" style="margin:.4em 0 0">남기지 않았어요</p>'}
+      ${thr}
+    </section>
+    ${ansHtml}
+    <section class="card"><h2>돌아보기</h2>
+      ${e.reflections.map(x => `<div class="reflection-entry"><small>${esc(x.date)}</small><p>${esc(x.text)}</p></div>`).join('')}
+      <form class="reflection-form" id="reflectionForm" data-id="${e.id}"><label for="recReflection">시간이 지난 뒤 남기는 생각</label><textarea class="field" id="recReflection" required placeholder="짧게 적어도 괜찮아요"></textarea><button class="btn" type="submit" style="margin-top:8px">돌아보기 남기기</button></form>
+    </section>
+    <div class="del-record"><button type="button" class="quiet-link" data-act="rec-del" data-id="${e.id}">이 기록 지우기</button></div>
+  </div>`;
+}
+function recordView(arg) {
+  const e = arg ? recById(arg) : null;
+  if (e) return detailHtml(e);
+  return `<div class="record-wrap">
+    <div class="record-top"><h1>나의 기록</h1></div>
+    <div class="seg tab-switch" style="--n:2" role="tablist"><button type="button" data-act="rec-tab" data-v="report" class="${rec.view === 'report' ? 'on' : ''}" role="tab" aria-selected="${rec.view === 'report'}">돌아봄</button><button type="button" data-act="rec-tab" data-v="date" class="${rec.view === 'date' ? 'on' : ''}" role="tab" aria-selected="${rec.view === 'date'}">모든 기록</button></div>
+    <div id="recBody">${rec.view === 'report' ? reportHtml() : listHtml()}</div>
+  </div>`;
+}
+// 다시 그리되 보던 자리를 지킨다
+function recRedraw() { const y = window.scrollY; route(false); window.scrollTo(0, y); }
+const recSave = (key, val) => ls.set(key, JSON.stringify(val));
+const recDone = ok => toast(ok ? '저장했어요' : '저장하지 못했어요 · 다시 시도');
+function recStep(d) {
+  const ps = recPeriods(recRows()), p = curPeriod(ps); if (!p) return;
+  if (rec.year) {
+    const yrs = [...new Set(ps.map(x => x.year))], y = yrs[yrs.indexOf(p.year) + d]; if (y == null) return;
+    rec.key = periodKey(ps.filter(x => x.year === y).pop());
+  } else {
+    const n = ps[ps.indexOf(p) + d]; if (!n) return; rec.key = periodKey(n);
+  }
+  recRedraw();
+}
+function periodSheet() {
+  openSheet(`<h2 id="popT">어떻게 돌아볼까요?</h2><div class="period-options"><button type="button" class="period-option" data-act="rec-period-pick" data-v="0" aria-pressed="${!rec.year}" data-focus>달마다 보기 ${rec.year ? '' : '<span aria-hidden="true">●</span>'}</button><button type="button" class="period-option" data-act="rec-period-pick" data-v="1" aria-pressed="${rec.year}">한 해 보기 ${rec.year ? '<span aria-hidden="true">●</span>' : ''}</button></div>`);
+}
+function fieldSheet(id, field) {
+  const e = recById(id); if (!e) return;
+  const name = field === 'keep' ? '오늘 남긴 한 문장' : '작은 실천';
+  rec.action = { kind: 'field', id, field };
+  openSheet(`<h2 id="popT">${name} 고치기</h2><textarea class="field" id="recFieldEdit" style="margin-top:10px;min-height:100px" maxlength="200" aria-label="${name}" data-focus>${esc(e[field])}</textarea><div class="set-btns"><button type="button" class="btn ghost" data-act="pop-close">취소</button><button type="button" class="btn" data-act="rec-field-save">저장</button></div>`);
+}
+function answerSheet(kind, id, i) {
+  const e = recById(id); if (!e) return;
+  const a = answersOf(e)[i]; if (!a) return;
+  rec.action = { kind, id, i };
+  openSheet(kind === 'edit'
+    ? `<h2 id="popT">답변 수정</h2><p class="hint">${esc(a.q)}</p><textarea class="field" id="recAnsEdit" style="margin-top:10px;min-height:100px" aria-label="답변" data-focus>${esc(a.a)}</textarea><div class="set-btns"><button type="button" class="btn ghost" data-act="pop-close">취소</button><button type="button" class="btn" data-act="rec-ans-save">저장</button></div>`
+    : `<h2 id="popT">이 답을 지울까요?</h2><div class="ps-topics" style="margin-top:12px;color:var(--ink-2)">${esc(a.a)}</div><div class="set-btns"><button type="button" class="btn ghost" data-act="pop-close" data-focus>취소</button><button type="button" class="btn" data-act="rec-ans-del-ok">삭제</button></div>`);
+}
+function deleteSheet(id) {
+  rec.action = { kind: 'record', id };
+  openSheet(`<h2 id="popT">이 기록을 지울까요?</h2><p class="hint">이 기기에서 아래가 함께 지워져요.</p><ul class="del-list"><li>이 날의 한 문장</li><li>작은 실천</li><li>미리 쓴 답</li><li>깊이 묵상하기 답(아버지·아들·성령)</li><li>돌아보기</li></ul><div class="set-btns"><button type="button" class="btn ghost" data-act="pop-close" data-focus>취소</button><button type="button" class="btn" data-act="rec-del-ok">지우기</button></div>`);
+}
+
 // ── 길 찾기(# 주소) ──
 function route(moved) {
   teardown();
-  let v = currentView();
+  let { v, arg } = parseHash();
   // 모르는 주소이거나 데모로 들어오기 전이면 첫 화면(들어온 뒤의 빈 주소는 이번 주)
   if (!v) v = D.entered ? 'week' : 'start';
   else if (v !== 'start' && !D.entered) v = 'start';
-  if (location.hash !== '#' + v) history.replaceState(null, '', '#' + v);
+  if (v !== 'read') readFrom = '';
+  // 없는 책, 없는 기록이면 목록으로(책이 하나도 없게 한 상태에서도)
+  if (v === 'shelf' && arg && (D.noBooks || !bookById(arg))) arg = '';
+  if (v === 'record' && arg && !recById(arg)) arg = '';
+  if (v !== 'shelf' && v !== 'record') arg = '';
+  if (location.hash !== hashFor(v, arg)) history.replaceState(null, '', hashFor(v, arg));
   if (moved) { closeMenu(); $('#toast').hidden = true; }
   const start = v === 'start';
   $('#topbar').classList.toggle('bare', start);
   $('#topnav').hidden = start; $('#tabs').hidden = start;
   document.body.dataset.view = v;
-  $('#view').innerHTML = start ? startView() : v === 'week' ? weekView() : v === 'read' ? readView() : v === 'share' ? shareView() : placeView(v);
+  $('#view').innerHTML = start ? startView() : v === 'week' ? weekView() : v === 'read' ? readView() : v === 'share' ? shareView() : v === 'shelf' ? shelfView(arg) : v === 'record' ? recordView(arg) : placeView(v);
   const tab = start ? '' : v === 'week' ? 'week' : PLACE[v][1];
   $$('[data-tab]').forEach(a => { const on = a.dataset.tab === tab; a.classList.toggle('on', on); on ? a.setAttribute('aria-current', 'page') : a.removeAttribute('aria-current'); });
-  document.title = start ? '디다코' : (v === 'week' ? '이번 주' : PLACE[v][0]) + ' · 디다코';
+  document.title = start ? '디다코' : (v === 'shelf' && arg ? bTitle(bookById(arg)) : v === 'record' && arg ? '기록 상세' : v === 'week' ? '이번 주' : PLACE[v][0]) + ' · 디다코';
   paintBadge(); $('#badge').hidden = start;
   if (moved) {
     window.scrollTo(0, 0);
     const h = $('h1', $('#view')); if (h) { h.setAttribute('tabindex', '-1'); h.focus({ preventScroll: true }); }
   }
-  if (v === 'read') readInit(); else if (v === 'share') shareInit();
+  if (v === 'read') readInit(); else if (v === 'share') shareInit(); else if (v === 'shelf') shelfInit(arg);
 }
 // 설정을 바꿔 다시 그릴 때는 보던 자리를 지키고, 말씀을 열며를 다시 띄우지 않는다
 function rerender() {
   const y = window.scrollY; applySettings(); reflow = true; route(false); reflow = false;
-  if (currentView() === 'read') window.scrollTo(0, y);
+  if (['read', 'shelf', 'record'].includes(currentView())) window.scrollTo(0, y);
   if (!$('#settings').hidden) renderSettings();
 }
 
@@ -1332,11 +1862,54 @@ const acts = {
   },
   'demo-reset'() {
     closeSheet();
-    ls.del(K.demo); ls.del(K.reflect); ls.del(K.keep); ls.del(K.answers); ls.del(K.bookmark); ls.del(K.memo); ls.del(K.leadopen); loadState();
+    ls.del(K.demo); ls.del(K.reflect); ls.del(K.keep); ls.del(K.answers); ls.del(K.bookmark); ls.del(K.memo); ls.del(K.leadopen);
+    [K.shareDone, K.recRefl, K.recAns, K.recEdit, K.recDel, K.recHide].forEach(ls.del); loadState();
     if (location.hash === '#start') route(true); else location.hash = '#start';
   },
   'pop-close'() { closeSheet(); },
-  'read-go'(e, el) { readResume = el.dataset.resume === '1'; if (location.hash === '#read') route(true); else location.hash = '#read'; },
+  'read-go'(e, el) { readResume = el.dataset.resume === '1'; readFrom = el.dataset.from || ''; if (location.hash === '#read') route(true); else location.hash = '#read'; },
+  // 책장
+  'open-book'(e, el) { shelfLesson = el.dataset.lesson || ''; location.hash = '#book-' + el.dataset.book; },
+  'lesson-other'() { toast('데모에서는 이번 주 과만 펼칠 수 있어요'); },
+  // 나의 기록
+  'rec-tab'(e, el) { rec.view = el.dataset.v; recRedraw(); },
+  'rec-prev'() { recStep(-1); }, 'rec-next'() { recStep(1); },
+  'rec-period'() { periodSheet(); },
+  'rec-period-pick'(e, el) { rec.year = el.dataset.v === '1'; closeSheet(); recRedraw(); },
+  'rec-more'() { rec.more = !rec.more; recRedraw(); },
+  'rec-open'(e, el) { location.hash = '#rec-' + el.dataset.id; },
+  'rec-field-edit'(e, el) { fieldSheet(el.dataset.id, el.dataset.field); },
+  'rec-field-save'() {
+    const { id, field } = rec.action, t = $('#recFieldEdit'), v = t.value.trim();
+    if (!v) { t.focus(); return; }
+    const ed = readJson(K.recEdit); ed[id] = Object.assign(ed[id] || {}, { [field]: v });
+    const ok = recSave(K.recEdit, ed); closeSheet(); recRedraw(); recDone(ok);
+  },
+  'rec-ans-edit'(e, el) { answerSheet('edit', el.dataset.id, +el.dataset.i); },
+  'rec-ans-del'(e, el) { answerSheet('delete', el.dataset.id, +el.dataset.i); },
+  'rec-ans-save'() {
+    const { id, i } = rec.action, t = $('#recAnsEdit'), v = t.value.trim();
+    if (!v) { t.focus(); return; }
+    const cur = answersOf(recById(id)).map(a => Object.assign({}, a)); cur[i].a = v;
+    const all = savedAns(); all[id] = cur;
+    const ok = recSave(K.recAns, all); closeSheet(); recRedraw(); recDone(ok);
+  },
+  'rec-ans-del-ok'() {
+    const { id, i } = rec.action, cur = answersOf(recById(id)).slice(); cur.splice(i, 1);
+    const all = savedAns(); all[id] = cur;
+    recSave(K.recAns, all); closeSheet(); recRedraw();
+  },
+  'rec-del'(e, el) { deleteSheet(el.dataset.id); },
+  'rec-del-ok'() {
+    const { id } = rec.action, e = recById(id);
+    // 이번 주 기록은 기기에 남은 글(오늘 남길 것, 펼치기에서 쓴 내 생각)을 모아 보인 것이라, 지우면 그 글도 함께 지운다. 예시 기록은 지운 것으로만 표시해 두고 설정에서 되살린다
+    if (e && e.live) { ls.del(K.keep); ls.del(K.answers); ls.del(K.shareDone); }
+    else { const d = recDeleted(); if (!d.includes(id)) d.push(id); recSave(K.recDel, d); }
+    [K.recRefl, K.recAns, K.recEdit].forEach(k => { const o = readJson(k); if (o[id]) { delete o[id]; recSave(k, o); } });
+    closeSheet(); history.replaceState(null, '', '#record'); route(false); window.scrollTo(0, 0); toast('기록을 지웠어요');
+  },
+  'rec-restore'() { ls.del(K.recDel); ls.del(K.recHide); rerender(); toast('예시 기록을 되살렸어요'); },
+  'rec-hide'() { ls.set(K.recHide, '1'); rerender(); toast('기록을 비웠어요'); },
   prep() { toast('다음 단계에서 열려요'); },
   later() { toast('다음 단계에서 열려요'); },
   'keep-fill'() { ls.set(K.keep, JSON.stringify(Object.assign({ at: Date.now() }, DATA.sampleKeep))); rerender(); toast('예시를 채웠어요'); },
@@ -1404,7 +1977,7 @@ document.addEventListener('click', e => {
     const [k, v] = set.dataset.set.split(':');
     if (DISPLAY_KEYS.includes(k)) { S[k] = k === 'big' ? v === '1' : v; saveDisplay(); }
     else if (k === 'bookmark') { if (v === '1') { if (!hasBm()) ls.set(K.bookmark, JSON.stringify({ id: 'o2', at: Date.now() })); } else ls.del(K.bookmark); }   // 책갈피는 펼치기가 꽂는 것과 같은 자리
-    else { D[k] = ['lastWeek', 'before', 'alt', 'readOpen', 'readTriple'].includes(k) ? v === '1' : k === 'dimSec' ? (v === '5' ? 5 : 15) : v; saveDemo(); }
+    else { D[k] = ['lastWeek', 'before', 'alt', 'readOpen', 'readTriple', 'two', 'noBooks', 'longTitle', 'newcomer'].includes(k) ? v === '1' : k === 'dimSec' ? (v === '5' ? 5 : 15) : v; saveDemo(); }
     rerender();
     return;
   }
@@ -1420,6 +1993,8 @@ document.addEventListener('keydown', e => {
   if ((e.key === 'Enter' || e.key === ' ') && e.target.classList && e.target.classList.contains('wo')) {
     e.preventDefault(); if (e.target.closest('#opening')) hideOpening(); else if (R.on) go(1); return;
   }
+  // 책장의 표지(button이 아닌 칸)를 키보드로 열기
+  if ((e.key === 'Enter' || e.key === ' ') && e.target.classList && e.target.classList.contains('cover')) { e.preventDefault(); e.target.click(); return; }
   if (e.key !== 'Escape') return;
   if (!$('#pop').hidden) closeSheet(); else if (!$('#opening').hidden) hideOpening(); else closeMenu();
 });
@@ -1429,6 +2004,8 @@ document.addEventListener('input', e => {
   if (t.id === 'lwInput') ls.set(K.reflect, t.value);
   else if (t.matches && t.matches('textarea[data-id]')) { const id = t.dataset.id; sizeTa(t); setBookmark(id); clearTimeout(timers[id]); timers[id] = setTimeout(() => saveAns(id, t), 450); }
   else if ((t.id === 'kSentence' || t.id === 'kAction') && currentView() === 'read') { clearTimeout(keepT); keepT = setTimeout(saveKeepRead, 450); }
+  else if (t.id === 'shelfQ') runShelfSearch();
+  else if (t.id === 'recQ') { rec.q = t.value; $('#recResults').innerHTML = recSearch(); }
   else if (t.id === 'memoText') { const m = readMemo(); m[t.dataset.key] = t.value; ls.set(K.memo, JSON.stringify(m)); }   // 리더의 내 진행 메모
 });
 document.addEventListener('focusout', e => {
@@ -1440,7 +2017,17 @@ window.addEventListener('pagehide', () => { flushAll(); if (keepT) saveKeepRead(
 // 남기고 다음: 눌러서 넘어가기 전에 나눔하기의 오늘 남길 것을 저장
 document.addEventListener('click', e => { const el = e.target.closest('[data-act="next"]'); if (el && R.on && cur().t === 'keep') saveKeepShare(); }, true);
 document.addEventListener('change', e => {
+  if (e.target.id === 'jpat') { D.jpat = pick(e.target.value, JPATS, 'vine'); saveDemo(); rerender(); return; }
   if (e.target.id === 'lwInput') toast(ls.set(K.reflect, e.target.value) ? '저장했어요' : '저장하지 못했어요 · 다시 시도');
+});
+// 돌아보기: 시간이 지난 뒤 남기는 생각. 쌓아 두고 날짜를 붙인다(오늘은 데모의 오늘)
+document.addEventListener('submit', e => {
+  const f = e.target; if (!f || f.id !== 'reflectionForm') return;
+  e.preventDefault();
+  const id = f.dataset.id, text = $('#recReflection').value.trim(); if (!text) return;
+  const all = readJson(K.recRefl); all[id] = Array.isArray(all[id]) ? all[id] : [];
+  all[id].push({ date: DATA.today.replace(/\(.*$/, '').trim(), text });
+  const ok = recSave(K.recRefl, all); recRedraw(); recDone(ok);
 });
 window.addEventListener('hashchange', () => route(true));
 
