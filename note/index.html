@@ -2,10 +2,10 @@
 <html lang="ko">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover">
 <title>디다코 노트</title>
 <meta name="theme-color" content="#2B6A62">
-<!-- 홈 화면 앱(PWA): 코이데·디다코 앱과 같은 아이콘을 쓴다 -->
+<!-- 홈 화면 앱(PWA): 노트 아이콘은 먹색 세 겹 책갈피(icons/icon.svg) -->
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" type="image/png" sizes="32x32" href="icons/favicon-32.png">
 <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
@@ -83,6 +83,7 @@ html { font-size: var(--base); -webkit-text-size-adjust: 100%; text-size-adjust:
 html, body { margin: 0; }
 body { background: var(--page); color: var(--ink); font-family: var(--f-body); font-size: 1rem; line-height: 1.55; -webkit-tap-highlight-color: transparent; word-break: keep-all; overflow-wrap: anywhere; overflow-x: hidden; }
 button, input, textarea { font: inherit; color: inherit; }
+html { touch-action: manipulation; }   /* 두 번 눌러 확대 막기(아이폰 홈 화면 앱) */
 button, a, input, textarea, [role="switch"], [role="radio"] { touch-action: manipulation; }
 button { cursor: pointer; }
 a { color: inherit; }
@@ -119,6 +120,7 @@ textarea.field { resize: none; line-height: 1.6; }
 .switch.on { background: var(--accent); }
 .switch.on > span { left: 23px; }
 .switch::after { content: ""; position: absolute; inset: -8px -2px; }   /* 눌리는 자리를 44px 이상으로 */
+.kakao:disabled { opacity: .6; cursor: default; }
 .kakao { display: flex; align-items: center; justify-content: center; gap: .5em; width: 100%; min-height: 52px; border: 0; border-radius: 12px; background: #FEE500; color: rgba(0, 0, 0, .85); font: 600 1rem var(--f-body); }
 .col { max-width: 640px; margin: 0 auto; padding: 24px max(16px, env(safe-area-inset-right, 0px)) calc(120px + env(safe-area-inset-bottom, 0px)) max(16px, env(safe-area-inset-left, 0px)); }
 .back-row { display: flex; align-items: center; }
@@ -1062,8 +1064,8 @@ function viewStart() {
       <div class="sm" style="margin-top:8px;line-height:1.6">말씀 앞에서 묻고,<br>품고, 알게 되는 곳이에요</div>
     </div>
     <div style="margin-top:auto;margin-bottom:56px;display:flex;flex-direction:column;gap:12px">
-      <button class="kakao" type="button" data-act="kakao">${BUBBLE}카카오로 시작하기</button>
-      <div class="sm" style="text-align:center;margin-top:4px">내 질문은 나만 볼 수 있어요</div>
+      <button class="kakao" type="button" data-act="kakao"${LIVE && authBusy ? ' disabled aria-busy="true"' : ''}>${BUBBLE}${LIVE && authBusy ? '카카오 로그인을 확인하고 있어요…' : '카카오로 시작하기'}</button>
+      <div class="sm" style="text-align:center;margin-top:4px">${LIVE && authBusy ? '잠시만 기다려 주세요. 몇 초 걸려요.' : '내 질문은 나만 볼 수 있어요'}</div>
     </div>
   </div>`;
 }
@@ -2772,7 +2774,7 @@ function guard(key) {
   if (key.startsWith('start')) return 'today';
   return key;
 }
-let lastKey = '';
+let lastKey = '', drawnDay = realDN();
 function render(fromHash) {
   const raw = routeKey(), key = guard(raw);
   if (key !== raw) { setHash(key, true); return; }
@@ -2788,6 +2790,7 @@ function render(fromHash) {
   if (fromHash) { closeMenus(); closeSheet(true); hideOpening(true); clearTimeout(toastT); $('#toast').hidden = true; }   // 화면을 옮기면 떠 있던 알림은 바로 숨긴다
   const oldList = $('.t8-list'), listTop = oldList ? oldList.scrollTop : 0;   // 넓은 화면 지난 질문 목록의 스크롤은 같은 목록 화면끼리 옮길 때 그대로 둔다
   $('#main').innerHTML = viewOf(key)();
+  drawnDay = realDN();
   const newList = $('.t8-list'); if (oldList && newList) newList.scrollTop = listTop;
   const m = MENU_OF(key);
   $$('[data-tab]').forEach(a => { const on = a.dataset.tab === m; a.classList.toggle('on', on); on ? a.setAttribute('aria-current', 'page') : a.removeAttribute('aria-current'); });
@@ -3148,6 +3151,12 @@ const VK = 'didako-note-vault', LK = 'didako-note-lock', GK = 'didako-note-gone'
 let V = readJson(VK), gone = new Set(Array.isArray(readJson(GK)) ? readJson(GK) : []);
 const liveEntryRoute = routeKey();
 let churchNotice = '', liveReady = false, epoch = 0, authWork = null;
+let authBusy = LIVE && new URLSearchParams(location.search).has('code');
+function setAuthBusy(busy) {
+  if (authBusy === busy) return;
+  authBusy = busy;
+  if (routeKey() === 'start') render();
+}
 let syncTimer = 0, syncing = false, syncAgain = false, syncStatus = '';
 let savedNotes = normalizeNotes(N), recEnables = false;
 let vaultBusy = false, syncWait = null, syncFinish = null;
@@ -3262,15 +3271,19 @@ function recoverLogin() {
 async function bootLive() {
   D.sync = 'off';
   const url = new URL(location.href), code = url.searchParams.get('code');
-  if (code) {
-    const r = await hubApi('login', { code, redirectUri: CFG.REDIRECT_URI });
-    ls.set('didako-hub-token', r.token);
-    // 새 카카오 계정으로 들어온 경우 옛 교회 로그인으로 돌아가지 않게 한다.
-    ls.del('didako-token'); ls.del('didako-uid');
-    url.searchParams.delete('code'); url.searchParams.delete('state'); history.replaceState(null, '', url);
-    await recoverLogin();
-  } else if (ls.get('didako-hub-token') && !ls.get('didako-token')) await recoverLogin();
-  else if (ls.get('didako-token') && ls.get('didako-uid') && ls.get('didako-church-url')) {
+  if (code || (ls.get('didako-hub-token') && !ls.get('didako-token'))) {
+    setAuthBusy(true);
+    try {
+      if (code) {
+        const r = await hubApi('login', { code, redirectUri: CFG.REDIRECT_URI });
+        ls.set('didako-hub-token', r.token);
+        // 새 카카오 계정으로 들어온 경우 옛 교회 로그인으로 돌아가지 않게 한다.
+        ls.del('didako-token'); ls.del('didako-uid');
+        url.searchParams.delete('code'); url.searchParams.delete('state'); history.replaceState(null, '', url);
+      }
+      await recoverLogin();
+    } finally { setAuthBusy(false); }
+  } else if (ls.get('didako-token') && ls.get('didako-uid') && ls.get('didako-church-url')) {
     switchOwner(ls.get('didako-uid')); liveReady = true; ob.kakao = ob.church = true;
     ensureStart(); go(me ? (!liveEntryRoute || liveEntryRoute.startsWith('start') ? 'today' : liveEntryRoute) : 'start/name');
     if (me) syncLive();
@@ -3403,7 +3416,7 @@ if (LIVE) {
     try { if (syncWait) await syncWait; await fn(...args); } catch (err) { liveError(err); } finally { run.busy = false; vaultBusy = false; if (syncAgain) scheduleSync(); }
   };
   const keepStart = acts['keep-start'];
-  acts.kakao = () => { location.href = 'https://kauth.kakao.com/oauth/authorize?response_type=code&client_id=' + encodeURIComponent(CFG.KAKAO_REST_KEY) + '&redirect_uri=' + encodeURIComponent(CFG.REDIRECT_URI); };
+  acts.kakao = () => { if (authBusy) return; setAuthBusy(true); location.href = 'https://kauth.kakao.com/oauth/authorize?response_type=code&client_id=' + encodeURIComponent(CFG.KAKAO_REST_KEY) + '&redirect_uri=' + encodeURIComponent(CFG.REDIRECT_URI); };
   forms.church = run(async () => { if (val('codeIn').length < 4) return; churchNotice = ''; await enterChurch(await hubApi('join', { code: val('codeIn') })); });
   const agree = acts.agree;
   acts.agree = () => { agree(); scheduleSync(); };
@@ -3467,6 +3480,21 @@ if (LIVE) {
   };
   document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible') syncLive(); });
 }
+
+// 다음 날 다시 보이면 새 날짜로 그린다. 시트와 쓰던 글은 화면 이동 때까지 그대로 둔다.
+function refreshDay() {
+  if ((!LIVE && D.date) || realDN() === drawnDay) return;
+  if (!$('#pop').hidden || !$('#opening').hidden) return;
+  const key = routeKey();
+  // + 남기기(지도·오늘의 질문에서 온 글 포함), 탐구의 두 편집 방식·모아 보기,
+  // 이번 주의 생각과 의견 쓰기는 초점이 빠져도 작성 중인 화면으로 본다.
+  if (key === 'write' || MAP_WRITE.test(key) || TODAY_WRITE.test(key) ||
+      /^explore\/(note\/|week$)/.test(key) || key === 'more/feedback' || F.id || X.id || editing()) return;
+  render();
+}
+document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible') refreshDay(); });
+// 사파리 뒤로 가기로 기억해 둔 화면이 돌아오면(카카오로 가며 잠근 버튼이 남아 있다) 잠금을 푼다
+window.addEventListener('pageshow', e => { if (e.persisted && !new URLSearchParams(location.search).has('code')) setAuthBusy(false); refreshDay(); });
 
 // ── 시작 ──
 $('#setMenu').innerHTML = '<p class="mlabel">화면 설정</p>' + displayEx('topDispEx') + (LIVE ? '' : '<div class="mdiv"></div><button class="place-row" type="button" data-act="gear"><span class="sm">시안 보기 설정(데모에만 있어요)</span></button>');
