@@ -1,0 +1,229 @@
+{
+  "size": [
+    3456,
+    2016
+  ],
+  "cell": 48,
+  "projection": "Equirectangular (linear longitude/latitude, no cosine scaling); x=(lon-11.5)/38*3456; y=(43-lat)/18.5*2016; origin=top-left; nearest integer pixels",
+  "bounds": {
+    "lonW": 11.5,
+    "lonE": 49.5,
+    "latS": 24.5,
+    "latN": 43
+  },
+  "canaan": {
+    "x": 2064,
+    "y": 1035,
+    "w": 165,
+    "h": 273
+  },
+  "places": [
+    {
+      "id": "rome",
+      "name": "로마",
+      "lat": 41.9,
+      "lon": 12.5,
+      "x": 91,
+      "y": 120,
+      "kind": "town"
+    },
+    {
+      "id": "athens",
+      "name": "아덴",
+      "lat": 37.98,
+      "lon": 23.73,
+      "x": 1112,
+      "y": 547,
+      "kind": "town"
+    },
+    {
+      "id": "corinth",
+      "name": "고린도",
+      "lat": 37.91,
+      "lon": 22.88,
+      "x": 1035,
+      "y": 555,
+      "kind": "town"
+    },
+    {
+      "id": "philippi",
+      "name": "빌립보",
+      "lat": 41.01,
+      "lon": 24.29,
+      "x": 1163,
+      "y": 217,
+      "kind": "town"
+    },
+    {
+      "id": "thessalonica",
+      "name": "데살로니가",
+      "lat": 40.64,
+      "lon": 22.94,
+      "x": 1040,
+      "y": 257,
+      "kind": "town"
+    },
+    {
+      "id": "ephesus",
+      "name": "에베소",
+      "lat": 37.94,
+      "lon": 27.34,
+      "x": 1441,
+      "y": 551,
+      "kind": "town"
+    },
+    {
+      "id": "colossae",
+      "name": "골로새",
+      "lat": 37.78,
+      "lon": 29.26,
+      "x": 1615,
+      "y": 569,
+      "kind": "town"
+    },
+    {
+      "id": "lystra",
+      "name": "루스드라",
+      "lat": 37.6,
+      "lon": 32.35,
+      "x": 1896,
+      "y": 588,
+      "kind": "town"
+    },
+    {
+      "id": "galatia",
+      "name": "갈라디아",
+      "lat": 39.93,
+      "lon": 32.86,
+      "x": 1943,
+      "y": 335,
+      "kind": "region"
+    },
+    {
+      "id": "damascus",
+      "name": "다메섹",
+      "lat": 33.51,
+      "lon": 36.29,
+      "x": 2255,
+      "y": 1034,
+      "kind": "town"
+    },
+    {
+      "id": "haran",
+      "name": "하란",
+      "lat": 36.87,
+      "lon": 39.03,
+      "x": 2504,
+      "y": 668,
+      "kind": "town"
+    },
+    {
+      "id": "nineveh",
+      "name": "니느웨",
+      "lat": 36.36,
+      "lon": 43.15,
+      "x": 2878,
+      "y": 724,
+      "kind": "town"
+    },
+    {
+      "id": "babylon",
+      "name": "바벨론",
+      "lat": 32.54,
+      "lon": 44.42,
+      "x": 2994,
+      "y": 1140,
+      "kind": "town"
+    },
+    {
+      "id": "susa",
+      "name": "수산",
+      "lat": 32.19,
+      "lon": 48.25,
+      "x": 3342,
+      "y": 1178,
+      "kind": "town"
+    },
+    {
+      "id": "goshen",
+      "name": "이집트(고센)",
+      "lat": 30.8,
+      "lon": 31.8,
+      "x": 1846,
+      "y": 1329,
+      "kind": "town"
+    },
+    {
+      "id": "memphis",
+      "name": "이집트(멤피스)",
+      "lat": 29.85,
+      "lon": 31.25,
+      "x": 1796,
+      "y": 1433,
+      "kind": "town"
+    },
+    {
+      "id": "redsea",
+      "name": "홍해",
+      "lat": 29.95,
+      "lon": 32.55,
+      "x": 1914,
+      "y": 1422,
+      "kind": "sea"
+    },
+    {
+      "id": "marah",
+      "name": "마라",
+      "lat": 29.3,
+      "lon": 32.9,
+      "x": 1946,
+      "y": 1493,
+      "kind": "region"
+    },
+    {
+      "id": "rephidim",
+      "name": "르비딤",
+      "lat": 28.7,
+      "lon": 33.6,
+      "x": 2010,
+      "y": 1558,
+      "kind": "region"
+    },
+    {
+      "id": "horeb",
+      "name": "호렙 산",
+      "lat": 28.54,
+      "lon": 33.98,
+      "x": 2044,
+      "y": 1576,
+      "kind": "mountain"
+    },
+    {
+      "id": "kadesh",
+      "name": "가데스 바네아",
+      "lat": 30.65,
+      "lon": 34.42,
+      "x": 2085,
+      "y": 1346,
+      "kind": "town"
+    },
+    {
+      "id": "bozrah",
+      "name": "에돔(보스라)",
+      "lat": 30.73,
+      "lon": 35.6,
+      "x": 2192,
+      "y": 1337,
+      "kind": "town"
+    },
+    {
+      "id": "ziklag",
+      "name": "시글락",
+      "lat": 31.4,
+      "lon": 34.7,
+      "x": 2110,
+      "y": 1264,
+      "kind": "town"
+    }
+  ]
+}

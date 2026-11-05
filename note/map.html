@@ -1,0 +1,853 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>말씀 지도</title>
+<meta name="theme-color" content="#2B6A62">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Gowun+Batang:wght@400;700&family=IBM+Plex+Sans+KR:wght@400;500;600;700&display=swap">
+<link rel="stylesheet" href="design-styles.css">
+<script>
+// 노트의 화면 설정을 그림이 그려지기 전에 읽어 입힌다. 읽을 수 없으면 기기 설정을 따른다
+try {
+  const d = JSON.parse(localStorage.getItem('didako-note-display') || '{}'), r = document.documentElement;
+  if (['amber', 'blue', 'rose', 'ink'].includes(d.accent)) r.setAttribute('data-accent', d.accent);
+  if (d.mode === 'light' || d.mode === 'dark') r.setAttribute('data-mode', d.mode);
+  if (['neu', 'skeu', 'glass'].includes(d.style)) r.setAttribute('data-style', d.style);
+  if (d.big === true) r.setAttribute('data-big', '');
+} catch (e) {}
+</script>
+<style>
+/* 말씀 지도 시안을 노트에 옮겼다. 색 변수·글꼴·카드·칩·단추·장소 창·화면 모드·큰 글씨는 디다코 노트의 것을 그대로 쓴다(새 색·새 글꼴 없음).
+   색 테마도 노트의 저장값을 그대로 따른다. 디자인 스타일(basic·new·classic·glass)은 note/design-styles.css를 그대로 불러 쓴다. 이름과 내용은 모두 지어낸 예시·AI 초안이다. */
+:root {
+  --page: #F3F5F2; --surface: #FFFFFF; --surface-2: #EEF2EF;
+  --ink: #1B2523; --ink-2: #5B6965; --line: #DDE4E0; --line-strong: #B9C4BF;
+  --accent: #2B6A62; --accent-mid: #8DBDB5; --accent-soft: #DCEBE7; --on-accent: #FFFFFF;
+  --leader: #62519E; --leader-soft: #ECE7F7; --private: #E8ECEA;
+  --warn: #9A5A14; --warn-soft: #F5E8D6; --shadow: rgba(20, 35, 32, .14);
+  --neu-hi: rgba(255, 255, 255, .9); --neu-lo: rgba(20, 35, 32, .17);
+  --note-paper: #F3E4A8; --note-ink: #4E4214; --accent-deep: #1B4F48; --wood: #B98756;
+  --base: 16px;
+  --f-display: 'Gowun Batang', 'AppleMyungjo', 'Batang', serif;
+  --f-body: 'IBM Plex Sans KR', 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-mode="light"]) {
+  --page: #141B19; --surface: #1C2522; --surface-2: #232D2A;
+  --ink: #E5ECE9; --ink-2: #9CAAA5; --line: #2D3935; --line-strong: #4A5853;
+  --accent: #7CC2B7; --accent-mid: #3F7C73; --accent-soft: #1E3934; --on-accent: #0F1A18;
+  --leader: #B6A8EA; --leader-soft: #2A2442; --private: #252E2B;
+  --warn: #E2A563; --warn-soft: #3A2C1B; --shadow: rgba(0, 0, 0, .5); --neu-hi: rgba(255, 255, 255, .06); --neu-lo: rgba(0, 0, 0, .6);
+  --accent-deep: #7CC2B7; --wood: #7A5636; color-scheme: dark; } }
+:root[data-mode="dark"] {
+  --page: #141B19; --surface: #1C2522; --surface-2: #232D2A;
+  --ink: #E5ECE9; --ink-2: #9CAAA5; --line: #2D3935; --line-strong: #4A5853;
+  --accent: #7CC2B7; --accent-mid: #3F7C73; --accent-soft: #1E3934; --on-accent: #0F1A18;
+  --leader: #B6A8EA; --leader-soft: #2A2442; --private: #252E2B;
+  --warn: #E2A563; --warn-soft: #3A2C1B; --shadow: rgba(0, 0, 0, .5); --neu-hi: rgba(255, 255, 255, .06); --neu-lo: rgba(0, 0, 0, .6);
+  --accent-deep: #7CC2B7; --wood: #7A5636; color-scheme: dark; }
+/* 글씨: 휴대폰·태블릿 16px, PC 15px. 큰 글씨 모드는 약 1.2배 (글씨 크기는 rem, 칸 크기는 px) */
+:root[data-big] { --base: 19px; }
+@media (min-width: 1000px) { :root[data-big] { --base: 18px; } }
+
+/* 색 테마(초록은 위 기본값). GBS 앱·시안의 THEMES와 같은 값: 밝은 화면 / 어두운 화면 */
+:root[data-accent="amber"] { --page:#F7F2EA;--surface:#FFFDF9;--surface-2:#F1EADF;--ink:#2A221B;--ink-2:#6E6155;--line:#E6DCCD;--line-strong:#C9B9A3;--accent:#A9561B;--accent-mid:#E2B07F;--accent-soft:#F6E3CF;--on-accent:#FFFFFF;--private:#EFE8DE; }
+@media (prefers-color-scheme: dark) { :root[data-accent="amber"]:not([data-mode="light"]) { --page:#1A1612;--surface:#231E19;--surface-2:#2B241E;--ink:#EEE6DC;--ink-2:#AE9F8E;--line:#3A3129;--line-strong:#5A4D41;--accent:#E9A066;--accent-mid:#8A5A32;--accent-soft:#3A2818;--on-accent:#1E140C;--private:#2E2721; } }
+:root[data-accent="amber"][data-mode="dark"] { --page:#1A1612;--surface:#231E19;--surface-2:#2B241E;--ink:#EEE6DC;--ink-2:#AE9F8E;--line:#3A3129;--line-strong:#5A4D41;--accent:#E9A066;--accent-mid:#8A5A32;--accent-soft:#3A2818;--on-accent:#1E140C;--private:#2E2721; }
+:root[data-accent="blue"] { --page:#F2F4F8;--surface:#FFFFFF;--surface-2:#EAEEF4;--ink:#1B2230;--ink-2:#5A6475;--line:#DCE2EB;--line-strong:#B6C0CF;--accent:#2F5D95;--accent-mid:#93AFD3;--accent-soft:#DCE6F3;--on-accent:#FFFFFF;--private:#E8EBF0; }
+@media (prefers-color-scheme: dark) { :root[data-accent="blue"]:not([data-mode="light"]) { --page:#12161D;--surface:#1A2029;--surface-2:#212833;--ink:#E4E9F0;--ink-2:#9AA5B5;--line:#2C3542;--line-strong:#485466;--accent:#8EB4E6;--accent-mid:#3C5B85;--accent-soft:#1D2C42;--on-accent:#0E1622;--private:#232A35; } }
+:root[data-accent="blue"][data-mode="dark"] { --page:#12161D;--surface:#1A2029;--surface-2:#212833;--ink:#E4E9F0;--ink-2:#9AA5B5;--line:#2C3542;--line-strong:#485466;--accent:#8EB4E6;--accent-mid:#3C5B85;--accent-soft:#1D2C42;--on-accent:#0E1622;--private:#232A35; }
+:root[data-accent="rose"] { --page:#F8F2F3;--surface:#FFFDFD;--surface-2:#F2E8EA;--ink:#2A1E21;--ink-2:#6E5B60;--line:#E8DADD;--line-strong:#CDB6BC;--accent:#A8435C;--accent-mid:#DDA2B1;--accent-soft:#F5DFE5;--on-accent:#FFFFFF;--private:#F0E7E9; }
+@media (prefers-color-scheme: dark) { :root[data-accent="rose"]:not([data-mode="light"]) { --page:#1A1416;--surface:#231B1E;--surface-2:#2B2226;--ink:#EEE3E6;--ink-2:#B09CA2;--line:#3A2D31;--line-strong:#5A464C;--accent:#E896AB;--accent-mid:#86475A;--accent-soft:#3B2029;--on-accent:#200E14;--private:#2E2428; } }
+:root[data-accent="rose"][data-mode="dark"] { --page:#1A1416;--surface:#231B1E;--surface-2:#2B2226;--ink:#EEE3E6;--ink-2:#B09CA2;--line:#3A2D31;--line-strong:#5A464C;--accent:#E896AB;--accent-mid:#86475A;--accent-soft:#3B2029;--on-accent:#200E14;--private:#2E2428; }
+:root[data-accent="ink"] { --page:#F4F4F2;--surface:#FFFFFF;--surface-2:#EDEDEA;--ink:#1D1D1B;--ink-2:#62625E;--line:#E0E0DC;--line-strong:#BDBDB7;--accent:#33332F;--accent-mid:#A3A39C;--accent-soft:#E6E6E1;--on-accent:#FFFFFF;--private:#ECECE8; }
+@media (prefers-color-scheme: dark) { :root[data-accent="ink"]:not([data-mode="light"]) { --page:#141414;--surface:#1D1D1C;--surface-2:#252524;--ink:#ECECE8;--ink-2:#A3A39E;--line:#30302E;--line-strong:#4D4D4A;--accent:#E2E2DC;--accent-mid:#6A6A65;--accent-soft:#2E2E2C;--on-accent:#141414;--private:#262625; } }
+:root[data-accent="ink"][data-mode="dark"] { --page:#141414;--surface:#1D1D1C;--surface-2:#252524;--ink:#ECECE8;--ink-2:#A3A39E;--line:#30302E;--line-strong:#4D4D4A;--accent:#E2E2DC;--accent-mid:#6A6A65;--accent-soft:#2E2E2C;--on-accent:#141414;--private:#262625; }
+/* 색 테마를 고르면 진한 포인트(--accent-deep)도 그 테마색을 따르게 한다: 밝은 화면은 테마색을 조금 어둡게, 어두운 화면은 테마색 그대로 */
+:root[data-accent] { --accent-deep: color-mix(in srgb, var(--accent) 78%, #000); }
+@media (prefers-color-scheme: dark) { :root[data-accent]:not([data-mode="light"]) { --accent-deep: var(--accent); } }
+:root[data-accent][data-mode="dark"] { --accent-deep: var(--accent); }
+
+* { box-sizing: border-box; }
+html { font-size: var(--base); -webkit-text-size-adjust: 100%; text-size-adjust: 100%; height: 100%; }
+html, body { margin: 0; }
+body { height: 100%; background: var(--page); color: var(--ink); font-family: var(--f-body); font-size: 1rem; line-height: 1.55; -webkit-tap-highlight-color: transparent; word-break: keep-all; overflow-wrap: anywhere; overflow: hidden; }
+button, input, textarea { font: inherit; color: inherit; }
+button, a, input, textarea, [role="switch"], [role="radio"] { touch-action: manipulation; }
+button { cursor: pointer; }
+[hidden] { display: none !important; }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+.sf { font-family: var(--f-display); }
+.sm { font-size: .875rem; color: var(--ink-2); }
+.ic { width: 22px; height: 22px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; flex: none; }
+
+/* 공통 부품(노트와 같은 이름·모양: 디자인 스타일이 그대로 먹는다) */
+.card { background: var(--surface); border: 1px solid var(--line); border-radius: 16px; }
+.btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-height: 48px; padding: 0 20px; border-radius: 12px; border: 1px solid var(--accent); background: var(--accent); color: var(--on-accent); font: 700 1rem var(--f-body); text-decoration: none; }
+.btn.ghost { background: none; border-color: var(--accent-mid); color: var(--accent-deep); }
+.btn.big { width: 100%; min-height: 52px; font-size: 1.0625rem; }
+.btn.sm2 { min-height: 44px; padding: 0 14px; font-size: .875rem; }
+.btn:disabled { opacity: .5; cursor: default; }
+.chip { display: inline-block; padding: 4px 12px; border-radius: 999px; background: var(--accent-soft); color: var(--accent-deep); font-size: .8125rem; font-weight: 500; }
+.chip.era { background: var(--surface-2); color: var(--ink-2); }
+.field { display: block; width: 100%; min-height: 48px; padding: 11px 12px; border: 1px solid var(--line-strong); border-radius: 12px; background: var(--surface); color: var(--ink); font-size: .9375rem; }
+.field::placeholder { color: var(--ink-2); }
+textarea.field { resize: none; line-height: 1.6; }
+.seg { display: flex; background: var(--surface-2); border-radius: 12px; padding: 3px; }
+.seg button { flex: 1; min-height: 44px; border: 0; border-radius: 10px; background: none; font-size: .875rem; color: var(--ink-2); }
+.seg button.on { background: var(--line); color: var(--ink); font-weight: 700; }
+.switch { width: 48px; height: 28px; border-radius: 999px; border: 0; background: var(--line-strong); position: relative; flex: none; padding: 0; }
+.switch > span { position: absolute; top: 3px; left: 3px; width: 22px; height: 22px; border-radius: 50%; background: var(--surface); transition: left .2s; }
+.switch.on { background: var(--accent); }
+.switch.on > span { left: 23px; }
+.switch::after { content: ""; position: absolute; inset: -8px -2px; }
+.ib { width: 44px; height: 44px; background: none; border: 0; display: flex; align-items: center; justify-content: center; color: var(--ink); flex: none; }
+.x { width: 44px; height: 44px; border-radius: 12px; background: none; border: 0; color: var(--ink-2); display: grid; place-items: center; flex: none; }
+.h1 { font: 700 1.375rem/1.4 var(--f-display); margin: 0; }
+.sl { font-size: .875rem; color: var(--ink-2); font-weight: 500; margin: 0 0 8px; }
+.toast { pointer-events: none; position: fixed; left: 50%; bottom: calc(32px + env(safe-area-inset-bottom, 0px)); transform: translateX(-50%); width: max-content; background: var(--ink); color: var(--page); padding: .6em 1em; border-radius: 10px; font-size: .875rem; z-index: 60; max-width: calc(100% - 32px); text-align: center; }
+.toast.pill { background: var(--surface); color: var(--accent); border: 1px solid var(--line); box-shadow: 0 4px 14px var(--shadow); font-weight: 500; border-radius: 999px; padding: .5em 1.1em; }
+
+/* 아래에서 올라오는 창(남기기·화면 설정) */
+.pop { position: fixed; inset: 0; z-index: 50; display: flex; align-items: flex-end; justify-content: center; }
+.pop-scrim { position: absolute; inset: 0; background: rgb(0 0 0 / .4); }
+.pop-sheet { position: relative; width: 100%; max-width: 480px; max-height: 90vh; overflow-y: auto; background: var(--page); border-radius: 20px 20px 0 0; padding: 20px 16px max(28px, env(safe-area-inset-bottom, 0px)); display: flex; flex-direction: column; gap: 12px; box-shadow: 0 -8px 28px var(--shadow); }
+@media (min-width: 640px) { .pop { align-items: center; } .pop-sheet { border-radius: 18px; } }
+.pop-sheet h2 { margin: 0; font: 700 1.25rem/1.35 var(--f-display); }
+.pop-sheet p { margin: 0; font-size: .9375rem; line-height: 1.65; }
+.pop-sheet form { display: flex; flex-direction: column; gap: 12px; }
+.sheet-top { display: flex; justify-content: space-between; align-items: center; gap: 8px; }
+:root[data-style="glass"] .pop-sheet { background: var(--glass-strong); }
+
+/* ── 화면 짜임 ── */
+.app { height: 100vh; height: 100dvh; display: flex; flex-direction: column; }
+.top { flex: none; padding: 4px max(16px, env(safe-area-inset-right, 0px)) 0 max(16px, env(safe-area-inset-left, 0px)); position: relative; z-index: 45; }   /* 시대 목록·찾기 결과가 장소 판(40) 위로 펼쳐지게 */
+.hdr { display: flex; justify-content: space-between; align-items: center; min-height: 44px; padding-top: env(safe-area-inset-top, 0px); }
+.map-heading { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+.map-back { display: inline-flex; align-items: center; min-height: 44px; color: var(--accent-deep); font-size: .875rem; text-decoration: none; }
+.hdr .tools { display: flex; margin-right: -10px; }
+.sbox { position: relative; margin-top: 4px; }
+.sbox .field { padding-right: 44px; }
+.sbox .clr { position: absolute; right: 0; top: 2px; }
+.results { position: absolute; left: 0; right: 0; top: calc(100% + 6px); z-index: 8; list-style: none; margin: 0; padding: 4px; background: var(--surface); border: 1px solid var(--line); border-radius: 14px; box-shadow: 0 10px 28px var(--shadow); }
+.results button { display: flex; flex-direction: column; align-items: flex-start; width: 100%; min-height: 44px; padding: 6px 12px; background: none; border: 0; border-radius: 10px; text-align: left; }
+.results button:hover, .results button:focus-visible { background: var(--accent-soft); }
+.results b { font-weight: 600; }
+.results .none { padding: 12px; color: var(--ink-2); font-size: .875rem; }
+.qmore { margin: 4px 0 12px; padding: 0 4px; }
+.mapwrap { position: relative; flex: 1; min-width: 0; display: flex; flex-direction: column; }   /* 위 지도 8, 아래 받은 질문 띠 2 */
+/* 받은 질문 띠: 지도 8 : 띠 2. 긴 질문도 자르지 않고 한 장에 보이게 최소 높이를 맞춘다 */
+.today { order: 2; flex: 2 1 0; min-height: var(--strip-min, 0px); display: grid; grid-template-columns: auto minmax(0, 1fr) auto; align-items: center; gap: 4px; padding: 0 6px; margin: 0; border-radius: 20px 20px 0 0; border-bottom: 0; box-shadow: 0 -2px 10px var(--shadow); position: relative; z-index: 4; }
+.qstrip { width: 100%; min-width: 0; align-self: stretch; display: flex; gap: 10px; overflow-x: auto; scroll-snap-type: x mandatory; padding: 8px 0; scrollbar-width: none; }
+.qstrip::-webkit-scrollbar { display: none; }
+/* 시대 고르기: 머리줄의 작은 단추 → 아래로 펼쳐지는 목록 */
+.erabtn { display: inline-flex; align-items: center; gap: 2px; min-height: 36px; margin: 4px 4px 4px 0; padding: 0 10px 0 12px; border-radius: 999px; background: var(--surface); border: 1px solid var(--line-strong); color: var(--ink); font-size: .8125rem; font-weight: 600; white-space: nowrap; }
+.erabtn.on { background: var(--accent-soft); border-color: var(--accent); color: var(--accent-deep); }
+.today .nv { position: relative; display: flex; width: 40px; height: 40px; border-radius: 50%; background: var(--surface); border: 1px solid var(--line-strong); color: var(--ink); box-shadow: 0 1px 4px var(--shadow); }
+.today .nv::after { content: ""; position: absolute; inset: -2px; }
+.today .nv:disabled { opacity: .35; cursor: default; }
+.today .tb { margin: 0; flex: 0 0 100%; min-width: 0; display: flex; flex-direction: column; gap: 4px; align-self: center; text-align: left; padding: 10px 14px; justify-content: flex-start; scroll-snap-align: center; color: var(--ink); }
+.today .tb .meta { display: flex; align-items: center; gap: 4px 8px; flex-wrap: wrap; min-height: 22px; font-size: .8125rem; color: var(--ink-2); }
+.today .tb .q { font: 700 1.0625rem/1.5 var(--f-display); color: var(--ink); }
+.today .tb .ask { font-size: .8125rem; color: var(--ink-2); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.today .tb .go { margin-left: auto; white-space: nowrap; font-size: .875rem; font-weight: 600; color: var(--accent-deep); }
+.today .tb .meta > .sm { margin-left: auto; white-space: nowrap; }
+.today .tb .chip { padding: 2px 10px; font-size: .75rem; line-height: 18px; }   /* 장소 칩이 있어도 없어도 카드 높이가 같게(meta 줄 22px) */
+.eras { position: absolute; top: calc(100% - 4px); right: 12px; z-index: 8; display: flex; flex-direction: column; gap: 2px; min-width: 168px; padding: 6px; border-radius: 16px; background: var(--surface); border: 1px solid var(--line); box-shadow: 0 6px 24px var(--shadow); }
+.eras[hidden] { display: none; }
+.eras .chip-btn { display: flex; align-items: center; justify-content: flex-start; text-align: left; border: 0; background: none; border-radius: 10px; min-height: 40px; }
+.eras .chip-btn.on { background: var(--accent-soft); }
+.eras::-webkit-scrollbar { display: none; }
+.chip-btn { flex: none; min-height: 40px; padding: 0 14px; border-radius: 999px; background: var(--surface); border: 1px solid var(--line-strong); color: var(--ink-2); font-size: .875rem; white-space: nowrap; }
+.chip-btn.on { background: var(--accent-soft); border-color: var(--accent); color: var(--accent-deep); font-weight: 700; }
+.body { flex: 1; min-height: 0; display: flex; }
+.stage { order: 1; position: relative; flex: 8 1 0; min-height: 0; min-width: 0; overflow: hidden; background: #2a3a4f; /* 지도 그림이 오기 전 잠깐 보이는 바다 색. 그림 밖은 보이지 않는다 */ touch-action: none; user-select: none; -webkit-user-select: none; cursor: grab; outline: none; }
+.stage.drag { cursor: grabbing; }
+.world { position: absolute; left: 0; top: 0; width: 1728px; height: 2208px; max-width: none; transform-origin: 0 0; will-change: transform; image-rendering: auto; -webkit-user-drag: none; pointer-events: none; }
+.world.px { image-rendering: pixelated; }
+.zoom { position: absolute; right: 10px; top: 10px; display: flex; flex-direction: column; gap: 8px; z-index: 3; }
+.zoom button { position: relative; width: 36px; height: 36px; border-radius: 50%; border: 1px solid var(--line-strong); background: color-mix(in srgb, var(--surface) 92%, transparent); color: var(--ink); box-shadow: 0 2px 8px var(--shadow); display: grid; place-items: center; }
+
+.zoom button::after { content: ""; position: absolute; inset: -4px; }
+
+/* 두 겹 지도: 구역은 그림 좌표에 맞추고, 단추는 지도 위에 둔다 */
+.canaan-box { position: absolute; padding: 0; border: 3px solid var(--accent); border-radius: 8px; background: color-mix(in srgb, var(--accent) 10%, transparent); box-shadow: 0 0 0 2px color-mix(in srgb, var(--surface) 75%, transparent), 0 2px 10px var(--shadow); z-index: 0; color: var(--ink); }
+.canaan-box:hover, .canaan-box:focus-visible { background: color-mix(in srgb, var(--accent) 18%, transparent); }
+.canaan-box span { position: absolute; left: 50%; bottom: calc(100% + 5px); transform: translateX(-50%); white-space: nowrap; background: var(--surface); border: 1px solid var(--line); border-radius: 999px; padding: 5px 10px; font-size: .8125rem; box-shadow: 0 1px 4px var(--shadow); }
+.layer-back { position: absolute; left: 10px; top: 10px; height: 36px; padding: 0 12px; border-radius: 999px; border: 1px solid var(--line-strong); background: var(--surface); color: var(--ink); font-size: .8125rem; box-shadow: 0 2px 8px var(--shadow); z-index: 3; }
+.layer-back::after { content: ''; position: absolute; inset: -4px 0; }
+.erabtn:disabled { opacity: .35; cursor: default; }
+.pin.region .dot { display: none; }
+.pin.label-only { cursor: default; }
+.pin.label-only .lbl { pointer-events: auto; }
+.layer-ghost { z-index: 2; pointer-events: none; }
+
+/* 장소 점과 이름표 */
+.pin { position: absolute; left: 0; top: 0; width: 44px; height: 44px; padding: 0; border: 0; background: none; border-radius: 50%; will-change: transform; transition: opacity .2s; z-index: 1; }
+.pin .dot { position: absolute; left: 50%; top: 50%; width: 14px; height: 14px; margin: -7px 0 0 -7px; border-radius: 50%; background: var(--accent); border: 2px solid var(--surface); box-shadow: 0 1px 3px var(--shadow); }
+.pin.sp .dot { width: 10px; height: 10px; margin: -5px 0 0 -5px; border-radius: 2px; transform: rotate(45deg); border-width: 1.5px; }
+.pin .lbl { position: absolute; left: calc(50% + var(--lx, 11px)); top: calc(50% + var(--ly, -10px)); white-space: nowrap; font: 600 .75rem/1 var(--f-body); color: var(--ink); background: color-mix(in srgb, var(--surface) 90%, transparent); padding: 3px 7px; border-radius: 999px; box-shadow: 0 1px 3px var(--shadow); pointer-events: none; }
+.pin.nolbl .lbl { display: none; }
+.pin.dim { opacity: .3; }
+.pin.sel { z-index: 2; opacity: 1; }
+.pin.sel .dot { box-shadow: 0 0 0 4px color-mix(in srgb, var(--accent) 35%, transparent), 0 1px 3px var(--shadow); }
+.pin.sp.sel .dot { box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 35%, transparent); }
+
+.pin.flash .dot { animation: pin-flash .6s ease-in-out 2; }
+@keyframes pin-flash { 50% { box-shadow: 0 0 0 7px color-mix(in srgb, var(--accent) 35%, transparent); } }
+@media (prefers-reduced-motion: reduce) { .pin.flash .dot { animation: none; box-shadow: 0 0 0 4px color-mix(in srgb, var(--accent) 35%, transparent); } }
+
+/* 장소 창: 휴대폰은 아래에서 올라오는 창, 넓은 화면(900px 이상)은 오른쪽 고정 판 */
+.scrim { position: fixed; inset: 0; z-index: 30; background: rgb(0 0 0 / .4); }
+.panel { display: none; position: fixed; left: 0; right: 0; bottom: 0; margin: 0 auto; width: 100%; max-width: 480px; max-height: 80vh; max-height: 80dvh; z-index: 40; background: var(--page); border-radius: 20px 20px 0 0; box-shadow: 0 -8px 28px var(--shadow); flex-direction: column; overflow: hidden; }
+.panel.open { display: flex; }
+.panel { padding: 0; gap: 0; }
+.panel .pbody { position: relative; overflow-y: auto; overflow-x: hidden; flex: 1; min-height: 0; padding: 0 0 max(24px, env(safe-area-inset-bottom, 0px)); display: flex; flex-direction: column; gap: 14px; }
+.panel .px { position: absolute; top: 6px; right: 6px; z-index: 3; background: color-mix(in srgb, var(--surface) 88%, transparent); border-radius: 50%; box-shadow: 0 1px 4px var(--shadow); }
+.panel .pbody > :not(.pimg):not(.px) { padding-left: 16px; padding-right: 16px; }   /* 마을 그림만 판 끝까지 꽉 차고 나머지는 16px 안쪽에 */
+.panel .pimg { display: block; flex: none; width: 100%; max-width: none; margin: 0; height: auto; aspect-ratio: 3 / 2; object-fit: cover; background: var(--surface-2); }   /* 마을 그림(3:2)을 자르지 않고 다 보인다 */
+.panel .phead { padding-top: 14px; }
+.panel .pbody > .px + .phead { padding-top: 18px; padding-right: 44px; }
+.panel h2 { margin: 0; font: 700 1.375rem/1.35 var(--f-display); }
+.panel .empty { color: var(--ink-2); font-size: .9375rem; padding-top: 24px; }
+.sec { display: flex; flex-direction: column; }
+.row { display: flex; gap: 10px; align-items: flex-start; padding: 12px 0; border-top: 1px solid var(--line); }
+.sec .row:first-of-type { border-top: 0; }
+.row .rb { flex: 1; min-width: 0; }
+.row .chips { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 6px; }
+.row p { margin: 0; font-size: .9375rem; line-height: 1.55; }
+.row.emph, .qitem.hl { background: var(--accent-soft); border: 1px solid var(--accent); border-radius: 14px; padding: 12px; margin-bottom: 6px; }
+.row.emph + .row { border-top: 0; }
+/* 이야기는 옆으로 밀어 본다: 한 장 반쯤 보이게 */
+.hscroll { display: flex; gap: 10px; overflow-x: auto; scroll-snap-type: x mandatory; margin: 0 -16px; padding: 2px 16px 10px; scroll-padding: 0 16px; scrollbar-width: none; }
+.hscroll::-webkit-scrollbar { display: none; }
+.hscroll .row { flex: 0 0 76%; scroll-snap-align: start; flex-direction: column; align-items: stretch; gap: 8px; padding: 12px; border: 1px solid var(--line); border-radius: 14px; background: var(--surface); margin: 0; }
+.hscroll .row:only-child { flex-basis: 100%; }
+.hscroll .row .btn { align-self: flex-end; }
+.hscroll .row.emph { margin: 0; }
+.qitem { padding: 12px 0; border-top: 1px solid var(--line); }
+.sec .qitem:first-of-type { border-top: 0; }
+.qitem.hl { border-top: 1px solid var(--accent); padding: 10px; }
+.qline { display: flex; gap: 8px; align-items: flex-start; }
+.qmain { flex: 1; min-width: 0; display: flex; gap: 10px; align-items: flex-start; text-align: left; background: none; border: 0; padding: 0; min-height: 48px; }
+.qmain img { width: 48px; height: 48px; border-radius: 12px; object-fit: cover; flex: none; background: var(--surface-2); }
+.qmain .qt { display: flex; flex-direction: column; gap: 4px; align-items: flex-start; min-width: 0; }
+.qmain .qt b { font: 700 .9375rem/1.45 var(--f-display); }
+.qbg { margin: 8px 0 0 58px; font-size: .875rem; line-height: 1.7; color: var(--ink-2); }
+.mine { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; }
+.mine li { padding: 10px 0; border-top: 1px solid var(--line); }
+.mine li:first-child { border-top: 0; }
+.mine p { white-space: pre-wrap; margin-top: 2px; }
+@media (min-width: 900px) {
+  .scrim { display: none !important; }
+  .panel, .panel.open { display: flex; position: static; flex: none; width: 380px; max-width: none; max-height: none; margin: 0; border-radius: 0; box-shadow: none; border-left: 1px solid var(--line); background: var(--surface); }
+  .panel .pbody { padding-bottom: 32px; }
+  .hscroll { flex-direction: column; overflow-x: visible; scroll-snap-type: none; margin: 0; padding: 0 0 4px; gap: 8px; }   /* 넓은 화면은 이야기도 세로로 */
+  .hscroll .row { flex: none; flex-direction: row; align-items: center; gap: 10px; }
+  .hscroll .row .btn { align-self: center; }
+}
+:root[data-style="glass"] .panel { background: var(--glass-strong); -webkit-backdrop-filter: var(--glass-blur); backdrop-filter: var(--glass-blur); }
+.lv-ctx { display: flex; flex-direction: column; gap: 8px; align-items: flex-start; background: var(--surface-2); border-radius: 12px; padding: 10px 14px; }
+.lv-ctx .chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.lv-ctx .chip.era { background: var(--surface); }
+.qitem.hl .chip, .row.emph .chip { background: var(--surface); }
+.lv-ctx .q { font: 700 1rem/1.5 var(--f-display); }
+.set-row { display: flex; flex-direction: column; gap: 8px; }
+.set-row.inline { flex-direction: row; justify-content: space-between; align-items: center; }
+@media (prefers-reduced-motion: reduce) { .switch > span, .pin { transition: none; } }
+</style>
+</head>
+<body>
+<div class="app" id="app">
+  <div class="top" id="top">
+    <div class="hdr">
+      <div class="map-heading"><a class="map-back" href="index.html#/today">← 오늘의 질문</a><h1 class="h1">말씀 지도</h1></div>
+      <div class="tools">
+        <button class="erabtn" type="button" id="eraBtn" aria-haspopup="true" aria-expanded="false" aria-controls="eras"><span id="eraLbl">모든 시대</span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg></button>
+        <button class="ib" type="button" id="btnSearch" aria-label="찾기" aria-expanded="false" aria-controls="sbox"><svg class="ic" width="24" height="24" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="6.5"/><path d="M16 16l4 4"/></svg></button>
+      </div>
+    </div>
+    <div class="sbox" id="sbox" hidden>
+      <input class="field" id="sq" type="text" inputmode="search" enterkeyhint="search" autocomplete="off" spellcheck="false" placeholder="장소나 장절을 적어요 (예: 가나, 요 2)" aria-label="장소나 장절 찾기">
+      <ul class="results" id="results" aria-label="찾은 장소" hidden></ul>
+    </div>
+    <div class="eras" id="eras" role="radiogroup" aria-label="시대 고르기" hidden></div>
+  </div>
+  <div class="body">
+    <div class="mapwrap">
+    <div class="today card" id="today"></div>
+    <div class="stage" id="stage" tabindex="-1" aria-label="성경의 땅 지도">
+      <img class="world" id="world" src="img/map/wide.webp" width="3456" height="2016" alt="" draggable="false">
+      <button class="canaan-box" id="canaan" type="button"><span>가나안 땅 · 자세히 보기 ›</span></button>
+      <button class="layer-back" id="nearBack" type="button" hidden>‹ 넓은 지도</button>
+      <div class="zoom">
+        <button type="button" id="zIn" aria-label="키우기"><svg class="ic" width="22" height="22" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg></button>
+        <button type="button" id="zOut" aria-label="줄이기"><svg class="ic" width="22" height="22" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14"/></svg></button>
+      </div>
+    </div>
+    </div>
+    <aside class="panel pop-sheet" id="panel" aria-label="장소"></aside>
+  </div>
+</div>
+<div class="scrim" id="scrim" hidden></div>
+<div class="toast" id="toast" hidden role="status"></div>
+<noscript><p style="padding:24px">말씀 지도를 보려면 자바스크립트가 필요해요.</p></noscript>
+
+<script src="questions-data.js"></script>
+<script src="map-places.js"></script>
+<script>
+(() => {
+'use strict';
+const $ = s => document.querySelector(s);
+const esc = s => String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+const calm = () => { try { return matchMedia('(prefers-reduced-motion: reduce)').matches; } catch (e) { return false; } };
+const isWide = () => matchMedia('(min-width: 900px)').matches;
+
+// ══════════════ 데이터 ══════════════
+// 장소·장절·한 줄 풀이·질문과의 짝은 모두 AI 초안이고 교역자 확인 전이다. 성경 원문은 싣지 않고 장절과 쉬운 풀이만 둔다. 하나님과 예수님은 그리지 않는다.
+const ERA = { pat: '족장', exo: '출애굽과 정착', king: '왕국', proph: '예언자', jesus: '예수님', church: '초대 교회' };
+// 마을 19곳: x·y는 옛칸(지도는 36×46칸, 한 칸 = 그림 48px). 이야기는 장절·시대·쉬운 풀이(prototype/merchant에서 옮김)
+const PLACES = window.MAP_TOWNS;
+// 이야기 터 12곳. 시대(era)는 prototype/merchant에 없어서 장절을 보고 정했다(책이 속한 시대, 사무엘 이야기는 왕국)
+const SPOTS = window.MAP_SPOTS;
+const ERA_ORDER = ['pat', 'exo', 'king', 'proph', 'jesus', 'church'];
+const NT = new Set(['jesus', 'church']);
+const eraLabel = e => (NT.has(e) ? '신약' : '구약') + ' · ' + ERA[e];
+const ERA_CHIP = [['all', '모든 시대'], ['pat', '족장'], ['exo', '출애굽과 정착'], ['king', '왕국'], ['proph', '예언자'], ['jesus', '예수님'], ['church', '교회']];
+
+// 성경 책 순서(장절 순서로 줄 세우기와 장절 찾기에 쓴다): [전체 이름, 줄임 이름]
+const BOOKS = [['창세기', '창'], ['출애굽기', '출'], ['레위기', '레'], ['민수기', '민'], ['신명기', '신'], ['여호수아', '수'], ['사사기', '삿'], ['룻기', '룻'], ['사무엘상', '삼상'], ['사무엘하', '삼하'],
+  ['열왕기상', '왕상'], ['열왕기하', '왕하'], ['역대상', '대상'], ['역대하', '대하'], ['에스라', '스'], ['느헤미야', '느'], ['에스더', '에'], ['욥기', '욥'], ['시편', '시'], ['잠언', '잠'],
+  ['전도서', '전'], ['아가', '아'], ['이사야', '사'], ['예레미야', '렘'], ['예레미야애가', '애'], ['에스겔', '겔'], ['다니엘', '단'], ['호세아', '호'], ['요엘', '욜'], ['아모스', '암'],
+  ['오바댜', '옵'], ['요나', '욘'], ['미가', '미'], ['나훔', '나'], ['하박국', '합'], ['스바냐', '습'], ['학개', '학'], ['스가랴', '슥'], ['말라기', '말'], ['마태복음', '마'],
+  ['마가복음', '막'], ['누가복음', '눅'], ['요한복음', '요'], ['사도행전', '행'], ['로마서', '롬'], ['고린도전서', '고전'], ['고린도후서', '고후'], ['갈라디아서', '갈'], ['에베소서', '엡'], ['빌립보서', '빌'],
+  ['골로새서', '골'], ['데살로니가전서', '살전'], ['데살로니가후서', '살후'], ['디모데전서', '딤전'], ['디모데후서', '딤후'], ['디도서', '딛'], ['빌레몬서', '몬'], ['히브리서', '히'], ['야고보서', '약'], ['베드로전서', '벧전'],
+  ['베드로후서', '벧후'], ['요한일서', '요일'], ['요한이서', '요이'], ['요한삼서', '요삼'], ['유다서', '유'], ['요한계시록', '계']];
+const BOOK_ONE = new Map(); BOOKS.forEach(([f, s], i) => { BOOK_ONE.set(f, i); BOOK_ONE.set(s, i); });
+// 장절 글 → { b: 책 번호, c: 장, v1, v2: 절 범위(없으면 null) }. "창세기 3장 9절"·"시편 85편 6절"·"왕상 5:1~12"·"요 2" 모두 읽는다
+const REF_RE = /^([가-힣]+)\s*(\d+)(?:\s*[장편](?:\s*(\d+)\s*절?)?|\s*[:：]\s*(\d+)(?:\s*[~\-]\s*(\d+))?\s*절?)?\s*$/;
+function parseRef(s) {
+  const m = REF_RE.exec(String(s).trim()); if (!m) return null;
+  const b = BOOK_ONE.get(m[1]); if (b === undefined) return null;
+  const v1 = m[3] ? +m[3] : m[4] ? +m[4] : null, v2 = m[5] ? +m[5] : v1;
+  return { b, c: +m[2], v1, v2 };
+}
+const refOrder = r => (r ? r.b * 1e6 + r.c * 1e3 + (r.v1 || 0) : 9e9);
+// 질문의 시대: 장소가 아니라 ref의 책으로 정한다(복음서 = 예수님, 사도행전과 편지 = 교회, 구약은 책에 맞는 시대). 엘리야·엘리사 이야기(왕상 17장~왕하)는 마을 이야기와 같게 예언자
+function eraOfRef(r) {
+  if (!r) return null;
+  const b = r.b;
+  if (b === 0 || b === 17) return 'pat';
+  if (b >= 1 && b <= 7) return 'exo';
+  if (b === 10 && r.c >= 17) return 'proph';
+  if (b === 11) return 'proph';
+  if ((b >= 8 && b <= 13) || (b >= 18 && b <= 21)) return 'king';
+  if (b >= 14 && b <= 16) return 'proph';
+  if (b >= 22 && b <= 38) return 'proph';
+  if (b >= 39 && b <= 42) return 'jesus';
+  return 'church';
+}
+
+// ── 장소 모으기: 마을 19곳 + 이야기 터 12곳 + 질문 장소(map-places.js의 새 곳) ──
+const PL = {};
+Object.entries(PLACES).forEach(([key, p]) => { PL[key] = { key, kind: 'town', name: window.MAP_NAMES[key], region: p.region, x: p.x, y: p.y, stories: p.stories.map(s => ({ ...s, r: parseRef(s.ref) })), qs: [] }; });
+Object.entries(SPOTS).forEach(([key, s]) => { PL[key] = { key, kind: 'spot', name: window.MAP_NAMES[key], region: s.region, x: s.x, y: s.y, stories: [{ ref: s.ref, era: s.era, t: s.line, r: parseRef(s.ref) }], qs: [] }; });
+Object.entries(window.Q_PLACES_NEW || {}).forEach(([key, s]) => { PL[key] = { key, kind: 'qplace', name: window.MAP_NAMES[key], region: s.region, x: s.x, y: s.y, stories: [], qs: [] }; });
+Object.values(PL).forEach(p => { p.layer = 'near'; });
+Object.entries(window.WIDE_PLACES).forEach(([key, p]) => { PL[key] = { ...p, key, layer: 'wide', region: '', stories: [], qs: [] }; });
+const PL_ORDER = Object.keys(PL);
+
+// ── 오늘의 질문 409개(note/questions-data.js) ──
+const QT = (window.NOTE_Q && window.NOTE_Q.today) || {};
+const imgKey = it => String(it.img).replace(/^img\/q\//, '').replace(/\.webp$/, '');
+const QBY = {};   // 질문 키 → 질문
+Object.entries(QT).forEach(([season, arr]) => arr.forEach(it => {
+  const key = imgKey(it), r = parseRef(it.ref);
+  QBY[key] = { ...it, key, r, era: eraOfRef(r), season, place: null };
+}));
+Object.entries({ ...window.Q_PLACES, ...window.Q_WIDE }).forEach(([qk, pk]) => { const q = QBY[qk], p = PL[pk]; if (q && p) { q.place = pk; p.qs.push(q); } });
+PL_ORDER.forEach(key => PL[key].qs.sort((a, b) => refOrder(a.r) - refOrder(b.r)));
+PL_ORDER.forEach(key => { const p = PL[key]; p.eras = new Set([...p.stories.map(s => s.era), ...p.qs.map(q => q.era)].filter(Boolean)); p.weight = p.stories.length + p.qs.length; });
+
+// ── 교회력 계산 시작(note/index.html의 것을 그대로 옮겼다: docs/today-questions/README.md의 규칙. 오늘의 질문 고르기에 쓴다) ──
+const DN = (y, m, d) => Math.round(Date.UTC(y, m - 1, d) / 86400000);
+const fromDN = n => { const t = new Date(n * 86400000); return { y: t.getUTCFullYear(), m: t.getUTCMonth() + 1, d: t.getUTCDate() }; };
+const dowOf = n => (((n + 4) % 7) + 7) % 7;
+function easterDN(y) {
+  const a = y % 19, b = Math.floor(y / 100), c = y % 100, d = Math.floor(b / 4), e = b % 4, f = Math.floor((b + 8) / 25), g = Math.floor((b - f + 1) / 3);
+  const h = (19 * a + b - d - g + 15) % 30, i = Math.floor(c / 4), k = c % 4, l = (32 + 2 * e + 2 * i - h - k) % 7, m = Math.floor((a + 11 * h + 22 * l) / 451);
+  const mo = Math.floor((h + l - 7 * m + 114) / 31), da = ((h + l - 7 * m + 114) % 31) + 1;
+  return DN(y, mo, da);
+}
+function adventDN(y) { const c = DN(y, 12, 25), w = dowOf(c); return c - (w || 7) - 21; }
+function churchDay(y, m, d, bank) {
+  const t = DN(y, m, d), c25 = DN(y, 12, 25), adv = adventDN(y), easter = easterDN(y), ash = easter - 46, pent = easter + 49;
+  let season, n, len = 0, tail = 0;
+  if (t >= c25) { season = 'christmas'; n = t - c25 + 1; }
+  else if (t >= adv) { season = 'advent'; n = t - adv + 1; len = c25 - adv; tail = 7; }
+  else if (t <= DN(y, 1, 5)) { season = 'christmas'; n = t - DN(y, 1, 1) + 8; }
+  else if (t < ash) { season = 'epiphany'; n = t - DN(y, 1, 6) + 1; len = ash - DN(y, 1, 6); tail = 7; }
+  else if (t < easter) { season = 'lent'; n = t - ash + 1; }
+  else if (t <= pent) { season = 'easter'; n = t - easter + 1; }
+  else { season = 'after-pentecost'; n = t - pent; len = adv - pent - 1; tail = 14; }
+  const item = len && n > len - tail ? bank[season] - (len - n) : n;
+  if (dowOf(t) === 0) {
+    const sp = m === 7 && d <= 7 ? 1 : m === 10 && d + 7 > 31 ? 2 : m === 11 && d >= 15 && d <= 21 ? 3 : 0;
+    if (sp) return { season: 'special', n: sp, item: sp };
+  }
+  return { season, n, item };
+}
+// ── 교회력 계산 끝 ──
+const BANK_SIZE = Object.fromEntries(Object.entries(QT).map(([key, v]) => [key, v.length]));
+const realDN = () => { const x = new Date(); return DN(x.getFullYear(), x.getMonth() + 1, x.getDate()); };
+function questionOn(t) {
+  const b = fromDN(t), c = churchDay(b.y, b.m, b.d, BANK_SIZE), it = QT[c.season] && QT[c.season][c.item - 1];
+  return it ? QBY[imgKey(it)] || null : null;
+}
+// 노트 데모와 같은 오늘·처음 들어온 날을 읽는다.지도 전용 날짜나 저장소는 두지 않는다.
+const readJSON = key => { try { return JSON.parse(localStorage.getItem(key) || '{}') || {}; } catch (e) { return {}; } };
+const demo = readJSON('didako-note-demo');
+const dateDN = value => {
+  const a = /^(\d{4})-(\d{2})-(\d{2})$/.exec(value || ''); if (!a || +a[1] < 1900 || +a[1] > 2200) return null;
+  const t = DN(+a[1], +a[2], +a[3]), d = fromDN(t); return d.y === +a[1] && d.m === +a[2] && d.d === +a[3] ? t : null;
+};
+const TODAY_DN = dateDN(demo.date) ?? realDN();
+const START_DN = dateDN(demo.start) ?? TODAY_DN;
+let openedT = null, opened = new Set();
+function openedAt(t) {
+  if (openedT === t) return opened;
+  opened = new Set(); for (let d = START_DN; d <= t; d++) { const q = questionOn(d); if (q) opened.add(q.key); }
+  openedT = t; return opened;
+}
+const isOpen = q => openedAt(TODAY_DN).has(q.key);
+const openQs = p => p.qs.filter(isOpen);
+
+// 기록은 노트와 같은 저장소에서 읽기만 한다. 쓰기는 노트의 + 남기기가 맡는다.
+const stored = readJSON('didako-note-notes');
+const notesMem = [...(Array.isArray(stored.qs) ? stored.qs : []), ...(Array.isArray(stored.fs) ? stored.fs : [])]
+  .filter(n => n && typeof n.text === 'string' && /^[\w-]+$/.test(n.id) && PL[n.place])
+  .map(n => ({ ...n, route: Array.isArray(stored.qs) && stored.qs.includes(n) ? 'q' : (n.q && /^[\w-]+$/.test(n.q) ? 'q' : 'pair'), target: n.q || n.id }));
+
+// ══════════════ 지도 보기(키우기·옮기기) ══════════════
+const CELL = 48, K_MAX = 56 / CELL;
+let layer = 'wide', IMG_W = 3456, IMG_H = 2016;
+const activeKeys = () => PL_ORDER.filter(key => PL[key].layer === layer);
+const canaan = window.WIDE_CANAAN;
+const homeCenter = () => layer === 'wide' ? [canaan.x + canaan.w / 2, canaan.y + canaan.h / 2] : [IMG_W / 2, IMG_H / 2];
+const PAD_V = 0;   // 그림 밖이 보이지 않게 지도 위아래 여백을 두지 않는다
+const stage = $('#stage'), world = $('#world');
+let sw = 0, sh = 0, k = 0.2, tx = 0, ty = 0, kFit = 0.2, fitted = true, anim = 0, selKey = null;
+function constrain() {
+  k = Math.min(Math.max(K_MAX, kFit), Math.max(kFit, k));
+  const w = IMG_W * k, h = IMG_H * k;
+  tx = w <= sw ? (sw - w) / 2 : Math.min(0, Math.max(sw - w, tx));
+  ty = h <= sh - 2 * PAD_V ? (sh - h) / 2 : Math.min(PAD_V, Math.max(sh - PAD_V - h, ty));
+}
+function paint() {
+  constrain();
+  world.style.transform = `translate(${tx}px, ${ty}px) scale(${k})`;
+  world.classList.toggle('px', k * (window.devicePixelRatio || 1) >= 0.9);   // 키웠을 때는 도트가 뭉개지지 않게, 줄였을 때는 매끄럽게
+  fitted = Math.abs(k - kFit) < 1e-4;
+  const box = $('#canaan'); box.hidden = layer !== 'wide';
+  if (!box.hidden) { box.style.left = (canaan.x * k + tx) + 'px'; box.style.top = (canaan.y * k + ty) + 'px'; box.style.width = (canaan.w * k) + 'px'; box.style.height = (canaan.h * k) + 'px'; }
+  layoutPins();
+}
+function measure(reset = false) {
+  const r = stage.getBoundingClientRect(), nw = r.width, nh = r.height;
+  if (!nw || !nh) return;
+  const cx = sw ? (sw / 2 - tx) / k : NaN, cy = sh ? (sh / 2 - ty) / k : NaN, was = fitted || !sw;
+  sw = nw; sh = nh; kFit = Math.max(sw / IMG_W, sh / IMG_H);
+  if (was || reset) { k = kFit; const c = reset || !Number.isFinite(cx) ? homeCenter() : [cx, cy]; tx = sw / 2 - c[0] * k; ty = sh / 2 - c[1] * k; } else { tx = sw / 2 - cx * k; ty = sh / 2 - cy * k; }
+  paint();
+}
+function zoomAt(f, px, py) {
+  cancelAnimationFrame(anim);
+  if (layer === 'near' && f < 1 && k <= kFit + 1e-4) { setLayer('wide'); return; }
+  const wx = (px - tx) / k, wy = (py - ty) / k;
+  const target = k * f, threshold = Math.min(K_MAX * .95, Math.max(kFit * 2.4, Math.min(sw / canaan.w, sh / canaan.h) * .45));
+  if (layer === 'wide' && f > 1 && target >= threshold && wx >= canaan.x && wx <= canaan.x + canaan.w && wy >= canaan.y && wy <= canaan.y + canaan.h) { setLayer('near'); return; }
+  const nk = Math.min(Math.max(K_MAX, kFit), Math.max(kFit, k * f)), g = nk / k;
+  tx = px - (px - tx) * g; ty = py - (py - ty) * g; k = nk; paint();
+}
+function flyTo(nk, wx, wy, sx, sy) {   // 그림 위의 한 점(wx, wy)이 화면의 (sx, sy)(기본은 지도 가운데)에 오게 옮기며 키운다
+  cancelAnimationFrame(anim);
+  nk = Math.min(Math.max(K_MAX, kFit), Math.max(kFit, nk));
+  const k0 = k, x0 = tx, y0 = ty, w = IMG_W * nk, h = IMG_H * nk;
+  if (sx === undefined) { sx = sw / 2; sy = sh / 2; }
+  let x1 = sx - wx * nk, y1 = sy - wy * nk;
+  x1 = w <= sw ? (sw - w) / 2 : Math.min(0, Math.max(sw - w, x1)); y1 = h <= sh - 2 * PAD_V ? (sh - h) / 2 : Math.min(PAD_V, Math.max(sh - PAD_V - h, y1));
+  if (calm()) { k = nk; tx = x1; ty = y1; paint(); return; }
+  const t0 = performance.now(), D = 320;
+  const step = now => {
+    const p = Math.min(1, (now - t0) / D), e = 1 - Math.pow(1 - p, 3);
+    k = k0 + (nk - k0) * e; tx = x0 + (x1 - x0) * e; ty = y0 + (y1 - y0) * e; paint();
+    if (p < 1) anim = requestAnimationFrame(step);
+  };
+  anim = requestAnimationFrame(step);
+}
+const cellPx = p => p.layer === 'wide' ? [p.x, p.y] : [(p.x + 0.5) * CELL, (p.y + 0.5) * CELL];
+// 두 그림의 비율을 억지로 맞추지 않고 각각의 꽉 찬 맞춤 크기로 바꾼다.
+function setLayer(next, animate = true) {
+  if (layer === next) return;
+  cancelAnimationFrame(anim);
+  stage.querySelectorAll('.layer-ghost').forEach(el => el.remove()); world.getAnimations().forEach(a => a.cancel());
+  const oldTransform = world.style.transform, oldK = k;
+  const ghost = animate && !calm() ? world.cloneNode(false) : null;
+  if (ghost) { ghost.removeAttribute('id'); ghost.setAttribute('aria-hidden', 'true'); ghost.classList.add('layer-ghost'); stage.append(ghost); }
+  if (selKey) pins[selKey].el.classList.remove('sel'); selKey = null; hlQ = null; openQ.clear();
+  layer = next; IMG_W = next === 'wide' ? 3456 : 1728; IMG_H = next === 'wide' ? 2016 : 2208;
+  world.src = next === 'wide' ? 'img/map/wide.webp' : 'img/map/world.webp'; world.width = IMG_W; world.height = IMG_H; world.style.width = IMG_W + 'px'; world.style.height = IMG_H + 'px';
+  PL_ORDER.forEach(key => { pins[key].el.hidden = PL[key].layer !== layer; });
+  $('#nearBack').hidden = layer !== 'near'; $('#eraBtn').disabled = layer === 'wide'; toggleEras(false);
+  ptrs.clear(); g = null; stage.classList.remove('drag');
+  measure(true); paintEra(); paintPanel(false);
+  if (ghost) {
+    const center = [canaan.x + canaan.w / 2, canaan.y + canaan.h / 2], nk = oldK * (next === 'near' ? 1.35 : .85);
+    const to = next === 'near' ? `translate(${sw / 2 - center[0] * nk}px, ${sh / 2 - center[1] * nk}px) scale(${nk})` : oldTransform;
+    ghost.animate([{ opacity: 1, transform: oldTransform }, { opacity: 0, transform: to }], { duration: 300, easing: 'ease-out' }).finished.then(() => ghost.remove()).catch(() => ghost.remove());
+    world.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 300, easing: 'ease-out' });
+  }
+}
+
+// ── 점과 이름표 ──
+// 받은 질문 수가 아니라 연결된 질문 자체가 없는 넓은 지도 장소만 이름표로 둔다.
+const labelOnly = p => p.layer === 'wide' && p.qs.length === 0;
+const pins = {};
+PL_ORDER.forEach(key => {
+  const p = PL[key], onlyName = labelOnly(p), b = document.createElement(onlyName ? 'span' : 'button');
+  b.hidden = p.layer !== layer; if (!onlyName) b.type = 'button';
+  b.className = 'pin ' + (onlyName ? 'region label-only' : p.kind === 'town' ? 'tn' : p.kind === 'region' ? 'region' : 'sp'); b.dataset.k = key;
+  b.setAttribute('aria-label', p.name + ', ' + p.region);
+  b.innerHTML = `<span class="dot"></span><span class="lbl">${esc(p.name)}</span>`;
+  stage.insertBefore(b, stage.querySelector('.zoom'));
+  pins[key] = { el: b, lbl: b.querySelector('.lbl'), lw: 0, sx: 0, sy: 0 };
+});
+const LBL_H = 20;
+const rank = key => (key === selKey ? -1e6 : labelOnly(PL[key]) ? -1e5 : 0) - PL[key].weight * (PL[key].kind === 'town' ? 100 : 1);
+function setLbl(pn, show, off) {   // 이름표의 왼쪽 위 자리를 점 가운데에서 잰 값으로 둔다
+  const cls = pn.el.classList;
+  if (!show) { cls.add('nolbl'); return; }
+  cls.remove('nolbl');
+  const sig = off[0] + ',' + off[1]; if (pn.sig !== sig) { pn.sig = sig; pn.el.style.setProperty('--lx', off[0] + 'px'); pn.el.style.setProperty('--ly', off[1] + 'px'); }
+}
+function layoutPins() {
+  const dots = [], lbls = [], hit = (a, b) => a[0] < b[2] && a[2] > b[0] && a[1] < b[3] && a[3] > b[1];
+  if (layer === 'wide') { const label = $('#canaan span').getBoundingClientRect(), st = stage.getBoundingClientRect(); lbls.push([label.left - st.left - 3, label.top - st.top - 3, label.right - st.left + 3, label.bottom - st.top + 3]); }
+  activeKeys().forEach(key => {   // 점 자리를 먼저 채워 둔다(이름표가 점을 덮지 않게)
+    const pn = pins[key], c = cellPx(PL[key]);
+    pn.sx = c[0] * k + tx; pn.sy = c[1] * k + ty;
+    pn.el.style.transform = `translate(${pn.sx - 22}px, ${pn.sy - 22}px)`;
+    if (PL[key].kind !== 'region' && !labelOnly(PL[key])) dots.push([pn.sx - 8, pn.sy - 8, pn.sx + 8, pn.sy + 8, key]);
+  });
+  const showAll = k >= 0.5;   // 이야기 터와 질문 장소의 이름은 키웠을 때만
+  activeKeys().sort((a, b) => rank(a) - rank(b)).forEach(key => {
+    const p = PL[key], pn = pins[key];
+    if (!(layer === 'wide' || key === selKey || p.kind === 'town' || showAll)) { setLbl(pn, false); return; }
+    if (!pn.lw) {   // 이름표 크기는 한 번 재어 둔다(숨겨져 있으면 잠깐 보이게 해서 잰다)
+      const had = pn.el.classList.contains('nolbl'); pn.el.classList.remove('nolbl');
+      pn.lw = pn.lbl.offsetWidth || p.name.length * 12 + 14; pn.lh = pn.lbl.offsetHeight || LBL_H; if (had) pn.el.classList.add('nolbl');
+    }
+    const w = pn.lw, H = pn.lh, x = pn.sx, y = pn.sy, h = H / 2;
+    const cand = [...(p.kind === 'region' || labelOnly(p) ? [[-w / 2, -h]] : []), [10, -h], [-10 - w, -h], [-w / 2, 10], [-w / 2, -10 - H], [8, 8], [8, -8 - H], [-8 - w, 8], [-8 - w, -8 - H]];   // 오른쪽, 왼쪽, 아래, 위, 네 모서리 순으로 빈 자리를 찾는다
+    let put = null;
+    for (const [lx, ly] of cand) {
+      const r = [x + lx, y + ly, x + lx + w, y + ly + H];
+      if (r[0] < 2 || r[2] > sw - 2 || r[1] < 2 || r[3] > sh - 2) continue;
+      if (dots.some(d => d[4] !== key && hit(r, d)) || lbls.some(l => hit(r, l))) continue;
+      put = [[lx, ly], r]; break;
+    }
+    if (put) { lbls.push([put[1][0] - 2, put[1][1] - 1, put[1][2] + 2, put[1][3] + 1]); setLbl(pn, true, put[0]); } else setLbl(pn, false);
+  });
+}
+
+// ── 시대 고르기: 그 시대 이야기나 질문이 있는 장소만 진하게 ──
+let eraSel = 'all';
+$('#eras').innerHTML = ERA_CHIP.map(([id, nm]) => `<button class="chip-btn" type="button" role="radio" aria-checked="false" data-era="${id}">${nm}</button>`).join('');
+function paintEra() {
+  $('#eraBtn').disabled = layer === 'wide';
+  PL_ORDER.forEach(key => { const p = PL[key], has = p.stories.some(x => x.era === eraSel) || openQs(p).some(q => q.era === eraSel); pins[key].el.classList.toggle('dim', p.layer === 'near' && eraSel !== 'all' && !has); });
+  document.querySelectorAll('#eras .chip-btn').forEach(b => { const on = b.dataset.era === eraSel; b.classList.toggle('on', on); b.setAttribute('aria-checked', String(on)); });
+  const nm = (ERA_CHIP.find(x => x[0] === eraSel) || ERA_CHIP[0])[1];
+  $('#eraLbl').textContent = nm; $('#eraBtn').classList.toggle('on', eraSel !== 'all'); $('#eraBtn').setAttribute('aria-label', '시대 고르기: ' + nm);
+}
+
+// ══════════════ 받은 질문 띠 ══════════════
+let todayQ = null, stripItems = [], stripIndex = -1, stripTimer = 0, flashTimer = 0;
+const CHEV_L = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg>';
+const CHEV_R = CHEV_L.replace('M15 5l-7 7 7 7', 'M9 5l7 7-7 7');
+function paintToday() {
+  todayQ = questionOn(TODAY_DN); stripItems = [];
+  for (let day = TODAY_DN; day >= Math.min(START_DN, TODAY_DN); day--) {
+    const q = questionOn(day); if (q && (day === TODAY_DN || q.place)) stripItems.push({ day, q });
+  }
+  const cards = stripItems.map(({ day, q }) => {
+    const d = fromDN(day), age = TODAY_DN - day, p = PL[q.place];
+    const date = `${d.y !== fromDN(TODAY_DN).y ? d.y + '년 ' : ''}${d.m}월 ${d.d}일`;
+    const meta = age === 0 ? '오늘의 질문 · ' + date : date + (age === 1 ? ' · 어제' : age === 2 ? ' · 그제' : '');
+    return `<button class="tb card" type="button" data-day="${day}" data-q="${q.key}" data-pair="${p ? p.key : ''}"><span class="meta"><span>${meta}</span>${p ? `<span class="chip">${esc(p.name)}에서</span><span class="go">${esc(p.name)}에서 보기 ›</span>` : '<span class="sm">지도에 자리가 없어요</span>'}</span><span class="q">${esc(q.q)}</span>${q.asker ? `<span class="ask">${esc(q.asker)}</span>` : ''}</button>`;
+  }).join('');
+  $('#today').innerHTML = `<button class="ib nv prev" type="button" data-strip="-1" aria-label="더 최근 질문">${CHEV_L}</button><div class="qstrip" id="qStrip" role="region" aria-label="받은 질문">${cards || '<div class="sm">오늘의 질문을 불러오지 못했어요</div>'}</div><button class="ib nv next" type="button" data-strip="1" aria-label="지난 질문">${CHEV_R}</button>`;
+  const strip = $('#qStrip');
+  strip.addEventListener('scroll', () => { clearTimeout(stripTimer); stripTimer = setTimeout(settleStrip, 140); }, { passive: true });
+  const observer = new ResizeObserver(sizeStrip);
+  observer.observe(strip); [...strip.children].forEach(card => observer.observe(card));
+}
+function sizeStrip() {
+  const cards = [...$('#qStrip').children];
+  // 칸에 늘려 맞춘 높이가 아니라 카드 내용의 높이를 잰다. 폭·큰 글씨가 바뀌면 다시 줄어들 수도 있다.
+  const height = Math.max(0, ...cards.map(el => el.getBoundingClientRect().height));
+  $('#today').style.setProperty('--strip-min', Math.ceil(height + 17) + 'px');
+}
+function paintStripNav() {
+  $('#today [data-strip="-1"]').disabled = stripIndex <= 0;
+  $('#today [data-strip="1"]').disabled = stripIndex >= stripItems.length - 1;
+}
+function activateStrip(index, move = true) {
+  if (index < 0 || index >= stripItems.length) return;
+  const changed = stripIndex !== index; stripIndex = index; paintStripNav();
+  if (!changed || !move) return;
+  const p = PL[stripItems[index].q.place]; if (!p) return;
+  setLayer(p.layer);
+  const c = cellPx(p); flyTo(Math.max(k, 0.62), c[0], c[1]);
+  clearTimeout(flashTimer); Object.values(pins).forEach(pn => pn.el.classList.remove('flash'));
+  pins[p.key].el.classList.add('flash');
+  flashTimer = setTimeout(() => pins[p.key].el.classList.remove('flash'), 1200);
+}
+function settleStrip() {
+  const strip = $('#qStrip'), center = strip.getBoundingClientRect().left + strip.clientWidth / 2;
+  let index = 0, near = Infinity;
+  [...strip.children].forEach((el, i) => { const r = el.getBoundingClientRect(), distance = Math.abs(r.left + r.width / 2 - center); if (distance < near) { near = distance; index = i; } });
+  activateStrip(index);
+}
+function scrollToCard(index, smooth = true) {
+  const strip = $('#qStrip'), card = strip.children[index]; if (!card) return;
+  const r = card.getBoundingClientRect(), s = strip.getBoundingClientRect();
+  strip.scrollTo({ left: strip.scrollLeft + r.left + r.width / 2 - s.left - strip.clientWidth / 2, behavior: smooth && !calm() ? 'smooth' : 'instant' });
+}
+
+// ══════════════ 장소 창 ══════════════
+let hlQ = null, openQ = new Set();
+const panel = $('#panel');
+const X_IC = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg>';
+const dateOf = ms => { const d = new Date(ms); return `${d.getMonth() + 1}월 ${d.getDate()}일`; };
+function panelHTML() {
+  if (!selKey) return `<div class="pbody"><p class="empty">지도에서 장소를 누르면 그곳의 이야기와 오늘의 질문이 나와요.</p></div>`;
+  const p = PL[selKey];
+  const stories = p.stories.map((s, i) => ({ ...s, i })).sort((a, b) => ERA_ORDER.indexOf(a.era) - ERA_ORDER.indexOf(b.era));
+  if (eraSel !== 'all') stories.sort((a, b) => (b.era === eraSel) - (a.era === eraSel) || ERA_ORDER.indexOf(a.era) - ERA_ORDER.indexOf(b.era));
+  const sHtml = stories.length ? `<section class="sec" aria-label="이곳에서 있었던 이야기"><h3 class="sl">이곳에서 있었던 이야기</h3><div class="hscroll">${stories.map(s =>
+    `<div class="row${eraSel !== 'all' && s.era === eraSel ? ' emph' : ''}"><div class="rb"><div class="chips"><span class="chip">${esc(s.ref)}</span><span class="chip era">${esc(eraLabel(s.era))}</span></div><p>${esc(s.t)}</p></div><button class="btn ghost sm2" type="button" data-act="leave-s" data-i="${s.i}" aria-label="${esc(s.ref)} 남기기">남기기</button></div>`).join('')}</div></section>` : '';
+  const qs = openQs(p), more = qs.length < p.qs.length; if (hlQ) { const i = qs.findIndex(q => q.key === hlQ); if (i > 0) qs.unshift(qs.splice(i, 1)[0]); }
+  const qHtml = qs.length ? `<section class="sec" aria-label="이곳의 오늘의 질문"><h3 class="sl">이곳의 오늘의 질문</h3>${qs.map(q => {
+    const open = openQ.has(q.key);
+    return `<div class="qitem${hlQ === q.key ? ' hl' : ''}" data-q="${q.key}"><div class="qline"><button class="qmain" type="button" data-act="q-toggle" data-q="${q.key}" aria-expanded="${open}"><img src="img/q/${q.key}.webp" alt="" loading="lazy"><span class="qt"><b>${esc(q.q)}</b><span class="sm">${esc(q.asker)}</span><span class="chip">${esc(q.ref)}</span></span></button><button class="btn ghost sm2" type="button" data-act="leave-q" data-q="${q.key}" aria-label="내 질문에 품기">내 질문에 품기</button></div>${open ? `<div class="qbg">${esc(q.bg)}</div>` : ''}</div>`;
+  }).join('')}</section>` : '';
+  const qMore = more ? `<p class="sm qmore">이곳에서 나올 질문이 더 있어요</p>` : '';   // 아직 오지 않은 질문: 글·날짜·개수는 보이지 않는다
+  const mine = notesMem.filter(n => n.place === selKey).sort((a, b) => b.at - a.at);
+  const mHtml = mine.length ? `<section class="sec" aria-label="내가 남긴 것"><h3 class="sl">내가 남긴 것</h3><ul class="mine">${mine.map(n => `<li><span class="sm">${dateOf(n.at)}</span><p><a class="map-back" href="index.html#/mine/${n.route}/${encodeURIComponent(n.target)}">${esc(n.text.split(/\r?\n/)[0])}</a></p></li>`).join('')}</ul></section>` : '';
+  const img = p.layer === 'near' && p.kind === 'town' ? `<img class="pimg" src="img/towns/${p.key}.webp" alt="${esc(p.name)} 그림" onerror="this.remove()">` : '';
+  return `<div class="pbody"><button class="x px" type="button" data-act="p-x" aria-label="닫기">${X_IC}</button>${img}<div class="phead"><h2>${esc(p.name)}</h2><div class="sm">${esc(p.region)}</div></div>${sHtml}${qHtml}${qMore}${p.layer === 'near' ? mHtml : ''}</div>`;
+}
+function paintPanel(keepScroll) {
+  const old = panel.querySelector('.pbody'), sc = keepScroll && old ? old.scrollTop : 0;
+  panel.innerHTML = panelHTML();
+  const bd = panel.querySelector('.pbody'); if (bd) bd.scrollTop = sc;
+  panel.classList.toggle('open', !!selKey);
+  $('#scrim').hidden = !(selKey && !isWide());
+  syncInert();
+}
+function select(key, o) {
+  o = o || {};
+  if (!PL[key] || labelOnly(PL[key])) return;
+  setLayer(PL[key].layer);
+  if (selKey && pins[selKey]) pins[selKey].el.classList.remove('sel');
+  selKey = key; hlQ = o.hlQ || (todayQ && todayQ.place === key ? todayQ.key : null); openQ = new Set();
+  pins[key].el.classList.add('sel');
+  paintPanel(false);
+  if (o.fly) { const c = cellPx(PL[key]), v = viewCenter(); flyTo(Math.max(k, 0.62), c[0], c[1], v[0], v[1]); } else layoutPins();
+  const f = panel.querySelector('.px'); if (f && !isWide()) f.focus({ preventScroll: true });
+  if (o.hlQ) { const hl = panel.querySelector('.qitem.hl'); if (hl) hl.scrollIntoView({ block: 'nearest', behavior: 'auto' }); }   // 오늘의 질문 카드에서 열면 강조된 질문이 보이게
+}
+function viewCenter() {   // 휴대폰에서는 장소 창이 가린 아래쪽을 빼고, 보이는 지도의 가운데
+  if (isWide() || !selKey) return [sw / 2, sh / 2];
+  const st = stage.getBoundingClientRect(), top = panel.getBoundingClientRect().top;
+  const bottom = Math.max(st.top + Math.min(160, sh * 0.4), Math.min(st.bottom, top));
+  return [sw / 2, (bottom - st.top) / 2];
+}
+function deselect() {
+  if (!selKey) return;
+  const was = selKey; pins[was].el.classList.remove('sel'); selKey = null; hlQ = null; layoutPins(); paintPanel(false);
+  if (!isWide()) pins[was].el.focus({ preventScroll: true });
+}
+// 휴대폰 장소 창이 떠 있으면 뒤 지도를 누르지 못하게 한다. 오늘의 질문으로 돌아가는 링크는 남긴다
+function syncInert() {
+  const modalPanel = !!selKey && !isWide();
+  stage.inert = modalPanel; $('#today').inert = modalPanel;
+  document.querySelectorAll('#top button, #sbox').forEach(el => { el.inert = modalPanel; });
+}
+
+// 지도는 쓰는 화면으로 이어 주고, 기록은 노트에서 저장한다.
+function openWrite(kind, id) {
+  location.href = `index.html#/write/map/${encodeURIComponent(selKey)}/${kind}/${encodeURIComponent(id)}`;
+}
+
+// ══════════════ 찾기 ══════════════
+const norm = s => String(s).replace(/\s+/g, '').toLowerCase();
+function search(raw) {
+  const q = raw.trim(); if (!q) return [];
+  const out = [], seen = new Set(), add = (key, sub) => { if (!labelOnly(PL[key]) && !seen.has(key) && out.length < 8) { seen.add(key); out.push({ key, sub }); } };
+  const nq = norm(q);
+  PL_ORDER.forEach(key => { if (norm(PL[key].name).includes(nq)) add(key, PL[key].region); });
+  const m = REF_RE.exec(q);
+  if (m) {
+    const b = BOOK_ONE.get(m[1]), books = b !== undefined ? [b] : BOOKS.map((x, i) => (x[0].startsWith(m[1]) ? i : -1)).filter(i => i >= 0);
+    const ch = +m[2], vv = m[3] ? +m[3] : m[4] ? +m[4] : null;
+    const ok = r => r && books.includes(r.b) && r.c === ch && (vv === null || r.v1 === null || (vv >= r.v1 && vv <= (r.v2 || r.v1)));
+    PL_ORDER.forEach(key => {
+      const p = PL[key], hit = p.stories.find(s => ok(s.r)) || openQs(p).find(x => ok(x.r));
+      if (hit) add(key, hit.ref);
+    });
+  }
+  return out;
+}
+let results = [];
+function paintResults() {
+  const raw = $('#sq').value, ul = $('#results');
+  if (!raw.trim()) { ul.hidden = true; ul.innerHTML = ''; results = []; return; }
+  results = search(raw);
+  ul.innerHTML = results.length ? results.map(r => `<li><button type="button" data-act="res" data-k="${r.key}"><b>${esc(PL[r.key].name)}</b><span class="sm">${esc(r.sub)}</span></button></li>`).join('') : `<li class="none">찾는 곳이 없어요</li>`;
+  ul.hidden = false;
+}
+function toggleSearch(open) {
+  const box = $('#sbox'); box.hidden = !open; $('#btnSearch').setAttribute('aria-expanded', String(open));
+  if (open) $('#sq').focus(); else { $('#sq').value = ''; paintResults(); }
+  requestAnimationFrame(() => measure());
+}
+
+// ══════════════ 눌렀을 때 ══════════════
+document.addEventListener('click', e => {
+  const a = e.target.closest('[data-act]'); if (!a) return;
+  const act = a.dataset.act;
+  if (act === 'p-x') deselect();
+  else if (act === 'q-toggle') { const id = a.dataset.q; openQ.has(id) ? openQ.delete(id) : openQ.add(id); paintPanel(true); const nb = panel.querySelector(`[data-act="q-toggle"][data-q="${id}"]`); if (nb) nb.focus({ preventScroll: true }); }
+  else if (act === 'leave-s') openWrite('s', a.dataset.i);
+  else if (act === 'leave-q') openWrite('q', a.dataset.q);
+  else if (act === 'res') { const key = a.dataset.k; toggleSearch(false); select(key, { fly: true }); }
+});
+$('#scrim').addEventListener('click', deselect);
+$('#btnSearch').addEventListener('click', () => toggleSearch($('#sbox').hidden));
+$('#sq').addEventListener('input', paintResults);
+$('#sq').addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); const first = results[0]; if (first) { toggleSearch(false); select(first.key, { fly: true }); } } });
+function toggleEras(open) {
+  if (layer === 'wide') open = false;
+  $('#eras').hidden = !open; $('#eraBtn').setAttribute('aria-expanded', String(open));
+  if (open) { const b = $('#eras .chip-btn.on') || $('#eras .chip-btn'); if (b) b.focus(); }
+}
+$('#eraBtn').addEventListener('click', e => { e.stopPropagation(); toggleEras($('#eras').hidden); });
+$('#eras').addEventListener('click', e => { const b = e.target.closest('.chip-btn'); if (!b) return; e.stopPropagation(); eraSel = b.dataset.era; paintEra(); if (selKey) paintPanel(true); toggleEras(false); $('#eraBtn').focus(); });
+document.addEventListener('click', e => { if (!$('#eras').hidden && !e.target.closest('#eras, #eraBtn')) toggleEras(false); });
+$('#today').addEventListener('click', e => {
+  const nav = e.target.closest('[data-strip]');
+  if (nav) { scrollToCard(Math.max(0, Math.min(stripItems.length - 1, stripIndex + Number(nav.dataset.strip)))); return; }
+  const b = e.target.closest('.tb');
+  if (b && b.dataset.pair) select(b.dataset.pair, { fly: true, hlQ: b.dataset.q });
+});
+$('#canaan').addEventListener('click', () => { if (!suppressClick) { setLayer('near'); $('#nearBack').focus({ preventScroll: true }); } });
+$('#nearBack').addEventListener('click', () => { setLayer('wide'); $('#canaan').focus({ preventScroll: true }); });
+$('#zIn').addEventListener('click', () => zoomAt(1.5, sw / 2, sh / 2));
+$('#zOut').addEventListener('click', () => zoomAt(1 / 1.5, sw / 2, sh / 2));
+document.addEventListener('keydown', e => {
+  if (e.key !== 'Escape') return;
+  if (!$('#eras').hidden) { toggleEras(false); $('#eraBtn').focus(); } else if (!$('#sbox').hidden) toggleSearch(false); else if (selKey && !isWide()) deselect();
+});
+
+// ── 지도 위 손짓: 한 손가락(마우스)은 끌어 옮기기, 두 손가락은 키우기·줄이기, 두 번 누르면 그 자리를 두 배로, 휠은 키우기 ──
+const ptrs = new Map();
+let g = null, suppressClick = false, lastTap = { t: 0, x: 0, y: 0 };
+const local = e => { const r = stage.getBoundingClientRect(); return [e.clientX - r.left, e.clientY - r.top]; };
+function nearestPin(px, py, r) {
+  let best = null, bd = r * r;
+  activeKeys().filter(key => !labelOnly(PL[key])).forEach(key => { const pn = pins[key], dx = pn.sx - px, dy = pn.sy - py, d = dx * dx + dy * dy; if (d <= bd) { bd = d; best = key; } });
+  return best;
+}
+stage.addEventListener('pointerdown', e => {
+  if (e.target.closest('.zoom, .layer-back')) return;
+  if (e.pointerType === 'mouse' && e.button !== 0) return;
+  cancelAnimationFrame(anim);
+  const [x, y] = local(e); ptrs.set(e.pointerId, { x, y });
+  if (ptrs.size === 1) g = { mode: 'tap', x0: x, y0: y, moved: false };
+  else if (ptrs.size === 2) {
+    const [p, q] = [...ptrs.values()]; g = { mode: 'pinch', d0: Math.hypot(p.x - q.x, p.y - q.y) || 1, k0: k, moved: true };
+    ptrs.forEach((v, id) => { try { stage.setPointerCapture(id); } catch (err) { /* 잡지 못해도 된다 */ } });
+  }
+});
+stage.addEventListener('pointermove', e => {
+  if (!ptrs.has(e.pointerId) || !g) return;
+  const [x, y] = local(e), o = ptrs.get(e.pointerId);
+  if (g.mode === 'pinch' && ptrs.size >= 2) {
+    ptrs.set(e.pointerId, { x, y });
+    const [p, q] = [...ptrs.values()], d = Math.hypot(p.x - q.x, p.y - q.y) || 1, mx = (p.x + q.x) / 2, my = (p.y + q.y) / 2;
+    zoomAt((g.k0 * d / g.d0) / k, mx, my); return;
+  }
+  if (g.mode === 'tap' && Math.hypot(x - g.x0, y - g.y0) > 6) {
+    g.mode = 'pan'; g.moved = true; stage.classList.add('drag');
+    try { stage.setPointerCapture(e.pointerId); } catch (err) { /* 잡지 못해도 된다 */ }
+  }
+  if (g.mode === 'pan') { tx += x - o.x; ty += y - o.y; ptrs.set(e.pointerId, { x, y }); paint(); }
+});
+function endPtr(e) {
+  if (!ptrs.has(e.pointerId)) return;
+  const [x, y] = local(e); ptrs.delete(e.pointerId);
+  if (g && g.moved) suppressClick = true;
+  if (g && g.mode === 'tap' && e.type === 'pointerup' && !nearestPin(x, y, 28)) {   // 빈 자리를 두 번 누르면 그 자리를 두 배로
+    const now = performance.now();
+    if (now - lastTap.t < 320 && Math.hypot(x - lastTap.x, y - lastTap.y) < 30) {
+      lastTap.t = 0;
+      if (k >= K_MAX - 1e-3) flyTo(kFit, (IMG_W) / 2, (IMG_H) / 2);
+      else { const wx = (x - tx) / k, wy = (y - ty) / k; flyTo(k * 2, wx, wy, x, y); }   // 누른 자리가 제자리에 머물며 커진다
+    } else lastTap = { t: now, x, y };
+  }
+  if (ptrs.size === 0) { g = null; stage.classList.remove('drag'); setTimeout(() => { suppressClick = false; }, 0); }
+  else if (ptrs.size === 1) { const r = [...ptrs.values()][0]; g = { mode: 'pan', moved: true }; ptrs.set([...ptrs.keys()][0], r); stage.classList.add('drag'); }
+}
+stage.addEventListener('pointerup', endPtr);
+stage.addEventListener('pointercancel', endPtr);
+stage.addEventListener('wheel', e => {
+  e.preventDefault(); cancelAnimationFrame(anim);
+  const [x, y] = local(e), dy = e.deltaMode === 1 ? e.deltaY * 16 : e.deltaY;
+  zoomAt(Math.exp(-dy * (e.ctrlKey ? 0.01 : 0.0015)), x, y);
+}, { passive: false });
+stage.addEventListener('click', e => {
+  if (suppressClick) { suppressClick = false; return; }
+  if (e.target.closest('#canaan, .layer-back, .label-only')) return;
+  const pin = e.target.closest('.pin');
+  if (e.detail === 0 && pin) { select(pin.dataset.k); return; }   // 키보드로 누른 것
+  if (e.target.closest('.zoom, .layer-back')) return;
+  const [x, y] = local(e), key = nearestPin(x, y, 30);   // 점이 겹쳐 있어도 가장 가까운 점을 연다
+  if (key) select(key);
+});
+
+// ══════════════ 시작 ══════════════
+world.style.width = IMG_W + 'px'; world.style.height = IMG_H + 'px';
+paintToday(); paintEra(); paintPanel(false);
+new ResizeObserver(() => measure()).observe(stage);
+measure();
+function openAddress() {
+  const args = new URLSearchParams(location.hash.slice(1)), key = args.get('p'), q = args.get('q');
+  const found = q ? stripItems.findIndex(item => item.q.key === q) : -1, index = found >= 0 ? found : 0;
+  scrollToCard(index, false); activateStrip(index, !Object.hasOwn(PL, key));
+  if (Object.hasOwn(PL, key)) select(key, { fly: true, hlQ: Object.hasOwn(QBY, q) && QBY[q].place === key && isOpen(QBY[q]) ? q : null });
+}
+openAddress();
+window.addEventListener('hashchange', openAddress);
+if (document.fonts && document.fonts.ready) document.fonts.ready.then(() => { Object.values(pins).forEach(pn => { pn.lw = 0; }); paint(); });
+window.addEventListener('resize', () => { paintPanel(true); });
+// 시안 확인을 위해 열어 둔 손잡이(화면에는 보이지 않는다)
+window.SCRIPTURE_MAP = { PL, QBY, view: () => ({ layer, IMG_W, IMG_H, k, tx, ty, kFit, sw, sh }), pins: () => Object.fromEntries(PL_ORDER.map(key => [key, { x: pins[key].sx, y: pins[key].sy, lbl: !pins[key].el.classList.contains('nolbl'), dim: pins[key].el.classList.contains('dim') }])) };
+})();
+</script>
+</body>
+</html>
