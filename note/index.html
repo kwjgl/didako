@@ -277,6 +277,10 @@ body.tabs-off .stickbar { bottom: env(safe-area-inset-bottom, 0px); }
 .past2 button:first-child { border-top: 0; }
 .past2 .pq { font-size: .9375rem; }
 .past-more { text-align: center; }
+/* 모두 보기는 지난 질문 상자 안 맨 아래, 질문 줄과 같은 가는 선으로 나눈다(S-40) */
+.past2 .past-more { border-top: 1px solid var(--line); }
+.past2 .past-more .tx { display: flex; align-items: center; justify-content: center; min-height: 44px; }
+.past-none { padding: 14px 0; text-align: center; line-height: 1.5; word-break: keep-all; }
 .pcard { display: block; width: 100%; text-align: left; margin-top: 8px; padding: 10px 16px; color: var(--ink); }
 .pcard .d { font-size: .8125rem; color: var(--ink-2); }
 .pcard.on { background: var(--accent-soft); border-color: transparent; }   /* 지금 펴 둔 지난 질문 */
@@ -1355,7 +1359,11 @@ const pageHead = (emo, title, right) => `<div class="page-top"><h1 class="h1">${
 // 지난 질문 한 줄: 누르면 그 질문이 펴진다. on은 지금 펴 둔 줄
 const pastCard = (p, on) => `<button class="pcard card${on ? ' on' : ''}" type="button" data-act="past-item" data-d="${p.date}"${on ? ' aria-current="true"' : ''}><div class="d">${dLine(p.d)}${p.rel ? ' · ' + p.rel : ''}</div><div class="pq">${esc(p.q)}</div><div class="sm">${esc(p.ref)} · ${esc(p.asker)}</div></button>`;
 // 넓은 화면 왼쪽의 지난 질문 목록: 어제부터 7일, 맨 아래에 모두 보기 링크. on은 지금 펴 둔 날, more는 링크가 가는 곳
-const pastSide = (on, more) => `<aside class="t8-list" aria-label="지난 질문"><div class="lbl">지난 질문</div>${pastItems(7).map(p => pastCard(p, p.date === on)).join('')}<div class="past-more"><a class="tx" href="#/today/past${more ? '/' + more : ''}">지난 질문 모두 보기</a></div></aside>`;
+const PAST_NONE = '지난 질문은 내일부터 여기에 하나씩 쌓여요.';   // 지난 질문이 없을 때(앱을 처음 쓴 날)
+const pastSide = (on, more) => {
+  const items = pastItems(7);
+  return `<aside class="t8-list" aria-label="지난 질문"><div class="lbl">지난 질문</div>${items.length ? items.map(p => pastCard(p, p.date === on)).join('') + `<div class="past-more"><a class="tx" href="#/today/past${more ? '/' + more : ''}">지난 질문 모두 보기</a></div>` : `<div class="sm past-none">${PAST_NONE}</div>`}</aside>`;
+};
 function viewToday() {
   const q = questionOn(demoDN());
   if (isWide()) {
@@ -1370,13 +1378,15 @@ function viewToday() {
     </div>`;
   }
   const two = pastItems(2).map(p => `<button type="button" data-act="past-item" data-d="${p.date}"><div class="pq">${esc(p.q)}</div><div class="sm">${esc(p.ref)} · ${p.rel}</div></button>`).join('');
+  const pastBox = two
+    ? `<div class="card past2">${two}<div class="past-more"><a class="tx" href="#/today/past">지난 질문 모두 보기</a></div></div>`
+    : `<div class="card past2"><div class="sm past-none">${PAST_NONE}</div></div>`;   // 앱을 처음 쓴 날은 지난 질문이 없다
   return `<div class="col">
     ${pageHead('💭', '오늘의 질문', `<div class="sm">${dateLine(demoDate())}</div>`)}
     ${qCard(q, true)}
-    ${mapCard()}
     <div class="past-h">지난 질문</div>
-    <div class="card past2">${two}</div>
-    <div class="past-more"><a class="tx" href="#/today/past">지난 질문 모두 보기</a></div>
+    ${pastBox}
+    ${mapCard()}
     ${vineLine()}
   </div>`;
 }
@@ -1594,7 +1604,7 @@ function a2hsSheet() {
 // 탐구 노트 ex { q(질문 id), mode('steps'|'free'), start, steps[5], ok[5], since, refs[], added{s2,s3}, done[], free{doc,touched}, touched, last }
 //   steps는 단계별로 쓴 글, free는 자유롭게 쓴 글(편집기 문서). 둘은 따로 보관하고 mode가 지금 쓰는 방식이다
 //   노트 하나는 질문 하나에 한 권. 지금 탐구하는 질문은 한 번에 세 개까지라 cur에 그 질문 id들을 최근에 쓰거나 연 것부터 둔다(네 번째를 시작하면 가장 오래 쓰지 않은 것이 지난 탐구로 내려간다)
-// 이번 주의 질문에 남긴 내 생각 wk { id(주 id), mine, at, done(다 펴 본 시각, 아니면 0) }. 질문을 따라 걷기의 묵상도 id 'wa-<연재>-<번호>'로 여기에 둔다(done은 쓰지 않는다)
+// 이번 주의 질문에 남긴 내 생각 wk { id(주 id), mine, at, done(다 펴 본 시각, 아니면 0) }. 질문을 따라 걷기의 묵상도 id 'wa-<연재>-<번호>'로 여기에 둔다(done은 그 토막을 마친 날)
 // 발견 f { id, text, ref, since, at, touched, q(이어진 질문 id, 없으면 '' = 남겨 둔 ! 발견) }
 const DAY = 864e5;
 let N = { qs: [], fs: [], ex: [], cur: [], wk: [] };
@@ -2075,10 +2085,12 @@ function viewExplore() {
   const wkImg = wk.img ? `<img class="q-img" src="${wk.img}" alt="${esc(wk.alt)}" width="1200" height="675" decoding="async">` : '';   // 정물 그림(없는 주는 글만)
   const weekCard = `<div class="xwk"><div class="sm xwm">${wkMeta}${done ? '<span class="week-done sm"><span class="week-check">✓</span> 다 펴 봤어요</span>' : ''}</div><div class="sf xwq">${esc(wk.q)}</div><div class="xwr">${wk.refs.map(esc).join(' · ')}</div>${wkImg}<button class="btn" type="button" data-act="week-open">${done ? '다시 펴 보기' : '펴 보기'}</button></div>`;
   const wn = walkNow(), wbtn = wide ? '' : ' wide';
-  const wnDN = wn && wn.ep ? walkOpenDN(wn.w, wn.w.eps.indexOf(wn.ep)) : 0;
-  const walkCard = !wn ? '' : wn.ep
-    ? `<div class="card xcard"><div class="sm">${esc(wn.w.book)} · ${wnDN === demoDN() ? '오늘' : walkDay(wnDN)}</div><div class="sf xct" style="margin-top:4px">${esc(wn.ep.title)}</div><div class="sm" style="margin-top:4px">${esc(wn.ep.ref)}</div><a class="btn${wbtn}" href="#/explore/walk/${wn.w.id}/${wn.ep.n}" style="margin-top:12px">읽기</a><a class="tx wk-all" href="#/explore/walk/${wn.w.id}">${esc(wn.w.book)} 전체 보기 ›</a></div>`
-    : `<div class="card xcard"><div class="sm">${esc(wn.w.book)} · ${walkDay(parseYmd(wn.w.start).t)}에 시작해요</div><div class="sf xct" style="margin-top:4px">${esc(wn.w.title)}</div><div class="sm" style="margin-top:6px;line-height:1.55;word-break:keep-all">${esc(wn.w.line)}</div><a class="tx wk-all" href="#/explore/walk/${wn.w.id}">${esc(wn.w.book)} 전체 보기 ›</a></div>`;
+  const wAll = wn ? `<a class="tx wk-all" href="#/explore/walk/${wn.w.id}">${esc(wn.w.book)} 전체 보기 ›</a>` : '';
+  const walkCard = !wn ? ''
+    : wn.ep ? `<div class="card xcard"><div class="sm">${esc(wn.w.book)} · ${wn.ep.n}번째 걸음</div><div class="sf xct" style="margin-top:4px">${esc(wn.ep.title)}</div><div class="sm" style="margin-top:4px">${esc(wn.ep.ref)}</div><a class="btn${wbtn}" href="#/explore/walk/${wn.w.id}/${wn.ep.n}" style="margin-top:12px">읽기</a>${wAll}</div>`
+    : wn.next ? `<div class="card xcard"><div class="sm">${esc(wn.w.book)} · 다음 토막은 ${walkWhen(wn.nextDN)} 열려요</div><div class="sf xct" style="margin-top:4px">${esc(wn.next.title)}</div><div class="sm" style="margin-top:4px">${esc(wn.next.ref)}</div>${wAll}</div>`
+    : wn.all ? `<div class="card xcard"><div class="sm">${esc(wn.w.book)}</div><div class="sf xct" style="margin-top:4px">${esc(wn.w.title)}</div><div class="sm" style="margin-top:6px;line-height:1.55;word-break:keep-all">모든 토막을 걸었어요. 언제든 다시 읽을 수 있어요.</div>${wAll}</div>`
+    : `<div class="card xcard"><div class="sm">${esc(wn.w.book)} · ${walkDay(parseYmd(wn.w.start).t)}에 시작해요</div><div class="sf xct" style="margin-top:4px">${esc(wn.w.title)}</div><div class="sm" style="margin-top:6px;line-height:1.55;word-break:keep-all">${esc(wn.w.line)}</div>${wAll}</div>`;
   const curCard = (n, i) => `<div class="card xcard"${i ? ' style="margin-top:10px"' : ''}><div class="sf xct">${esc(getQ(n.q).text)}</div><div style="margin-top:10px">${n.mode === 'free' ? `<span class="sm">자유롭게 쓰기 · ${startLine(n)}</span>` : dotsHtml(n, false, startLine(n))}</div><button class="btn${wide ? '' : ' wide'}" type="button" data-act="past-open" data-id="${n.q}">이어서 쓰기</button></div>`;
   const curHtml = cur.length
     ? cur.map(curCard).join('')
@@ -2140,12 +2152,13 @@ function viewWeek() {
 // ── 질문을 따라 걷기(S-38): 연재 목록. 열린 토막은 누르고, 아직 안 열린 토막은 흐리게 열리는 날만. 읽은 표시·진도는 두지 않는다 ──
 function viewWalk(w) {
   const wide = isWide();
-  const head = `<div class="card xhead"><div class="xlb" style="margin:0 0 6px">질문을 따라 걷기</div><div class="sf xwq">${esc(w.book)} — ${esc(w.title)}</div><p class="wk-p" style="margin-top:10px">${esc(w.intro)}</p><div class="sm">월·수·금에 한 토막씩 열려요. 지난 토막은 언제든 다시 읽을 수 있어요.</div></div>`;
+  const head = `<div class="card xhead"><div class="xlb" style="margin:0 0 6px">질문을 따라 걷기</div><div class="sf xwq">${esc(w.book)} — ${esc(w.title)}</div><p class="wk-p" style="margin-top:10px">${esc(w.intro)}</p><div class="sm">한 토막을 머묾까지 걸으면 다음 토막이 다음 날 열려요. 매일 걸어도, 띄엄띄엄 걸어도 괜찮아요. 걸은 토막은 언제든 다시 읽을 수 있어요.</div></div>`;
   const rows = w.eps.map((e, i) => {
-    const day = walkDay(walkOpenDN(w, i));
+    const day = walkOpenDN(w, i);
+    const when = i === 0 ? `${walkDay(day)}에 시작해요` : Number.isFinite(day) ? `${walkWhen(day)} 열려요` : '앞 토막을 마치면 열려요';
     return walkIsOpen(w, e)
-      ? `<a class="card xrow" href="#/explore/walk/${w.id}/${e.n}"><span><span style="display:block">${esc(e.title)}</span><span class="sm">${esc(e.ref)} · ${day}</span></span><span class="xch" aria-hidden="true">›</span></a>`
-      : `<div class="card xrow wk-wait"><span><span style="display:block">${esc(e.title)}</span><span class="sm">${day}에 열려요</span></span></div>`;
+      ? `<a class="card xrow" href="#/explore/walk/${w.id}/${e.n}"><span><span style="display:block">${esc(e.title)}</span><span class="sm">${e.n}번째 걸음 · ${esc(e.ref)}</span></span><span class="xch" aria-hidden="true">›</span></a>`
+      : `<div class="card xrow wk-wait"><span><span style="display:block">${esc(e.title)}</span><span class="sm">${when}</span></span></div>`;
   }).join('');
   const body = head + `<div style="margin-top:12px">${rows}</div>`;
   if (wide) return wideShell(body, { pn: true, top: '' });
@@ -2153,12 +2166,12 @@ function viewWalk(w) {
 }
 
 // 한 토막(이번 주의 질문처럼 한 단계씩): 0 본문 읽기 → 1 보기 → 2 묵상(쓰는 칸) → 3 풀이 → 4 머묾. 본문 노트(원어·배경)는 위에 접혀 있고 언제든 편다.
-// 사실(본문 노트)은 먼저, 해석(풀이)은 내 묵상 뒤에 둔다(철학 ⑪). 묵상을 적어 둔 토막은 다 펴진 채로 연다
+// 사실(본문 노트)은 먼저, 해석(풀이)은 내 묵상 뒤에 둔다(철학 ⑪). 묵상을 적었거나 마친 토막은 다 펴진 채로 연다
 let WE = { key: '', max: 0, view: 0, notes: false };
 function viewWalkEp(w, ep) {
   const wide = isWide(), i = w.eps.indexOf(ep), key = w.id + '/' + ep.n, mine = getMine(walkMineId(w, ep));
-  if (WE.key !== key) WE = { key, max: mine ? 4 : 0, view: mine ? 4 : 0, notes: false };
-  const head = `<div class="card xhead"><div class="xlb" style="margin:0 0 6px">${esc(w.book)} · ${walkDay(walkOpenDN(w, i))}</div><div class="sf xwq">${esc(ep.title)}</div></div>`
+  if (WE.key !== key) WE = { key, max: (mine || walkDone(w, ep)) ? 4 : 0, view: (mine || walkDone(w, ep)) ? 4 : 0, notes: false };
+  const head = `<div class="card xhead"><div class="xlb" style="margin:0 0 6px">${esc(w.book)} · ${ep.n}번째 걸음</div><div class="sf xwq">${esc(ep.title)}</div></div>`
     + (ep.img ? `<img class="q-img" src="${esc(ep.img)}" alt="${esc(ep.art || '')}" width="1200" height="675" decoding="async" style="margin-top:12px">` : '');   // 그림은 img가 있는 토막에만(그림은 나중에 넣는다)
   const noteRow = n => `<li class="wk-note"><div><b>${esc(n.w)}</b> <span class="wk-heb" lang="he" dir="rtl">${esc(n.heb)}</span> <span class="sm">${esc(n.at.join(', '))}</span></div><p>${esc(n.t)}</p><div class="sm">사전 뜻: ${esc(n.gloss)} · ${esc(n.s)}${n.see.length ? ' · 같은 낱말: ' + esc(n.see.join(', ')) : ''}</div></li>`;
   const notes = `<div class="wk-notes"><button class="tx wk-nt" type="button" data-act="walk-notes" aria-expanded="${WE.notes}">본문 노트 ${WE.notes ? '접기' : '펴기'}</button>`
@@ -2188,7 +2201,7 @@ function viewWalkEp(w, ep) {
     const prev = prevEp ? `<a class="btn ol" href="#/explore/walk/${w.id}/${prevEp.n}">‹ 이전</a>` : '';
     const next = !nextEp ? `<a class="btn" href="#/explore/walk/${w.id}">${esc(w.book)} 목록으로</a>`
       : walkIsOpen(w, nextEp) ? `<a class="btn" href="#/explore/walk/${w.id}/${nextEp.n}">다음 토막 →</a>`
-      : `<span class="sm wk-next">다음 토막은 ${walkDay(walkOpenDN(w, i + 1))}에 열려요</span>`;
+      : walkDone(w, ep) ? `<span class="sm wk-next">다음 토막은 ${walkWhen(walkOpenDN(w, i + 1))} 열려요</span>` : '';
     bar = prev + next;
   }
   const actBar = `<div class="xact"><div class="xact-in">${bar}</div></div>`;
@@ -2684,19 +2697,32 @@ function mapContext(key) {
   const data = kind === 'q' ? Object.values(Q.today).flat().find(q => questionKey(q) === id && (window.Q_PLACES[id] || window.Q_WIDE[id]) === place && receivedKey(id)) : !Object.hasOwn(window.WIDE_PLACES, place) && /^\d+$/.test(id) && (window.MAP_STORIES[place] || [])[+id];
   return data ? { place, kind, id, data, key } : null;
 }
-// 질문을 따라 걷기(S-38): 연재 데이터는 walks-data.js. 토막은 시작 월요일(start)부터 월·수·금에 하나씩 달력대로 열린다(데모는 날짜 바꾸기를 따른다)
+// 질문을 따라 걷기(S-38, S-39): 연재 데이터는 walks-data.js. 첫 토막은 start 날부터, 다음 토막은 앞 토막을 마친(머묾까지 넘긴) 다음 날부터 열린다(데모는 날짜 바꾸기를 따른다)
 const walkById = id => (window.WALKS || []).find(w => w.id === id);
-const walkOpenDN = (w, i) => parseYmd(w.start).t + Math.floor(i / 3) * 7 + [0, 2, 4][i % 3];   // i번째(0부터) 토막이 열리는 날(하루 수)
+const walkMineId = (w, ep) => `wa-${w.id}-${ep.n}`;   // 묵상에 쓴 글은 이번 주의 질문 내 생각과 같은 자리(N.wk)에 이 id로 둔다
+const walkDone = (w, ep) => { const m = N.wk.find(x => x.id === walkMineId(w, ep)); return m && m.done ? m.done : 0; };   // 마친 날(ms), 안 마쳤으면 0
+const dnOfMs = ms => { const d = new Date(ms); return parseYmd(`${d.getFullYear()}-${pad2(d.getMonth() + 1)}-${pad2(d.getDate())}`).t; };
+// i번째(0부터) 토막이 열리는 날(하루 수): 첫 토막은 start, 다음은 앞 토막을 마친 다음 날. 앞 토막을 아직 안 마쳤으면 Infinity(열리지 않음)
+const walkOpenDN = (w, i) => { const s = parseYmd(w.start).t; if (i === 0) return s; const d = walkDone(w, w.eps[i - 1]); return d ? Math.max(s, dnOfMs(d) + 1) : Infinity; };
+const walkWhen = n => (n === demoDN() + 1 ? '내일' : walkDay(n) + '에');   // "내일" 또는 "11월 13일(금)에"
+// 머묾까지 오면 마친 것: 그날(데모는 고른 날)의 정오를 done에 남긴다. 처음 마친 날을 지킨다
+function markWalkDone(w, ep) {
+  const id = walkMineId(w, ep), now = Date.now(), day = dnDate(demoDN()).getTime() + DAY / 2, m = N.wk.find(x => x.id === id);
+  if (m) { if (!m.done) { m.done = day; m.at = now; } } else N.wk.push({ id, mine: '', at: now, done: day });
+  saveNotes();
+}
 const walkIsOpen = (w, ep) => walkOpenDN(w, w.eps.indexOf(ep)) <= demoDN();
 const walkDay = n => { const d = dnDate(n); return `${mdLine(d)}(${DAYS[d.getDay()]})`; };   // "11월 13일(금)"
-const walkMineId = (w, ep) => `wa-${w.id}-${ep.n}`;   // 묵상에 쓴 글은 이번 주의 질문 내 생각과 같은 자리(N.wk)에 이 id로 둔다
-// 탐구하기 카드에 보일 것: 이미 시작한 연재 가운데 가장 늦게 시작한 것의 가장 최근 토막. 시작한 연재가 없으면 곧 시작할 연재(ep 없음)
+// 탐구하기 카드에 보일 것: 이미 시작한 연재 가운데 가장 늦게 시작한 것에서 ① 열렸지만 아직 안 마친 첫 토막(ep) ② 없으면 다음 토막이 열리는 때(next) ③ 다 마쳤으면 all.
+// 시작한 연재가 없으면 곧 시작할 연재(start만)
 function walkNow() {
   const t = demoDN(), all = window.WALKS || [];
-  const started = all.filter(w => parseYmd(w.start).t <= t).sort((a, b) => parseYmd(b.start).t - parseYmd(a.start).t)[0];
-  if (started) { const open = started.eps.filter(e => walkIsOpen(started, e)); return { w: started, ep: open[open.length - 1] }; }
-  const next = all.filter(w => parseYmd(w.start).t > t).sort((a, b) => parseYmd(a.start).t - parseYmd(b.start).t)[0];
-  return next ? { w: next, ep: null } : null;
+  const w = all.filter(x => parseYmd(x.start).t <= t).sort((a, b) => parseYmd(b.start).t - parseYmd(a.start).t)[0];
+  if (!w) { const nx = all.filter(x => parseYmd(x.start).t > t).sort((a, b) => parseYmd(a.start).t - parseYmd(b.start).t)[0]; return nx ? { w: nx, start: true } : null; }
+  const ep = w.eps.find(e => walkIsOpen(w, e) && !walkDone(w, e));
+  if (ep) return { w, ep };
+  const i = w.eps.findIndex(e => !walkDone(w, e));
+  return i < 0 ? { w, all: true } : { w, next: w.eps[i], nextDN: walkOpenDN(w, i) };
 }
 // 지금 주소가 열린 토막(explore/walk/<id>/<번호>)이면 { w, ep }
 function walkEpOfRoute() {
@@ -3298,7 +3324,7 @@ function render(fromHash) {
   const drawStart = performance.now();
   const raw = routeKey(), key = guard(raw);
   if (key !== raw) { setHash(key, true); return; }
-  if (key !== lastKey) WE.key = '';   // 다시 열 때 저장된 묵상이 있으면 머묾까지, 지웠으면 처음부터
+  if (key !== lastKey) WE.key = '';   // 다시 열 때 저장된 묵상이나 마친 기록에 맞춰 단계를 연다
   if (me) ensureVineStart();
   const fm = /^explore\/note\/([\w-]+)$/.exec(key), freeNow = fm && getEx(fm[1]) && getEx(fm[1]).mode === 'free' ? fm[1] : '';   // 자유롭게 쓰는 노트 화면이면 그 노트 id
   const wall = k => /^mine(\/q\/[\w-]+)?$/.test(k);
@@ -3392,7 +3418,7 @@ const acts = {
   'week-next'() { WK.view = Math.min(3, WK.view + 1); WK.max = Math.max(WK.max, WK.view); if (WK.view === 3) { markWeekDone(); earnBadge('w-open'); } render(); window.scrollTo(0, 0); const h = $('#xHead'); if (h) h.focus({ preventScroll: true }); },
   'week-view'(e, el) { WK.view = Number(el.dataset.i); render(); },
   'week-back'() { setHash('explore'); },
-  'walk-next'() { WE.view = Math.min(4, WE.view + 1); WE.max = Math.max(WE.max, WE.view); render(); window.scrollTo(0, 0); const h = $('#xHead'); if (h) h.focus({ preventScroll: true }); },
+  'walk-next'() { WE.view = Math.min(4, WE.view + 1); WE.max = Math.max(WE.max, WE.view); if (WE.view === 4) { const r = walkEpOfRoute(); if (r) markWalkDone(r.w, r.ep); } render(); window.scrollTo(0, 0); const h = $('#xHead'); if (h) h.focus({ preventScroll: true }); },
   'walk-view'(e, el) { WE.view = Number(el.dataset.i); render(); },
   'walk-notes'() { WE.notes = !WE.notes; render(); },
   pray() { toast('데모라 넘어가지 않아요'); },   // 데모: 기도하는 앱으로 넘어가지 않는다
