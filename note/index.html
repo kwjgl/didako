@@ -474,6 +474,7 @@ body.pop-open { overflow: hidden; }
 .sft .tx { min-height: 44px; padding: 0; font: 700 .84375rem var(--f-body); color: var(--note-ink); }
 /* 남겨 둔 ! 발견: 질문에 아직 붙지 않은 낱장이라 점선 테두리와 옅은 노랑으로 구분한다 */
 .sn.lf { background: color-mix(in srgb, var(--note-paper) 55%, var(--surface)); border: 1.5px dashed color-mix(in srgb, var(--note-ink) 45%, transparent); box-shadow: none; }
+.sn.lf[data-act] { cursor: pointer; }   /* 남겨 둔 ! 발견은 쪽지를 눌러도 짝 찾기로 연다(S-33) */
 .sn.lf .mk { background: none; border: 1.5px solid var(--note-ink); color: var(--note-ink); line-height: 19px; }
 .sn.lf .tx4 { -webkit-line-clamp: 3; }
 .sn.lf .tx4.open { display: block; overflow: visible; }
@@ -666,6 +667,7 @@ body.focus .tabs { display: none !important; }
 .xbar .grp { display: flex; align-items: center; gap: 2px; }
 .xibt { width: 44px; height: 44px; border: 0; background: none; color: var(--ink); display: flex; align-items: center; justify-content: center; padding: 0; flex: none; }
 .xibt.ac { color: var(--accent); }
+.xibt.xffd { width: auto; padding: 0 10px; font-size: .9375rem; font-weight: 700; color: var(--accent-deep); }   /* 자유롭게 쓰기 위쪽 줄의 [! 발견](S-32) */
 .xseg { display: flex; gap: 2px; background: var(--line); border-radius: 12px; padding: 2px; }
 .xseg button { width: 44px; height: 40px; border: 0; border-radius: 10px; padding: 0; display: flex; align-items: center; justify-content: center; background: none; color: var(--ink-2); }
 .xseg button[aria-pressed="true"] { background: var(--surface); color: var(--accent); box-shadow: 0 1px 3px var(--shadow); }
@@ -875,10 +877,14 @@ body.fs .xw-top { padding-right: 52px; }   /* 시안 보기 설정(톱니)이 �
 @media (prefers-reduced-motion: reduce) { .vt-in-r, .vt-in-l, .vt-fade { animation: none; } }
 </style>
 <link rel="stylesheet" href="design-styles.css">
+<!-- 시작 화면이 뜨기 전에는 바탕을 단색으로(바탕 무늬가 잠깐 비치지 않게). splash.js가 닫을 때 푼다(S-34) -->
+<script>document.documentElement.classList.add('booting'); setTimeout(() => document.documentElement.classList.remove('booting'), 5000);</script>
+<style>html.booting body { background-image: none !important; } html.booting body::before { display: none !important; }</style>
 </head>
 <body>
 <!-- 세 겹 책갈피 로고(상단 바와 소개 화면에서 쓴다) -->
 <svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs><symbol id="i-didako" viewBox="0 0 16 16"><g fill="none"><circle cx="8" cy="2.6" r="1.5" stroke="var(--s1, var(--accent))" stroke-width="1.4"/><path d="M8 4.2V5.8" stroke="var(--s1, var(--accent))" stroke-width="1.2"/><clipPath id="didako-clip"><path d="M4.2 5.6H11.8V14.8L8 11.8L4.2 14.8Z"/></clipPath><g clip-path="url(#didako-clip)" stroke="none"><rect x="4.2" y="4.6" width="2.53" height="12" fill="var(--s1, var(--accent))"/><rect x="6.73" y="4.6" width="2.54" height="12" fill="var(--s2, var(--accent-mid))"/><rect x="9.27" y="4.6" width="2.53" height="12" fill="var(--s3, var(--ink-2))"/><path d="M6.73 4.6V15M9.27 4.6V15" stroke="var(--cord-bg, var(--page))" stroke-width=".5"/></g></g></symbol></defs></svg>
+<script src="splash.js"></script>
 
 <!-- 모든 화면의 상단 바: 로고와 앱 이름, 넓은 화면 글자 메뉴, 함께하는 곳과 화면 설정 -->
 <header class="topbar" id="topbar" hidden>
@@ -2268,6 +2274,16 @@ function exMoreSheet() {
     <button class="btn lt" type="button" data-act="sheet-x" style="margin-top:4px">닫기</button>`);
 }
 
+function freeFoundSheet() {
+  saveFree(false);
+  const n = getEx(F.id); if (!n) return;
+  const lines = docLines(n.free && n.free.doc).map(l => /^!\s+(\S.*)$/.exec(l.trim())).filter(Boolean);
+  const text = lines.length ? lines[lines.length - 1][1].trim() : '';
+  openSheet(`<div class="sheet-top"><h2>무엇을 알게 됐나요?</h2><button class="tx" type="button" data-act="sheet-x">닫기</button></div>
+    <textarea class="field" id="ffTa" rows="4" placeholder="알게 된 것을 적어 봐요" aria-label="알게 된 것">${esc(text)}</textarea>
+    <button class="btn k wide" type="button" data-act="free-found-go">알게 됐어요</button>`);
+}
+
 // ── 자유롭게 쓰기(③-2): 편집기(Tiptap, 아래쪽 module 스크립트)와 이어 쓴다. 캔버스 M9f, M9g, M14, M14b, M23, T3, T7 ──
 // 글은 n.free.doc에 둔다(단계별 글과 따로). 고칠 때마다 0.5초 쉬었다가 저장하고, ? ! 줄(새 질문·알게 된 것)은 [저장 ✓]을 누르거나 화면을 떠날 때 처리한다
 const newF = () => ({ id: '', ed: null, full: false, timer: 0, dirty: false, st: {}, seq: 0, fail: false, warned: false, chars: 0 });
@@ -2285,10 +2301,10 @@ function fbarHtml(wide) {   // 서식 막대: 아이콘 7개를 세 묶음으로
     + b('q', '질문 줄', '<b class="mq">?</b>') + b('f', '발견 줄', '<b class="mq">!</b>');
   return wide ? `<div class="fbar wd" role="toolbar" aria-label="서식"><div class="fg">${grp}</div><span class="fstat" id="fStat"></span></div>` : `<div class="fbar pf" role="toolbar" aria-label="서식">${grp}</div>`;
 }
-function freeBar(wide) {   // 위쪽 줄: 휴대폰 [← 탐구하기] … [저장 ✓] [⋯], 넓은 화면은 [전체 화면] [저장 ✓] [⋯]
+function freeBar(wide) {   // 위쪽 줄: 휴대폰 [← 탐구하기] … [! 발견] [저장 ✓] [⋯], 넓은 화면은 [전체 화면] [! 발견] [저장 ✓] [⋯]
   const left = wide ? '<span></span>' : '<button class="tx" type="button" data-act="note-back"><span style="margin-left:-6px">← 탐구하기</span></button>';
   const full = wide ? `<button class="xibt" type="button" data-act="full" aria-label="${F.full ? '전체 화면 끝내기' : '전체 화면'}" style="color:var(--ink-2)">${F.full ? FS_OFF : FS_ON}</button>` : '';
-  return `<div class="xbar">${left}<div class="grp">${full}<button class="xibt ac" type="button" aria-label="저장" data-act="note-save">${SAVE_IC}</button><button class="xibt" type="button" aria-label="더보기" data-act="ex-more">${DOTS_IC(22)}</button></div></div>`;
+  return `<div class="xbar">${left}<div class="grp">${full}<button class="xibt xffd" type="button" data-act="free-found" aria-label="알게 된 것으로 이 질문 닫기"><b class="mq">!</b>&nbsp;발견</button><button class="xibt ac" type="button" aria-label="저장" data-act="note-save">${SAVE_IC}</button><button class="xibt" type="button" aria-label="더보기" data-act="ex-more">${DOTS_IC(22)}</button></div></div>`;
 }
 function viewFree(id) {
   const n = getEx(id), q = getQ(id), wide = isWide();
@@ -2918,7 +2934,7 @@ function snQ(q, sel) {
   const progress = current && n ? (n.mode === 'free' ? `<span style="display:block;margin-top:6px">자유롭게 쓰기 · ${startLine(n)}</span>` : dotsHtml(n, true, startLine(n))) : '';
   return `<button class="sn${found ? ' y' : ''}${current ? ' x' : ''}${sel ? ' sel' : ''}" type="button" data-act="open-q" data-id="${q.id}"${sel ? ' aria-pressed="true"' : ''}><span class="sn-head">${found ? '<span class="mks" role="img" aria-label="질문, 발견"><span class="mk">?</span><span class="mk">!</span></span>' : '<span class="mk" aria-hidden="true">?</span>'}${compass}</span><span class="tx4">${esc(q.text)}</span><span class="mt">${found ? qMeta(q) : (q.ref ? esc(q.ref) + ' · ' : '') + qMeta(q)}${progress}</span></button>`;
 }
-const snF = f => `<div class="sn y lf"><span class="mk" aria-hidden="true">!</span><span class="tx4">${esc(f.text)}</span><span class="sft"><span class="mt" style="margin:0">${fDate(f)}</span><button class="tx" type="button" data-act="pair-find" data-id="${f.id}">질문에 잇기 ›</button></span></div>`;
+const snF = f => `<div class="sn y lf" data-act="pair-find" data-id="${f.id}"><span class="mk" aria-hidden="true">!</span><span class="tx4">${esc(f.text)}</span><span class="sft"><span class="mt" style="margin:0">${fDate(f)}</span><button class="tx" type="button" data-act="pair-find" data-id="${f.id}">질문에 잇기 ›</button></span></div>`;
 // 고른 해는 화면에서만 기억한다. 기기 보관이나 주소에는 넣지 않는다.
 let weeksYear = null;
 function mineTools(search = true) {
@@ -2987,7 +3003,6 @@ function road(q) {
 function qBody(q) {
   const found = q.state === 'found', par = q.parent && getQ(q.parent);
   return `<div class="card qcard"><div class="sf qt-h">${esc(q.text)}</div>
-      ${getEx(q.id) ? `<button class="btn lt" type="button" data-act="past-open" data-id="${q.id}">${isCur(q.id) ? '이어서 탐구하기' : '탐구 노트 보기'}</button>` : ''}
       <div class="qmeta">${q.ref ? `<span class="chip">${esc(q.ref)}</span>` : ''}<span class="sm">${qMeta(q)}</span></div>
       ${par ? `<button class="tx par" type="button" data-act="parent-open" data-id="${par.id}">'${esc(par.text)}'에서 생겨난 질문 ›</button>` : ''}</div>
     <button class="btn wide go${found ? ' alt' : ''}" type="button" data-act="q-explore" data-id="${q.id}">${found ? '이어서 적기' : isCur(q.id) ? '이어서 쓰기' : '탐구하기'}</button>
@@ -3350,6 +3365,22 @@ const acts = {
   'hold-more'() {   // 질문은 품고 있는 질문 그대로 두고 탐구 첫 화면으로
     const n = curEx(); if (n) commitStep(n, 4, n.steps[4].trim() !== '');
     setHash('explore');
+  },
+  'free-found'() { freeFoundSheet(); },
+  'free-found-go'() {
+    const n = getEx(F.id), q = n && getQ(n.q); if (!n || !q) return;
+    const text = $('#ffTa').value.trim();
+    if (!text) { toast('알게 된 것을 먼저 적어 주세요'); return; }
+    const wasFound = q.state === 'found', now = Date.now();
+    if (!n.done.includes('!|' + text)) n.done.push('!|' + text);
+    saveFree(true);
+    q.trail = q.trail.filter(t => !(t.kind === 'got' && t.text === text));
+    const same = N.fs.some(f => f.q === q.id && f.text === text);
+    if (!same) N.fs.push({ id: newId('f'), text, ref: '', since: '', at: now, touched: now, q: q.id });
+    q.state = 'found'; q.touched = now; saveNotes();
+    closeSheet(true);
+    after = () => toast(wasFound || same ? '이어졌어요' : '알게 된 질문이 됐어요', { pill: true });
+    go('mine/q/' + q.id);
   },
   found() {   // ⑤에 적은 글이 발견으로 길 끝에 붙고, 짝 찾기 없이 이 질문이 알게 된 질문이 된다
     const n = curEx(), q = n && getQ(n.q); if (!n || !q) return;
@@ -3945,6 +3976,7 @@ if (!LIVE) saveBadges();
 applySettings();
 if (!location.hash) setHash(me ? 'today' : 'start', true);
 render(true);
+window.didakoSplash && window.didakoSplash.hide();   // 첫 화면을 그렸으면 시작 화면을 닫는다(S-34)
 if (LIVE) {
   bootLive().catch(liveError);
   if ('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js').catch(() => {});
