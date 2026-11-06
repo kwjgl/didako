@@ -254,7 +254,7 @@ body.tabs-off .stickbar { bottom: env(safe-area-inset-bottom, 0px); }
 .strip .v { font: 700 .9375rem var(--f-display); overflow: hidden; text-overflow: ellipsis; }
 .wr-ta { min-height: 136px; font-size: 1rem; padding: 12px 14px; margin: 10px 0 6px; }
 .wr-ta:focus { border-color: var(--accent); box-shadow: 0 0 0 2px var(--accent-soft); outline: none; }
-.wr-row { width: 100%; border: 0; border-top: 1px solid var(--line); background: none; display: flex; justify-content: space-between; align-items: center; min-height: 44px; text-align: left; }
+.wr-row { padding: 0 6px; width: 100%; border: 0; border-top: 1px solid var(--line); background: none; display: flex; justify-content: space-between; align-items: center; min-height: 44px; text-align: left; }
 .wr-row .a { color: var(--accent); }
 
 /* 더보기(M8, T13)와 세부 화면 */
@@ -618,11 +618,11 @@ body.focus .tabs { display: none !important; }
 .xfrrow { display: flex; align-items: center; gap: 6px; margin-top: 12px; }
 .xfr { display: inline-flex; align-items: center; min-height: 44px; padding: 0 14px; border-radius: 22px; border: 1.5px dashed var(--accent-mid); color: var(--accent-deep); font: 500 .875rem var(--f-body); background: none; }
 .xfrrow .tx { gap: 4px; font-size: .875rem; color: var(--ink-2); }
-.week-traces { margin-top: 24px; }
+.weeks-year { display: flex; align-items: center; justify-content: space-between; margin: 14px 0; }
 .week-trace { display: block; width: 100%; margin-top: 8px; text-align: left; color: var(--ink); }
-.week-trace > .sf { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+.week-trace > .sf { margin-top: 4px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
 .week-trace > .sm { display: block; margin-top: 4px; }
-.week-mine { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.week-trace > .week-mine { display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
 .xfrrow [data-act="frame-next"] { min-width: 44px; min-height: 44px; justify-content: center; }
 label.wr-row, label.vc { position: relative; cursor: pointer; }
 label.wr-row > input, label.vc > input { position: absolute; inset: 0; width: 100%; height: 100%; opacity: 0; cursor: pointer; }
@@ -809,6 +809,14 @@ body.fs .xw-top { padding-right: 52px; }   /* 시안 보기 설정(톱니)이 �
 .badge-sheet { display: flex; flex-direction: column; gap: 12px; text-align: center; align-items: stretch; }
 .badge-art.large { width: 144px; align-self: center; }
 .badge-art.large svg { width: 88px; height: 88px; }
+/* 부드럽게 넘어가기: 코이데와 같은 값으로 새 화면만 움직인다. */
+.vt-in-r { animation: vt-in-r .2s cubic-bezier(.2, .8, .2, 1) both; }
+.vt-in-l { animation: vt-in-l .2s cubic-bezier(.2, .8, .2, 1) both; }
+.vt-fade { animation: vt-fade .18s ease-out both; }
+@keyframes vt-in-r { from { opacity: 0; transform: translateX(14px); } }
+@keyframes vt-in-l { from { opacity: 0; transform: translateX(-14px); } }
+@keyframes vt-fade { from { opacity: 0; } }
+@media (prefers-reduced-motion: reduce) { .vt-in-r, .vt-in-l, .vt-fade { animation: none; } }
 </style>
 <link rel="stylesheet" href="design-styles.css">
 </head>
@@ -2543,6 +2551,7 @@ const BADGES = [
 ];
 const BADGE_ART = true;   // 배지 그림(note/img/badges/<k>.webp, 지시서 S-07, PR #165). false로 바꾸면 선 아이콘으로 돌아간다
 const BADGE_IC = '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="9" r="6"/><path d="M8 14l-2 7 6-3 6 3-2-7"/></svg>';
+const WEEKS_IC = '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M7 3v4M17 3v4M3 11h18M7 15h2M15 15h2M7 18h2"/></svg>';
 const BADGE_LINES = {
   'q-first': '<path d="M6 3h12v18H6zM10 8a2 2 0 1 1 3 2c-1 .5-1 1-1 2"/><circle cx="12" cy="15" r=".5"/>',
   'f-first': '<path d="M5 5h12v16H5zM17 2l1.5 3.5L22 7l-3.5 1.5L17 12l-1.5-3.5L12 7l3.5-1.5z"/>',
@@ -2622,23 +2631,29 @@ function snQ(q, sel) {
   return `<button class="sn${found ? ' y' : ''}${sel ? ' sel' : ''}" type="button" data-act="open-q" data-id="${q.id}"${sel ? ' aria-pressed="true"' : ''}>${found ? '<span class="mks" role="img" aria-label="질문, 발견"><span class="mk">?</span><span class="mk">!</span></span>' : '<span class="mk" aria-hidden="true">?</span>'}<span class="tx4">${esc(q.text)}</span><span class="mt">${found ? qMeta(q) : (q.ref ? esc(q.ref) + ' · ' : '') + qMeta(q)}</span></button>`;
 }
 const snF = f => `<div class="sn y lf"><span class="mk" aria-hidden="true">!</span><span class="tx4">${esc(f.text)}</span><span class="sft"><span class="mt" style="margin:0">${fDate(f)}</span><button class="tx" type="button" data-act="pair-find" data-id="${f.id}">질문에 잇기 ›</button></span></div>`;
-let weeksExpanded = false;
-function weekTraces() {
-  const list = N.wk.filter(w => w.done && weekById(w.id)).sort((a, b) => b.done - a.done);
-  if (!list.length) return '';
-  const current = weekNow().id;
-  const rows = (weeksExpanded ? list : list.slice(0, 3)).map(w => {
+// 고른 해는 화면에서만 기억한다. 기기 보관이나 주소에는 넣지 않는다.
+let weeksYear = null;
+function mineTools(search = true) {
+  return `<div style="display:flex;align-items:center"><a class="ib" href="#/mine/weeks" aria-label="펴 본 이번 주의 질문">${WEEKS_IC}</a>${badgeButton()}${search ? `<a class="ib" href="#/mine/search" aria-label="검색" style="margin-right:-10px">${SEARCH_IC}</a>` : ''}</div>`;
+}
+function viewWeeks() {
+  const list = N.wk.filter(w => w.done && weekById(w.id));
+  const years = [...new Set(list.map(w => Number(w.id.slice(2, 6))))].sort((a, b) => b - a);
+  if (!years.includes(weeksYear)) weeksYear = years[0] || null;
+  const index = years.indexOf(weeksYear), current = weekNow().id;
+  const rows = list.filter(w => Number(w.id.slice(2, 6)) === weeksYear).sort((a, b) => b.id.localeCompare(a.id)).map(w => {
     const q = weekById(w.id), tag = w.id === current ? 'button' : 'div';
-    return `<${tag} class="card xcard week-trace"${tag === 'button' ? ' type="button" data-act="week-open"' : ''}><span class="sf">${esc(q.q)}</span><span class="sm">제${q.n}주일 · ${mdLine(new Date(w.done))}</span>${w.mine ? `<span class="sm week-mine">${esc(w.mine)}</span>` : ''}</${tag}>`;
+    return `<${tag} class="card xcard week-trace"${tag === 'button' ? ' type="button" data-act="week-open"' : ''}><span class="sm">제${q.n}주일 · ${mdLine(new Date(w.done))}</span><span class="sf">${esc(q.q)}</span>${w.mine ? `<span class="sm week-mine">${esc(w.mine)}</span>` : ''}</${tag}>`;
   }).join('');
-  return `<section class="week-traces"><div class="road-h">펴 본 이번 주의 질문</div>${rows}${list.length > 3 ? `<button class="tx" type="button" data-act="weeks-toggle">${weeksExpanded ? '접기' : '더 보기'}</button>` : ''}</section>`;
+  return `<div class="col"><div class="back-row"><a class="bk" href="#/mine">← 내 기록</a></div><h1 class="tt">펴 본 이번 주의 질문</h1>
+    ${years.length ? `<div class="weeks-year"><button class="ib" type="button" aria-label="이전 해" data-act="weeks-year" data-year="${years[index + 1] || ''}"${index === years.length - 1 ? ' disabled' : ''}>‹</button><span>${weeksYear}년</span><button class="ib" type="button" aria-label="다음 해" data-act="weeks-year" data-year="${years[index - 1] || ''}"${index === 0 ? ' disabled' : ''}>›</button></div>${rows}` : '<div class="empty"><div class="ph">이번 주의 질문을 마무리까지 펴면 여기에 쌓여요</div></div>'}</div>`;
 }
 function viewMine(sel) {
   const all = wallItems();
   if (!all.length) {   // 질문도 남겨 둔 ! 발견도 없다(M12)
-    return `<div class="col more">${pageHead('🗂️', '내 기록', badgeButton())}
+    return `<div class="col more">${pageHead('🗂️', '내 기록', mineTools(false))}
       <div class="empty"><div class="sm">아직 모아 둔 것이 없어요. 말씀을 읽다 궁금한 것이 생기면 + 남기기에서 남겨 두세요.</div>
-      <a class="btn wide" href="#/write">남기기로 가기</a></div>${weekTraces()}</div>`;
+      <a class="btn wide" href="#/write">남기기로 가기</a></div></div>`;
   }
   const items = wallList(), wide = isWide(), selQ = sel && getQ(sel);
   const card = it => (it.k === 'q' ? snQ(it.q, wide && selQ && selQ.id === it.q.id) : snF(it.f));
@@ -2648,9 +2663,9 @@ function viewMine(sel) {
   else { const cols = [[], []]; items.forEach((it, i) => cols[i % 2].push(card(it))); wall = `<div class="wall">${cols.map(c => `<div class="wcol">${c.join('')}</div>`).join('')}</div>`; }
   const panel = wide && selQ ? `<aside class="qpanel" aria-label="질문 펴기"><div style="display:flex;justify-content:flex-end;margin-right:-12px">${trashButton('q', selQ.id)}${selQ.state === 'found' ? `<button class="ib" type="button" aria-label="이 질문 더 보기" data-act="q-more" data-id="${selQ.id}">${DOTS_IC(24)}</button>` : ''}<a class="ib" href="#/mine" aria-label="닫기">${X_IC}</a></div>${qBody(selQ)}</aside>` : '';
   return `<div class="col more">
-    ${pageHead('🗂️', '내 기록', `<div style="display:flex;align-items:center">${badgeButton()}<a class="ib" href="#/mine/search" aria-label="검색" style="margin-right:-10px">${SEARCH_IC}</a></div>`)}
+    ${pageHead('🗂️', '내 기록', mineTools())}
     <div class="chips" role="group" aria-label="걸러 보기">${FILTERS.map(([v, l]) => `<button class="flt${mineFilter === v ? ' on' : ''}" type="button" aria-pressed="${mineFilter === v}" data-act="mine-filter" data-v="${v}">${l}</button>`).join('')}</div>
-    ${wall}${weekTraces()}</div>${panel}`;
+    ${wall}</div>${panel}`;
 }
 // 남겨 둔 ! 발견의 글은 세 줄까지만 보이고, 더 길면 "더 보기"로 펴 준다
 function fitMore() {
@@ -2810,7 +2825,7 @@ let undoSnap = null;   // 짝 풀기를 되돌리기 위한 직전 모습
 const VIEWS = {
   'start': viewStart, 'start/church': viewChurch, 'start/name': viewName, 'start/consent': viewConsent,
   'today': viewToday, 'today/past': viewPast, 'today/write': viewWrite,
-  'explore': viewExplore, 'explore/week': viewWeek, 'write': viewWrite, 'mine': () => viewMine(), 'mine/search': viewSearch, 'mine/badges': viewBadges,
+  'explore': viewExplore, 'explore/week': viewWeek, 'write': viewWrite, 'mine': () => viewMine(), 'mine/search': viewSearch, 'mine/badges': viewBadges, 'mine/weeks': viewWeeks,
   'more': viewMore, 'more/about': viewAbout, 'more/guide': viewGuide, 'more/feedback': viewFeedback, 'more/sync': viewSync
 };
 const MENU_OF = k => (k.startsWith('today') ? (TODAY_WRITE.test(k) ? 'write' : 'today') : k.startsWith('more') ? 'more' : k.startsWith('mine') ? 'mine' : k.startsWith('explore') ? 'explore' : k);
@@ -2852,11 +2867,28 @@ function guard(key) {
   if (key.startsWith('start')) return 'today';
   return key;
 }
+const VT_CLASSES = ['vt-in-r', 'vt-in-l', 'vt-fade'];
+function vtAnim(el, cls) {
+  el.classList.remove(...VT_CLASSES); void el.offsetWidth; el.classList.add(cls);
+  el.addEventListener('animationend', () => el.classList.remove(cls), { once: true });
+}
 let lastKey = '', drawnDay = realDN();
 function render(fromHash) {
+  const drawStart = performance.now();
   const raw = routeKey(), key = guard(raw);
   if (key !== raw) { setHash(key, true); return; }
   const fm = /^explore\/note\/([\w-]+)$/.exec(key), freeNow = fm && getEx(fm[1]) && getEx(fm[1]).mode === 'free' ? fm[1] : '';   // 자유롭게 쓰는 노트 화면이면 그 노트 id
+  const wall = k => /^mine(\/q\/[\w-]+)?$/.test(k);
+  const oldFree = /^explore\/note\/([\w-]+)$/.exec(lastKey);
+  const tabs = ['today', 'explore', 'write', 'mine', 'more'];
+  const from = tabs.indexOf(MENU_OF(lastKey)), to = tabs.indexOf(MENU_OF(key));
+  let motion = '';
+  if (fromHash && lastKey && key !== lastKey && !key.startsWith('start') && !lastKey.startsWith('start') &&
+      !(isWide() && wall(key) && wall(lastKey)) && !freeNow && !F.id &&
+      !(oldFree && getEx(oldFree[1])?.mode === 'free') && !matchMedia('(prefers-reduced-motion: reduce)').matches && from >= 0 && to >= 0) {
+    motion = to > from ? 'vt-in-r' : to < from ? 'vt-in-l' : 'vt-fade';
+  }
+  $('#main').classList.remove(...VT_CLASSES);
   if (F.id) leaveFree(freeNow === F.id);   // 쓰던 자유 노트를 저장하고 편집기를 내려놓는다
   if (X.id) { flushNote(); if (!key.startsWith('explore/note/')) X.id = ''; }   // 쓰던 노트를 떠날 때 쓴 것을 저장한다
   if (key !== 'mine/search') srchBack = 'mine';
@@ -2874,7 +2906,6 @@ function render(fromHash) {
   $$('[data-tab]').forEach(a => { const on = a.dataset.tab === m; a.classList.toggle('on', on); on ? a.setAttribute('aria-current', 'page') : a.removeAttribute('aria-current'); });
   $$('[data-menu]').forEach(a => { const on = a.dataset.menu === m; a.classList.toggle('on', on); on ? a.setAttribute('aria-current', 'page') : a.removeAttribute('aria-current'); });
   paintSettings();
-  const wall = k => /^mine(\/q\/[\w-]+)?$/.test(k);
   if (fromHash && key !== lastKey && !(isWide() && wall(key) && wall(lastKey))) { window.scrollTo(0, 0); }   // 넓은 화면에서 질문을 펴도 벽 자리는 그대로
   if (fromHash) { showTabs(); lastY = window.scrollY; }
   lastKey = key;
@@ -2889,6 +2920,7 @@ function render(fromHash) {
   syncAwake(key);
   if (LIVE) paintSyncStatus();
   if (after) { const f = after; after = null; f(); }   // 화면을 옮긴 뒤에 띄울 것(카드, 알림)
+  if (motion && key === lastKey && performance.now() - drawStart <= 50 && !$('#main').querySelector('.xact, .qpanel, .fbar.pf')) vtAnim($('#main'), motion);   // 화면에 붙은 막대가 있으면 움직이지 않는다(움직이는 동안 막대가 제자리를 벗어난다)
 }
 // 고른 설정을 눌린 표시로 맞춘다(자리를 다시 그리지 않아서 누르던 단추가 그대로 있다)
 function paintSettings() {
@@ -2927,7 +2959,7 @@ const acts = {
   // 탐구하기(③-1)
   'srch-ex'() { srchBack = 'explore'; setHash('mine/search'); },
   'week-open'() { WK = { max: 0, view: 0 }; showOpening(() => setHash('explore/week')); },   // 말씀을 열며 한 장 뒤에 한 단계씩
-  'weeks-toggle'() { weeksExpanded = !weeksExpanded; render(); },
+  'weeks-year'(e, el) { weeksYear = Number(el.dataset.year); render(); },
   'week-next'() { WK.view = Math.min(3, WK.view + 1); WK.max = Math.max(WK.max, WK.view); if (WK.view === 3) { markWeekDone(); earnBadge('w-open'); } render(); window.scrollTo(0, 0); const h = $('#xHead'); if (h) h.focus({ preventScroll: true }); },
   'week-view'(e, el) { WK.view = Number(el.dataset.i); render(); },
   'week-back'() { setHash('explore'); },
