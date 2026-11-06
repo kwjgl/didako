@@ -173,6 +173,7 @@ body.tabs-off .stickbar { bottom: env(safe-area-inset-bottom, 0px); }
 .place-row .role-tag { margin-left: 6px; }
 .place-row .place-copy { display: flex; flex-direction: column; gap: 2px; }
 .place-row:hover, .place-row:focus-visible { background: var(--surface-2); }
+#setMenu > .mlabel:first-child { font-size: .96875rem; font-weight: 700; color: var(--ink); }
 #setMenu { max-height: calc(100dvh - 74px); overflow-y: auto; }
 @media (max-width: 999px) {
   .topbar { height: 52px; transition: transform .22s ease; }
@@ -615,7 +616,8 @@ body.focus .tabs { display: none !important; }
 .xfrrow { display: flex; align-items: center; gap: 6px; margin-top: 12px; }
 .xfr { display: inline-flex; align-items: center; min-height: 44px; padding: 0 14px; border-radius: 22px; border: 1.5px dashed var(--accent-mid); color: var(--accent-deep); font: 500 .875rem var(--f-body); background: none; }
 .xfrrow .tx { gap: 4px; font-size: .875rem; color: var(--ink-2); }
-.xrow2 { display: flex; justify-content: space-between; align-items: center; width: 100%; min-height: 48px; margin-top: 10px; padding: 0 2px; border: 0; border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); background: none; font: 400 .9375rem var(--f-body); color: var(--ink); text-align: left; }
+.xrow2 > input { position: absolute; inset: 0; width: 100%; height: 100%; opacity: 0; cursor: pointer; }
+.xrow2 { position: relative; display: flex; justify-content: space-between; align-items: center; width: 100%; min-height: 48px; margin-top: 10px; padding: 0 2px; border: 0; border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); background: none; font: 400 .9375rem var(--f-body); color: var(--ink); text-align: left; }
 .xrefs:empty { display: none; }
 .xsh { display: flex; align-items: center; gap: 8px; font: 700 1rem var(--f-display); color: var(--ink); margin: 14px 0 6px; }
 .xsh b { flex: 0 0 24px; width: 24px; height: 24px; border-radius: 12px; background: var(--accent); color: var(--on-accent); font: 700 .8125rem/24px var(--f-body); text-align: center; }
@@ -869,6 +871,7 @@ body.fs .xw-top { padding-right: 52px; }   /* 시안 보기 설정(톱니)이 �
 const CFG = window.DIDAKO_CONFIG || {};
 const LIVE = !!CFG.HUB_URL && !new URLSearchParams(location.search).has('demo');
 const DATA = window.NOTE_DATA;
+const KOIDE_PRAY_URL = 'https://koide.koinobia.com/app/note.html';   // 기도하러 갈 곳(코이데 기도 노트). 화면 글에는 '코이데'라고 쓰지 않는다(결정 기록 2026-10-26)
 const Q = window.NOTE_Q;   // 오늘의 질문 409개와 이번 주의 질문 52개(note/tools/make-data.py가 만든다)
 const $ = (s, el = document) => el.querySelector(s);
 const $$ = (s, el = document) => [...el.querySelectorAll(s)];
@@ -1226,6 +1229,7 @@ function viewMore() {
       <a class="gr" href="#/more/feedback"><span class="gt"><b>의견 보내기</b><span class="gd">불편한 점, 바라는 점, 고마운 점</span></span><span class="ch" aria-hidden="true">›</span></a>
     </div><button class="logout" type="button" data-act="logout">이 기기에서 로그아웃</button>`;
   return `<div class="col more">${pageHead('', '더보기')}
+    ${LIVE && ls.get('didako-church-name') ? `<div class="sm" style="margin:-4px 0 12px">${esc((ls.get('didako-church-name') || '') + (ls.get('didako-church-kind') === 'test' ? ' · 테스트' : ''))}</div>` : ''}
     <div class="more-grid" style="margin-top:4px"><div>${me1}</div><div>${set1}${app1}</div></div></div>`;
 }
 const back = `<a class="bk" href="#/more">${CHEV_L}더보기</a>`;
@@ -1876,8 +1880,8 @@ function viewWeek() {
     body += `<button class="btn wide" type="button" data-act="pray" style="margin-top:16px;background:var(--accent-soft);color:var(--accent-deep)">이 질문으로 하나님께 기도하기${EXT_IC}</button>
       <div class="xfin"><div class="xft">이번 주의 질문을 다 펴 봤어요.</div><div class="sm">오늘 적은 내 생각은 내년 이맘때<br>이 질문과 함께 다시 보여요.</div></div>
       ${m ? `<div class="sm" style="font-size:.8125rem;margin-top:16px">이 질문과 닿는 내 질문이 있어요</div>
-        <div class="card xmine"><span><span class="sf">${esc(m.text)}</span><span class="sm">${qSub(m)}</span></span><button class="tx" type="button" data-act="bring" data-id="${m.id}">탐구로 가져오기</button></div>`
-        : `<button class="btn lt wide" type="button" data-act="bring" style="margin-top:16px">탐구로 가져오기</button>`}`;
+        <div class="card xmine"><span><span class="sf">${esc(m.text)}</span><span class="sm">${qSub(m)}</span></span><button class="tx" type="button" data-act="bring" data-id="${m.id}">좀 더 탐구하기</button></div>`
+        : `<button class="btn lt wide" type="button" data-act="bring" style="margin-top:16px">좀 더 탐구하기</button>`}`;
     bar = '<button class="btn" type="button" data-act="week-back">탐구하기로 돌아가기</button>';
   }
   const actBar = `<div class="xact"><div class="xact-in">${bar}</div></div>`;
@@ -1886,7 +1890,7 @@ function viewWeek() {
 }
 
 // ── 단계별로 쓰기: 하나씩 쓰기와 모아 보기(M9a ~ M15, M29, T1, T6) ──
-let X = { id: '', step: 0, sinceOpen: false, frame: 0, open3: false, panel: true, dirty: false };
+let X = { id: '', step: 0, frame: 0, open3: false, panel: true, dirty: false };
 const curEx = () => getEx(X.id);
 function noteBar(all, wide) {
   const left = wide ? (all ? '<span></span>' : `<button class="xibt" type="button" aria-label="단계 목록 열고 닫기" aria-pressed="${X.panel}" data-act="panel" style="color:var(--ink-2);margin-left:2px">${PANEL_IC}</button>`) : '<button class="tx" type="button" data-act="note-back"><span style="margin-left:-6px">← 탐구하기</span></button>';
@@ -1909,8 +1913,7 @@ function stepBlock(n) {
     return `<div class="xcur">${stepHead(0)}
       <div class="xfrrow"><button class="xfr" type="button" data-act="frame-use">${esc(f)}</button>${fr.length > 1 ? `<button class="tx" type="button" data-act="frame-next" aria-label="다른 문장 틀 보기">${REFRESH_IC}다른 틀</button><span class="sm" style="font-size:.78rem;margin-left:auto">${X.frame % fr.length + 1}/${fr.length}</span>` : ''}</div>
       ${taHtml(n, '')}
-      <button class="xrow2" type="button" data-act="since-toggle" aria-expanded="${X.sinceOpen}" aria-controls="xSinceBox"><span class="sm">이 질문이 생긴 때</span><span id="xSinceVal">${n.since ? ymLine(n.since) + ' ' : ''}<span class="sm">›</span></span></button>
-      <div class="exbox" id="xSinceBox"${X.sinceOpen ? '' : ' hidden'}><input class="field" id="xSince" type="month" max="${ymNow()}" aria-label="이 질문이 생긴 때" value="${esc(n.since)}"></div></div>`;
+      <label class="xrow2"><span class="sm">이 질문이 생긴 때</span><span id="xSinceVal">${n.since ? ymLine(n.since) + ' ' : ''}<span class="sm">›</span></span><input id="xSince" type="month" data-act="since-pick" max="${ymNow()}" aria-label="이 질문이 생긴 때" value="${esc(n.since)}"></label></div>`;
   }
   if (i === 1) {
     const rec = rec2(n), on = rec && n.added.s2 && n.added.s2.q === rec.q && n.steps[1].includes(n.added.s2.ref);   // 쓰는 칸에서 그 장절 줄을 지우면 다시 [넣기]
@@ -1958,7 +1961,7 @@ function allBody(n) {
 }
 function viewNote(id, all) {
   const n = getEx(id), q = getQ(id), wide = isWide();
-  if (X.id !== id) { X.id = id; X.step = nextStep(n); X.sinceOpen = false; X.frame = 0; X.open3 = false; X.dirty = false; }
+  if (X.id !== id) { X.id = id; X.step = nextStep(n); X.frame = 0; X.open3 = false; X.dirty = false; }
   const title = `<div class="sf xnt${all ? ' all' : ''}">${esc(q.text)}</div><div style="margin:6px 0 4px">${dotsHtml(n, false, startLine(n))}</div>`;
   const bar = noteBar(all, wide);
   if (all) {
@@ -2007,7 +2010,7 @@ function onNoteInput(e) {
 }
 function flushNote() { const n = curEx(); if (n && X.dirty) commitStep(n, X.step, false); }
 function focusTa() { const t = $('#xTa'); if (t) { t.focus({ preventScroll: true }); t.setSelectionRange(t.value.length, t.value.length); } }   // 글을 이어 쓰도록 끝에 둔다
-function goStep(i) { X.step = Math.max(0, Math.min(4, i)); X.sinceOpen = false; render(); window.scrollTo(0, 0); const h = $('#xHead'); if (h) h.focus({ preventScroll: true }); }
+function goStep(i) { X.step = Math.max(0, Math.min(4, i)); render(); window.scrollTo(0, 0); const h = $('#xHead'); if (h) h.focus({ preventScroll: true }); }
 function addS2(n, c) {   // 닮은 오늘의 질문의 장절을 쓰는 칸에 넣는다
   const cur = n.steps[1].replace(/\s+$/, '');
   n.steps[1] = (cur ? cur + '\n' : '') + c.ref + '\n'; n.added.s2 = { q: c.q, ref: c.ref }; X.dirty = true; saveNotes();
@@ -2916,11 +2919,11 @@ const acts = {
   },
   'frame-use'() {
     const n = curEx(), t = $('#xTa'); if (!n || !t) return;
-    if (!t.value.trim()) { t.value = DATA.frames[X.frame % DATA.frames.length].split('___')[0]; n.steps[0] = t.value; X.dirty = true; saveNotes(); }
+    if (!t.value.trim()) { t.value = DATA.frames[X.frame % DATA.frames.length]; n.steps[0] = t.value; X.dirty = true; saveNotes(); }
     t.focus({ preventScroll: true }); t.setSelectionRange(t.value.length, t.value.length);
   },
   'frame-next'() { X.frame = (X.frame + 1) % DATA.frames.length; render(); },
-  'since-toggle'() { X.sinceOpen = !X.sinceOpen; $('#xSinceBox').hidden = !X.sinceOpen; $('[data-act="since-toggle"]').setAttribute('aria-expanded', String(X.sinceOpen)); if (X.sinceOpen) $('#xSince').focus({ preventScroll: true }); },
+  'since-pick'(e, el) { if (el.showPicker) { try { el.showPicker(); } catch (_) { /* 지원하지 않거나 열 수 없어도 기본 고르기는 그대로 둔다 */ } } },
   's2-add'() { const n = curEx(), c = n && rec2(n); if (c) { addS2(n, c); render(); focusTa(); } },
   's2-del'() { const n = curEx(), a = n && n.added.s2; if (!a) return; n.steps[1] = n.steps[1].split('\n').filter(l => l.trim() !== a.ref).join('\n'); n.added.s2 = null; X.dirty = true; saveNotes(); render(); },
   's3-open'(e, el) {
@@ -3062,7 +3065,7 @@ function resetAll() {
   ls.del(K.badges); B = { seen: [] };
   ls.del(K.session); ls.del(K.demo); ls.del(K.notes); me = null; D.start = ''; D.date = ''; D.sync = 'off'; D.syncAt = 0;
   N = { qs: [], fs: [], ex: [], cur: [], wk: [] }; W = newDraft('', 'q'); mineFilter = 'all'; searchQ = ''; P = { fid: '', sel: '' }; undoSnap = null; trailOpen.clear(); hideOpening(true);
-  X = { id: '', step: 0, sinceOpen: false, frame: 0, open3: false, panel: true, dirty: false }; WK = { max: 0, view: 0 }; pendingSwap = null; startBack = 'explore'; srchBack = 'mine';
+  X = { id: '', step: 0, frame: 0, open3: false, panel: true, dirty: false }; WK = { max: 0, view: 0 }; pendingSwap = null; startBack = 'explore'; srchBack = 'mine';
   ob.kakao = ob.church = false; ob.name = ''; dispOpen = false; fb.text = ''; fb.named = false; fb.kind = '이랬으면';
   closeSheet(true); closeMenus(); setHash('start', true); render(true);
 }
@@ -3417,6 +3420,16 @@ if (LIVE) {
   };
   const keepStart = acts['keep-start'];
   acts.kakao = () => { if (authBusy) return; setAuthBusy(true); location.href = 'https://kauth.kakao.com/oauth/authorize?response_type=code&client_id=' + encodeURIComponent(CFG.KAKAO_REST_KEY) + '&redirect_uri=' + encodeURIComponent(CFG.REDIRECT_URI); };
+  acts.pray = () => {
+    const n = curEx(), q = n && getQ(n.q);
+    const text = routeKey() === 'explore/week' ? weekNow().q : q?.text;
+    if (!text) return;
+    let copied;
+    try { copied = navigator.clipboard.writeText(text); } catch (_) { /* 복사하지 못해도 기도할 곳은 연다 */ }
+    // 복사를 기다리느라 새 창 열기가 막히지 않도록 누른 순간 연다.
+    window.open(KOIDE_PRAY_URL, '_blank', 'noopener');
+    if (copied) copied.then(() => toast('질문을 복사했어요. 붙여 넣어 기도해 보세요'), () => {});
+  };
   forms.church = run(async () => { if (val('codeIn').length < 4) return; churchNotice = ''; await enterChurch(await hubApi('join', { code: val('codeIn') })); });
   const agree = acts.agree;
   acts.agree = () => { agree(); scheduleSync(); };

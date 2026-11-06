@@ -1,10 +1,11 @@
 /*
  * 홈 화면 앱(PWA)용 작은 도우미. 앱 화면 파일을 휴대폰에 한 벌 남겨 두었다가, 인터넷이 끊기거나 느릴 때 그걸로 연다.
  * 코이데와 같은 방식이다: 늘 인터넷의 새 파일을 먼저 받아서(받으면 남겨 둔 것도 바꿈) 고친 화면이 바로 보인다. 브라우저에 남은 사본은 쓰지 않고 서버에 확인한다.
+ * 그림(img/)은 바뀌는 일이 드물어 남겨 둔 사본을 먼저 쓴다. 그림을 바꾸면 CACHE 번호를 올려 새로 받게 한다.
  * 아래 CACHE 번호는 남겨 둔 사본의 이름표다. 번호를 올리면 예전 사본을 지운다(AGENTS.md 서비스워커 캐시).
  * 데모에는 서버가 없다. 같은 주소의 파일만 다루고, 글꼴 같은 다른 주소의 요청은 건드리지 않는다.
  */
-const CACHE = 'didako-note-v2';
+const CACHE = 'didako-note-v3';
 const SHELL = ['./', 'index.html', 'config.js', 'design-styles.css', 'demo-data.js', 'questions-data.js', 'map.html', 'map-places.js', 'words-ko.js', 'vendor/tiptap-2.27.3.js', 'manifest.webmanifest', 'icons/icon-192.png', 'icons/icon-512.png', 'icons/icon-maskable-512.png', 'icons/apple-touch-icon.png', 'icons/favicon-32.png'];
 
 self.addEventListener('install', e => {
@@ -18,6 +19,17 @@ self.addEventListener('fetch', e => {
   const req = e.request, url = new URL(req.url);
   if (req.method !== 'GET' || url.origin !== location.origin) return;
   if (!url.pathname.startsWith(new URL('./', location).pathname)) return;
+  if (url.pathname.includes('/img/')) {
+    e.respondWith(caches.match(req).then(async cached => {
+      if (cached) return cached;
+      const res = await fetch(new Request(req.url, { cache: 'no-cache', credentials: 'same-origin' }));
+      if (res.ok) {
+        try { const c = await caches.open(CACHE); await c.put(req, res.clone()); } catch (_) { /* 사본을 남기지 못해도 받은 그림은 보여 준다 */ }
+      }
+      return res;
+    }).catch(() => Response.error()));
+    return;
+  }
   // GitHub Pages가 파일을 10분 동안 그대로 쓰라고 해도, 서버에 바뀌었는지 늘 물어본다(바뀌지 않았으면 확인만 하고 끝난다).
   //  화면 주소 요청(navigate)에는 옵션을 붙일 수 없어서 주소로 새 요청을 만든다 (코이데와 같다)
   e.respondWith(fetch(new Request(req.url, { cache: 'no-cache', credentials: 'same-origin' })).then(res => {
