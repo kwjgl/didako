@@ -173,6 +173,7 @@ body.tabs-off .stickbar { bottom: env(safe-area-inset-bottom, 0px); }
 .place-row .role-tag { margin-left: 6px; }
 .place-row .place-copy { display: flex; flex-direction: column; gap: 2px; }
 .place-row:hover, .place-row:focus-visible { background: var(--surface-2); }
+#setMenu .set-row { padding-left: 6px; }
 #setMenu > .mlabel:first-child { font-size: .96875rem; font-weight: 700; color: var(--ink); }
 #setMenu { max-height: calc(100dvh - 74px); overflow-y: auto; }
 @media (max-width: 999px) {
@@ -538,16 +539,17 @@ mark { background: var(--accent-soft); color: inherit; border-radius: 4px; paddi
 .xdt.s { width: 14px; height: 14px; font-size: 9px; line-height: 11px; }
 .xdots.s { gap: 4px; }
 .xwk { background: var(--accent-soft); border-radius: 16px; padding: 16px; }
-.xwk .xwq { font-size: 1.3125rem; font-weight: 700; line-height: 1.45; word-break: keep-all; margin-top: 4px; }
+.xwk .xwq { font-size: 1.1875rem; font-weight: 700; line-height: 1.45; word-break: keep-all; margin-top: 4px; }
 .xwk .xwm { font-size: .875rem; }
-.xwk .xwr { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 12px; }
-.xwk .chip { background: var(--surface); }   /* 카드 바탕이 칩 바탕(--accent-soft)과 같아서 칩만 흰 바탕으로 */
-.xwk .xwi { margin-top: 14px; }   /* 정물 그림: 칩 줄과 펴 보기 사이 */
+.xwk .xwr { margin-top: 6px; font-size: .8125rem; line-height: 1.5; color: var(--ink-2); word-break: keep-all; }   /* 장절은 작은 한 줄(칩으로 두면 세 줄을 차지했다) */
+.xwk .q-img { margin-top: 14px; }   /* 정물 그림은 카드 폭 가득, 잘리지 않게 원래 비율(16:9) */
+.xwk .xwm { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+.week-done { display: inline-flex; align-items: center; gap: 4px; }
+.week-check { display: inline-flex; align-items: center; justify-content: center; width: 20px; height: 20px; border-radius: 50%; background: var(--accent); color: var(--on-accent); }
 .xwk .btn { margin-top: 14px; }
 .xcard { padding: 14px 16px; }
 .xcard .xct { font-size: 1.1875rem; font-weight: 700; line-height: 1.35; }
 .xcard .btn { margin-top: 14px; }
-.xempty { padding: 16px 16px 4px; border: 1.5px dashed var(--accent-mid); border-radius: 16px; }
 .xempty .ph { color: var(--ink-2); font-size: .9375rem; line-height: 1.5; word-break: keep-all; }
 .xrow { display: flex; align-items: center; justify-content: space-between; gap: 8px; width: 100%; min-height: 60px; margin-top: 8px; padding: 8px 16px; font: 400 .9375rem/1.4 var(--f-body); color: var(--ink); text-align: left; }
 .xrow .sm { display: block; font-size: .8125rem; }
@@ -616,6 +618,14 @@ body.focus .tabs { display: none !important; }
 .xfrrow { display: flex; align-items: center; gap: 6px; margin-top: 12px; }
 .xfr { display: inline-flex; align-items: center; min-height: 44px; padding: 0 14px; border-radius: 22px; border: 1.5px dashed var(--accent-mid); color: var(--accent-deep); font: 500 .875rem var(--f-body); background: none; }
 .xfrrow .tx { gap: 4px; font-size: .875rem; color: var(--ink-2); }
+.week-traces { margin-top: 24px; }
+.week-trace { display: block; width: 100%; margin-top: 8px; text-align: left; color: var(--ink); }
+.week-trace > .sf { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+.week-trace > .sm { display: block; margin-top: 4px; }
+.week-mine { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.xfrrow [data-act="frame-next"] { min-width: 44px; min-height: 44px; justify-content: center; }
+label.wr-row, label.vc { position: relative; cursor: pointer; }
+label.wr-row > input, label.vc > input { position: absolute; inset: 0; width: 100%; height: 100%; opacity: 0; cursor: pointer; }
 .xrow2 > input { position: absolute; inset: 0; width: 100%; height: 100%; opacity: 0; cursor: pointer; }
 .xrow2 { position: relative; display: flex; justify-content: space-between; align-items: center; width: 100%; min-height: 48px; margin-top: 10px; padding: 0 2px; border: 0; border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); background: none; font: 400 .9375rem var(--f-body); color: var(--ink); text-align: left; }
 .xrefs:empty { display: none; }
@@ -658,9 +668,7 @@ body.focus .tabs { display: none !important; }
 .xw.has-r .xw-in.pn { padding: 6px 24px 56px; }
 @media (max-width: 1100px) { .xw.has-r { gap: 12px; padding: 0 12px; } .xw.has-r .xw-in.pn { padding: 6px 16px 56px; } .xw.has-r .xw-in .xact .btn { min-width: 100px; padding: 0 16px; } .xw.has-r .xw-in .xact .btn.k { min-width: 140px; } .xw.has-r .xw-in .xact .btn.xprev { min-width: 48px; padding: 0; } }   /* 1000px 안팎에서는 가운데가 350px 안팎이라 사이와 안쪽 여백을 더 줄인다 */
 .xw-in .xhead { margin-top: 12px; }
-.xw-in .xwk { padding: 20px; }
-.xw-in .xwk .xwq { font-size: 1.5rem; line-height: 1.5; }
-.xw-in .xwk .btn, .xw-in .xcard .btn { padding: 0 24px; margin-top: 16px; }
+.xw-in .xcard .btn { padding: 0 24px; margin-top: 16px; }
 .xw-in .xcard { padding: 18px 20px; }
 .xw-in .xcard .xct { font-size: 1.3125rem; }
 .xw-in .xnt { font-size: 1.75rem; }
@@ -1020,6 +1028,8 @@ const BUBBLE = '<svg viewBox="0 0 18 18" width="18" height="18" aria-hidden="tru
 const CHECK = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>';
 const SYNC_IC = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 11a8 8 0 0 0-14-4.5L4 9M4 4v5h5M4 13a8 8 0 0 0 14 4.5L20 15M20 20v-5h-5"/></svg>';
 const X_IC = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg>';
+const TRASH_IC = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 6h18M9 6V4h6v2M5 6l1 14h12l1-14M10 10v6M14 10v6"/></svg>';
+const trashButton = (kind, id) => `<button class="ib" type="button" aria-label="이 ${kind === 'q' ? '질문' : '발견'} 지우기" data-act="${kind}-del" data-id="${esc(id)}" style="color:var(--ink-2)">${TRASH_IC}</button>`;
 
 // ── 알림과 아래에서 올라오는 창 ──
 let toastT = 0;
@@ -1370,7 +1380,7 @@ function a2hsSheet() {
 // 탐구 노트 ex { q(질문 id), mode('steps'|'free'), start, steps[5], ok[5], since, refs[], added{s2,s3}, done[], free{doc,touched}, touched, last }
 //   steps는 단계별로 쓴 글, free는 자유롭게 쓴 글(편집기 문서). 둘은 따로 보관하고 mode가 지금 쓰는 방식이다
 //   노트 하나는 질문 하나에 한 권. 지금 탐구하는 질문은 한 번에 세 개까지라 cur에 그 질문 id들을 최근에 쓰거나 연 것부터 둔다(네 번째를 시작하면 가장 오래 쓰지 않은 것이 지난 탐구로 내려간다)
-// 이번 주의 질문에 남긴 내 생각 wk { id(주 id), mine, at }
+// 이번 주의 질문에 남긴 내 생각 wk { id(주 id), mine, at, done(다 펴 본 시각, 아니면 0) }
 // 발견 f { id, text, ref, since, at, touched, q(이어진 질문 id, 없으면 '' = 남겨 둔 ! 발견) }
 const DAY = 864e5;
 let N = { qs: [], fs: [], ex: [], cur: [], wk: [] };
@@ -1473,7 +1483,7 @@ function normalizeNotes(a) {
       id: f.id, text: f.text, ref: s(f.ref), since: ym(f.since), place: window.MAP_NAMES[f.place] ? f.place : '', at: t(f.at), touched: t(f.touched) || t(f.at), q: idOr(f.q)
     })),
     ex: [], cur: [],
-    wk: (Array.isArray(a.wk) ? a.wk : []).filter(w => w && idOk(w.id) && s(w.mine).trim()).map(w => ({ id: w.id, mine: w.mine, at: t(w.at) }))
+    wk: (Array.isArray(a.wk) ? a.wk : []).filter(w => w && idOk(w.id) && (s(w.mine).trim() || t(w.done) > 0)).map(w => ({ id: w.id, mine: s(w.mine), at: t(w.at), done: Math.max(0, t(w.done)) }))
   };
   // 탐구 노트: 질문이 있는 것만, 질문 하나에 하나
   const seen = new Set(), lst = (v, n, f) => Array.from({ length: n }, (_, i) => f(Array.isArray(v) ? v[i] : undefined));
@@ -1747,8 +1757,23 @@ const shortOf = w => w.short || (w.confess.split(/(?<=[.요])\s/)[0] || w.confes
 const getMine = id => { const m = N.wk.find(x => x.id === id); return m ? m.mine : ''; };
 function setMine(id, text) {
   const i = N.wk.findIndex(x => x.id === id);
-  if (!text.trim()) { if (i >= 0) N.wk.splice(i, 1); } else if (i >= 0) { N.wk[i].mine = text; N.wk[i].at = Date.now(); } else N.wk.push({ id, mine: text, at: Date.now() });
+  if (!text.trim()) {
+    if (i >= 0) { if (N.wk[i].done) { N.wk[i].mine = ''; N.wk[i].at = Date.now(); } else N.wk.splice(i, 1); }
+  } else if (i >= 0) { N.wk[i].mine = text; N.wk[i].at = Date.now(); }
+  else N.wk.push({ id, mine: text, at: Date.now(), done: 0 });
   saveNotes();
+}
+function markWeekDone() {
+  const id = weekNow().id, now = Date.now(), w = N.wk.find(x => x.id === id);
+  if (w) { if (!w.done) w.done = now; w.at = now; }
+  else N.wk.push({ id, mine: '', at: now, done: now });
+  saveNotes();
+}
+// 주 id는 그 주 주일의 날짜다. 지난 해의 흔적도 같은 질문 자료에서 찾는다.
+function weekById(id) {
+  const m = /^wk(\d{4})(\d{2})(\d{2})$/.exec(id), day = m && parseYmd(`${m[1]}-${m[2]}-${m[3]}`);
+  if (!day || dowOf(day.t) !== 0) return null;
+  return Q.weekly[Math.min(weekNo(day.t), 52) - 1] || null;
 }
 // 이 질문에 닿는 내 질문 하나(짝 찾기 점수, 없으면 null). keys는 데모용 낱말
 const mineFor = w => N.qs.map(q => ({ q, s: scoreTR(w.q + ' ' + w.confess + ' ' + (w.keys || ''), w.refs[0] || '', q.text + ' ' + q.trail.map(x => x.text).join(' '), q.ref) })).filter(x => x.s > 0).sort((a, b) => b.s - a.s || b.q.touched - a.q.touched).map(x => x.q)[0] || null;
@@ -1830,22 +1855,23 @@ function wideShell(main, o) {
 function viewExplore() {
   const wide = isWide(), wk = weekNow(), cur = curNotes(), past = pastNotes();
   const wkMeta = `제${wk.n}주일`;   // 주일 번호만(묶음·주제 이름은 질문 글이 대신한다)
-  const wkImg = wk.img ? `<img class="q-img xwi" src="${wk.img}" alt="${esc(wk.alt)}" width="1200" height="675" decoding="async">` : '';   // 정물 그림(없는 주는 글만)
-  const weekCard = `<div class="xwk"><div class="sm xwm">${wkMeta}</div><div class="sf xwq">${esc(wk.q)}</div><div class="xwr">${wk.refs.map(r => `<span class="chip">${esc(r)}</span>`).join('')}</div>${wkImg}<button class="btn" type="button" data-act="week-open">펴 보기</button></div>`;
+  const done = N.wk.some(w => w.id === wk.id && w.done);
+  const wkImg = wk.img ? `<img class="q-img" src="${wk.img}" alt="${esc(wk.alt)}" width="1200" height="675" decoding="async">` : '';   // 정물 그림(없는 주는 글만)
+  const weekCard = `<div class="xwk"><div class="sm xwm">${wkMeta}${done ? '<span class="week-done sm"><span class="week-check">✓</span> 다 펴 봤어요</span>' : ''}</div><div class="sf xwq">${esc(wk.q)}</div><div class="xwr">${wk.refs.map(esc).join(' · ')}</div>${wkImg}<button class="btn" type="button" data-act="week-open">${done ? '다시 펴 보기' : '펴 보기'}</button></div>`;
   const curCard = (n, i) => `<div class="card xcard"${i ? ' style="margin-top:10px"' : ''}><div class="sf xct">${esc(getQ(n.q).text)}</div><div style="margin-top:10px">${n.mode === 'free' ? `<span class="sm">자유롭게 쓰기 · ${startLine(n)}</span>` : dotsHtml(n, false, startLine(n))}</div><button class="btn${wide ? '' : ' wide'}" type="button" data-act="past-open" data-id="${n.q}">이어서 쓰기</button></div>`;
   const curHtml = cur.length
     ? cur.map(curCard).join('')
-    : `<div class="xempty"><div class="ph">내 기록에서 질문 하나를 골라 탐구해 보세요</div><a class="tx" href="#/mine" style="padding:0;margin-top:2px">내 기록으로 가기 ›</a></div>`;
+    : `<div class="card xcard xempty"><div class="ph">품고 있는 질문 하나를 골라 탐구를 시작해 보세요</div><a class="btn${wide ? '' : ' wide'}" href="#/mine">질문 고르기</a></div>`;
   if (wide) {
     return wideShell(`${pageHead('🔍', '탐구하기')}
-      <div class="xlb" style="margin-top:20px">이번 주의 질문</div>${weekCard}
-      <div class="xlb" style="margin-top:28px">내가 탐구하는 질문</div>${curHtml}`, { pn: false });
+      <div class="xlb" style="margin-top:20px">내가 탐구하는 질문</div>${curHtml}
+      <div class="xlb" style="margin-top:28px">이번 주의 질문</div>${weekCard}`, { pn: false });
   }
   const rows = past.map(n => `<button class="card xrow" type="button" data-act="past-open" data-id="${n.q}"><span><span style="display:block">${esc(getQ(n.q).text)}</span><span class="sm">${n.mode === 'free' ? '자유롭게 쓰기' : '단계별로 쓰기'} · ${startLine(n)}</span></span><span class="xch" aria-hidden="true">›</span></button>`).join('');
   return `<div class="col">
     ${pageHead('🔍', '탐구하기', `<button class="ib" type="button" aria-label="검색" data-act="srch-ex" style="margin-right:-10px">${SEARCH_IC}</button>`)}
-    <div class="xlb" style="margin-top:14px">이번 주의 질문</div>${weekCard}
-    <div class="xlb">내가 탐구하는 질문</div>${curHtml}
+    <div class="xlb" style="margin-top:14px">내가 탐구하는 질문</div>${curHtml}
+    <div class="xlb">이번 주의 질문</div>${weekCard}
     ${past.length ? `<div class="xlb">지난 탐구</div>${rows}` : ''}
   </div>`;
 }
@@ -1911,7 +1937,7 @@ function stepBlock(n) {
   if (i === 0) {
     const fr = DATA.frames, f = fr[X.frame % fr.length];
     return `<div class="xcur">${stepHead(0)}
-      <div class="xfrrow"><button class="xfr" type="button" data-act="frame-use">${esc(f)}</button>${fr.length > 1 ? `<button class="tx" type="button" data-act="frame-next" aria-label="다른 문장 틀 보기">${REFRESH_IC}다른 틀</button><span class="sm" style="font-size:.78rem;margin-left:auto">${X.frame % fr.length + 1}/${fr.length}</span>` : ''}</div>
+      <div class="xfrrow"><button class="xfr" type="button" data-act="frame-use">${esc(f)}</button>${fr.length > 1 ? `<button class="tx" type="button" data-act="frame-next" aria-label="다른 문장 틀 보기">${REFRESH_IC}</button><span class="sm" style="font-size:.78rem;margin-left:auto">${X.frame % fr.length + 1}/${fr.length}</span>` : ''}</div>
       ${taHtml(n, '')}
       <label class="xrow2"><span class="sm">이 질문이 생긴 때</span><span id="xSinceVal">${n.since ? ymLine(n.since) + ' ' : ''}<span class="sm">›</span></span><input id="xSince" type="month" data-act="since-pick" max="${ymNow()}" aria-label="이 질문이 생긴 때" value="${esc(n.since)}"></label></div>`;
   }
@@ -2353,7 +2379,7 @@ const NOTE_IC = '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" str
 // 쓰고 있는 글(이 화면을 떠났다 와도 남지만, 새로고침하면 사라진다)
 // t: 오늘의 질문에서 품을 때 그 질문의 날(하루 수). 오늘이면 데모의 오늘, 지난 질문이면 그날
 function newDraft(mode, kind, t) {
-  const d = { mode, day: t || 0, kind: kind || 'q', text: '', ref: '', refFromText: false, refFound: '', refRaw: '', refOpen: false, since: '', sinceOpen: false };
+  const d = { mode, day: t || 0, kind: kind || 'q', text: '', ref: '', refFromText: false, refFound: '', refRaw: '', refOpen: false, since: '' };
   if (mode === 'today') {   // 오늘의 질문에서 품기(M1c): 질문 글과 장절이 미리 채워져 있다
     const c = questionOn(t); d.kind = 'q'; d.text = c.q + ' '; const r = parseRef(c.ref); d.ref = r ? r.text : c.ref;
   }
@@ -2392,7 +2418,7 @@ function viewWrite() {
   const strip = map ? `<div class="strip"><span class="l">말씀 지도에서 · ${esc(window.MAP_NAMES[map.place])}</span></div>${map.kind === 's' ? `<p class="sm">${esc(map.data.ref)} · ${esc(map.data.t)}</p>` : ''}` : todayMode ? `<div class="strip"><span class="l">오늘의 질문에서 ·</span><span class="v">${esc(questionOn(wday).q)}</span></div>` : '';
   const sinceLabel = isQ ? '예전에 생긴 질문이에요' : '예전에 알게 된 거예요';
   const refBox = `<div class="exbox" id="wrRefBox"${W.refOpen ? '' : ' hidden'}><input class="field" id="wrRef" type="text" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="예) 창22:2, 요 15:1-8, 시편 23편" aria-label="성경 위치" value="${esc(W.refRaw || W.ref)}"><div class="okl" id="wrRefOk">${refOkText()}</div></div>`;
-  const sinceBox = `<div class="exbox" id="wrSinceBox"${W.sinceOpen ? '' : ' hidden'}><input class="field" id="wrSince" type="month" max="${ymNow()}" aria-label="${sinceLabel}" value="${esc(W.since)}"></div>`;
+  const sinceInput = `<input id="wrSince" type="month" data-act="since-pick" max="${ymNow()}" aria-label="${sinceLabel}" value="${esc(W.since)}">`;
   const go = `<button class="btn ${wide ? '' : 'wide'}" id="wrGo" type="button" data-act="wr-save"${W.text.trim() ? '' : ' disabled'}>${isQ ? '품어 두기' : '남기기'}</button>`;
   if (wide) {
     const recent = wallItems().slice(0, 3).map(it => it.k === 'q'
@@ -2406,10 +2432,10 @@ function viewWrite() {
           <div class="card wr2-card">
             <textarea class="wr2-ta" id="wrTa" placeholder="${ph}" aria-label="${isQ ? '질문' : '발견'}">${esc(W.text)}</textarea>
             <div class="okl" id="wrOk" aria-live="polite">${okLine()}</div>
-            ${refBox}${todayMode ? '' : sinceBox}
+            ${refBox}
             <div class="wr2-foot">
               <button class="vc" type="button" data-act="wr-ref" aria-expanded="${W.refOpen}" aria-controls="wrRefBox">성경 위치 <span id="wrRefChip">${W.ref ? '· ' + esc(W.ref) : '+'}</span></button>
-              ${todayMode ? '' : `<button class="vc" type="button" data-act="wr-since" aria-expanded="${W.sinceOpen}" aria-controls="wrSinceBox">${isQ ? '예전에 생긴 질문' : sinceLabel} <span id="wrSinceChip">${W.since ? '· ' + ymLine(W.since) : '+'}</span></button>`}
+              ${todayMode ? '' : `<label class="vc">${isQ ? '예전에 생긴 질문' : sinceLabel} <span id="wrSinceChip">${W.since ? '· ' + ymLine(W.since) : '+'}</span>${sinceInput}</label>`}
               ${go}
             </div>
           </div>
@@ -2427,7 +2453,7 @@ function viewWrite() {
     <div class="okl" id="wrOk" aria-live="polite">${okLine()}</div>
     <button class="wr-row sm" type="button" data-act="wr-ref" aria-expanded="${W.refOpen}" aria-controls="wrRefBox"><span>성경 위치 (선택)</span><span id="wrRefVal" class="${W.ref ? 'a' : ''}">${W.ref ? esc(W.ref) + ' ›' : '›'}</span></button>
     ${refBox}
-    ${todayMode ? '' : `<button class="wr-row sm" type="button" data-act="wr-since" aria-expanded="${W.sinceOpen}" aria-controls="wrSinceBox"><span>${sinceLabel}</span><span id="wrSinceVal" class="${W.since ? 'a' : ''}">${W.since ? ymLine(W.since) + ' ›' : '›'}</span></button>${sinceBox}`}
+    ${todayMode ? '' : `<label class="wr-row sm"><span>${sinceLabel}</span><span id="wrSinceVal" class="${W.since ? 'a' : ''}">${W.since ? ymLine(W.since) + ' ›' : '›'}</span>${sinceInput}</label>`}
     <div style="margin-top:8px">${go}</div>
   </div>`;
 }
@@ -2596,12 +2622,23 @@ function snQ(q, sel) {
   return `<button class="sn${found ? ' y' : ''}${sel ? ' sel' : ''}" type="button" data-act="open-q" data-id="${q.id}"${sel ? ' aria-pressed="true"' : ''}>${found ? '<span class="mks" role="img" aria-label="질문, 발견"><span class="mk">?</span><span class="mk">!</span></span>' : '<span class="mk" aria-hidden="true">?</span>'}<span class="tx4">${esc(q.text)}</span><span class="mt">${found ? qMeta(q) : (q.ref ? esc(q.ref) + ' · ' : '') + qMeta(q)}</span></button>`;
 }
 const snF = f => `<div class="sn y lf"><span class="mk" aria-hidden="true">!</span><span class="tx4">${esc(f.text)}</span><span class="sft"><span class="mt" style="margin:0">${fDate(f)}</span><button class="tx" type="button" data-act="pair-find" data-id="${f.id}">질문에 잇기 ›</button></span></div>`;
+let weeksExpanded = false;
+function weekTraces() {
+  const list = N.wk.filter(w => w.done && weekById(w.id)).sort((a, b) => b.done - a.done);
+  if (!list.length) return '';
+  const current = weekNow().id;
+  const rows = (weeksExpanded ? list : list.slice(0, 3)).map(w => {
+    const q = weekById(w.id), tag = w.id === current ? 'button' : 'div';
+    return `<${tag} class="card xcard week-trace"${tag === 'button' ? ' type="button" data-act="week-open"' : ''}><span class="sf">${esc(q.q)}</span><span class="sm">제${q.n}주일 · ${mdLine(new Date(w.done))}</span>${w.mine ? `<span class="sm week-mine">${esc(w.mine)}</span>` : ''}</${tag}>`;
+  }).join('');
+  return `<section class="week-traces"><div class="road-h">펴 본 이번 주의 질문</div>${rows}${list.length > 3 ? `<button class="tx" type="button" data-act="weeks-toggle">${weeksExpanded ? '접기' : '더 보기'}</button>` : ''}</section>`;
+}
 function viewMine(sel) {
   const all = wallItems();
   if (!all.length) {   // 질문도 남겨 둔 ! 발견도 없다(M12)
     return `<div class="col more">${pageHead('🗂️', '내 기록', badgeButton())}
       <div class="empty"><div class="sm">아직 모아 둔 것이 없어요. 말씀을 읽다 궁금한 것이 생기면 + 남기기에서 남겨 두세요.</div>
-      <a class="btn wide" href="#/write">남기기로 가기</a></div></div>`;
+      <a class="btn wide" href="#/write">남기기로 가기</a></div>${weekTraces()}</div>`;
   }
   const items = wallList(), wide = isWide(), selQ = sel && getQ(sel);
   const card = it => (it.k === 'q' ? snQ(it.q, wide && selQ && selQ.id === it.q.id) : snF(it.f));
@@ -2609,11 +2646,11 @@ function viewMine(sel) {
   if (!items.length) wall = '<div class="sm wall-none">아직 모아 둔 것이 없어요</div>';
   else if (wide) wall = `<div class="wgrid">${items.map(card).join('')}</div>`;
   else { const cols = [[], []]; items.forEach((it, i) => cols[i % 2].push(card(it))); wall = `<div class="wall">${cols.map(c => `<div class="wcol">${c.join('')}</div>`).join('')}</div>`; }
-  const panel = wide && selQ ? `<aside class="qpanel" aria-label="질문 펴기"><div style="display:flex;justify-content:flex-end;margin-right:-12px">${selQ.state === 'found' ? `<button class="ib" type="button" aria-label="이 질문 더 보기" data-act="q-more" data-id="${selQ.id}">${DOTS_IC(24)}</button>` : ''}<a class="ib" href="#/mine" aria-label="닫기">${X_IC}</a></div>${qBody(selQ)}</aside>` : '';
+  const panel = wide && selQ ? `<aside class="qpanel" aria-label="질문 펴기"><div style="display:flex;justify-content:flex-end;margin-right:-12px">${trashButton('q', selQ.id)}${selQ.state === 'found' ? `<button class="ib" type="button" aria-label="이 질문 더 보기" data-act="q-more" data-id="${selQ.id}">${DOTS_IC(24)}</button>` : ''}<a class="ib" href="#/mine" aria-label="닫기">${X_IC}</a></div>${qBody(selQ)}</aside>` : '';
   return `<div class="col more">
     ${pageHead('🗂️', '내 기록', `<div style="display:flex;align-items:center">${badgeButton()}<a class="ib" href="#/mine/search" aria-label="검색" style="margin-right:-10px">${SEARCH_IC}</a></div>`)}
     <div class="chips" role="group" aria-label="걸러 보기">${FILTERS.map(([v, l]) => `<button class="flt${mineFilter === v ? ' on' : ''}" type="button" aria-pressed="${mineFilter === v}" data-act="mine-filter" data-v="${v}">${l}</button>`).join('')}</div>
-    ${wall}</div>${panel}`;
+    ${wall}${weekTraces()}</div>${panel}`;
 }
 // 남겨 둔 ! 발견의 글은 세 줄까지만 보이고, 더 길면 "더 보기"로 펴 준다
 function fitMore() {
@@ -2655,7 +2692,7 @@ function qBody(q) {
 function viewQ(id) {
   if (isWide()) return viewMine(id);   // 넓은 화면은 벽 위 오른쪽 패널로 펴진다(T12)
   const q = getQ(id);
-  return `<div class="col"><div class="page-top" style="align-items:center"><a class="bk" href="#/mine">← 내 기록</a>${q.state === 'found' ? `<button class="ib" type="button" aria-label="이 질문 더 보기" data-act="q-more" data-id="${q.id}" style="margin-right:-10px">${DOTS_IC(24)}</button>` : ''}</div>${qBody(q)}</div>`;
+  return `<div class="col"><div class="page-top" style="align-items:center"><a class="bk" href="#/mine">← 내 기록</a><div style="display:flex;align-items:center;margin-right:-10px">${trashButton('q', q.id)}${q.state === 'found' ? `<button class="ib" type="button" aria-label="이 질문 더 보기" data-act="q-more" data-id="${q.id}">${DOTS_IC(24)}</button>` : ''}</div></div>${qBody(q)}</div>`;
 }
 // 질문 ⋯ (M27b)와 발견 ⋯ (M27)
 function qMoreSheet(q) {
@@ -2664,10 +2701,48 @@ function qMoreSheet(q) {
     <button class="btn lt" type="button" data-act="sheet-x" style="margin-top:4px">닫기</button>`);
 }
 function dMoreSheet(f) {
-  openSheet(`<div class="grab"></div><div class="band" style="margin-bottom:4px"><b>!</b> ${esc(f.text)}</div>
+  openSheet(`<div class="grab"></div><div class="band" style="margin-bottom:4px;display:flex;align-items:center;gap:8px"><span style="flex:1"><b>!</b> ${esc(f.text)}</span>${trashButton('d', f.id)}</div>
     <button class="card optc" type="button" data-act="d-move" data-id="${f.id}"><b>다른 질문으로 옮기기</b><span class="sm">이 발견을 다른 질문에 붙여요</span></button>
     <button class="card optc" type="button" data-act="d-unpair" data-id="${f.id}"><b>짝 풀기</b><span class="sm">! 발견은 지워지지 않고, 내 기록의 '발견만'으로 돌아가요</span></button>
     <button class="btn lt" type="button" data-act="sheet-x" style="margin-top:4px">닫기</button>`);
+}
+
+// 지우기 전에 범위를 보인다. 질문에 붙어 있던 발견과 자식 질문은 남긴다.
+function qDeleteSheet(q) {
+  const found = N.fs.filter(f => f.q === q.id).length;
+  const lines = ['질문과 지나온 길'];
+  if (getEx(q.id)) lines.push('이 질문의 탐구 노트');
+  if (found) lines.push(`붙어 있던 발견 ${found}개는 지워지지 않고 '발견만'으로 돌아가요`);
+  if (N.qs.some(x => x.parent === q.id)) lines.push('이 질문에서 나온 질문은 그대로 남아요');
+  if (LIVE && V.on) lines.push('동기화를 켰다면 다른 기기에서도 지워져요');
+  openSheet(`<div class="grab"></div><h2>이 질문을 지울까요?</h2><p class="sf">${esc(q.text)}</p>
+    ${lines.map(line => `<div class="sm">${esc(line)}</div>`).join('')}
+    <div class="ra"><button class="btn" type="button" data-act="q-del-go" data-id="${q.id}">지우기</button><button class="btn lt" type="button" data-act="sheet-x">닫기</button></div>`);
+}
+function dDeleteSheet(f) {
+  openSheet(`<div class="grab"></div><h2>이 발견을 지울까요?</h2><p class="sf">${esc(f.text)}</p>
+    <div class="sm">${f.q ? '이 발견만 지워져요. 이어진 질문은 그대로 남아요' : '이 발견만 지워져요'}</div>
+    <div class="ra"><button class="btn" type="button" data-act="d-del-go" data-id="${f.id}">지우기</button><button class="btn lt" type="button" data-act="sheet-x">닫기</button></div>`);
+}
+function finishDelete() {
+  undoSnap = null; saveNotes(); closeSheet(true);
+  after = () => toast('지웠어요'); go('mine');
+}
+function deleteQuestion(id) {
+  if (!getQ(id)) return;
+  N.qs = N.qs.filter(q => q.id !== id);
+  N.ex = N.ex.filter(n => n.q !== id); N.cur = N.cur.filter(qid => qid !== id);
+  N.fs.forEach(f => { if (f.q === id) { f.q = ''; f.touched = Date.now(); } });
+  N.qs.forEach(q => { if (q.parent === id) { q.parent = ''; q.touched = Date.now(); } });
+  if (X.id === id) X = { id: '', step: 0, frame: 0, open3: false, panel: true, dirty: false };
+  trailOpen.delete(id); finishDelete();
+}
+function deleteDiscovery(id) {
+  if (!getF(id)) return;
+  // 마지막 발견이 떨어진 질문은 기존 짝 풀기와 똑같이 품고 있는 질문으로 둔다.
+  unpair(id); N.fs = N.fs.filter(f => f.id !== id);
+  if (P.fid === id) P = { fid: '', sel: '' };
+  finishDelete();
 }
 
 // 짝 찾기(M21)와 직접 고르기(M26)
@@ -2677,7 +2752,7 @@ const RADIO_OFF = '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" a
 function viewPair(fid) {
   const f = getF(fid), cands = candQs(f, 3);
   if (P.fid !== fid || !cands.some(q => q.id === P.sel)) P = { fid, sel: cands[0] ? cands[0].id : '' };
-  return `<div class="col"><div class="back-row"><a class="bk" href="#/mine">← 내 기록</a></div>
+  return `<div class="col"><div class="back-row" style="justify-content:space-between"><a class="bk" href="#/mine">← 내 기록</a>${trashButton('d', f.id)}</div>
     <div class="band lf" style="margin-top:10px;font-size:1rem;padding:12px 14px"><b>!</b> ${esc(f.text)}</div>
     <div class="sm pdate">${fDate(f)}</div>
     ${cands.length ? `<div class="pq-h">이 질문의 답일까요?</div>
@@ -2852,7 +2927,8 @@ const acts = {
   // 탐구하기(③-1)
   'srch-ex'() { srchBack = 'explore'; setHash('mine/search'); },
   'week-open'() { WK = { max: 0, view: 0 }; showOpening(() => setHash('explore/week')); },   // 말씀을 열며 한 장 뒤에 한 단계씩
-  'week-next'() { WK.view = Math.min(3, WK.view + 1); WK.max = Math.max(WK.max, WK.view); if (WK.view === 3) earnBadge('w-open'); render(); window.scrollTo(0, 0); const h = $('#xHead'); if (h) h.focus({ preventScroll: true }); },
+  'weeks-toggle'() { weeksExpanded = !weeksExpanded; render(); },
+  'week-next'() { WK.view = Math.min(3, WK.view + 1); WK.max = Math.max(WK.max, WK.view); if (WK.view === 3) { markWeekDone(); earnBadge('w-open'); } render(); window.scrollTo(0, 0); const h = $('#xHead'); if (h) h.focus({ preventScroll: true }); },
   'week-view'(e, el) { WK.view = Number(el.dataset.i); render(); },
   'week-back'() { setHash('explore'); },
   pray() { toast('데모라 넘어가지 않아요'); },   // 데모: 기도하는 앱으로 넘어가지 않는다
@@ -2919,8 +2995,11 @@ const acts = {
   },
   'frame-use'() {
     const n = curEx(), t = $('#xTa'); if (!n || !t) return;
-    if (!t.value.trim()) { t.value = DATA.frames[X.frame % DATA.frames.length]; n.steps[0] = t.value; X.dirty = true; saveNotes(); }
-    t.focus({ preventScroll: true }); t.setSelectionRange(t.value.length, t.value.length);
+    const insert = !t.value.trim();
+    if (insert) { t.value = DATA.frames[X.frame % DATA.frames.length]; n.steps[0] = t.value; X.dirty = true; saveNotes(); }
+    t.focus({ preventScroll: true });
+    const i = insert ? t.value.indexOf('___') : -1;
+    if (i >= 0) t.setSelectionRange(i, i + 3); else t.setSelectionRange(t.value.length, t.value.length);
   },
   'frame-next'() { X.frame = (X.frame + 1) % DATA.frames.length; render(); },
   'since-pick'(e, el) { if (el.showPicker) { try { el.showPicker(); } catch (_) { /* 지원하지 않거나 열 수 없어도 기본 고르기는 그대로 둔다 */ } } },
@@ -2960,7 +3039,6 @@ const acts = {
   // + 남기기
   'wr-kind'(e, el) { W.kind = el.dataset.v; render(); const t = $('#wrTa'); if (t) t.focus({ preventScroll: true }); },
   'wr-ref'() { W.refOpen = !W.refOpen; $('#wrRefBox').hidden = !W.refOpen; $$('[data-act="wr-ref"]').forEach(x => x.setAttribute('aria-expanded', String(W.refOpen))); if (W.refOpen) $('#wrRef').focus({ preventScroll: true }); },
-  'wr-since'() { W.sinceOpen = !W.sinceOpen; $('#wrSinceBox').hidden = !W.sinceOpen; $$('[data-act="wr-since"]').forEach(x => x.setAttribute('aria-expanded', String(W.sinceOpen))); if (W.sinceOpen) $('#wrSince').focus({ preventScroll: true }); },
   'wr-save'() { saveWrite(); },
   'old-pick'(e, el) { const f = getF(el.dataset.f), q = getQ(el.dataset.q); if (f && q) oldPickSheet(f, q); },
   'old-no'(e, el) { const q = getQ(el.dataset.q); if (q) qDoneSheet(q); },
@@ -2972,6 +3050,10 @@ const acts = {
   'more-text'(e, el) { const t = el.previousElementSibling; if (t) t.classList.add('open'); el.remove(); },
   'trail-more'(e, el) { trailOpen.add(el.dataset.id); render(); },
   'parent-open'(e, el) { setHash('mine/q/' + el.dataset.id); },
+  'q-del'(e, el) { const q = getQ(el.dataset.id); if (q) qDeleteSheet(q); },
+  'q-del-go'(e, el) { deleteQuestion(el.dataset.id); },
+  'd-del'(e, el) { const f = getF(el.dataset.id); if (f) dDeleteSheet(f); },
+  'd-del-go'(e, el) { deleteDiscovery(el.dataset.id); },
   'q-more'(e, el) { const q = getQ(el.dataset.id); if (q) qMoreSheet(q); },
   'q-hold'(e, el) { holdMore(el.dataset.id); closeSheet(); render(); },
   'd-more'(e, el) { const f = getF(el.dataset.id); if (f) dMoreSheet(f); },
@@ -3314,8 +3396,13 @@ function mergePayload(local, remote) {
   const removed = new Set([...(local.gone || []), ...(remote.gone || [])]);
   const choose = (kind, key, time) => {
     const items = new Map(a[kind].map(x => [x[key], x]));
-    b[kind].forEach(x => { const old = items.get(x[key]); if (!old || x[time] > old[time]) items.set(x[key], x); });
-    return [...items.values()].filter(x => !removed.has(kind === 'ex' ? 'ex:' + x[key] : x[key]));
+    b[kind].forEach(x => {
+      const old = items.get(x[key]), newest = !old || x[time] > old[time] ? x : old;
+      // 글은 최신 at을 따르되, 한 기기에서라도 다 펴 본 흔적은 남긴다.
+      items.set(x[key], kind === 'wk' ? { ...newest, done: newest.done || old?.done || x.done || 0 } : newest);
+    });
+    // 생각을 비우며 남긴 옛 삭제 표시가 있어도 다 펴 본 주의 흔적은 지키도록 한다.
+    return [...items.values()].filter(x => (kind === 'wk' && x.done) || !removed.has(kind === 'ex' ? 'ex:' + x[key] : x[key]));
   };
   const notes = normalizeNotes({ qs: choose('qs', 'id', 'touched'), fs: choose('fs', 'id', 'touched'), wk: choose('wk', 'id', 'at'), ex: choose('ex', 'q', 'touched'), cur: [...new Set([...a.cur, ...b.cur])] });
   const badges = { seen: [...new Set([...(local.badges?.seen || []), ...(remote.badges?.seen || [])])] };
@@ -3425,7 +3512,14 @@ if (LIVE) {
     const text = routeKey() === 'explore/week' ? weekNow().q : q?.text;
     if (!text) return;
     let copied;
-    try { copied = navigator.clipboard.writeText(text); } catch (_) { /* 복사하지 못해도 기도할 곳은 연다 */ }
+    try { copied = navigator.clipboard.writeText(text); } catch (_) { /* 복사 실패는 아래에서 안내한다 */ }
+    if (navigator.standalone === true) {
+      Promise.resolve(copied || Promise.reject()).then(
+        () => toast('질문을 복사했어요. 기도 노트를 열어 붙여 넣어 기도해 보세요'),
+        () => toast('복사하지 못했어요. 질문을 길게 눌러 복사해 주세요')
+      );
+      return;
+    }
     // 복사를 기다리느라 새 창 열기가 막히지 않도록 누른 순간 연다.
     window.open(KOIDE_PRAY_URL, '_blank', 'noopener');
     if (copied) copied.then(() => toast('질문을 복사했어요. 붙여 넣어 기도해 보세요'), () => {});
