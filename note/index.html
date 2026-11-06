@@ -194,6 +194,54 @@ body.tabs-off .stickbar { bottom: env(safe-area-inset-bottom, 0px); }
 .gearpanel .dategrp .field { flex: 1; min-width: 0; min-height: 44px; }
 .gearpanel .dategrp .btn { flex: none; }
 .gearpanel .ginfo { margin: 0 6px 6px; line-height: 1.5; }
+.gearpanel .vine-demo { margin: 8px 6px; }
+.vine-demo .vine-demo-days { display: flex; gap: 6px; margin-top: 6px; }
+.vine-demo-days .btn { flex: 1; min-width: 0; padding: 0 6px; }
+
+/* 포도나무: 웹용 한 벌을 정수 배율로만 키운다. 작은 폭에서도 그림이 가로 스크롤을 만들지 않는다. */
+.col.vine-page { max-width: 816px; padding-left: 0; padding-right: 0; }
+.vine-copy { padding: 0 16px; }
+.vine-heading { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.vine-stage { display: flex; justify-content: center; overflow: hidden; width: 100%; }
+.vine-scene { --vine-scale: 1; position: relative; flex: none; width: calc(var(--vine-w) * var(--vine-scale)); height: calc(var(--vine-h) * var(--vine-scale)); overflow: hidden; image-rendering: pixelated; }
+.vine-zoom { position: absolute; width: var(--vine-w); height: var(--vine-h); transform: scale(var(--vine-scale)); transform-origin: top left; }
+.vine-layers { position: absolute; width: 384px; height: 256px; }
+.vine-layers > img { position: absolute; left: 0; top: 0; width: 384px; height: 256px; }
+.vine-layers > span { position: absolute; }
+.vine-leaf { width: 22px; height: 20px; background: url('img/vine/scene/leaf.png') no-repeat; background-size: 132px 20px; }
+.vine-grape { display: inline-block; flex: none; width: 20px; height: 28px; background: url('img/vine/scene/grape.png') no-repeat; background-size: 100px 28px; image-rendering: pixelated; }
+.vine-bg-night { display: none; }
+@media (prefers-color-scheme: dark) {
+  :root:not([data-mode="light"]) .vine-bg-day { display: none; }
+  :root:not([data-mode="light"]) .vine-bg-night { display: block; }
+}
+:root[data-mode="dark"] .vine-bg-day { display: none; }
+:root[data-mode="dark"] .vine-bg-night { display: block; }
+.vine-fruits { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; margin: 24px 16px; }
+.vine-fruit { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; min-height: 96px; padding: 12px 4px; }
+.vine-fruit.growing { border-color: var(--accent); box-shadow: inset 0 0 0 1px var(--accent); }
+.vine-fruit.waiting .vine-fruit-name { color: var(--ink-2); opacity: .5; }
+.vine-guide { margin-top: 24px; }
+@media (min-width: 1000px) { .vine-scene { --vine-scale: 2; } }
+/* 오늘의 질문 끝의 얇은 입구. 웹용 카드 영역을 절반으로 줄인 뒤 작은 창으로 자른다. */
+.vine-line { display: flex; align-items: center; gap: 10px; height: 62px; max-height: 64px; padding: 6px 8px; margin-top: 16px; overflow: hidden; text-decoration: none; }
+.vine-line-thumb { position: relative; display: block; flex: none; width: 64px; height: 48px; overflow: hidden; border-radius: 8px; }
+.vine-line-mini { position: absolute; left: 50%; top: 50%; width: 180px; height: 120px; transform: translate(-50%, -50%); }
+.vine-line .vine-scene { --vine-scale: 1; transform: scale(.5); transform-origin: top left; }
+.vine-line-copy { flex: 1; min-width: 0; font-size: .875rem; }
+.vine-line-copy > span { display: block; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.vine-line-copy .sm { font-size: .75rem; }
+.vine-line-go { flex: none; color: var(--ink-2); }
+.vine-story { display: flex; flex-direction: column; gap: 12px; }
+.vine-story-img { display: block; width: 100%; height: auto; aspect-ratio: 16 / 9; object-fit: cover; border-radius: 12px; }
+.vine-story-tree { display: flex; justify-content: center; width: 100%; overflow: hidden; border-radius: 12px; }
+.vine-story-tree .vine-scene { --vine-scale: 1; }
+.pop-sheet .vine-story-text { font-size: 1rem; line-height: 1.7; }
+.vine-story .sm { font-size: .875rem; line-height: 1.6; }
+.vine-fruit { font: inherit; color: var(--ink); }
+.vine-badge-title { margin: 28px 0 4px; }
+.vine-badge-sub { margin: 0; }
+.vine-badge-empty { width: 56px; height: 56px; border: 2px solid var(--line-strong); border-radius: 50%; opacity: .45; }
 .mdiv { height: 1px; background: var(--line); margin: 8px 6px; }
 .toast { pointer-events: none; position: fixed; left: 50%; bottom: calc(96px + env(safe-area-inset-bottom, 0px)); transform: translateX(-50%); width: max-content; background: var(--ink); color: var(--page); padding: .6em 1em; border-radius: 10px; font-size: .875rem; z-index: 60; max-width: calc(100% - 32px); text-align: center; }
 @media (min-width: 1000px) { .toast { bottom: 40px; } }
@@ -876,6 +924,7 @@ body.fs .xw-top { padding-right: 52px; }   /* 시안 보기 설정(톱니)이 �
   <label class="sm" for="gearStart">처음 들어온 날</label>
   <div class="dategrp"><input class="field" id="gearStart" type="date" min="1900-01-01" max="2200-12-31" aria-label="처음 들어온 날"></div>
   <div class="ginfo sm" id="gearInfo" aria-live="polite"></div>
+  <div class="vine-demo" id="vineDemo" hidden><span class="sm">포도나무 머문 날</span><div class="vine-demo-days"><button class="btn ghost sm2" type="button" data-act="vine-demo" data-days="0">0일</button><button class="btn ghost sm2" type="button" data-act="vine-demo" data-days="23">23일</button><button class="btn ghost sm2" type="button" data-act="vine-demo" data-days="67">67일</button><button class="btn ghost sm2" type="button" data-act="vine-demo" data-days="90">90일</button></div><div class="vine-demo-days"><button class="btn ghost sm2" type="button" data-act="vine-demo" data-days="9">9일</button><button class="btn ghost sm2" type="button" data-act="vine-demo" data-days="89">89일</button></div></div>
   <div class="mdiv"></div>
   <div style="padding:0 6px 8px"><button class="btn ghost wide sm2" type="button" data-act="demo-fill">예시 기록 채우기</button></div>
   <div style="padding:0 6px 4px"><button class="btn ghost wide sm2" type="button" data-act="demo-reset">처음부터 다시(첫 접속부터)</button></div>
@@ -908,7 +957,7 @@ const ls = {
   del(k) { try { localStorage.removeItem(k); } catch (e) { /* 없는 것으로 본다 */ } }
 };
 const readJson = k => { try { return JSON.parse(ls.get(k) || '{}') || {}; } catch (e) { return {}; } };
-const K = { display: 'didako-note-display', session: 'didako-note-session', demo: 'didako-note-demo', notes: 'didako-note-notes', badges: 'didako-note-badges' };
+const K = { display: 'didako-note-display', session: 'didako-note-session', demo: 'didako-note-demo', notes: 'didako-note-notes', badges: 'didako-note-badges', vine: 'didako-note-vine' };
 const pick = (v, list, d) => (list.includes(v) ? v : d);
 
 // ── 화면 설정(화면 모드·색 테마·디자인·큰 글씨): GBS 앱과 같은 값, 기억 자리만 따로 ──
@@ -1007,8 +1056,131 @@ function questionOn(t) {
   D.date = typeof b.date === 'string' && parseYmd(b.date) ? b.date : '';
   D.sync = b.sync === 'on' ? 'on' : 'off'; D.syncAt = Number(b.syncAt) || 0;
 })();
+// 열매의 이름·뜻·이야기는 S-30의 쉬운 풀이를 그대로 둔다. 기존 배지 목록과 섞지 않는다.
+const FRUITS = [
+  {
+    "k": "fruit-01",
+    "name": "사랑",
+    "meaning": "서로를 위해 낮아지는 마음",
+    "story": "마지막 저녁, 예수님은 겉옷을 벗고 대야에 물을 담아 제자들의 발을 하나하나 씻기셨어요. 그리고 내가 한 것처럼 너희도 서로 그렇게 하라고 하셨어요.",
+    "ref": "요한복음 13:1~15"
+  },
+  {
+    "k": "fruit-02",
+    "name": "희락",
+    "meaning": "형편보다 깊은 곳에서 오는 기쁨",
+    "story": "매를 맞고 발이 묶인 채 갇힌 밤에도, 바울과 실라는 기도하고 찬송했어요. 그 노래를 다른 갇힌 사람들도 듣고 있었어요.",
+    "ref": "사도행전 16:22~34"
+  },
+  {
+    "k": "fruit-03",
+    "name": "화평",
+    "meaning": "멀어진 사이를 다시 잇는 마음",
+    "story": "주인에게서 도망쳤던 오네시모가 바울을 만나 예수님을 믿게 되었어요. 바울은 주인 빌레몬에게 그를 종이 아니라 사랑받는 형제로 맞아 달라고 편지를 썼어요.",
+    "ref": "빌레몬서 1:10~17"
+  },
+  {
+    "k": "fruit-04",
+    "name": "오래 참음",
+    "meaning": "쉽게 포기하지 않고 기다리는 마음",
+    "story": "안나는 남편을 일찍 잃고 여든이 넘도록 성전을 떠나지 않고 기도하며 기다렸어요. 그리고 마침내 약속된 아기를 만났어요.",
+    "ref": "누가복음 2:36~38"
+  },
+  {
+    "k": "fruit-05",
+    "name": "자비",
+    "meaning": "아픈 이웃 곁에 멈추는 마음",
+    "story": "강도를 만나 쓰러진 사람을 여러 사람이 지나쳤어요. 한 사마리아 사람이 멈춰 상처를 싸매 주고, 자기 나귀에 태워 여관까지 데려가 돌봐 주었어요.",
+    "ref": "누가복음 10:30~37"
+  },
+  {
+    "k": "fruit-06",
+    "name": "양선",
+    "meaning": "착한 일을 실제로 해내는 마음",
+    "story": "욥바의 도르가는 가난한 과부들에게 손수 옷을 지어 주며 착한 일을 많이 했어요. 그녀가 세상을 떠나자 사람들은 그녀가 지어 준 옷을 보이며 울었어요.",
+    "ref": "사도행전 9:36~39"
+  },
+  {
+    "k": "fruit-07",
+    "name": "충성",
+    "meaning": "끝까지 곁을 지키는 신실함",
+    "story": "바울은 디모데를 나와 한마음인 사람이라고 불렀어요. 감옥에 갇힌 마지막 때에도 바울은 디모데에게 겉옷과 책을 가지고 어서 와 달라고 부탁했어요.",
+    "ref": "디모데후서 4:9~13"
+  },
+  {
+    "k": "fruit-08",
+    "name": "온유",
+    "meaning": "힘이 있어도 부드럽게 다가오는 마음",
+    "story": "왕으로 오시는 예수님은 큰 말이 아니라 어린 나귀를 타셨어요. 사람들은 겉옷과 나뭇가지를 길에 펴며 맞이했어요.",
+    "ref": "마태복음 21:1~9"
+  },
+  {
+    "k": "fruit-09",
+    "name": "절제",
+    "meaning": "나를 내려놓고 더 중요한 것을 지키는 마음",
+    "story": "요한은 광야에서 낙타털 옷을 입고 소박하게 살며 사람들을 예수님께로 이끌었어요. 사람들이 예수님께로 가자 그분은 커지고 나는 작아져야 한다며 기뻐했어요.",
+    "ref": "요한복음 3:27~30"
+  }
+];
+const VINE_FRUIT = { k: 'vine', name: '포도나무', story: '아홉 가지 열매가 한 나무에 맺혔어요. 열매는 가지가 애써 만든 것이 아니라 나무에 붙어 있을 때 맺혀요.', ref: '요한복음 15:4~5' };
+
+// 포도나무 기억 자리: start는 이 기능을 처음 연 날, days는 머문 날, dew는 발견을 남긴 날,
+// seen은 본 열매 장면(S-30용). 날짜는 'YYYY-MM-DD'이며 지운 기록과 별개로 남긴다.
+function normalizeVine(raw) {
+  const v = raw && typeof raw === 'object' ? raw : {};
+  const start = parseYmd(v.start) ? v.start : '';
+  const dates = list => [...new Set((Array.isArray(list) ? list : []).filter(d => typeof d === 'string' && parseYmd(d) && (!start || d >= start)))].sort();
+  const days = dates(v.days), dew = dates(v.dew).filter(d => days.includes(d));
+  const seen = [...new Set((Array.isArray(v.seen) ? v.seen : []).filter(s => typeof s === 'string'))].sort();
+  return { start, days, dew, seen };
+}
+let VN = normalizeVine(readJson(K.vine));
+let vineMoment = null, vineMomentTimer = 0, vineStoryFollow = false;
+const saveVine = () => { ls.set(K.vine, JSON.stringify(VN)); if (LIVE) scheduleSync(); };
+function ensureVineStart() { if (!VN.start) { VN.start = dnStr(demoDN()); saveVine(); } }
+function markStay({ dew = false } = {}) {
+  if (!me) return false;
+  ensureVineStart();
+  const today = dnStr(demoDN());
+  if (today < VN.start) return false;   // 데모 날짜를 되돌려도 시작 전 기록은 세지 않는다.
+  const fresh = !VN.days.includes(today);
+  if (fresh) { VN.days.push(today); VN.days.sort(); }
+  if (dew && !VN.dew.includes(today)) { VN.dew.push(today); VN.dew.sort(); }
+  if (fresh || dew) saveVine();
+  if (fresh) {
+    const n = vineDays(), fruit = n <= 90 && n % 10 === 0 ? FRUITS[n / 10 - 1] : null;
+    vineMoment = { day: today, key: fruit?.k || '' }; scheduleVineMoment();
+  }
+  return fresh;
+}
+const vineDays = () => VN.days.length;
+const vineLeaves = i => Math.max(0, Math.min(10, vineDays() - (i - 1) * 10));
+const vineGrapeFrame = n => n === 10 ? 3 : n >= 4 && n <= 6 ? 0 : n >= 7 && n <= 8 ? 1 : n === 9 ? 2 : n === 0 ? 4 : null;
+function fillVineDemo(days) {
+  if (LIVE || ![0, 9, 23, 67, 89, 90].includes(days)) return;
+  clearVineMoments();
+  const today = demoDN(), end = today - ([9, 89].includes(days) ? 1 : 0), dates = Array.from({ length: days }, (_, i) => dnStr(end - days + i + 1));
+  VN = { start: dates[0] || dnStr(today), days: dates, dew: [3, 9, 17, 21, 33, 48, 60, 77, 85].filter(k => k <= days).map(k => dates[k - 1]), seen: [] };
+  saveVine(); closeMenus(); render();
+}
+function clearVineMoments() { clearTimeout(vineMomentTimer); vineMomentTimer = 0; vineMoment = null; vineStoryFollow = false; }
+function scheduleVineMoment() {
+  if (!vineMoment || vineMomentTimer) return;
+  vineMomentTimer = setTimeout(() => { vineMomentTimer = 0; flushVineMoment(); }, 0);
+}
+function flushVineMoment() {
+  if (!vineMoment || !me) return;
+  if (vineMoment.day !== dnStr(demoDN())) { vineMoment = null; return; }
+  // 저장 뒤 화면 이동·기존 확인 창·입력 중에는 끼어들지 않는다.
+  if (routeKey() !== lastKey || !$('#pop').hidden || !$('#opening').hidden || editing()) return;
+  if (!$('#toast').hidden && $('#toast').classList.contains('act')) return;   // 되돌리기 단추도 가리지 않는다.
+  const moment = vineMoment; vineMoment = null;
+  if (!moment.key) { toast('오늘 잎 하나가 돋았어요'); return; }
+  if (!VN.seen.includes(moment.key)) openFruitScene(moment.key, true);
+}
+
 // 첫 접속을 마친 날을 기억한다. 데모는 처음 연 사람도 지난 질문을 볼 수 있게 데모의 오늘보다 30일 앞을 처음 들어온 날로 둔다(실제 앱은 카카오로 처음 로그인한 날).
-function ensureStart() { if (!D.start) { D.start = dnStr(demoDN() - (LIVE ? 0 : 30)); saveDemo(); } }
+function ensureStart() { if (!D.start) { D.start = dnStr(demoDN() - (LIVE ? 0 : 30)); saveDemo(); } ensureVineStart(); }
 if (me) ensureStart();
 const startDN = () => D.start ? parseYmd(D.start).t : demoDN();
 const questionKey = q => String(q.img || '').replace(/^img\/q\//, '').replace(/\.webp$/, '');
@@ -1055,7 +1227,7 @@ function toast(msg, o) {
   t.className = 'toast' + (o.pill ? ' pill' : '') + (o.undo ? ' act' : '');
   t.textContent = msg;
   if (o.undo) { const b = document.createElement('button'); b.type = 'button'; b.dataset.act = 'undo'; b.textContent = '되돌리기'; t.append(' · ', b); }
-  t.hidden = false; clearTimeout(toastT); toastT = setTimeout(() => { t.hidden = true; }, o.undo ? 7000 : 2600);
+  t.hidden = false; clearTimeout(toastT); toastT = setTimeout(() => { t.hidden = true; scheduleVineMoment(); }, o.undo ? 7000 : 2600);
 }
 const SOON = '다음 단계에서 열려요';   // 데모: 아직 만들지 않은 곳의 안내
 let sheetFrom = null, sheetLock = false;
@@ -1074,6 +1246,7 @@ function closeSheet(quiet) {
     if (f && f.focus) f.focus({ preventScroll: true });
   }
   sheetFrom = null;
+  vineStoryFollow = false; scheduleVineMoment();
 }
 const sheetMsg = t => { const m = $('#shMsg'); if (m) m.textContent = t; };
 const val = id => ($('#' + id).value || '').trim();
@@ -1169,6 +1342,7 @@ function viewToday() {
         ${pageHead('💭', '오늘의 질문', `<div class="sm">${dateLine(demoDate())}</div>`)}
         ${qCard(q, true)}
         ${mapCard()}
+        ${vineLine()}
       </div></div>
     </div>`;
   }
@@ -1180,6 +1354,7 @@ function viewToday() {
     <div class="past-h">지난 질문</div>
     <div class="card past2">${two}</div>
     <div class="past-more"><a class="tx" href="#/today/past">지난 질문 모두 보기</a></div>
+    ${vineLine()}
   </div>`;
 }
 // 지난 질문 모두 보기: 한 달씩 넘겨 본다(#/today/past/2026-09, 없으면 데모의 오늘이 속한 달). ›는 이번 달에서 막고 ‹는 막지 않는다
@@ -1555,12 +1730,12 @@ function span(from, to) {
   const d = Math.floor((to - from) / DAY);
   return d >= 7 ? `${Math.floor(d / 7)}주` : `${Math.max(1, d)}일`;
 }
-// 질문 쪽지의 기간: 품고 있으면 "질문만 · 3개월째", 알게 됐으면 "질문과 발견 · 7개월 걸었어요"(처음부터 첫 발견까지)
+// 질문 쪽지의 기간: 품고 있으면 "질문만 · 3개월째", 알게 됐으면 "질문과 발견 · 7개월째"(처음부터 첫 발견까지)
 function qMeta(q) {
   const s = startOf(q);
   if (q.state === 'found') {
     const arr = N.fs.filter(f => f.q === q.id).map(f => f.at);
-    return `질문과 발견 · ${span(s, Math.max(s, arr.length ? Math.min(...arr) : Date.now()))} 걸었어요`;
+    return `질문과 발견 · ${span(s, Math.max(s, arr.length ? Math.min(...arr) : Date.now()))}째`;
   }
   return `질문만 · ${span(s, Date.now())}째`;
 }
@@ -1688,6 +1863,7 @@ function hideOpening(skip) {   // skip가 true이면 다음 화면으로 가지 
   clearTimeout(openT); const o = $('#opening'); if (o.hidden) return;
   o.hidden = true; o.innerHTML = ''; ['#main', '#tabs', '#topbar'].forEach(s => { $(s).inert = false; }); document.body.classList.remove('pop-open');
   const cb = openCb; openCb = null; if (!skip && cb) cb();
+  scheduleVineMoment();
 }
 // 내 기록에서 질문을 펼 때는 말씀을 열며 없이 바로 펴진다(2026-10-27)
 const openQ = id => setHash('mine/q/' + id);
@@ -1783,7 +1959,7 @@ function markWeekDone() {
   const id = weekNow().id, now = Date.now(), w = N.wk.find(x => x.id === id);
   if (w) { if (!w.done) w.done = now; w.at = now; }
   else N.wk.push({ id, mine: '', at: now, done: now });
-  saveNotes();
+  markStay(); saveNotes();
 }
 // 주 id는 그 주 주일의 날짜다. 지난 해의 흔적도 같은 질문 자료에서 찾는다.
 function weekById(id) {
@@ -1845,6 +2021,7 @@ function openStartSheet(qid) {
 }
 function dismissSheet() {
   if (sheetLock) return;
+  if ($('#popSheet .vine-story')) { closeFruitScene(false); return; }
   if (routeKey().startsWith('explore/start/')) { closeSheet(true); setHash(startBack); } else closeSheet();
 }
 
@@ -2035,7 +2212,7 @@ function commitStep(n, i, mark) {
   if (mark) n.ok[i] = true;
   if (i === 1) n.refs = refsOf(n.steps[1]);
   if (t) {
-    if (mark || X.dirty) { const now = Date.now(); n.last = i; n.touched = now; q.touched = now; }
+    if (mark || X.dirty) { const now = Date.now(); n.last = i; n.touched = now; q.touched = now; markStay(); }
     syncLines(n, q, n.steps[i]);
   }
   X.dirty = false; saveNotes();
@@ -2086,8 +2263,8 @@ function exMoreSheet() {
   openSheet(`<div class="grab"></div>
     <button class="card optc" type="button" data-act="ex-export" data-id="${id}"><b>내보내기</b><span class="sm">PDF·Markdown 같은 파일로 저장하거나 복사해요</span></button>
     ${free
-      ? `<button class="card optc" type="button" data-act="to-steps" data-id="${id}"><b>단계별로 쓰기로 바꾸기</b><span class="sm">다섯 단계 질문을 따라 써요. 언제든 자유롭게 쓰기로 돌아올 수 있어요</span></button>`
-      : `<button class="card optc" type="button" data-act="to-free" data-id="${id}"><b>자유롭게 쓰기로 바꾸기</b><span class="sm">단계 없이 내 방식대로 써요. 언제든 단계별로 쓰기로 돌아올 수 있어요</span></button>`}
+      ? `<button class="card optc" type="button" data-act="to-steps" data-id="${id}"><b>단계별로 쓰기로 바꾸기</b><span class="sm">다섯 단계 질문을 따라 써요.</span></button>`
+      : `<button class="card optc" type="button" data-act="to-free" data-id="${id}"><b>자유롭게 쓰기로 바꾸기</b><span class="sm">단계 없이 내 방식대로 써요.</span></button>`}
     <button class="btn lt" type="button" data-act="sheet-x" style="margin-top:4px">닫기</button>`);
 }
 
@@ -2153,7 +2330,7 @@ function saveFree(sync) {
   clearTimeout(F.timer);
   if (F.ed && F.dirty) {
     const doc = cleanDoc(F.ed.json()), now = Date.now();
-    if (doc) { n.free = { doc, touched: now }; n.touched = now; q.touched = now; F.dirty = false; F.warned = false; }
+    if (doc) { if (JSON.stringify(doc) !== JSON.stringify(n.free?.doc)) markStay(); n.free = { doc, touched: now }; n.touched = now; q.touched = now; F.dirty = false; F.warned = false; }
     else if (!F.warned) { F.warned = true; toast('글이 너무 길어서 저장하지 못했어요'); }
   }
   if (sync && n.free && n.free.doc) syncLines(n, q, docLines(n.free.doc).join('\n'));
@@ -2513,11 +2690,11 @@ function saveWrite() {
   const now = Date.now(), today = W.mode === 'today', since = W.since && W.since <= ymNow() ? W.since : '', ref = W.ref;
   if (W.kind === 'q') {
     const q = { id: newId('q'), text, ref, since, from: today ? 'today' : '', place: W.place || '', at: now, touched: now, state: 'holding', parent: '', trail: [] };
-    N.qs.push(q); saveNotes(); W = newDraft('', 'q');
+    N.qs.push(q); markStay(); saveNotes(); W = newDraft('', 'q');
     finishWrite(() => qDoneSheet(q));
   } else {
     const f = { id: newId('f'), text, ref, since, place: W.place || '', at: now, touched: now, q: '' };
-    N.fs.push(f); saveNotes(); W = newDraft('', 'f');
+    N.fs.push(f); markStay({ dew: true }); saveNotes(); W = newDraft('', 'f');
     finishWrite(() => { const c = candQs(f, 1)[0]; c ? fPairSheet(f, c) : fNoneSheet(f); });
   }
 }
@@ -2574,10 +2751,14 @@ const BADGE_LINES = {
   'm-year': '<rect x="4" y="3" width="15" height="18" rx="2"/><path d="M8 3v18M13 3v9l2-2 2 2V3M16 18l2 3 2-3"/>'
 };
 // 저장값은 아는 키와 실제 날짜만 받아들인다. 본 배지에도 모르는 키는 남기지 않는다.
+function badgeSeen(keys) {
+  const allowed = new Set([...BADGES.map(b => b.k), ...FRUITS.map(f => f.k), 'vine']);
+  return [...new Set((Array.isArray(keys) ? keys : []).filter(k => allowed.has(k)))];
+}
 function readBadges() {
   const raw = readJson(K.badges), out = { seen: [] };
   BADGES.forEach(b => { if (typeof raw[b.k] === 'string' && parseYmd(raw[b.k])) out[b.k] = raw[b.k]; });
-  out.seen = Array.isArray(raw.seen) ? [...new Set(raw.seen.filter(k => BADGES.some(b => b.k === k)))] : [];
+  out.seen = badgeSeen(raw.seen);
   return out;
 }
 let B = readBadges();
@@ -2610,20 +2791,107 @@ function refreshBadges() {
   if (matchMedia('(display-mode: standalone)').matches || navigator.standalone) earnBadge('a-home');
 }
 function badgeButton() {
-  const days = badgeDays(), fresh = BADGES.some(b => days[b.k] && !B.seen.includes(b.k));
+  const days = badgeDays(), vine = vineBadgeDays(), fresh = BADGES.some(b => days[b.k] && !B.seen.includes(b.k)) || Object.keys(vine).some(k => vine[k] && !B.seen.includes(k));
   return `<a class="ib bdg" href="#/mine/badges" aria-label="나의 배지">${BADGE_IC}${fresh ? '<span class="bdg-dot" aria-hidden="true"></span>' : ''}</a>`;
 }
 function badgeVisual(k, earned, large) {
-  const art = BADGE_ART ? `<img src="img/badges/${k}.webp" alt="">` : `<svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${BADGE_LINES[k]}</svg>`;
+  const vine = k === 'vine' || FRUITS.some(f => f.k === k);
+  const art = vine || BADGE_ART ? `<img src="img/${vine ? 'vine/' : ''}badges/${k}.webp" alt="">` : `<svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${BADGE_LINES[k]}</svg>`;
   return `<span class="badge-art${earned ? ' earned' : ' locked'}${large ? ' large' : ''}">${art}</span>`;
 }
+// 포도나무 조각은 같은 좌표계에 쌓고, 작은 카드에서는 자리 표의 영역만 잘라 쓴다.
+let vineAnchors = null, vineAnchorsPending = null;
+function loadVineAnchors() {
+  if (vineAnchors || vineAnchorsPending) return;
+  vineAnchorsPending = fetch('img/vine/scene/anchors.json').then(r => { if (!r.ok) throw new Error('anchors'); return r.json(); }).then(a => {
+    vineAnchors = a;
+    if ($('#main .vine-scene')) render();
+    const tree = $('#popSheet .vine-story-tree'); if (tree) tree.innerHTML = vineScene();
+  }).catch(() => { vineAnchorsPending = null; });
+}
+const vineGrape = (frame, style = '') => `<span class="vine-grape" aria-hidden="true" data-frame="${frame}" style="background-position:-${frame * 20}px 0;${style}"></span>`;
+function vineScene(opts = {}) {
+  loadVineAnchors();
+  const a = vineAnchors, box = opts.crop && a ? a.card.map(v => v / 2) : [0, 0, 384, 256];
+  const [x, y, w, h] = box, total = vineDays(), today = dnStr(demoDN());
+  const image = (name, cls = '', style = '') => `<img class="${cls}" src="img/vine/scene/${name}.png" alt="" aria-hidden="true" style="${style}">`;
+  let layers = image('bg-day', 'vine-bg-day') + image('bg-night', 'vine-bg-night');
+  if (a) {
+    if (total) layers += image(total <= 40 ? 'trunk-0' : 'trunk-1', 'vine-trunk');
+    a.branches.forEach(b => {
+      const n = vineLeaves(b.id); if (!n) return;
+      const base = b.base[0] / 2, tip = b.tip[0] / 2, cut = base + (tip - base) * n / 10;
+      const left = Math.max(0, Math.min(base, cut) - 2), right = Math.min(384, Math.max(base, cut) + 2);
+      layers += image('branch-' + b.id, 'vine-branch', n < 10 ? `clip-path:inset(0 ${384 - right}px 0 ${left}px)` : '');
+    });
+    a.branches.forEach(b => b.leaves.slice(0, vineLeaves(b.id)).forEach((l, j) => {
+      const day = VN.days[(b.id - 1) * 10 + j], frame = VN.dew.includes(day) ? 5 : day === today ? 4 : l.frame;
+      layers += `<span class="vine-leaf" aria-hidden="true" data-frame="${frame}" style="left:${l.x / 2}px;top:${l.y / 2}px;background-position:-${frame * 22}px 0;${l.flip ? 'transform:scaleX(-1)' : ''}"></span>`;
+    }));
+    a.branches.forEach(b => {
+      const frame = vineGrapeFrame(vineLeaves(b.id));
+      if (frame !== null) layers += vineGrape(frame, `left:${b.grape[0] / 2}px;top:${b.grape[1] / 2}px`);
+    });
+  }
+  return `<div class="vine-scene" role="img" aria-label="포도나무" style="--vine-w:${w}px;--vine-h:${h}px"><div class="vine-zoom"><div class="vine-layers" style="left:${-x}px;top:${-y}px">${layers}</div></div></div>`;
+}
+function vineLine() {
+  const n = vineDays(), name = FRUITS[Math.min(8, Math.floor(n / 10))].name;
+  const text = !n ? '포도나무에 첫 잎을 기다리고 있어요' : n >= 90 ? '아홉 열매가 맺힌 포도나무' : `${name}의 열매가 자라고 있어요`;
+  const stayed = VN.days.includes(dnStr(demoDN()));
+  return `<a class="card vine-line" href="#/mine/vine"><span class="vine-line-thumb" aria-hidden="true"><span class="vine-line-mini">${vineScene({ crop: true })}</span></span><span class="vine-line-copy"><span class="vine-line-message">${text}</span>${stayed ? '<span class="sm">오늘 잎 하나가 돋았어요</span>' : ''}</span><span class="vine-line-go" aria-hidden="true">›</span></a>`;
+}
+function vineBadgeDays() {
+  const days = Object.fromEntries(FRUITS.map((f, i) => [f.k, VN.days[(i + 1) * 10 - 1] || null]));
+  days.vine = VN.days[89] || null;
+  return days;
+}
+const vineBadgeName = fruit => fruit.k === 'vine' ? '포도나무' : `${fruit.name}의 열매`;
+function vineBadgeGroups(days) {
+  const fruits = [...FRUITS, VINE_FRUIT];
+  const future = (title, sub, names) => `<section class="vine-badge-group"><h2 class="xlb2 vine-badge-title">${title}</h2><p class="sm vine-badge-sub">${sub}</p><div class="badge-grid">${names.map(name => `<button class="badge-item" type="button" data-act="vine-unopened"><span class="badge-art locked"><span class="vine-badge-empty" aria-hidden="true"></span></span><span class="sm badge-name">${name}</span></button>`).join('')}</div></section>`;
+  return `<section class="vine-badge-group"><h2 class="xlb2 vine-badge-title">성령의 열매</h2><div class="badge-grid">${fruits.map(f => `<button class="badge-item${days[f.k] ? ' earned' : ''}" type="button" data-act="badge-open" data-badge="${f.k}">${badgeVisual(f.k, days[f.k], false)}<span class="sm badge-name">${vineBadgeName(f)}</span></button>`).join('')}</div></section>` +
+    future('포도원', '포도나무 다음에 열려요', ['포도원 일꾼', '두 아들', '포도원 농부', '무화과나무']) +
+    future('새 포도주', '포도원 다음에 열려요', ['가나의 잔치', '새 부대', '마지막 만찬', '나라의 잔치']);
+}
+function openVineBadge(k) {
+  const fruit = k === 'vine' ? VINE_FRUIT : FRUITS.find(f => f.k === k); if (!fruit) return;
+  const day = vineBadgeDays()[k], date = day && parseYmd(day);
+  openSheet(`<div class="badge-sheet">${badgeVisual(k, day, true)}<h2>${vineBadgeName(fruit)}</h2><p>${day ? esc(fruit.meaning || fruit.story) : '말씀에 머문 날이 쌓이면 맺혀요'}</p>${date ? `<p class="sm">${date.m}월 ${date.d}일에 받았어요</p><button class="btn" type="button" data-act="vine-story" data-key="${k}">이야기 다시 보기</button>` : ''}<button class="btn lt" type="button" data-act="sheet-x">닫기</button></div>`);
+}
+function openFruitScene(k, earned = false) {
+  const fruit = k === 'vine' ? VINE_FRUIT : FRUITS.find(f => f.k === k); if (!fruit || !vineBadgeDays()[k]) return;
+  const isVine = k === 'vine', title = isVine ? '아홉 열매가 다 맺혔어요' : `${fruit.name}의 열매${earned ? '를 맺었어요' : ''}`;
+  const image = isVine ? `<div class="vine-story-tree">${vineScene()}</div>` : `<img class="vine-story-img" src="img/vine/stories/${k}.webp" width="1200" height="675" alt="${esc(fruit.name)}의 열매 이야기">`;
+  openSheet(`<div class="vine-story" data-key="${k}">${image}<h2 class="sf">${title}</h2>${fruit.meaning ? `<p class="sm">${esc(fruit.meaning)}</p>` : ''}<p class="vine-story-text">${esc(fruit.story)}</p><p class="sm">${esc(fruit.ref)} · 나의 배지에 ‘${vineBadgeName(fruit)}’가 생겼어요</p><div class="rb2"><button class="btn" type="button" data-act="vine-story-go">포도나무 보기</button><button class="btn lt" type="button" data-act="vine-story-close">닫기</button></div></div>`);
+  $('#popSheet').scrollTop = 0;
+  vineStoryFollow = earned && k === 'fruit-09' && !VN.seen.includes('vine');
+  if (!VN.seen.includes(k)) { VN.seen.push(k); VN.seen.sort(); saveVine(); }
+}
+function closeFruitScene(goVine) {
+  const follow = vineStoryFollow;
+  closeSheet();
+  if (follow && !VN.seen.includes('vine')) vineMoment = { day: dnStr(demoDN()), key: 'vine' };
+  if (goVine) go('mine/vine');
+  scheduleVineMoment();
+}
+function viewVine() {
+  return `<div class="col vine-page"><div class="vine-copy"><div class="back-row"><a class="bk" href="#/mine">← 내 기록</a></div><div class="vine-heading"><h1 class="tt">포도나무</h1><span class="sm">요 15:1~8</span></div><p class="sm">말씀에 머문 날마다 잎이 돋고, 성령의 열매가 맺혀요</p></div>
+    <div class="vine-stage">${vineScene()}</div><div class="vine-fruits">${FRUITS.map((fruit, i) => {
+      const n = vineLeaves(i + 1), state = n === 10 ? 'earned' : n ? 'growing' : 'waiting', tag = n === 10 ? 'button' : 'div';
+      return `<${tag} class="card vine-fruit ${state}"${n === 10 ? ` type="button" data-act="vine-story" data-key="${fruit.k}"` : ''}>${vineGrape(vineGrapeFrame(n) ?? 4)}<span class="vine-fruit-name">${fruit.name}</span></${tag}>`;
+    }).join('')}</div><div class="vine-copy vine-guide">${vineDays() >= 90 ? '<p class="sm">아홉 열매를 다 맺었어요. 다음 포도원은 준비하고 있어요.</p>' : ''}<p class="sm">잎은 무언가를 남긴 날마다 하나씩 돋아요. 며칠 쉬어도 시들지 않아요.<br>발견(!)을 남긴 날의 잎에는 이슬이 맺혀요.</p></div></div>`;
+}
+const VINE_IC = '<svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M11 19c-3 0-5-2-7-5l4-1-3-5 5 1 2-6 3 5 5-2-1 6 3 2c-3 4-6 6-9 5M7 22l6-8M12 15l-2-4M13 14l4-3"/></svg>';
+
 function viewBadges() {
-  const days = badgeDays(), seen = [...new Set([...B.seen, ...BADGES.filter(b => days[b.k]).map(b => b.k)])];
+  const days = badgeDays(), vine = vineBadgeDays(), seen = badgeSeen([...B.seen, ...BADGES.filter(b => days[b.k]).map(b => b.k), ...Object.keys(vine).filter(k => vine[k])]);
   if (seen.length !== B.seen.length) { B.seen = seen; saveBadges(); }
   return `<div class="col"><div class="back-row"><a class="bk" href="#/mine">‹ 내 기록</a></div><h1 class="tt">나의 배지</h1><p class="sm">앱을 하나씩 써 보며 받는 표시예요.</p>
-    <div class="badge-grid">${BADGES.map(b => `<button type="button" class="badge-item${days[b.k] ? ' earned' : ''}" data-act="badge-open" data-badge="${b.k}">${badgeVisual(b.k, days[b.k], false)}<span class="sm badge-name">${esc(b.name)}</span></button>`).join('')}</div></div>`;
+    <div class="badge-grid">${BADGES.map(b => `<button type="button" class="badge-item${days[b.k] ? ' earned' : ''}" data-act="badge-open" data-badge="${b.k}">${badgeVisual(b.k, days[b.k], false)}<span class="sm badge-name">${esc(b.name)}</span></button>`).join('')}</div>${vineBadgeGroups(vine)}</div>`;
 }
 function openBadge(k) {
+  if (k === 'vine' || FRUITS.some(f => f.k === k)) { openVineBadge(k); return; }
   const b = BADGES.find(b => b.k === k); if (!b) return;
   const day = badgeDays()[k], d = day && parseYmd(day);
   const buttons = day || b.kind === 'mark' ? '<button class="btn wide" type="button" data-act="sheet-x">닫기</button>' : `<a class="btn wide" href="${b.go}" data-act="badge-go">해 보기 ›</a><button class="btn ghost wide" type="button" data-act="sheet-x">나중에 할게요</button>`;
@@ -2654,7 +2922,7 @@ const snF = f => `<div class="sn y lf"><span class="mk" aria-hidden="true">!</sp
 // 고른 해는 화면에서만 기억한다. 기기 보관이나 주소에는 넣지 않는다.
 let weeksYear = null;
 function mineTools(search = true) {
-  return `<div style="display:flex;align-items:center"><a class="ib" href="#/mine/weeks" aria-label="펴 본 이번 주의 질문">${WEEKS_IC}</a>${badgeButton()}${search ? `<a class="ib" href="#/mine/search" aria-label="검색" style="margin-right:-10px">${SEARCH_IC}</a>` : ''}</div>`;
+  return `<div style="display:flex;align-items:center"><a class="ib" href="#/mine/vine" aria-label="포도나무">${VINE_IC}</a><a class="ib" href="#/mine/weeks" aria-label="펴 본 이번 주의 질문">${WEEKS_IC}</a>${badgeButton()}${search ? `<a class="ib" href="#/mine/search" aria-label="검색" style="margin-right:-10px">${SEARCH_IC}</a>` : ''}</div>`;
 }
 function viewWeeks() {
   const list = N.wk.filter(w => w.done && weekById(w.id));
@@ -2846,7 +3114,7 @@ let undoSnap = null;   // 짝 풀기를 되돌리기 위한 직전 모습
 const VIEWS = {
   'start': viewStart, 'start/church': viewChurch, 'start/name': viewName, 'start/consent': viewConsent,
   'today': viewToday, 'today/past': viewPast, 'today/write': viewWrite,
-  'explore': viewExplore, 'explore/week': viewWeek, 'write': viewWrite, 'mine': () => viewMine(), 'mine/search': viewSearch, 'mine/badges': viewBadges, 'mine/weeks': viewWeeks,
+  'explore': viewExplore, 'explore/week': viewWeek, 'write': viewWrite, 'mine': () => viewMine(), 'mine/search': viewSearch, 'mine/badges': viewBadges, 'mine/weeks': viewWeeks, 'mine/vine': viewVine,
   'more': viewMore, 'more/about': viewAbout, 'more/guide': viewGuide, 'more/feedback': viewFeedback, 'more/sync': viewSync
 };
 const MENU_OF = k => (k.startsWith('today') ? (TODAY_WRITE.test(k) ? 'write' : 'today') : k.startsWith('more') ? 'more' : k.startsWith('mine') ? 'mine' : k.startsWith('explore') ? 'explore' : k);
@@ -2898,6 +3166,7 @@ function render(fromHash) {
   const drawStart = performance.now();
   const raw = routeKey(), key = guard(raw);
   if (key !== raw) { setHash(key, true); return; }
+  if (me) ensureVineStart();
   const fm = /^explore\/note\/([\w-]+)$/.exec(key), freeNow = fm && getEx(fm[1]) && getEx(fm[1]).mode === 'free' ? fm[1] : '';   // 자유롭게 쓰는 노트 화면이면 그 노트 id
   const wall = k => /^mine(\/q\/[\w-]+)?$/.test(k);
   const oldFree = /^explore\/note\/([\w-]+)$/.exec(lastKey);
@@ -2941,6 +3210,7 @@ function render(fromHash) {
   syncAwake(key);
   if (LIVE) paintSyncStatus();
   if (after) { const f = after; after = null; f(); }   // 화면을 옮긴 뒤에 띄울 것(카드, 알림)
+  scheduleVineMoment();
   if (motion && key === lastKey && performance.now() - drawStart <= 50 && !$('#main').querySelector('.xact, .qpanel, .fbar.pf')) vtAnim($('#main'), motion);   // 화면에 붙은 막대가 있으면 움직이지 않는다(움직이는 동안 막대가 제자리를 벗어난다)
 }
 // 고른 설정을 눌린 표시로 맞춘다(자리를 다시 그리지 않아서 누르던 단추가 그대로 있다)
@@ -2965,6 +3235,11 @@ function closeMenus(returnGearFocus = false) {
 
 // ── 눌림 처리 ──
 const acts = {
+  'vine-story'(e, el) { openFruitScene(el.dataset.key); },
+  'vine-story-close'() { closeFruitScene(false); },
+  'vine-story-go'() { closeFruitScene(true); },
+  'vine-unopened'() { openSheet('<h2>아직 열리지 않았어요</h2><div class="ra"><button class="btn lt" type="button" data-act="sheet-x">닫기</button></div>'); },
+  'vine-demo'(e, el) { fillVineDemo(Number(el.dataset.days)); },
   'badge-open'(e, el) { openBadge(el.dataset.badge); },
   'badge-go'() { closeSheet(true); },
   kakao() { ob.kakao = true; setHash('start/church'); },   // 데모: 바로 로그인한 것으로 본다
@@ -3197,6 +3472,8 @@ const forms = {
 };
 // 기억을 모두 지우고 첫 접속부터 다시(톱니의 처음부터 다시, 더보기의 로그아웃). 화면 설정은 이 기기의 것이라 남긴다
 function resetAll() {
+  clearVineMoments();
+  ls.del(K.vine); VN = normalizeVine({});
   ls.del(K.badges); B = { seen: [] };
   ls.del(K.session); ls.del(K.demo); ls.del(K.notes); me = null; D.start = ''; D.date = ''; D.sync = 'off'; D.syncAt = 0;
   N = { qs: [], fs: [], ex: [], cur: [], wk: [] }; W = newDraft('', 'q'); mineFilter = 'all'; searchQ = ''; P = { fid: '', sel: '' }; undoSnap = null; trailOpen.clear(); hideOpening(true);
@@ -3227,6 +3504,7 @@ function setDemoDate(v) {
 document.addEventListener('change', e => { if (e.target.id === 'gearStart' && parseYmd(e.target.value)) { D.start = e.target.value; saveDemo(); paintSettings(); render(); } });
 document.addEventListener('change', e => { if (e.target.id === 'gearDate' && e.target.value) setDemoDate(e.target.value); });   // 칸을 비우면 그대로 두고, 진짜 오늘로 돌아가려면 [오늘로]
 document.addEventListener('focusout', e => { if (e.target.id === 'gearDate' || e.target.id === 'gearStart') paintSettings(); });   // 칸을 떠날 때 읽히지 않는 값이면 데모의 오늘로 되돌린다
+document.addEventListener('focusout', scheduleVineMoment);   // 쓰는 칸을 떠나면 미뤄 둔 포도나무 알림을 확인한다.
 document.addEventListener('submit', e => {
   const f = e.target.closest('[data-form]'); if (!f) return;
   e.preventDefault(); if (forms[f.dataset.form]) forms[f.dataset.form]();
@@ -3355,8 +3633,9 @@ function liveError(err) {
 }
 // 저장 공간이 부족하면 옛 주인의 사본을 남기기 전에는 자리를 비우지 않는다.
 function switchOwner(uid) {
+  clearVineMoments();
   const owner = ls.get('didako-note-owner');
-  const keys = [K.notes, K.badges, K.session, K.demo, VK, LK, GK];
+  const keys = [K.notes, K.badges, K.session, K.demo, K.vine, VK, LK, GK];
   if (owner !== uid) {
     const old = Object.fromEntries(keys.map(k => [k, ls.get(k)]));
     const stashKey = 'didako-note-stash.' + uid, stash = ls.get(stashKey);
@@ -3371,7 +3650,7 @@ function switchOwner(uid) {
     }
     if (stash) localStorage.removeItem(stashKey);
   }
-  loadNotes(); savedNotes = normalizeNotes(N); B = readBadges();
+  loadNotes(); savedNotes = normalizeNotes(N); B = readBadges(); VN = normalizeVine(readJson(K.vine));
   const d = readJson(K.demo);
   D.start = parseYmd(d.start) ? d.start : ''; D.date = '';
   V = readJson(VK); D.sync = V.on ? 'on' : 'off'; D.syncAt = V.last || 0;
@@ -3458,16 +3737,19 @@ function mergePayload(local, remote) {
     return [...items.values()].filter(x => (kind === 'wk' && x.done) || !removed.has(kind === 'ex' ? 'ex:' + x[key] : x[key]));
   };
   const notes = normalizeNotes({ qs: choose('qs', 'id', 'touched'), fs: choose('fs', 'id', 'touched'), wk: choose('wk', 'id', 'at'), ex: choose('ex', 'q', 'touched'), cur: [...new Set([...a.cur, ...b.cur])] });
-  const badges = { seen: [...new Set([...(local.badges?.seen || []), ...(remote.badges?.seen || [])])] };
+  const badges = { seen: badgeSeen([...(local.badges?.seen || []), ...(remote.badges?.seen || [])]) };
   BADGES.forEach(({ k }) => {
     const dates = [local.badges?.[k], remote.badges?.[k]].filter(x => parseYmd(x)).sort(); if (dates.length) badges[k] = dates[0];
   });
   const starts = [local.start, remote.start].filter(x => parseYmd(x)).sort();
-  return { v: 1, name: local.name || remote.name || '', start: starts[0] || '', notes, badges, gone: [...removed] };
+  const av = normalizeVine(local.vine), bv = normalizeVine(remote.vine), vineStarts = [av.start, bv.start].filter(Boolean).sort();
+  const vine = normalizeVine({ start: vineStarts[0] || '', days: [...av.days, ...bv.days], dew: [...av.dew, ...bv.dew], seen: [...av.seen, ...bv.seen] });
+  return { v: 1, name: local.name || remote.name || '', start: starts[0] || '', notes, badges, gone: [...removed], vine };
 }
-const payload = () => ({ v: 1, name: me?.name || '', start: D.start, notes: normalizeNotes(N), badges: B, gone: [...gone] });
+const payload = () => ({ v: 1, name: me?.name || '', start: D.start, notes: normalizeNotes(N), badges: B, gone: [...gone], vine: VN });
 function takeMerged(m) {
   N = m.notes; savedNotes = normalizeNotes(N); B = m.badges; gone = new Set(m.gone); D.start = m.start;
+  VN = normalizeVine(m.vine); ls.set(K.vine, JSON.stringify(VN));
   if (!me?.name && m.name) { me = { name: m.name, at: Date.now() }; ls.set(K.session, JSON.stringify(me)); }
   ls.set(K.notes, JSON.stringify(N)); ls.set(K.badges, JSON.stringify(B)); ls.set(GK, JSON.stringify([...gone])); saveDemo();
 }
@@ -3657,6 +3939,7 @@ document.addEventListener('visibilitychange', () => { if (document.visibilitySta
 window.addEventListener('pageshow', e => { if (e.persisted && !new URLSearchParams(location.search).has('code')) setAuthBusy(false); refreshDay(); });
 
 // ── 시작 ──
+$('#vineDemo').hidden = LIVE;
 $('#setMenu').innerHTML = '<p class="mlabel">화면 설정</p>' + displayEx('topDispEx') + (LIVE ? '' : '<div class="mdiv"></div><button class="place-row" type="button" data-act="gear"><span class="sm">시안 보기 설정(데모에만 있어요)</span></button>');
 if (!LIVE) saveBadges();
 applySettings();

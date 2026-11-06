@@ -1,0 +1,727 @@
+{
+  "canvas": [
+    768,
+    512
+  ],
+  "leafSize": [
+    44,
+    40
+  ],
+  "grapeSize": [
+    40,
+    56
+  ],
+  "trunk": {
+    "stages": [
+      [
+        1,
+        40
+      ],
+      [
+        41,
+        90
+      ]
+    ]
+  },
+  "branches": [
+    {
+      "id": 1,
+      "base": [
+        384,
+        296
+      ],
+      "tip": [
+        224,
+        330
+      ],
+      "leaves": [
+        {
+          "x": 350,
+          "y": 262,
+          "frame": 0,
+          "flip": false
+        },
+        {
+          "x": 334,
+          "y": 282,
+          "frame": 1,
+          "flip": false
+        },
+        {
+          "x": 318,
+          "y": 302,
+          "frame": 2,
+          "flip": true
+        },
+        {
+          "x": 302,
+          "y": 288,
+          "frame": 3,
+          "flip": false
+        },
+        {
+          "x": 286,
+          "y": 276,
+          "frame": 0,
+          "flip": false
+        },
+        {
+          "x": 270,
+          "y": 296,
+          "frame": 1,
+          "flip": true
+        },
+        {
+          "x": 254,
+          "y": 316,
+          "frame": 2,
+          "flip": false
+        },
+        {
+          "x": 238,
+          "y": 302,
+          "frame": 3,
+          "flip": false
+        },
+        {
+          "x": 222,
+          "y": 290,
+          "frame": 0,
+          "flip": true
+        },
+        {
+          "x": 206,
+          "y": 310,
+          "frame": 1,
+          "flip": false
+        }
+      ],
+      "grape": [
+        264,
+        348
+      ]
+    },
+    {
+      "id": 2,
+      "base": [
+        384,
+        296
+      ],
+      "tip": [
+        544,
+        260
+      ],
+      "leaves": [
+        {
+          "x": 374,
+          "y": 256,
+          "frame": 1,
+          "flip": false
+        },
+        {
+          "x": 390,
+          "y": 270,
+          "frame": 2,
+          "flip": true
+        },
+        {
+          "x": 406,
+          "y": 282,
+          "frame": 3,
+          "flip": false
+        },
+        {
+          "x": 422,
+          "y": 262,
+          "frame": 0,
+          "flip": false
+        },
+        {
+          "x": 438,
+          "y": 242,
+          "frame": 1,
+          "flip": true
+        },
+        {
+          "x": 454,
+          "y": 256,
+          "frame": 2,
+          "flip": false
+        },
+        {
+          "x": 470,
+          "y": 268,
+          "frame": 3,
+          "flip": false
+        },
+        {
+          "x": 486,
+          "y": 248,
+          "frame": 0,
+          "flip": true
+        },
+        {
+          "x": 502,
+          "y": 228,
+          "frame": 1,
+          "flip": false
+        },
+        {
+          "x": 518,
+          "y": 242,
+          "frame": 2,
+          "flip": false
+        }
+      ],
+      "grape": [
+        464,
+        304
+      ]
+    },
+    {
+      "id": 3,
+      "base": [
+        224,
+        330
+      ],
+      "tip": [
+        64,
+        366
+      ],
+      "leaves": [
+        {
+          "x": 190,
+          "y": 298,
+          "frame": 2,
+          "flip": true
+        },
+        {
+          "x": 174,
+          "y": 316,
+          "frame": 3,
+          "flip": false
+        },
+        {
+          "x": 158,
+          "y": 336,
+          "frame": 0,
+          "flip": false
+        },
+        {
+          "x": 142,
+          "y": 324,
+          "frame": 1,
+          "flip": true
+        },
+        {
+          "x": 126,
+          "y": 312,
+          "frame": 2,
+          "flip": false
+        },
+        {
+          "x": 110,
+          "y": 330,
+          "frame": 3,
+          "flip": false
+        },
+        {
+          "x": 94,
+          "y": 350,
+          "frame": 0,
+          "flip": true
+        },
+        {
+          "x": 78,
+          "y": 338,
+          "frame": 1,
+          "flip": false
+        },
+        {
+          "x": 62,
+          "y": 326,
+          "frame": 2,
+          "flip": false
+        },
+        {
+          "x": 46,
+          "y": 346,
+          "frame": 3,
+          "flip": true
+        }
+      ],
+      "grape": [
+        104,
+        382
+      ]
+    },
+    {
+      "id": 4,
+      "base": [
+        544,
+        260
+      ],
+      "tip": [
+        704,
+        226
+      ],
+      "leaves": [
+        {
+          "x": 534,
+          "y": 222,
+          "frame": 3,
+          "flip": false
+        },
+        {
+          "x": 550,
+          "y": 234,
+          "frame": 0,
+          "flip": false
+        },
+        {
+          "x": 566,
+          "y": 246,
+          "frame": 1,
+          "flip": true
+        },
+        {
+          "x": 582,
+          "y": 228,
+          "frame": 2,
+          "flip": false
+        },
+        {
+          "x": 598,
+          "y": 208,
+          "frame": 3,
+          "flip": false
+        },
+        {
+          "x": 614,
+          "y": 220,
+          "frame": 0,
+          "flip": true
+        },
+        {
+          "x": 630,
+          "y": 232,
+          "frame": 1,
+          "flip": false
+        },
+        {
+          "x": 646,
+          "y": 214,
+          "frame": 2,
+          "flip": false
+        },
+        {
+          "x": 662,
+          "y": 194,
+          "frame": 3,
+          "flip": true
+        },
+        {
+          "x": 678,
+          "y": 206,
+          "frame": 0,
+          "flip": false
+        }
+      ],
+      "grape": [
+        624,
+        268
+      ]
+    },
+    {
+      "id": 5,
+      "base": [
+        320,
+        182
+      ],
+      "tip": [
+        448,
+        156
+      ],
+      "leaves": [
+        {
+          "x": 308,
+          "y": 144,
+          "frame": 0,
+          "flip": false
+        },
+        {
+          "x": 322,
+          "y": 158,
+          "frame": 1,
+          "flip": true
+        },
+        {
+          "x": 334,
+          "y": 172,
+          "frame": 2,
+          "flip": false
+        },
+        {
+          "x": 346,
+          "y": 152,
+          "frame": 3,
+          "flip": false
+        },
+        {
+          "x": 360,
+          "y": 134,
+          "frame": 0,
+          "flip": true
+        },
+        {
+          "x": 372,
+          "y": 148,
+          "frame": 1,
+          "flip": false
+        },
+        {
+          "x": 386,
+          "y": 160,
+          "frame": 2,
+          "flip": false
+        },
+        {
+          "x": 398,
+          "y": 142,
+          "frame": 3,
+          "flip": true
+        },
+        {
+          "x": 410,
+          "y": 124,
+          "frame": 0,
+          "flip": false
+        },
+        {
+          "x": 424,
+          "y": 136,
+          "frame": 1,
+          "flip": false
+        }
+      ],
+      "grape": [
+        380,
+        196
+      ]
+    },
+    {
+      "id": 6,
+      "base": [
+        320,
+        182
+      ],
+      "tip": [
+        192,
+        210
+      ],
+      "leaves": [
+        {
+          "x": 288,
+          "y": 148,
+          "frame": 1,
+          "flip": true
+        },
+        {
+          "x": 274,
+          "y": 168,
+          "frame": 2,
+          "flip": false
+        },
+        {
+          "x": 262,
+          "y": 186,
+          "frame": 3,
+          "flip": false
+        },
+        {
+          "x": 250,
+          "y": 174,
+          "frame": 0,
+          "flip": true
+        },
+        {
+          "x": 236,
+          "y": 160,
+          "frame": 1,
+          "flip": false
+        },
+        {
+          "x": 224,
+          "y": 178,
+          "frame": 2,
+          "flip": false
+        },
+        {
+          "x": 210,
+          "y": 198,
+          "frame": 3,
+          "flip": true
+        },
+        {
+          "x": 198,
+          "y": 184,
+          "frame": 0,
+          "flip": false
+        },
+        {
+          "x": 186,
+          "y": 170,
+          "frame": 1,
+          "flip": false
+        },
+        {
+          "x": 172,
+          "y": 190,
+          "frame": 2,
+          "flip": true
+        }
+      ],
+      "grape": [
+        220,
+        230
+      ]
+    },
+    {
+      "id": 7,
+      "base": [
+        448,
+        156
+      ],
+      "tip": [
+        576,
+        130
+      ],
+      "leaves": [
+        {
+          "x": 436,
+          "y": 118,
+          "frame": 2,
+          "flip": false
+        },
+        {
+          "x": 450,
+          "y": 132,
+          "frame": 3,
+          "flip": false
+        },
+        {
+          "x": 462,
+          "y": 144,
+          "frame": 0,
+          "flip": true
+        },
+        {
+          "x": 474,
+          "y": 126,
+          "frame": 1,
+          "flip": false
+        },
+        {
+          "x": 488,
+          "y": 106,
+          "frame": 2,
+          "flip": false
+        },
+        {
+          "x": 500,
+          "y": 120,
+          "frame": 3,
+          "flip": true
+        },
+        {
+          "x": 514,
+          "y": 134,
+          "frame": 0,
+          "flip": false
+        },
+        {
+          "x": 526,
+          "y": 114,
+          "frame": 1,
+          "flip": false
+        },
+        {
+          "x": 538,
+          "y": 96,
+          "frame": 2,
+          "flip": true
+        },
+        {
+          "x": 552,
+          "y": 110,
+          "frame": 3,
+          "flip": false
+        }
+      ],
+      "grape": [
+        508,
+        168
+      ]
+    },
+    {
+      "id": 8,
+      "base": [
+        192,
+        210
+      ],
+      "tip": [
+        64,
+        236
+      ],
+      "leaves": [
+        {
+          "x": 160,
+          "y": 176,
+          "frame": 3,
+          "flip": false
+        },
+        {
+          "x": 146,
+          "y": 194,
+          "frame": 0,
+          "flip": true
+        },
+        {
+          "x": 134,
+          "y": 214,
+          "frame": 1,
+          "flip": false
+        },
+        {
+          "x": 122,
+          "y": 200,
+          "frame": 2,
+          "flip": false
+        },
+        {
+          "x": 108,
+          "y": 186,
+          "frame": 3,
+          "flip": true
+        },
+        {
+          "x": 96,
+          "y": 206,
+          "frame": 0,
+          "flip": false
+        },
+        {
+          "x": 82,
+          "y": 224,
+          "frame": 1,
+          "flip": false
+        },
+        {
+          "x": 70,
+          "y": 210,
+          "frame": 2,
+          "flip": true
+        },
+        {
+          "x": 58,
+          "y": 198,
+          "frame": 3,
+          "flip": false
+        },
+        {
+          "x": 44,
+          "y": 216,
+          "frame": 0,
+          "flip": false
+        }
+      ],
+      "grape": [
+        92,
+        256
+      ]
+    },
+    {
+      "id": 9,
+      "base": [
+        576,
+        130
+      ],
+      "tip": [
+        704,
+        102
+      ],
+      "leaves": [
+        {
+          "x": 564,
+          "y": 90,
+          "frame": 0,
+          "flip": true
+        },
+        {
+          "x": 578,
+          "y": 104,
+          "frame": 1,
+          "flip": false
+        },
+        {
+          "x": 590,
+          "y": 118,
+          "frame": 2,
+          "flip": false
+        },
+        {
+          "x": 602,
+          "y": 98,
+          "frame": 3,
+          "flip": true
+        },
+        {
+          "x": 616,
+          "y": 80,
+          "frame": 0,
+          "flip": false
+        },
+        {
+          "x": 628,
+          "y": 94,
+          "frame": 1,
+          "flip": false
+        },
+        {
+          "x": 642,
+          "y": 106,
+          "frame": 2,
+          "flip": true
+        },
+        {
+          "x": 654,
+          "y": 88,
+          "frame": 3,
+          "flip": false
+        },
+        {
+          "x": 666,
+          "y": 70,
+          "frame": 0,
+          "flip": false
+        },
+        {
+          "x": 680,
+          "y": 82,
+          "frame": 1,
+          "flip": true
+        }
+      ],
+      "grape": [
+        636,
+        142
+      ]
+    }
+  ],
+  "card": [
+    24,
+    16,
+    720,
+    480
+  ]
+}
