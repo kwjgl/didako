@@ -411,6 +411,14 @@ body.pop-open { overflow: hidden; }
 .sn.y .mt { color: var(--note-ink); }
 .sn .mks { display: flex; gap: 4px; margin-bottom: 6px; }
 .sn .mks .mk { margin: 0; }
+.sn .sn-head { display: flex; align-items: center; gap: 6px; margin-bottom: 6px; }
+.sn .sn-head > :is(.mk, .mks) { margin: 0; }
+.sn .sn-compass { width: 14px; height: 14px; stroke-width: 1.4; color: var(--ink-2); opacity: .7; }
+.sn.x { position: relative; height: auto; place-items: normal; padding-right: 24px; }
+.sn.x::after { content: ''; position: absolute; top: 0; right: 8px; width: 10px; height: 18px; background: var(--accent); clip-path: polygon(0 0, 100% 0, 100% 100%, 50% 72%, 0 100%); }
+.sn.x .sn-compass { color: var(--accent-deep); opacity: 1; }
+.sn .xdots { flex-wrap: wrap; margin-top: 6px; }
+.sn .xdt { flex: none; }
 .sn.sel { border-color: var(--accent); box-shadow: 0 0 0 1px var(--accent), 0 2px 6px var(--shadow); }
 .sn.sel .tx4 { font-weight: 700; }
 .sft { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; column-gap: 8px; margin-top: 4px; }
@@ -2624,11 +2632,23 @@ function openBadge(k) {
 
 // ── 내 기록(M20 ~ M27, T11, T12, P1) ──
 let mineFilter = 'all';   // 고른 칩은 화면 안에서만 기억한다(새로고침하면 전체)
-const FILTERS = [['all', '전체'], ['q', '질문만'], ['qf', '질문과 발견'], ['f', '발견만']];
-const wallList = () => wallItems().filter(it => mineFilter === 'all' || (mineFilter === 'q' && it.k === 'q' && it.q.state === 'holding') || (mineFilter === 'qf' && it.k === 'q' && it.q.state === 'found') || (mineFilter === 'f' && it.k === 'f'));
+const FILTERS = [['all', '전체'], ['x', '탐구 중'], ['q', '질문만'], ['qf', '질문과 발견'], ['f', '발견만']];
+function wallList() {
+  const items = wallItems();
+  if (mineFilter === 'all') return [
+    ...N.cur.map(id => items.find(it => it.k === 'q' && it.q.id === id)).filter(Boolean),
+    ...items.filter(it => it.k !== 'q' || !isCur(it.q.id))
+  ];
+  return items.filter(it => (mineFilter === 'x' && it.k === 'q' && isCur(it.q.id)) ||
+    (mineFilter === 'q' && it.k === 'q' && it.q.state === 'holding' && !isCur(it.q.id)) ||
+    (mineFilter === 'qf' && it.k === 'q' && it.q.state === 'found' && !isCur(it.q.id)) ||
+    (mineFilter === 'f' && it.k === 'f'));
+}
 function snQ(q, sel) {
-  const found = q.state === 'found';
-  return `<button class="sn${found ? ' y' : ''}${sel ? ' sel' : ''}" type="button" data-act="open-q" data-id="${q.id}"${sel ? ' aria-pressed="true"' : ''}>${found ? '<span class="mks" role="img" aria-label="질문, 발견"><span class="mk">?</span><span class="mk">!</span></span>' : '<span class="mk" aria-hidden="true">?</span>'}<span class="tx4">${esc(q.text)}</span><span class="mt">${found ? qMeta(q) : (q.ref ? esc(q.ref) + ' · ' : '') + qMeta(q)}</span></button>`;
+  const found = q.state === 'found', current = isCur(q.id), n = getEx(q.id);
+  const compass = current || n ? `<svg class="ic sn-compass" viewBox="0 0 24 24" role="img" aria-label="${current ? '탐구 중' : '예전에 탐구한 질문'}"><circle cx="12" cy="12" r="8.5"/><path d="M15.5 8.5l-2 5-5 2 2-5z"/></svg>` : '';
+  const progress = current && n ? (n.mode === 'free' ? `<span style="display:block;margin-top:6px">자유롭게 쓰기 · ${startLine(n)}</span>` : dotsHtml(n, true, startLine(n))) : '';
+  return `<button class="sn${found ? ' y' : ''}${current ? ' x' : ''}${sel ? ' sel' : ''}" type="button" data-act="open-q" data-id="${q.id}"${sel ? ' aria-pressed="true"' : ''}><span class="sn-head">${found ? '<span class="mks" role="img" aria-label="질문, 발견"><span class="mk">?</span><span class="mk">!</span></span>' : '<span class="mk" aria-hidden="true">?</span>'}${compass}</span><span class="tx4">${esc(q.text)}</span><span class="mt">${found ? qMeta(q) : (q.ref ? esc(q.ref) + ' · ' : '') + qMeta(q)}${progress}</span></button>`;
 }
 const snF = f => `<div class="sn y lf"><span class="mk" aria-hidden="true">!</span><span class="tx4">${esc(f.text)}</span><span class="sft"><span class="mt" style="margin:0">${fDate(f)}</span><button class="tx" type="button" data-act="pair-find" data-id="${f.id}">질문에 잇기 ›</button></span></div>`;
 // 고른 해는 화면에서만 기억한다. 기기 보관이나 주소에는 넣지 않는다.
@@ -2650,7 +2670,7 @@ function viewWeeks() {
 }
 function viewMine(sel) {
   const all = wallItems();
-  if (!all.length) {   // 질문도 남겨 둔 ! 발견도 없다(M12)
+  if (!all.length && mineFilter !== 'x') {   // 질문도 남겨 둔 ! 발견도 없다(M12)
     return `<div class="col more">${pageHead('🗂️', '내 기록', mineTools(false))}
       <div class="empty"><div class="sm">아직 모아 둔 것이 없어요. 말씀을 읽다 궁금한 것이 생기면 + 남기기에서 남겨 두세요.</div>
       <a class="btn wide" href="#/write">남기기로 가기</a></div></div>`;
@@ -2658,7 +2678,7 @@ function viewMine(sel) {
   const items = wallList(), wide = isWide(), selQ = sel && getQ(sel);
   const card = it => (it.k === 'q' ? snQ(it.q, wide && selQ && selQ.id === it.q.id) : snF(it.f));
   let wall;
-  if (!items.length) wall = '<div class="sm wall-none">아직 모아 둔 것이 없어요</div>';
+  if (!items.length) wall = mineFilter === 'x' ? '<div class="wall-none"><div class="sm">지금 탐구하는 질문이 없어요</div><a class="tx" href="#/explore">탐구하기로 가기 ›</a></div>' : '<div class="sm wall-none">아직 모아 둔 것이 없어요</div>';
   else if (wide) wall = `<div class="wgrid">${items.map(card).join('')}</div>`;
   else { const cols = [[], []]; items.forEach((it, i) => cols[i % 2].push(card(it))); wall = `<div class="wall">${cols.map(c => `<div class="wcol">${c.join('')}</div>`).join('')}</div>`; }
   const panel = wide && selQ ? `<aside class="qpanel" aria-label="질문 펴기"><div style="display:flex;justify-content:flex-end;margin-right:-12px">${trashButton('q', selQ.id)}${selQ.state === 'found' ? `<button class="ib" type="button" aria-label="이 질문 더 보기" data-act="q-more" data-id="${selQ.id}">${DOTS_IC(24)}</button>` : ''}<a class="ib" href="#/mine" aria-label="닫기">${X_IC}</a></div>${qBody(selQ)}</aside>` : '';
@@ -2699,6 +2719,7 @@ function road(q) {
 function qBody(q) {
   const found = q.state === 'found', par = q.parent && getQ(q.parent);
   return `<div class="card qcard"><div class="sf qt-h">${esc(q.text)}</div>
+      ${getEx(q.id) ? `<button class="btn lt" type="button" data-act="past-open" data-id="${q.id}">${isCur(q.id) ? '이어서 탐구하기' : '탐구 노트 보기'}</button>` : ''}
       <div class="qmeta">${q.ref ? `<span class="chip">${esc(q.ref)}</span>` : ''}<span class="sm">${qMeta(q)}</span></div>
       ${par ? `<button class="tx par" type="button" data-act="parent-open" data-id="${par.id}">'${esc(par.text)}'에서 생겨난 질문 ›</button>` : ''}</div>
     <button class="btn wide go${found ? ' alt' : ''}" type="button" data-act="q-explore" data-id="${q.id}">${found ? '이어서 적기' : isCur(q.id) ? '이어서 쓰기' : '탐구하기'}</button>
