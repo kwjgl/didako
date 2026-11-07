@@ -1083,6 +1083,9 @@ function questionOn(t) {
   const b = fromDN(t), c = churchDay(b.y, b.m, b.d, BANK_SIZE), it = Q.today[c.season][c.item - 1];
   return { ...it, season: c.season, n: c.n, item: c.item, t, date: dnStr(t) };
 }
+// 모든 질문(S-63): 절기별 409개. 순서와 이름은 questions-data.js의 Q.today 그대로
+const SEASON_NAMES = { advent: '대림절', christmas: '성탄절기', epiphany: '주현절', lent: '사순절', easter: '부활절기', 'after-pentecost': '성령강림 후 절기', special: '특별한 날' };
+const qOf = (season, item) => { const it = (Q.today[season] || [])[item - 1]; return it ? { ...it, season, item } : null; };
 (function loadDemo() {
   const b = readJson(K.demo);
   D.start = typeof b.start === 'string' && parseYmd(b.start) ? b.start : '';
@@ -1206,7 +1209,7 @@ function flushVineMoment() {
   if (vineMoment.day !== dnStr(demoDN())) { vineMoment = null; return; }
   // 저장 뒤 화면 이동·기존 확인 창·입력 중에는 끼어들지 않는다.
   if (routeKey() !== lastKey || !$('#pop').hidden || !$('#opening').hidden || editing()) return;
-  if (!$('#toast').hidden && $('#toast').classList.contains('act')) return;   // 되돌리기 단추도 가리지 않는다.
+  if (!$('#toast').hidden) return;   // 지금 보이는 안내가 끝난 뒤 잎·열매 알림을 보여 준다(S-62).
   const moment = vineMoment; vineMoment = null;
   if (!moment.key) { toast('오늘 잎 하나가 돋았어요'); return; }
   if (!VN.seen.includes(moment.key)) openFruitScene(moment.key, true);
@@ -1217,10 +1220,7 @@ function ensureStart() { if (!D.start) { D.start = dnStr(demoDN() - (LIVE ? 0 : 
 if (me) ensureStart();
 const startDN = () => D.start ? parseYmd(D.start).t : demoDN();
 const questionKey = q => String(q.img || '').replace(/^img\/q\//, '').replace(/\.webp$/, '');
-const receivedKey = key => {
-  for (let t = demoDN(); t >= startDN(); t--) if (questionKey(questionOn(t)) === key) return true;
-  return false;
-};
+const receivedKey = key => Object.values(Q.today).some(items => items.some(q => questionKey(q) === key));   // 받은 날과 관계없이 409개 모두 연다(S-63)
 // 어제부터 거꾸로 count일. 내일 이후는 만들지 않는다
 function pastItems(count) {
   const t0 = demoDN(), out = [];
@@ -1368,7 +1368,7 @@ const pastCard = (p, on) => `<button class="pcard card${on ? ' on' : ''}" type="
 const PAST_NONE = '지난 질문은 내일부터 여기에 하나씩 쌓여요.';   // 지난 질문이 없을 때(앱을 처음 쓴 날)
 const pastSide = (on, more) => {
   const items = pastItems(7);
-  return `<aside class="t8-list" aria-label="지난 질문"><div class="lbl">지난 질문</div>${items.length ? items.map(p => pastCard(p, p.date === on)).join('') + `<div class="past-more"><a class="tx" href="#/today/past${more ? '/' + more : ''}">지난 질문 모두 보기</a></div>` : `<div class="sm past-none">${PAST_NONE}</div>`}</aside>`;
+  return `<aside class="t8-list" aria-label="지난 질문"><div class="lbl">지난 질문</div>${items.length ? items.map(p => pastCard(p, p.date === on)).join('') + `<div class="past-more"><a class="tx" href="#/today/past${more ? '/' + more : ''}">지난 질문 모두 보기</a></div>` : `<div class="sm past-none">${PAST_NONE}</div>`}<div class="past-more"><a class="tx" href="#/today/all">모든 질문 ›</a></div></aside>`;
 };
 function viewToday() {
   const q = questionOn(demoDN());
@@ -1383,9 +1383,7 @@ function viewToday() {
     </div>`;
   }
   const two = pastItems(2).map(p => `<button type="button" data-act="past-item" data-d="${p.date}"><div class="pq">${esc(p.q)}</div><div class="sm">${esc(p.ref)} · ${p.rel}</div></button>`).join('');
-  const pastBox = two
-    ? `<div class="card past2">${two}<div class="past-more"><a class="tx" href="#/today/past">지난 질문 모두 보기</a></div></div>`
-    : `<div class="card past2"><div class="sm past-none">${PAST_NONE}</div></div>`;   // 앱을 처음 쓴 날은 지난 질문이 없다
+  const pastBox = `<div class="card past2">${two || `<div class="sm past-none">${PAST_NONE}</div>`}<div class="past-more wk-links"><a class="tx" href="#/today/past">지난 질문 모두 보기</a><a class="tx" href="#/today/all">모든 질문 ›</a></div></div>`;   // 첫날에도 모든 질문은 열 수 있다(S-63)
   return `<div class="col">
     ${pageHead('💭', '오늘의 질문', `<div class="sm">${dateLine(demoDate())}</div>`)}
     ${qCard(q, true)}
@@ -1434,6 +1432,23 @@ function viewDay(ds) {
     ${pageHead('💭', '지난 질문', `<div class="sm">${dateLine(d)}</div>`)}
     ${qCard(q, true, holdHref)}
   </div>`;
+}
+
+// 모든 질문: 날짜별 지난 질문은 그대로 두고 절기별로 모두 펴 본다(S-63).
+function viewAll(season) {
+  season = season || questionOn(demoDN()).season;
+  const today = questionOn(demoDN()), wide = isWide();
+  const chips = `<div class="chips" role="group" aria-label="절기 고르기">${Object.entries(SEASON_NAMES).map(([key, name]) => `<button class="flt${key === season ? ' on' : ''}" type="button" aria-pressed="${key === season}" data-act="all-season" data-season="${key}">${name}</button>`).join('')}</div>`;
+  const rows = Q.today[season].map((q, i) => `<button class="pcard card" type="button" data-act="all-question" data-season="${season}" data-item="${i + 1}"><div class="d">${esc(q.label)}${questionKey(q) === questionKey(today) ? ' · 오늘' : ''}</div><div class="pq">${esc(q.q)}</div><div class="sm">${esc(q.ref)} · ${esc(q.asker)}</div></button>`).join('');
+  if (wide) return `<div class="t8">${pastSide('', '')}<div class="t8-main"><div class="t8-in">${pageHead('💭', '모든 질문', '<a class="tx" href="#/today" style="padding:0">← 오늘의 질문</a>')}${chips}${rows}</div></div></div>`;
+  return `<div class="col"><div class="back-row"><a class="tx" href="#/today" style="padding-left:0">← 오늘의 질문</a></div><h1 class="h1">모든 질문</h1>${chips}${rows}</div>`;
+}
+// viewQ는 내 기록의 질문 화면이므로 절기별 질문 화면은 따로 둔다.
+function viewTodayQ(season, item) {
+  const q = qOf(season, item), back = `<a class="tx" href="#/today/all/${season}" style="padding-left:0">← 모든 질문</a>`;
+  const card = qCard(q, true, `#/today/q/${season}/${item}/write`);
+  if (isWide()) return `<div class="t8">${pastSide('', '')}<div class="t8-main"><div class="t8-in">${pageHead('💭', '모든 질문', back)}${card}</div></div></div>`;
+  return `<div class="col"><div class="back-row">${back}</div>${pageHead('💭', '모든 질문')}${card}</div>`;
 }
 
 // ── 더보기(M8, T13) ──
@@ -1711,7 +1726,7 @@ function normalizeNotes(a) {
       id: f.id, text: f.text, ref: s(f.ref), since: ym(f.since), place: window.MAP_NAMES[f.place] ? f.place : '', at: t(f.at), touched: t(f.touched) || t(f.at), q: idOr(f.q)
     })),
     ex: [], cur: [],
-    wk: (Array.isArray(a.wk) ? a.wk : []).filter(w => w && idOk(w.id) && (s(w.mine).trim() || t(w.done) > 0)).map(w => ({ id: w.id, mine: s(w.mine), at: t(w.at), done: Math.max(0, t(w.done)) }))
+    wk: (Array.isArray(a.wk) ? a.wk : []).filter(w => w && idOk(w.id) && (s(w.mine).trim() || t(w.done) > 0 || t(w.at) > 0)).map(w => ({ id: w.id, mine: s(w.mine), at: t(w.at), done: Math.max(0, t(w.done)) }))
   };
   // 탐구 노트: 질문이 있는 것만, 질문 하나에 하나
   const seen = new Set(), lst = (v, n, f) => Array.from({ length: n }, (_, i) => f(Array.isArray(v) ? v[i] : undefined));
@@ -1984,12 +1999,10 @@ const weekNow = () => weeks()[0];
 const weekLabel = w => `${dLine(w.d)} 주일${w.weeksAgo === 0 ? ' · 이번 주' : ''}`;
 const shortOf = w => w.short || (w.confess.split(/(?<=[.요])\s/)[0] || w.confess);
 const getMine = id => { const m = N.wk.find(x => x.id === id); return m ? m.mine : ''; };
-function setMine(id, text) {
-  const i = N.wk.findIndex(x => x.id === id);
-  if (!text.trim()) {
-    if (i >= 0) { if (N.wk[i].done) { N.wk[i].mine = ''; N.wk[i].at = Date.now(); } else N.wk.splice(i, 1); }
-  } else if (i >= 0) { N.wk[i].mine = text; N.wk[i].at = Date.now(); }
-  else N.wk.push({ id, mine: text, at: Date.now(), done: 0 });
+function setMine(id, text) {   // 비우면 지우지 않고 빈 글과 새 시각을 남긴다(S-61): 동기화에서 더 새로운 쪽을 따르게 해 지운 것도 다른 기기에 전해진다
+  const i = N.wk.findIndex(x => x.id === id), now = Date.now();
+  if (i >= 0) { N.wk[i].mine = text.trim() ? text : ''; N.wk[i].at = now; }
+  else if (text.trim()) N.wk.push({ id, mine: text, at: now, done: 0 });
   saveNotes();
 }
 function markWeekDone() {
@@ -2007,14 +2020,17 @@ function weekById(id) {
 // 이 질문에 닿는 내 질문 하나(짝 찾기 점수, 없으면 null). keys는 데모용 낱말
 const mineFor = w => N.qs.map(q => ({ q, s: scoreTR(w.q + ' ' + w.confess + ' ' + (w.keys || ''), w.refs[0] || '', q.text + ' ' + q.trail.map(x => x.text).join(' '), q.ref) })).filter(x => x.s > 0).sort((a, b) => b.s - a.s || b.q.touched - a.q.touched).map(x => x.q)[0] || null;
 
-// 이미 받은 질문 안에서만 고른다: 오늘의 질문은 오늘까지와 지난 질문, 이번 주의 질문은 이번 주와 그 앞
-// 받은 범위는 처음 들어온 날부터 데모의 오늘까지(같은 질문이 두 번 들어 있으면 가까운 날 하나만)
+// 오늘·지난 질문을 먼저 두고 나머지 409개도 모두 고른다(S-63). 이번 주의 질문은 받은 범위를 그대로 둔다.
 function receivedToday() {
   const t = demoDN(), out = [], seen = new Set();
   for (let i = 0; t - i >= startDN(); i++) {
     const c = questionOn(t - i); if (seen.has(c.q)) continue; seen.add(c.q);
     out.push({ q: c.q, ref: c.ref, asker: c.asker, pd: i === 0 ? `${mdLine(demoDate())} · 오늘` : `${dLine(dnDate(t - i))}${i <= 2 ? ' · ' + relLine(i) : ''}` });
   }
+  Object.values(Q.today).forEach(items => items.forEach(c => {
+    if (seen.has(c.q)) return; seen.add(c.q);
+    out.push({ q: c.q, ref: c.ref, asker: c.asker, pd: c.label });
+  }));
   return out;
 }
 function bestOf(list, textOf, refOf, n) {
@@ -2274,7 +2290,7 @@ function stepBlock(n) {
     const rec = rec2(n), on = rec && n.added.s2 && n.added.s2.q === rec.q && n.steps[1].includes(n.added.s2.ref);   // 쓰는 칸에서 그 장절 줄을 지우면 다시 [넣기]
     const card = rec ? `<div class="xsg"><div class="xsq">${esc(rec.q)}</div><div class="sm">${esc(rec.ref)} · ${esc(rec.asker)}</div>${on ? `<div style="display:flex;align-items:center;justify-content:space-between;margin-top:10px"><span class="okl" style="padding:0">✓ 넣었어요</span><button class="tx" type="button" data-act="s2-del">빼기</button></div>` : '<button class="btn lt wide" type="button" data-act="s2-add">넣기</button>'}</div>` : '';
     return `<div class="xcur">${stepHead(1)}${card}${taHtml(n, '장절을 적어요 (예: 시 13:1)')}<div class="xrefs" id="xRefs">${refsHtml(n)}</div>
-      ${rec ? '' : '<button class="tx" type="button" data-act="find2" style="margin-top:6px;padding:0 2px">지난 오늘의 질문에서 찾아보기 ›</button>'}</div>`;
+      ${rec ? '' : '<button class="tx" type="button" data-act="find2" style="margin-top:6px;padding:0 2px">모든 질문에서 찾아보기 ›</button>'}</div>`;
   }
   if (i === 2) {
     const s3 = n.added.s3, w = (s3 && weeks().find(x => x.id === s3.id)) || rec3(n), open = Boolean(s3 && X.open3 && w);
@@ -2370,7 +2386,7 @@ function addS2(n, c) {   // 닮은 오늘의 질문의 장절을 쓰는 칸에 �
   const cur = n.steps[1].replace(/\s+$/, '');
   n.steps[1] = (cur ? cur + '\n' : '') + c.ref + '\n'; n.added.s2 = { q: c.q, ref: c.ref }; X.dirty = true; saveNotes();
 }
-// 찾아보기 창(M9b0a, M90a): 이미 받은 질문 안에서 낱말이나 장절로 찾아 고른다
+// 찾아보기 창(M9b0a, M90a): 오늘의 질문은 전체에서, 이번 주의 질문은 받은 범위에서 고른다(S-63).
 let PK = { kind: 2, q: '', sel: '' };
 function pkItems() {
   const needle = PK.q.trim().toLowerCase(), r = parseRef(PK.q), rt = r ? r.text.toLowerCase() : '';
@@ -2386,8 +2402,8 @@ function pkPaint() {
 }
 function pkSheet(kind) {
   PK = { kind, q: '', sel: '' };
-  openSheet(`<div class="sheet-top"><h2>${kind === 2 ? '지난 오늘의 질문' : '지난 이번 주의 질문'}</h2><button class="tx" type="button" data-act="sheet-x">닫기</button></div>
-    <p class="sm">${kind === 2 ? '받은 질문 안에서 찾아요' : '열린 질문 안에서 찾아요'}</p>
+  openSheet(`<div class="sheet-top"><h2>${kind === 2 ? '오늘의 질문' : '지난 이번 주의 질문'}</h2><button class="tx" type="button" data-act="sheet-x">닫기</button></div>
+    <p class="sm">${kind === 2 ? '모든 질문에서 찾아요' : '열린 질문 안에서 찾아요'}</p>
     <label class="xsrchbox">${SRCH_IC(20)}<input id="pkQ" type="search" placeholder="낱말이나 장절" autocomplete="off" aria-label="낱말이나 장절"></label>
     <div id="pkList"></div>
     <button class="btn wide" id="pkGo" type="button" data-act="pk-go" disabled>${kind === 2 ? '넣기' : '펴 보기'}</button>`);
@@ -2398,6 +2414,7 @@ function exMoreSheet() {
   const free = Boolean(F.id), id = free ? F.id : X.id;
   openSheet(`<div class="grab"></div>
     <button class="card optc" type="button" data-act="ex-export" data-id="${id}"><b>내보내기</b><span class="sm">PDF·Markdown 같은 파일로 저장하거나 복사해요</span></button>
+    ${isCur(id) ? `<button class="card optc" type="button" data-act="ex-stop" data-id="${id}"><b>탐구 멈추기</b><span class="sm">지난 탐구로 옮겨요. 쓴 글은 그대로 남아요.</span></button>` : ''}
     ${free
       ? `<button class="card optc" type="button" data-act="to-steps" data-id="${id}"><b>단계별로 쓰기로 바꾸기</b><span class="sm">다섯 단계 질문을 따라 써요.</span></button>`
       : `<button class="card optc" type="button" data-act="to-free" data-id="${id}"><b>자유롭게 쓰기로 바꾸기</b><span class="sm">단계 없이 내 방식대로 써요.</span></button>`}
@@ -2716,15 +2733,15 @@ const SEARCH_IC = '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" s
 const DOTS_IC = s => `<svg width="${s}" height="${s}" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="5" cy="12" r="1.8"/><circle cx="12" cy="12" r="1.8"/><circle cx="19" cy="12" r="1.8"/></svg>`;
 const NOTE_IC = '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 6.5C10 5 7 4.5 4 5v13c3-.5 6 0 8 1.5 2-1.5 5-2 8-1.5V5c-3-.5-6 0-8 1.5z"/><path d="M12 6.5v13"/></svg>';
 // 쓰고 있는 글(이 화면을 떠났다 와도 남지만, 새로고침하면 사라진다)
-// t: 오늘의 질문에서 품을 때 그 질문의 날(하루 수). 오늘이면 데모의 오늘, 지난 질문이면 그날
-function newDraft(mode, kind, t) {
+// t: 날짜별 품기의 하루 수. 선택한 질문이 있으면 날짜 대신 그 질문을 채운다(S-63).
+function newDraft(mode, kind, t, question) {
   const d = { mode, day: t || 0, kind: kind || 'q', text: '', ref: '', refFromText: false, refFound: '', refRaw: '', refOpen: false, since: '' };
   if (mode === 'today') {   // 오늘의 질문에서 품기(M1c): 질문 글과 장절이 미리 채워져 있다
-    const c = questionOn(t); d.kind = 'q'; d.text = c.q + ' '; const r = parseRef(c.ref); d.ref = r ? r.text : c.ref;
+    const c = question || questionOn(t); d.todayKey = questionKey(c); d.kind = 'q'; d.text = c.q + ' '; const r = parseRef(c.ref); d.ref = r ? r.text : c.ref;
   }
   return d;
 }
-// 지도에서 온 장소·질문·이야기는 아는 자료와 받은 범위 안에서만 연다.
+// 지도에서 온 장소·질문·이야기는 아는 자료 안에서만 연다(S-63).
 const MAP_WRITE = /^write\/map\/([\w-]+)\/(q|s)\/([\w-]+)$/;
 function mapContext(key) {
   const m = MAP_WRITE.exec(key); if (!m || !Object.hasOwn(window.MAP_NAMES, m[1])) return null;
@@ -2795,7 +2812,7 @@ function walkContext(key) {
   return ep && ep.hold && walkIsOpen(w, ep) ? { key, w, ep } : null;
 }
 
-const TODAY_WRITE = /^today\/(?:day\/(\d{4}-\d{2}-\d{2})\/)?write$/;   // 오늘의 질문에서 품기(today/write)와 지난 질문에서 품기(today/day/<날짜>/write)
+const TODAY_WRITE = /^today\/(?:(?:day\/(\d{4}-\d{2}-\d{2})|q\/([\w-]+)\/([1-9]\d*))\/)?write$/;   // 오늘·지난 날짜·절기별 모든 질문에서 품기(S-63)
 let W = newDraft('', 'q');
 const okLine = () => (W.refFromText && W.ref ? `문장에서 '${esc(W.refFound)}'를 찾아 성경 위치에 채웠어요` : '');
 function tnoteHtml(q, folded, wide) {
@@ -2806,7 +2823,8 @@ function tnoteHtml(q, folded, wide) {
 }
 function viewWrite() {
   const map = mapContext(routeKey()), walk = walkContext(routeKey()), tw = TODAY_WRITE.exec(routeKey()), todayMode = Boolean(tw) || Boolean(map) || Boolean(walk), wday = tw ? (tw[1] ? parseYmd(tw[1]).t : demoDN()) : 0;
-  if (tw && (W.mode !== 'today' || W.day !== wday)) W = newDraft('today', 'q', wday);   // 품는 질문이 바뀌면(날짜를 바꾸거나 다른 지난 질문) 글 칸과 장절도 새로
+  const selected = tw ? (tw[2] ? qOf(tw[2], Number(tw[3])) : questionOn(wday)) : null;
+  if (tw && (W.mode !== 'today' || W.day !== wday || W.todayKey !== questionKey(selected))) W = newDraft('today', 'q', wday, selected);   // 다른 질문을 품으면 글과 장절도 새로 채운다(S-63)
   if (map && W.mapKey !== map.key) {
     W = newDraft('map', 'q'); W.place = map.place; W.mapKey = map.key;
     W.text = map.kind === 'q' ? map.data.q + ' ' : '';
@@ -2818,7 +2836,7 @@ function viewWrite() {
   const ph = isQ ? '말씀 앞에서 생긴 궁금증을 적어 보세요' : '말씀 앞에서 알게 된 것을 적어 보세요';
   const kinds = [['q', '? 질문'], ['f', '! 발견']];
   const seg = `<div class="seg q" role="radiogroup" aria-label="종류"${wide ? ' style="margin:-3px 0;width:300px"' : ' style="margin-top:8px"'}>${kinds.map(([v, l]) => `<button type="button" role="radio" aria-checked="${W.kind === v}" class="${W.kind === v ? 'on' : ''}" data-act="wr-kind" data-v="${v}">${l}</button>`).join('')}</div>`;
-  const strip = walk ? `<div class="strip"><span class="l">질문으로 묵상하기에서</span><span class="v">${esc(walk.w.book)} ${esc(walk.ep.title)}</span></div><p class="sm" style="line-height:1.55;word-break:keep-all">${esc(walk.ep.ask)}</p>` : map ? `<div class="strip"><span class="l">말씀 지도에서 · ${esc(window.MAP_NAMES[map.place])}</span></div>${map.kind === 's' ? `<p class="sm">${esc(map.data.ref)} · ${esc(map.data.t)}</p>` : ''}` : todayMode ? `<div class="strip"><span class="l">오늘의 질문에서 ·</span><span class="v">${esc(questionOn(wday).q)}</span></div>` : '';
+  const strip = walk ? `<div class="strip"><span class="l">질문으로 묵상하기에서</span><span class="v">${esc(walk.w.book)} ${esc(walk.ep.title)}</span></div><p class="sm" style="line-height:1.55;word-break:keep-all">${esc(walk.ep.ask)}</p>` : map ? `<div class="strip"><span class="l">말씀 지도에서 · ${esc(window.MAP_NAMES[map.place])}</span></div>${map.kind === 's' ? `<p class="sm">${esc(map.data.ref)} · ${esc(map.data.t)}</p>` : ''}` : todayMode ? `<div class="strip"><span class="l">오늘의 질문에서 ·</span><span class="v">${esc(selected.q)}</span></div>` : '';
   const sinceLabel = isQ ? '예전에 생긴 질문이에요' : '예전에 알게 된 거예요';
   const refBox = `<div class="exbox" id="wrRefBox"${W.refOpen ? '' : ' hidden'}><input class="field" id="wrRef" type="text" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="예) 창22:2, 요 15:1-8, 시편 23편" aria-label="성경 위치" value="${esc(W.refRaw || W.ref)}"><div class="okl" id="wrRefOk">${refOkText()}</div></div>`;
   const sinceInput = `<input id="wrSince" type="month" data-act="since-pick" max="${ymNow()}" aria-label="${sinceLabel}" value="${esc(W.since)}">`;
@@ -3399,7 +3417,7 @@ let undoSnap = null;   // 짝 풀기를 되돌리기 위한 직전 모습
 // 주소(#/…) 하나가 화면 하나다. 첫 접속을 마치지 않았으면 첫 화면으로 돌려보낸다
 const VIEWS = {
   'start': viewStart, 'start/church': viewChurch, 'start/name': viewName, 'start/consent': viewConsent,
-  'today': viewToday, 'today/past': viewPast, 'today/write': viewWrite,
+  'today': viewToday, 'today/past': viewPast, 'today/all': viewAll, 'today/write': viewWrite,
   'explore': viewExplore, 'explore/walks': viewWalks, 'explore/week': viewWeek, 'write': viewWrite, 'mine': () => viewMine(), 'mine/search': viewSearch, 'mine/badges': viewBadges, 'mine/weeks': viewWeeks, 'mine/journal': viewJournal, 'mine/vine': viewVine,
   'more': viewMore, 'more/about': viewAbout, 'more/guide': viewGuide, 'more/feedback': viewFeedback, 'more/sync': viewSync
 };
@@ -3423,6 +3441,10 @@ function viewOf(key) {
     if (n && n.mode === 'free') return e[3] ? null : () => viewFree(id);   // 자유롭게 쓰는 노트에는 모아 보기가 없다
     return n && n.mode === 'steps' ? () => viewNote(id, Boolean(e[3])) : null;
   }
+  const aq = /^today\/q\/([\w-]+)\/([1-9]\d*)(\/write)?$/.exec(key);
+  if (aq) return Object.hasOwn(SEASON_NAMES, aq[1]) && qOf(aq[1], Number(aq[2])) ? (aq[3] ? viewWrite : () => viewTodayQ(aq[1], Number(aq[2]))) : null;
+  const al = /^today\/all\/([\w-]+)$/.exec(key);
+  if (al) return Object.hasOwn(SEASON_NAMES, al[1]) ? () => viewAll(al[1]) : null;
   const py = /^today\/past\/(\d{4}-\d{2})$/.exec(key);   // 지난 질문의 달 하나(today/past/<YYYY-MM>). 없는 달이거나 이번 달 이후면 막는다
   if (py) return parseYm(py[1]) && py[1] <= ymOf(demoDN()) && py[1] >= ymOf(startDN()) ? () => viewPast(py[1]) : null;
   const dy = /^today\/day\/(\d{4}-\d{2}-\d{2})(\/write)?$/.exec(key);   // 지난 질문 펴기(today/day/<날짜>)와 그 질문으로 품기. 없는 날이거나 오늘 이후면 막아서 오늘로 돌려보낸다
@@ -3439,7 +3461,7 @@ function setHash(h, replace) { replace ? location.replace('#/' + h) : (location.
 function guard(key) {
   const pm = /^today\/past\/(\d{4}-\d{2})$/.exec(key);
   if (me && pm && parseYm(pm[1]) && pm[1] > ymOf(demoDN())) return 'today/past';   // 앞달은 열리지 않으니 이번 달 목록으로
-  if (!viewOf(key)) return me ? (key.startsWith('mine') ? 'mine' : key.startsWith('explore') ? 'explore' : 'today') : 'start';
+  if (!viewOf(key)) return me ? (key.startsWith('today/q/') || key.startsWith('today/all/') ? 'today/all' : key.startsWith('mine') ? 'mine' : key.startsWith('explore') ? 'explore' : 'today') : 'start';
   if (!me) {
     if (!key.startsWith('start')) return 'start';
     if (key === 'start/church' && !ob.kakao) return 'start';
@@ -3531,6 +3553,8 @@ function closeMenus(returnGearFocus = false) {
 
 // ── 눌림 처리 ──
 const acts = {
+  'all-season'(e, el) { setHash('today/all/' + el.dataset.season); },
+  'all-question'(e, el) { setHash('today/q/' + el.dataset.season + '/' + el.dataset.item); },
   'vine-story'(e, el) { openFruitScene(el.dataset.key); },
   'vine-story-close'() { closeFruitScene(false); },
   'vine-story-go'() { closeFruitScene(true); },
@@ -3607,6 +3631,12 @@ const acts = {
   panel() { X.panel = !X.panel; render(); },
   'ex-more'() { exMoreSheet(); },
   'ex-export'(e, el) { exportSheet(el.dataset.id); },
+  'ex-stop'(e, el) {   // 지금 탐구에서 빼고 지난 탐구로(S-62). 노트·질문·글은 지우지 않는다
+    const id = el.dataset.id;
+    if (F.id === id) saveFree(false); else if (X.id === id) flushNote();   // 쓰던 글을 먼저 저장한다
+    N.cur = N.cur.filter(q => q !== id); saveNotes();
+    closeSheet(true); after = () => toast('지난 탐구로 옮겼어요'); setHash('explore');
+  },
   exp(e, el) { closeSheet(true); doExport(el.dataset.id, el.dataset.k); },
   'to-free'(e, el) {   // 단계별 글은 그대로 남기고 쓰는 방식만 바꾼다
     const n = getEx(el.dataset.id); if (!n) return;
@@ -4053,7 +4083,7 @@ function rememberGone() {
       const content = x => JSON.stringify({ ...x, touched: 0 });
       N[kind].forEach(x => { const prev = old.get(id(x)); if (prev && next.has(id(x)) && content(prev) !== content(next.get(id(x)))) x.touched = Date.now(); });
     }
-    savedNotes[kind].forEach(x => { if (!current.has(id(x))) gone.add(id(x)); });
+    savedNotes[kind].forEach(x => { if (kind !== 'wk' && !current.has(id(x))) gone.add(id(x)); });
   }
   ls.set(GK, JSON.stringify([...gone])); savedNotes = normalizeNotes(N);
 }
@@ -4067,8 +4097,8 @@ function mergePayload(local, remote) {
       // 글은 최신 at을 따르되, 한 기기에서라도 다 펴 본 흔적은 남긴다.
       items.set(x[key], kind === 'wk' ? { ...newest, done: newest.done || old?.done || x.done || 0 } : newest);
     });
-    // 생각을 비우며 남긴 옛 삭제 표시가 있어도 다 펴 본 주의 흔적은 지키도록 한다.
-    return [...items.values()].filter(x => (kind === 'wk' && x.done) || !removed.has(kind === 'ex' ? 'ex:' + x[key] : x[key]));
+    // 내 생각·묵상·나의 해석은 옛 삭제 표시와 관계없이 남기고 최신 at을 따른다(S-61).
+    return [...items.values()].filter(x => kind === 'wk' || !removed.has(kind === 'ex' ? 'ex:' + x[key] : x[key]));
   };
   const notes = normalizeNotes({ qs: choose('qs', 'id', 'touched'), fs: choose('fs', 'id', 'touched'), wk: choose('wk', 'id', 'at'), ex: choose('ex', 'q', 'touched'), cur: [...new Set([...a.cur, ...b.cur])] });
   const badges = { seen: badgeSeen([...(local.badges?.seen || []), ...(remote.badges?.seen || [])]) };

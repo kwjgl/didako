@@ -416,13 +416,8 @@ const dateDN = value => {
 };
 const TODAY_DN = dateDN(demo.date) ?? realDN();
 const START_DN = dateDN(demo.start) ?? TODAY_DN;
-let openedT = null, opened = new Set();
-function openedAt(t) {
-  if (openedT === t) return opened;
-  opened = new Set(); for (let d = START_DN; d <= t; d++) { const q = questionOn(d); if (q) opened.add(q.key); }
-  openedT = t; return opened;
-}
-const isOpen = q => openedAt(TODAY_DN).has(q.key);
+// 받은 날과 관계없이 모든 질문을 지도에서 연다(S-63). 아래 날짜별 띠는 그대로 둔다.
+const isOpen = q => Object.hasOwn(QBY, q.key);
 const openQs = p => p.qs.filter(isOpen);
 
 // 기록은 노트와 같은 저장소에서 읽기만 한다. 쓰기는 노트의 + 남기기가 맡는다.
