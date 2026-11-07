@@ -665,7 +665,16 @@ mark { background: var(--accent-soft); color: inherit; border-radius: 4px; paddi
 .wk-stay { margin-top: 26px; padding: 14px 16px; border-left: 3px solid var(--accent); background: var(--surface); border-radius: 0 12px 12px 0; }
 .wk-stay .sf { margin: 6px 0 0; font-size: 1.0625rem; line-height: 1.6; word-break: keep-all; }
 .wk-wait { opacity: .55; }
-.wk-all { display: block; min-height: 44px; margin-top: 4px; text-align: center; }
+.wk-links { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-top: 8px; }
+.wk-links .tx { min-height: 44px; display: inline-flex; align-items: center; }
+.wk-links .btn { flex: 0 0 auto; }
+.wk-row { justify-content: flex-start; gap: 12px; }
+.wk-row .wk-tt { flex: 1; min-width: 0; }
+.wk-no { flex: 0 0 28px; height: 28px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; background: var(--accent-soft); color: var(--accent-deep); font-size: .8125rem; font-weight: 700; }
+.wk-rest { margin-top: 8px; }
+.wk-rest > summary { min-height: 44px; display: flex; align-items: center; justify-content: center; cursor: pointer; list-style: none; }
+.wk-rest > summary::-webkit-details-marker { display: none; }
+.wk-rest > p { margin: 4px 0 0; text-align: center; }
 .wk-next { flex: 1; display: flex; align-items: center; justify-content: center; min-height: 48px; }
 a.xrow { text-decoration: none; }   /* 연재 목록 링크도 지난 탐구의 단추 줄과 같은 모양 */
 .xfin { margin-top: 16px; text-align: center; padding: 16px 14px; border: 1.5px dashed var(--accent-mid); border-radius: 16px; }
@@ -2089,14 +2098,14 @@ function viewExplore() {
   const wkMeta = `제${wk.n}주일`;   // 주일 번호만(묶음·주제 이름은 질문 글이 대신한다)
   const done = N.wk.some(w => w.id === wk.id && w.done);
   const wkImg = wk.img ? `<img class="q-img" src="${wk.img}" alt="${esc(wk.alt)}" width="1200" height="675" decoding="async">` : '';   // 정물 그림(없는 주는 글만)
-  const weekCard = `<div class="xwk"><div class="sm xwm">${wkMeta}${done ? '<span class="week-done sm"><span class="week-check">✓</span> 다 펴 봤어요</span>' : ''}</div><div class="sf xwq">${esc(wk.q)}</div><div class="xwr">${wk.refs.map(esc).join(' · ')}</div>${wkImg}<button class="btn" type="button" data-act="week-open">${done ? '다시 펴 보기' : '펴 보기'}</button></div>`;
+  const weekCard = `<div class="xwk"><div class="sm xwm">${wkMeta}${done ? '<span class="week-done sm"><span class="week-check">✓</span> 다 펴 봤어요</span>' : ''}</div><div class="sf xwq">${esc(wk.q)}</div><div class="xwr">${wk.refs.map(esc).join(', ')}</div>${wkImg}<button class="btn" type="button" data-act="week-open">${done ? '다시 펴 보기' : '펴 보기'}</button></div>`;
   const wn = walkNow(), wbtn = wide ? '' : ' wide';
-  const wAll = wn ? `<a class="tx wk-all" href="#/explore/walk/${wn.w.id}">${esc(wn.w.book)} 전체 보기 ›</a>` : '';
+  const wLinks = wn ? `<div class="wk-links"><a class="tx" href="#/explore/walk/${wn.w.id}">토막 목록</a><a class="tx" href="#/explore/walks">다른 연재 고르기 ›</a></div>` : '';   // 링크 둘을 한 줄에(S-47)
   const walkCard = !wn ? ''
-    : wn.ep ? `<div class="card xcard"><div class="sm">${esc(wn.w.book)} ${wn.ep.n}번째 걸음</div><div class="sf xct" style="margin-top:4px">${esc(wn.ep.title)}</div><div class="sm" style="margin-top:4px">${esc(wn.ep.ref)}</div><a class="btn${wbtn}" href="#/explore/walk/${wn.w.id}/${wn.ep.n}" style="margin-top:12px">읽기</a>${wAll}<a class="tx wk-all" href="#/explore/walks">다른 연재 고르기 ›</a></div>`
-    : wn.next ? `<div class="card xcard"><div class="sm">${esc(wn.w.book)}의 다음 토막은 ${walkWhen(wn.nextDN)} 열려요</div><div class="sf xct" style="margin-top:4px">${esc(wn.next.title)}</div><div class="sm" style="margin-top:4px">${esc(wn.next.ref)}</div>${wAll}<a class="tx wk-all" href="#/explore/walks">다른 연재 고르기 ›</a></div>`
-    : wn.all ? `<div class="card xcard"><div class="sm">${esc(wn.w.book)}</div><div class="sf xct" style="margin-top:4px">${esc(wn.w.title)}</div><div class="sm" style="margin-top:6px;line-height:1.55;word-break:keep-all">모든 토막을 걸었어요. 언제든 다시 읽을 수 있어요.</div>${wAll}<a class="tx wk-all" href="#/explore/walks">다른 연재 고르기 ›</a></div>`
-    : `<div class="card xcard"><div class="sm">${esc(josa(wn.w.book, '은', '는'))} ${walkDay(walkPickDN(wn.w))}에 시작해요</div><div class="sf xct" style="margin-top:4px">${esc(wn.w.title)}</div><div class="sm" style="margin-top:6px;line-height:1.55;word-break:keep-all">${esc(wn.w.line)}</div>${wAll}<a class="tx wk-all" href="#/explore/walks">다른 연재 고르기 ›</a></div>`;
+    : wn.ep ? `<div class="card xcard"><div class="sm">${esc(wn.w.book)} ${wn.ep.n}번째 걸음</div><div class="sf xct" style="margin-top:4px">${esc(wn.ep.title)}</div><div class="sm" style="margin-top:4px">${esc(wn.ep.ref)}</div><a class="btn${wbtn}" href="#/explore/walk/${wn.w.id}/${wn.ep.n}" style="margin-top:12px">읽기</a>${wLinks}</div>`
+    : wn.next ? `<div class="card xcard"><div class="sm">${esc(wn.w.book)}의 다음 토막은 ${walkWhen(wn.nextDN)} 열려요</div><div class="sf xct" style="margin-top:4px">${esc(wn.next.title)}</div><div class="sm" style="margin-top:4px">${esc(wn.next.ref)}</div>${wLinks}</div>`
+    : wn.all ? `<div class="card xcard"><div class="sm">${esc(wn.w.book)}</div><div class="sf xct" style="margin-top:4px">${esc(wn.w.title)}</div><div class="sm" style="margin-top:6px;line-height:1.55;word-break:keep-all">모든 토막을 걸었어요. 언제든 다시 읽을 수 있어요.</div>${wLinks}</div>`
+    : '';
   const curCard = (n, i) => `<div class="card xcard"${i ? ' style="margin-top:10px"' : ''}><div class="sf xct">${esc(getQ(n.q).text)}</div><div style="margin-top:10px">${n.mode === 'free' ? `<span class="sm">자유롭게 쓰기 · ${startLine(n)}</span>` : dotsHtml(n, false, startLine(n))}</div><button class="btn${wide ? '' : ' wide'}" type="button" data-act="past-open" data-id="${n.q}">이어서 쓰기</button></div>`;
   const curHtml = cur.length
     ? cur.map(curCard).join('')
@@ -2125,7 +2134,7 @@ function viewWeek() {
   const fold = (i, name, sum, skipped) => `<button class="xfd" type="button" data-act="week-view" data-i="${i}" aria-label="${name}, ${skipped ? '건너뛰었어요' : '답했어요'}. 누르면 다시 펴요"><i class="mk">✓</i><span class="tt"><b>${name}</b><span>${esc(sum)}</span></span><i class="ar" aria-hidden="true">›</i></button>`;
   const mine = getMine(wk.id);
   const names = ['내 생각 적어보기', '함께 볼 말씀', '교회가 고백해 온 것'];
-  const sums = [mine ? oneLine(mine) : '건너뛰었어요', wk.refs.join(' · '), shortOf(wk)];
+  const sums = [mine ? oneLine(mine) : '건너뛰었어요', wk.refs.join(', '), shortOf(wk)];
   const open = [
     `<div class="xcur"><div class="xnm s" id="xHead" tabindex="-1">내 생각 적어보기</div>
       <textarea class="field xta" id="wkTa" rows="4" placeholder="솔직한 생각을 적어 봐요. 떠오르는 생각이 없다면 적지 않아도 돼요." aria-label="내 생각 적어보기">${esc(mine)}</textarea>
@@ -2163,8 +2172,8 @@ function viewWalks() {
     const tail = `${w.eps.length}토막으로 된 ${kind}예요.${isCur ? ' 지금 걷고 있어요.' : ''}`;
     const btn = isCur
       ? `<a class="btn${wide ? '' : ' wide'}" href="#/explore/walk/${w.id}" style="margin-top:12px">이어 걷기</a>`
-      : `<button class="btn lt${wide ? '' : ' wide'}" type="button" data-act="walk-pick" data-id="${w.id}" style="margin-top:12px">이 연재 걷기</button>`;
-    return `<div class="card xcard" style="margin-top:10px"${isCur ? ' aria-current="true"' : ''}><div class="sm">${esc(w.book)}</div><div class="sf xct" style="margin-top:4px">${esc(w.title)}</div><div class="sm" style="margin-top:6px;line-height:1.55;word-break:keep-all">${esc(w.line)}</div><div class="sm" style="margin-top:6px">${tail}</div>${btn}<a class="tx wk-all" href="#/explore/walk/${w.id}">토막 목록 보기 ›</a></div>`;
+      : `<div class="wk-links" style="margin-top:12px"><button class="btn lt" type="button" data-act="walk-pick" data-id="${w.id}">이 연재 걷기</button><a class="tx" href="#/explore/walk/${w.id}">토막 미리 보기 ›</a></div>`;
+    return `<div class="card xcard" style="margin-top:10px"${isCur ? ' aria-current="true"' : ''}><div class="sm">${esc(w.book)}</div><div class="sf xct" style="margin-top:4px">${esc(w.title)}</div><div class="sm" style="margin-top:6px;line-height:1.55;word-break:keep-all">${esc(w.line)}</div><div class="sm" style="margin-top:6px">${tail}</div>${btn}</div>`;
   };
   const head = `<div class="card xhead"><div class="xlb" style="margin:0 0 6px">질문을 따라 걷기</div><div class="sf xwq">서가</div><p class="wk-p" style="margin-top:10px">걷고 싶은 연재를 하나 골라요. 한 번에 한 연재씩 걸어요. 다른 연재로 옮겨도 걸은 곳은 그대로 남아서, 돌아오면 이어서 걸을 수 있어요.</p></div>`;
   const body = head + all.map(card).join('');
@@ -2176,13 +2185,18 @@ function viewWalks() {
 function viewWalk(w) {
   const wide = isWide();
   const head = `<div class="card xhead"><div class="xlb" style="margin:0 0 6px">질문을 따라 걷기</div><div class="sm">${esc(w.book)}</div><div class="sf xwq" style="margin-top:2px">${esc(w.title)}</div><p class="wk-p" style="margin-top:10px">${esc(w.intro)}</p><div class="sm">한 토막을 머묾까지 걸으면 다음 토막이 다음 날 열려요. 매일 걸어도, 띄엄띄엄 걸어도 괜찮아요. 걸은 토막은 언제든 다시 읽을 수 있어요.</div></div>`;
-  const rows = w.eps.map((e, i) => {
-    const day = walkOpenDN(w, i);
-    const when = i === 0 ? (Number.isFinite(day) ? `${walkDay(day)}에 시작해요` : '이 연재를 고르면 열려요') : Number.isFinite(day) ? `${walkWhen(day)} 열려요` : '앞 토막을 마치면 열려요';
-    return walkIsOpen(w, e)
-      ? `<a class="card xrow" href="#/explore/walk/${w.id}/${e.n}"><span><span style="display:block">${esc(e.title)}</span><span class="sm">${esc(e.ref)}</span></span><span class="xch" aria-hidden="true">›</span></a>`
-      : `<div class="card xrow wk-wait"><span><span style="display:block">${esc(e.title)}</span><span class="sm">${when}</span></span></div>`;
-  }).join('');
+  // 토막 줄: 앞에 순서 번호. 열린 토막은 모두, 안 열린 토막은 바로 다음 하나만 보이고 나머지는 [남은 토막 모두 보기]로 접는다(S-47)
+  const no = e => `<span class="wk-no" aria-label="${e.n}번째 걸음">${e.n}</span>`;
+  const openRow = e => `<a class="card xrow wk-row" href="#/explore/walk/${w.id}/${e.n}">${no(e)}<span class="wk-tt"><span style="display:block">${esc(e.title)}</span><span class="sm">${esc(e.ref)}</span></span><span class="xch" aria-hidden="true">›</span></a>`;
+  const waitRow = (e, when) => `<div class="card xrow wk-row wk-wait">${no(e)}<span class="wk-tt"><span style="display:block">${esc(e.title)}</span>${when ? `<span class="sm">${when}</span>` : ''}</span></div>`;
+  const opened = w.eps.filter(e => walkIsOpen(w, e)), locked = w.eps.filter(e => !walkIsOpen(w, e));
+  let rows = opened.map(openRow).join('');
+  if (locked.length) {
+    const i = w.eps.indexOf(locked[0]), day = walkOpenDN(w, i);
+    const when = i === 0 ? '이 연재를 고르면 열려요' : Number.isFinite(day) ? `${walkWhen(day)} 열려요` : '앞 토막을 마치면 열려요';
+    rows += waitRow(locked[0], when);
+    if (locked.length > 1) rows += `<details class="wk-rest"><summary class="tx">남은 토막 모두 보기</summary><p class="sm">앞 토막을 마치면 하나씩 열려요.</p>${locked.slice(1).map(e => waitRow(e, '')).join('')}</details>`;
+  }
   const pick = w.id !== walkCurId() ? `<button class="btn${wide ? '' : ' wide'}" type="button" data-act="walk-pick" data-id="${w.id}" style="margin-top:12px">이 연재 걷기</button>` : '';
   const body = head + pick + `<div style="margin-top:12px">${rows}</div>`;
   if (wide) return wideShell(body, { pn: true, top: '' });
@@ -2724,7 +2738,7 @@ function mapContext(key) {
   const data = kind === 'q' ? Object.values(Q.today).flat().find(q => questionKey(q) === id && (window.Q_PLACES[id] || window.Q_WIDE[id]) === place && receivedKey(id)) : !Object.hasOwn(window.WIDE_PLACES, place) && /^\d+$/.test(id) && (window.MAP_STORIES[place] || [])[+id];
   return data ? { place, kind, id, data, key } : null;
 }
-// 질문을 따라 걷기(S-38, S-39): 연재 데이터는 walks-data.js. 첫 토막은 start 날부터, 다음 토막은 앞 토막을 마친(머묾까지 넘긴) 다음 날부터 열린다(데모는 날짜 바꾸기를 따른다)
+// 질문을 따라 걷기(S-38, S-39): 연재 데이터는 walks-data.js. 첫 토막은 처음 들어온 날(다른 연재는 서가에서 고른 날)부터, 다음 토막은 앞 토막을 마친(머묾까지 넘긴) 다음 날부터 열린다(데모는 날짜 바꾸기를 따른다)
 const walkById = id => (window.WALKS || []).find(w => w.id === id);
 const walkMineId = (w, ep) => `wa-${w.id}-${ep.n}`;   // 묵상에 쓴 글은 이번 주의 질문 내 생각과 같은 자리(N.wk)에 이 id로 둔다
 const walkMine2Id = (w, ep) => `wb-${w.id}-${ep.n}`;   // 나의 해석에 쓴 글(S-44). 묵상과 같은 자리(N.wk)에 이 id로 둔다. 마친 날은 묵상 쪽('wa-')에만 남긴다
@@ -2733,8 +2747,8 @@ const walkDone = (w, ep) => { const m = N.wk.find(x => x.id === walkMineId(w, ep
 const josa = (t, a, b) => { const c = [...t].pop().charCodeAt(0) - 0xAC00; return t + (c >= 0 && c <= 11171 && c % 28 !== 0 ? a : b); };
 // 지금 걷는 연재: N.wk의 'wa-cur'(mine = 연재 id). 없거나 모르는 id면 첫 연재(WALKS[0])
 const walkCurId = () => { const m = N.wk.find(x => x.id === 'wa-cur'), all = window.WALKS || []; return m && all.some(w => w.id === m.mine) ? m.mine : (all[0] ? all[0].id : ''); };
-// 그 사람이 이 연재를 고른 날(하루 수): 'wa-<연재>-0'의 done. 고른 적이 없으면 첫 연재만 start, 나머지는 Infinity(열리지 않음)
-const walkPickDN = w => { const m = N.wk.find(x => x.id === `wa-${w.id}-0`); return m && m.done ? Math.max(parseYmd(w.start).t, dnOfMs(m.done)) : ((window.WALKS || [])[0] === w ? parseYmd(w.start).t : Infinity); };
+// 그 사람이 이 연재를 고른 날(하루 수): 'wa-<연재>-0'의 done. 고른 적이 없으면 첫 연재(WALKS[0])는 오늘(처음 들어온 날부터 바로 걷는다), 나머지는 Infinity(서가에서 골라야 열린다). 연재의 start는 열림에 쓰지 않는다(S-47)
+const walkPickDN = w => { const m = N.wk.find(x => x.id === `wa-${w.id}-0`); return m && m.done ? dnOfMs(m.done) : ((window.WALKS || [])[0] === w ? demoDN() : Infinity); };
 // 연재 고르기: 지금 걷는 연재로 삼고, 처음 고르면 그날 정오를 고른 날로 남긴다(다시 골라도 처음 고른 날을 지킨다)
 function pickWalk(id) {
   const now = Date.now(), day = dnDate(demoDN()).getTime() + DAY / 2;
@@ -2744,7 +2758,7 @@ function pickWalk(id) {
   saveNotes();
 }
 const dnOfMs = ms => { const d = new Date(ms); return parseYmd(`${d.getFullYear()}-${pad2(d.getMonth() + 1)}-${pad2(d.getDate())}`).t; };
-// i번째(0부터) 토막이 열리는 날(하루 수): 첫 토막은 고른 날(start보다 앞서지 않음), 다음은 앞 토막을 마친 다음 날. 앞 토막을 아직 안 마쳤으면 Infinity(열리지 않음)
+// i번째(0부터) 토막이 열리는 날(하루 수): 첫 토막은 고른 날(첫 연재는 오늘), 다음은 앞 토막을 마친 다음 날. 앞 토막을 아직 안 마쳤으면 Infinity(열리지 않음)
 const walkOpenDN = (w, i) => { const s = walkPickDN(w); if (i === 0) return s; const d = walkDone(w, w.eps[i - 1]); return d ? Math.max(s, dnOfMs(d) + 1) : Infinity; };
 const walkWhen = n => (n === demoDN() + 1 ? '내일' : walkDay(n) + '에');   // "내일" 또는 "11월 13일(금)에"
 // 머묾까지 오면 마친 것: 그날(데모는 고른 날)의 정오를 done에 남긴다. 처음 마친 날을 지킨다
@@ -2756,11 +2770,9 @@ function markWalkDone(w, ep) {
 const walkIsOpen = (w, ep) => walkOpenDN(w, w.eps.indexOf(ep)) <= demoDN();
 const walkDay = n => { const d = dnDate(n); return `${mdLine(d)}(${DAYS[d.getDay()]})`; };   // "11월 13일(금)"
 // 탐구하기 카드에 보일 것: 지금 걷는 연재에서 ① 열렸지만 아직 안 마친 첫 토막(ep) ② 다음 토막이 열리는 때(next) ③ 다 마쳤으면 all.
-// 고른 날(첫 연재는 start)이 아직이면 start만
 function walkNow() {
   const w = walkById(walkCurId());
   if (!w) return null;
-  if (walkPickDN(w) > demoDN()) return { w, start: true };
   const ep = w.eps.find(e => walkIsOpen(w, e) && !walkDone(w, e));
   if (ep) return { w, ep };
   const i = w.eps.findIndex(e => !walkDone(w, e));
