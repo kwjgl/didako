@@ -660,6 +660,9 @@ mark { background: var(--accent-soft); color: inherit; border-radius: 4px; paddi
 .wk-links { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-top: 8px; }
 .wk-links .tx { min-height: 44px; display: inline-flex; align-items: center; }
 .wk-links .btn { flex: 0 0 auto; }
+.wk-card { position: relative; }
+.wk-stretch { position: absolute; inset: 0; z-index: 0; border-radius: inherit; }
+.wk-card .btn, .wk-card .wk-links a { position: relative; z-index: 1; }
 .wk-cover { display: block; width: 100%; height: auto; aspect-ratio: 16 / 9; object-fit: cover; border-radius: 12px; margin: 0 0 12px; background: var(--surface-2); }
 .wk-row { justify-content: flex-start; gap: 12px; }
 .wk-row .wk-tt { flex: 1; min-width: 0; }
@@ -1507,7 +1510,7 @@ const FAQ = [
   ['발견은 질문과 어떻게 이어져요?', '발견은 질문 하나에만 이어요. 한 질문에는 발견이 여러 개 붙을 수 있어요. 짝은 풀거나 바꿀 수 있고, 짝을 확정하는 것은 늘 내가 해요.'],
   ['탐구하기는 어떻게 해요?', '질문 하나를 한 권의 노트로 깊이 파고들어요. 단계별로 쓰기와 자유롭게 쓰기 가운데 골라 시작해요.', ['#/explore', '탐구하기 ›']],
   ['내 기록의 칩은 뭐예요?', '질문 하나가 쪽지 한 장이에요. 칩으로 전체 · 질문만 · 질문과 발견 · 발견만을 골라 봐요.', ['#/mine', '내 기록 › 쪽지 벽 ›']],
-  ['말씀을 열며는 뭐예요?', '탐구하기에서 이번 주의 질문을 펼 때와 질문으로 묵상하기에서 한 편을 시작할 때 "말씀을 열며" 한 장이 나와요. 세 겹으로 꼰 끈 아래 "아버지께서 주신 말씀을 / 말씀이 가리키는 예수님 안에서 / 성령님이 깨닫게 해 주시기를"이 한 줄씩 나타나고, 누르면 바로 넘어가요.', ['#/explore', '탐구하기 ›']]
+  ['말씀을 열며는 뭐예요?', '탐구하기에서 이번 주의 질문을 펼 때와 질문으로 묵상하기에서 마치지 않은 편을 그날 처음 열 때 "말씀을 열며" 한 장이 나와요. 세 겹으로 꼰 끈 아래 "아버지께서 주신 말씀을 / 말씀이 가리키는 예수님 안에서 / 성령님이 깨닫게 해 주시기를"이 한 줄씩 나타나고, 누르면 바로 넘어가요.', ['#/explore', '탐구하기 ›']]
 ];
 let faqOpen = new Set([0]);
 function viewGuide() {
@@ -2085,11 +2088,12 @@ function viewExplore() {
   const done = N.wk.some(w => w.id === wk.id && w.done);
   const weekCard = `<div class="card xcard"><div class="sm wk-meta">${wkMeta}${done ? '<span class="week-done sm"><span class="week-check">✓</span> 다 펴 봤어요</span>' : ''}</div><div class="sf xct" style="margin-top:4px">${esc(wk.q)}</div><div class="sm" style="margin-top:4px;line-height:1.5;word-break:keep-all">${wk.refs.map(esc).join(', ')}</div><button class="tx wk-open" type="button" data-act="week-open">${done ? '다시 펴 보기 ›' : '펴 보기 ›'}</button></div>`;   // 다른 카드와 같은 흰 카드(S-52)
   const wn = walkNow(), wbtn = wide ? '' : ' wide';
-  const wLinks = wn ? `<div class="wk-links"><a class="tx" href="#/explore/walk/${wn.w.id}">전체 목록</a><a class="tx" href="#/explore/walks">다른 연재 고르기 ›</a></div>` : '';   // 링크 둘을 한 줄에(S-47)
+  const wLinks = wn ? `<div class="wk-links" style="justify-content:flex-end"><a class="tx" href="#/explore/walks">다른 연재 고르기 ›</a></div>` : '';   // 카드를 누르면 목록으로 가므로 [전체 목록]은 뺐다(S-60)
+  const wGo = wn ? `<a class="wk-stretch" href="#/explore/walk/${wn.w.id}" aria-label="${esc(wn.w.book)} 목록 보기"></a>` : '';   // 카드 전체를 덮는 목록 링크
   const walkCard = !wn ? ''
-    : wn.ep ? `<div class="card xcard">${walkCover(wn.w)}<div class="sm">${esc(wn.w.book)} ${wn.ep.n}편</div><div class="sf xct" style="margin-top:4px">${esc(wn.ep.title)}</div><div class="sm" style="margin-top:4px">${esc(wn.ep.ref)}</div><a class="btn${wbtn}" href="#/explore/walk/${wn.w.id}/${wn.ep.n}" style="margin-top:12px">읽기</a>${wLinks}</div>`
-    : wn.next ? `<div class="card xcard">${walkCover(wn.w)}<div class="sm">${walkWhen(wn.nextDN)} 열려요</div><div class="sf xct" style="margin-top:4px">${esc(wn.next.title)}</div><div class="sm" style="margin-top:4px">${esc(wn.next.ref)}</div>${wLinks}</div>`
-    : wn.all ? `<div class="card xcard">${walkCover(wn.w)}<div class="sm">${esc(wn.w.book)}</div><div class="sf xct" style="margin-top:4px">${esc(wn.w.title)}</div><div class="sm" style="margin-top:6px;line-height:1.55;word-break:keep-all">모든 편을 마쳤어요. 언제든 다시 읽을 수 있어요.</div>${wLinks}</div>`
+    : wn.ep ? `<div class="card xcard wk-card">${wGo}${walkCover(wn.w)}<div class="sm">${esc(wn.w.book)} ${wn.ep.n}편</div><div class="sf xct" style="margin-top:4px">${esc(wn.ep.title)}</div><div class="sm" style="margin-top:4px">${esc(wn.ep.ref)}</div><a class="btn${wbtn}" href="#/explore/walk/${wn.w.id}/${wn.ep.n}" style="margin-top:12px">읽기</a>${wLinks}</div>`
+    : wn.next ? `<div class="card xcard wk-card">${wGo}${walkCover(wn.w)}<div class="sm">${walkWhen(wn.nextDN)} 열려요</div><div class="sf xct" style="margin-top:4px">${esc(wn.next.title)}</div><div class="sm" style="margin-top:4px">${esc(wn.next.ref)}</div>${wLinks}</div>`
+    : wn.all ? `<div class="card xcard wk-card">${wGo}${walkCover(wn.w)}<div class="sm">${esc(wn.w.book)}</div><div class="sf xct" style="margin-top:4px">${esc(wn.w.title)}</div><div class="sm" style="margin-top:6px;line-height:1.55;word-break:keep-all">모든 편을 마쳤어요. 언제든 다시 읽을 수 있어요.</div>${wLinks}</div>`
     : '';
   const curCard = (n, i) => `<div class="card xcard"${i ? ' style="margin-top:10px"' : ''}><div class="sf xct">${esc(getQ(n.q).text)}</div><div style="margin-top:10px">${n.mode === 'free' ? `<span class="sm">자유롭게 쓰기 · ${startLine(n)}</span>` : dotsHtml(n, false, startLine(n))}</div><button class="btn${wide ? '' : ' wide'}" type="button" data-act="past-open" data-id="${n.q}">이어서 쓰기</button></div>`;
   const curHtml = cur.length
@@ -2198,7 +2202,7 @@ function viewWalkEp(w, ep) {
   const st = walkDone(w, ep) ? 5 : (mine || mine2) ? 4 : 0;   // 마친 토막은 머묾까지, 적어 두고 안 마친 토막은 풀이까지 펴 둔다(다음 →으로 머묾에 들어가야 마친 날이 남는다)
   if (WE.key !== key) {
     WE = { key, max: st, view: st, notes: false };
-    if (st === 0) setTimeout(() => showOpening(null), 0);   // 아직 아무것도 적지 않았고 마치지도 않은 편을 처음 열면 말씀을 열며 한 장(S-55). 다시 열거나 이어 쓸 때는 없다
+    if (!walkDone(w, ep) && firstOpenToday(key)) setTimeout(() => showOpening(null), 0);   // 마치지 않은 편을 그날 처음 열면 말씀을 열며 한 장(S-60)
   }
   const head = `<div class="card xhead"><div class="xlb" style="margin:0 0 6px">${esc(w.book)} ${ep.n}편</div><div class="sf xwq">${esc(ep.title)}</div></div>`
     + (ep.img ? `<img class="q-img" src="${esc(ep.img)}" alt="${esc(ep.art || '')}" width="1200" height="675" decoding="async" style="margin-top:12px">` : '');   // 그림은 img가 있는 토막에만(S-49에서 네 편에 넣었다)
@@ -2730,6 +2734,15 @@ function mapContext(key) {
 }
 // 질문을 따라 걷기(S-38, S-39): 연재 데이터는 walks-data.js. 첫 토막은 처음 들어온 날(다른 연재는 서가에서 고른 날)부터, 다음 토막은 앞 토막을 마친(머묾까지 넘긴) 다음 날부터 열린다(데모는 날짜 바꾸기를 따른다)
 const walkById = id => (window.WALKS || []).find(w => w.id === id);
+// 말씀을 열며를 오늘 이미 본 편(S-60): 이 기기에만 두는 편의 기록이다(묵상 기록이 아니라 동기화하지 않는다). 날이 바뀌면 비운다
+const OPEN_K = 'didako-note-walk-open';
+function firstOpenToday(key) {
+  const today = dnStr(demoDN());
+  let o; try { o = JSON.parse(ls.get(OPEN_K) || '{}'); } catch (e) { o = {}; }
+  if (o.day !== today || !Array.isArray(o.eps)) o = { day: today, eps: [] };
+  if (o.eps.includes(key)) return false;
+  o.eps.push(key); ls.set(OPEN_K, JSON.stringify(o)); return true;
+}
 // 연재 표지(S-54): 단색 바탕 + 상징 하나. 탐구하기 카드, 연재 목록 머리, 서가 카드에 같은 그림을 쓴다. 표지가 없는 연재는 아무것도 그리지 않는다
 const walkCover = w => (w.cover ? `<img class="wk-cover" src="${esc(w.cover)}" alt="" width="1200" height="675" decoding="async">` : '');
 const walkMineId = (w, ep) => `wa-${w.id}-${ep.n}`;   // 묵상에 쓴 글은 이번 주의 질문 내 생각과 같은 자리(N.wk)에 이 id로 둔다
@@ -2997,7 +3010,7 @@ function badgeButton() {
 }
 function badgeVisual(k, earned, large) {
   const vine = k === 'vine' || FRUITS.some(f => f.k === k);
-  const art = vine || BADGE_ART ? `<img src="img/${vine ? 'vine/' : ''}badges/${k}.webp" alt="">` : `<svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${BADGE_LINES[k]}</svg>`;
+  const art = vine || BADGE_ART ? `<img src="img/${vine ? 'vine/' : ''}badges/${k}.webp" alt="" width="96" height="96" decoding="async">` : `<svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${BADGE_LINES[k]}</svg>`;
   return `<span class="badge-art${earned ? ' earned' : ' locked'}${large ? ' large' : ''}">${art}</span>`;
 }
 // 포도나무 조각은 같은 좌표계에 쌓고, 작은 카드에서는 자리 표의 영역만 잘라 쓴다.
@@ -3788,7 +3801,7 @@ function resetAll() {
   clearVineMoments();
   ls.del(K.vine); VN = normalizeVine({});
   ls.del(K.badges); B = { seen: [] };
-  ls.del(K.session); ls.del(K.demo); ls.del(K.notes); me = null; D.start = ''; D.date = ''; D.sync = 'off'; D.syncAt = 0;
+  ls.del(K.session); ls.del(K.demo); ls.del(K.notes); ls.del(OPEN_K); me = null; D.start = ''; D.date = ''; D.sync = 'off'; D.syncAt = 0;
   N = { qs: [], fs: [], ex: [], cur: [], wk: [] }; W = newDraft('', 'q'); mineFilter = 'all'; searchQ = ''; P = { fid: '', sel: '' }; undoSnap = null; trailOpen.clear(); hideOpening(true);
   X = { id: '', step: 0, frame: 0, open3: false, panel: true, dirty: false }; WK = { max: 0, view: 0 }; pendingSwap = null; startBack = 'explore'; srchBack = 'mine';
   ob.kakao = ob.church = false; ob.name = ''; dispOpen = false; fb.text = ''; fb.named = false; fb.kind = '이랬으면';
