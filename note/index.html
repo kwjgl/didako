@@ -2303,8 +2303,8 @@ function viewWalkEp(w, ep) {
 
 // 통독은 한 편을 한 화면에 펴고, 마음에 남은 글만 접힌 칸에 적는다(S-70)
 function viewWalkRead(w, ep) {
-  const wide = isWide(), i = w.eps.indexOf(ep), key = w.id + '/' + ep.n, mine = getMine(walkMineId(w, ep));
-  if (!walkDone(w, ep) && firstOpenToday(key)) setTimeout(() => showOpening(null), 0);
+  const wide = isWide(), i = w.eps.indexOf(ep), mine = getMine(walkMineId(w, ep));
+  if (!walkDone(w, ep) && firstOpenToday(w.id + '/read')) setTimeout(() => showOpening(null), 0);   // 통독은 연재마다 하루 한 번만(S-71). 1일 1편은 편마다
   const head = `<div class="card xhead"><div class="xlb" style="margin:0 0 6px">${esc(walkName(w))} ${ep.n}편</div><div class="sf xwq">${esc(ep.title)}</div></div>`
     + (ep.img ? `<img class="q-img" src="${esc(ep.img)}" alt="${esc(ep.art || '')}" width="1200" height="675" decoding="async" style="margin-top:12px">` : '');
   const notes = ep.notes && ep.notes.length ? `<div class="wk-notes"><button class="tx wk-nt" type="button" data-act="walk-notes" aria-haspopup="dialog">원어 해설 보기</button></div>` : '';
