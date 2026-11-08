@@ -646,9 +646,23 @@ function panelHTML() {
   const img = p.layer === 'near' && p.kind === 'town' ? `<img class="pimg" src="img/towns/${p.key}.webp" alt="${esc(p.name)} 그림" onerror="this.remove()">` : '';
   return `<div class="pbody"><button class="x px" type="button" data-act="p-x" aria-label="닫기">${X_IC}</button>${img}<div class="phead"><h2>${esc(p.name)}</h2><div class="sm">${esc(p.region)}</div></div>${sHtml}${qHtml}${qMore}${p.layer === 'near' ? mHtml : ''}</div>`;
 }
+// 화면을 다시 그릴 때 같은 그림(src가 같은 <img>)은 이미 그려 둔 요소를 옮겨 쓴다. 새로 만들면 받아 둔 그림도 다시 풀어 그리느라 반짝인다(S-65)
+function keepImgs(box, html) {
+  const old = new Map();
+  box.querySelectorAll('img[src]').forEach(im => { const k = im.getAttribute('src'); if (im.complete && im.naturalWidth && !old.has(k)) old.set(k, im); });
+  box.innerHTML = html;
+  if (!old.size) return;
+  box.querySelectorAll('img[src]').forEach(im => {
+    const k = im.getAttribute('src'), o = old.get(k);
+    if (!o) return;
+    old.delete(k);
+    o.className = im.className; o.style.cssText = im.style.cssText; o.alt = im.alt;
+    im.replaceWith(o);
+  });
+}
 function paintPanel(keepScroll) {
   const old = panel.querySelector('.pbody'), sc = keepScroll && old ? old.scrollTop : 0;
-  panel.innerHTML = panelHTML();
+  keepImgs(panel, panelHTML());
   const bd = panel.querySelector('.pbody'); if (bd) bd.scrollTop = sc;
   panel.classList.toggle('open', !!selKey);
   $('#scrim').hidden = !(selKey && !isWide());
