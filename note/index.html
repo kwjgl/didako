@@ -913,14 +913,18 @@ body.fs .xw-top { padding-right: 52px; }   /* 시안 보기 설정(톱니)이 �
 .badge-sheet { display: flex; flex-direction: column; gap: 12px; text-align: center; align-items: stretch; }
 .badge-art.large { width: 144px; align-self: center; }
 .badge-art.large svg { width: 88px; height: 88px; }
-/* 부드럽게 넘어가기: 코이데와 같은 값으로 새 화면만 움직인다. */
+/* 부드럽게 넘어가기(S-72): 다른 탭은 옆으로 살짝, 같은 탭 안에서 깊이 들어가면 오른쪽에서 펼쳐 나오고 나올 때는 왼쪽에서 들어온다. 모두 서서히 밝아진다. 코이데도 같게 맞춘다 */
 .vt-in-r { animation: vt-in-r .2s cubic-bezier(.2, .8, .2, 1) both; }
 .vt-in-l { animation: vt-in-l .2s cubic-bezier(.2, .8, .2, 1) both; }
-.vt-fade { animation: vt-fade .18s ease-out both; }
+.vt-fade { animation: vt-fade .25s ease-out both; }
+.vt-push { animation: vt-push .3s cubic-bezier(.2, .8, .2, 1) both; }
+.vt-pop { animation: vt-pop .24s cubic-bezier(.2, .8, .2, 1) both; }
 @keyframes vt-in-r { from { opacity: 0; transform: translateX(14px); } }
 @keyframes vt-in-l { from { opacity: 0; transform: translateX(-14px); } }
 @keyframes vt-fade { from { opacity: 0; } }
-@media (prefers-reduced-motion: reduce) { .vt-in-r, .vt-in-l, .vt-fade { animation: none; } }
+@keyframes vt-push { from { opacity: 0; transform: translateX(28px); } }
+@keyframes vt-pop { from { opacity: 0; transform: translateX(-18px); } }
+@media (prefers-reduced-motion: reduce) { .vt-in-r, .vt-in-l, .vt-fade, .vt-push, .vt-pop { animation: none; } }
 </style>
 <link rel="stylesheet" href="design-styles.css">
 <!-- 시작 화면이 뜨기 전에는 바탕을 단색으로(바탕 무늬가 잠깐 비치지 않게). splash.js가 닫을 때 푼다(S-34) -->
@@ -3541,7 +3545,7 @@ function guard(key) {
   if (key.startsWith('start')) return 'today';
   return key;
 }
-const VT_CLASSES = ['vt-in-r', 'vt-in-l', 'vt-fade'];
+const VT_CLASSES = ['vt-in-r', 'vt-in-l', 'vt-fade', 'vt-push', 'vt-pop'];
 function vtAnim(el, cls) {
   el.classList.remove(...VT_CLASSES); void el.offsetWidth; el.classList.add(cls);
   el.addEventListener('animationend', () => el.classList.remove(cls), { once: true });
@@ -3576,7 +3580,8 @@ function render(fromHash) {
   if (fromHash && lastKey && key !== lastKey && !key.startsWith('start') && !lastKey.startsWith('start') &&
       !(isWide() && wall(key) && wall(lastKey)) && !freeNow && !F.id &&
       !(oldFree && getEx(oldFree[1])?.mode === 'free') && !matchMedia('(prefers-reduced-motion: reduce)').matches && from >= 0 && to >= 0) {
-    motion = to > from ? 'vt-in-r' : to < from ? 'vt-in-l' : 'vt-fade';
+    const depth = k => k.split('/').length;   // 같은 탭 안에서는 주소 마디 수로 들어가는지 나오는지 본다(S-72)
+    motion = to > from ? 'vt-in-r' : to < from ? 'vt-in-l' : depth(key) > depth(lastKey) ? 'vt-push' : depth(key) < depth(lastKey) ? 'vt-pop' : 'vt-fade';
   }
   $('#main').classList.remove(...VT_CLASSES);
   if (F.id) leaveFree(freeNow === F.id);   // 쓰던 자유 노트를 저장하고 편집기를 내려놓는다
@@ -3612,7 +3617,7 @@ function render(fromHash) {
   if (LIVE) paintSyncStatus();
   if (after) { const f = after; after = null; f(); }   // 화면을 옮긴 뒤에 띄울 것(카드, 알림)
   scheduleVineMoment();
-  if (motion && key === lastKey && performance.now() - drawStart <= 50 && !$('#main').querySelector('.xact, .qpanel, .fbar.pf')) vtAnim($('#main'), motion);   // 화면에 붙은 막대가 있으면 움직이지 않는다(움직이는 동안 막대가 제자리를 벗어난다)
+  if (motion && key === lastKey && performance.now() - drawStart <= 50) vtAnim($('#main'), $('#main').querySelector('.xact, .qpanel, .fbar.pf') ? 'vt-fade' : motion);   // 화면에 붙은 막대가 있으면 옆으로 밀지 않고 밝아지기만 한다(transform은 붙은 막대를 제자리에서 벗어나게 한다, S-72)
 }
 // 고른 설정을 눌린 표시로 맞춘다(자리를 다시 그리지 않아서 누르던 단추가 그대로 있다)
 function paintSettings() {
