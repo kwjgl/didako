@@ -4,8 +4,8 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover">
 <title>디다코 노트</title>
-<meta name="theme-color" content="#2B6A62">
-<!-- 홈 화면 앱(PWA): 노트 아이콘은 먹색 세 겹 책갈피(icons/icon.svg) -->
+<meta name="theme-color" content="#2F5D95">
+<!-- 홈 화면 앱(PWA): 노트 아이콘은 파랑 세 겹 책갈피(icons/icon.svg) -->
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" type="image/png" sizes="32x32" href="icons/favicon-32.png">
 <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
@@ -22,7 +22,7 @@
 try {
   const d = JSON.parse(localStorage.getItem('didako-note-display') || '{}'), r = document.documentElement;
   if (d.mode === 'light' || d.mode === 'dark') r.setAttribute('data-mode', d.mode);
-  if (['amber', 'blue', 'rose', 'ink'].includes(d.accent)) r.setAttribute('data-accent', d.accent);
+  if (d.accent !== 'green') r.setAttribute('data-accent', ['amber', 'blue', 'rose', 'ink'].includes(d.accent) ? d.accent : 'blue');   // 기본은 파랑(S-64). 초록은 속성 없이 :root 값
   if (['neu', 'skeu', 'glass'].includes(d.style)) r.setAttribute('data-style', d.style);
   if (d.big === true) r.setAttribute('data-big', '');
 } catch (e) {}
@@ -995,11 +995,11 @@ const pick = (v, list, d) => (list.includes(v) ? v : d);
 
 // ── 화면 설정(화면 모드·색 테마·디자인·큰 글씨): GBS 앱과 같은 값, 기억 자리만 따로 ──
 const MODES = ['auto', 'light', 'dark'], ACCENTS = ['green', 'amber', 'blue', 'rose', 'ink'], STYLES = ['basic', 'neu', 'skeu', 'glass'];
-const S = { mode: 'auto', accent: 'green', style: 'basic', big: false };
+const S = { mode: 'auto', accent: 'blue', style: 'basic', big: false };
 const root = document.documentElement;
 (function loadDisplay() {
   const a = readJson(K.display);
-  S.mode = pick(a.mode, MODES, 'auto'); S.accent = pick(a.accent, ACCENTS, 'green'); S.style = pick(a.style, STYLES, 'basic'); S.big = a.big === true;
+  S.mode = pick(a.mode, MODES, 'auto'); S.accent = pick(a.accent, ACCENTS, 'blue'); S.style = pick(a.style, STYLES, 'basic'); S.big = a.big === true;
 })();
 function applySettings() {
   S.mode === 'auto' ? root.removeAttribute('data-mode') : root.setAttribute('data-mode', S.mode);
@@ -1455,7 +1455,7 @@ function viewTodayQ(season, item) {
 let dispOpen = false;
 const RADIO = (key, opts) => opts.map(([v, l]) => `<button type="button" role="radio" aria-checked="false" data-set="${key}:${v}">${l}</button>`).join('');
 const MODE_OPTS = [['auto', '기기 설정'], ['light', '밝게'], ['dark', '어둡게']];
-const SWATCHES = [['green', 'var(--accent)', '초록(기본)'], ['amber', '#A9561B', '주황'], ['blue', '#2F5D95', '파랑'], ['rose', '#A8435C', '장미'], ['ink', '#33332F', '먹색']];
+const SWATCHES = [['green', '#2B6A62', '초록'], ['amber', '#A9561B', '주황'], ['blue', '#2F5D95', '파랑(기본)'], ['rose', '#A8435C', '장미'], ['ink', '#33332F', '먹색']];
 const STYLE_OPTS = [['basic', 'basic'], ['neu', 'new'], ['skeu', 'classic'], ['glass', 'glass']];
 function displayEx(id = 'dispEx') {
   return `<div class="ex" id="${id}">
