@@ -931,11 +931,16 @@ body.fs .xw-top { padding-right: 52px; }   /* 시안 보기 설정(톱니)이 �
 @keyframes vt-push { from { opacity: 0; transform: translateX(40px); } }
 @keyframes vt-pop { from { opacity: 0; transform: translateX(-28px); } }
 @media (prefers-reduced-motion: reduce) { .vt-in-r, .vt-in-l, .vt-fade, .vt-push, .vt-pop { animation: none; } }
-/* 겹쳐 넘기기(S-73): 넘기는 동안만 이름을 붙여 따로 찍는다. 위쪽 바·하단 탭(root)은 움직이지 않고, 막대와 패널은 제자리에서 바뀐다 */
+/* 겹쳐 넘기기(S-73): 넘기는 동안만 이름을 붙여 따로 찍는다. 위쪽 바·하단 탭은 움직이지 않고, 막대와 패널은 제자리에서 바뀐다. 위쪽 바와 하단 탭도 따로 떼어 맨 위에 둔다(떼어 낸 #main이 그 위를 덮지 않게, S-84) */
 :root[data-vt] #main { view-transition-name: main; }
 :root[data-vt] .xact { view-transition-name: xact; }
 :root[data-vt] .fbar.pf { view-transition-name: fbar; }
 :root[data-vt] .qpanel { view-transition-name: qpanel; }
+:root[data-vt] #topbar { view-transition-name: topbar; }
+:root[data-vt] #tabs { view-transition-name: tabs; }
+::view-transition-group(topbar), ::view-transition-group(tabs) { animation: none; }
+::view-transition-old(topbar), ::view-transition-old(tabs) { animation: none; opacity: 0; }
+::view-transition-new(topbar), ::view-transition-new(tabs) { animation: none; }
 :root[data-vt="vt-push"] { --vt-in: 40px; --vt-out: -24px; }
 :root[data-vt="vt-pop"] { --vt-in: -28px; --vt-out: 24px; }
 :root[data-vt="vt-in-r"] { --vt-in: 14px; --vt-out: -10px; }
@@ -1983,6 +1988,7 @@ const parallelSvg = () => `<svg class="wo-par" viewBox="0 -32 240 64" aria-hidde
 const calm = () => { try { return matchMedia('(prefers-reduced-motion: reduce)').matches; } catch (e) { return false; } };
 let openT = 0, openCb = null;
 function showOpening(next) {
+  if (vtCur) vtCur.skipTransition();   // 넘기는 중인 새 화면이 말씀을 열며 위에 겹쳐 그려지지 않게(S-84)
   const o = $('#opening'); openCb = next;
   o.innerHTML = `<div class="wo" tabindex="0" aria-label="말씀을 열며. 누르면 넘어가요">
       <div class="wo-cord" aria-hidden="true">${parallelSvg()}<div class="wo-braid" style="position:absolute;inset:0">${braidH(240, 64, 2.5, 5)}</div></div>
@@ -3626,6 +3632,7 @@ function guard(key) {
   return key;
 }
 const VT_CLASSES = ['vt-in-r', 'vt-in-l', 'vt-fade', 'vt-push', 'vt-pop'];
+let vtCur = null;   // 지금 겹쳐 넘기는 중인 전환. 말씀을 열며처럼 화면 전체를 덮는 것을 띄울 때는 넘기기를 바로 끝낸다(S-84)
 let vtNow = false;   // 겹쳐 넘기는 중(S-73): 안쪽에서 다시 부른 render는 겹쳐 넘기기와 CSS 움직임을 하지 않는다
 let tapNav = 0;   // 앱 안에서 눌러 화면을 옮긴 때(S-81). 이 표시 없이 주소가 바뀌면 뒤로 스와이프·브라우저 뒤로 가기로 보고 겹쳐 넘기지 않는다(아이폰이 직접 넘기는 움직임과 겹치지 않게)
 function vtAnim(el, cls) {
@@ -3671,7 +3678,7 @@ function render(fromHash, still) {
     let t = null;
     try { t = document.startViewTransition(() => { try { render(fromHash, still); } finally { vtNow = false; } }); }
     catch (err) { vtNow = false; delete root.dataset.vt; }
-    if (t) { t.finished.finally(() => { delete root.dataset.vt; }); return; }
+    if (t) { vtCur = t; t.ready.catch(() => {}); t.finished.finally(() => { delete root.dataset.vt; if (vtCur === t) vtCur = null; }); return; }
   }
   $('#main').classList.remove(...VT_CLASSES);
   if (F.id) leaveFree(freeNow === F.id);   // 쓰던 자유 노트를 저장하고 편집기를 내려놓는다
