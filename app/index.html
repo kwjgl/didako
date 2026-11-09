@@ -556,8 +556,6 @@ body.sharing { overflow: hidden; }
 .shelf-wrap { max-width: 760px; margin: 0 auto; }
 @media (min-width: 1000px) { .shelf-wrap { max-width: 880px; } }
 .shelf-wrap h1, .record-wrap h1 { word-break: keep-all; overflow-wrap: anywhere; }
-.sec-h { font-family: var(--f-display); font-size: 1.15em; margin: 1.4em 0 .5em; }
-.sec-h:first-child { margin-top: .4em; }
 
 /* 검색 */
 .search { position: relative; margin-top: 10px; }
@@ -571,47 +569,32 @@ body.sharing { overflow: hidden; }
 .hit .hit-ref { font-size: .84em; color: var(--accent); font-family: var(--f-display); font-weight: 700; }
 .hit .hit-body { display: block; font-size: .86em; color: var(--ink-2); margin-top: .15em; line-height: 1.55; }
 
-/* 표지: 새 색 없이 --surface, 제목은 Gowun Batang. 위쪽 띠(.cover-pat)에 무늬가 들어간다. 무늬 8가지는 스크립트의 PATTERNS에 있다.
-   책마다 book.pattern 으로 고르고, 없으면 COVER.pattern(기본 'none', 띠 없음)을 따른다. 새 무늬는 PATTERNS['이름']에 SVG 글을 더하면 된다 */
-.now { display: flex; gap: 16px; align-items: flex-start; }
-.now-item { flex: 0 1 250px; min-width: 0; }
-.cover-wrap { position: relative; margin-top: 7px; container-type: inline-size; }
-.cover { position: relative; display: flex; flex-direction: column; align-items: stretch; width: 100%; min-height: 133.3cqw; text-align: left; overflow: clip; padding: 0;
-  border-radius: 6px 14px 14px 6px; background: var(--surface); border: 1px solid var(--line-strong); color: var(--ink); cursor: pointer; box-shadow: 0 10px 22px -12px var(--shadow); }
-.cover::before { content: ""; position: absolute; inset: 0 auto 0 0; width: 1.1em; background: linear-gradient(90deg, color-mix(in srgb, var(--ink) 12%, transparent), transparent); border-right: 1px solid var(--line); pointer-events: none; z-index: 2; }
-.cover-pat { flex: none; display: block; height: 46cqw; margin-left: 1.1em; background: var(--accent-soft); border-bottom: 1px solid var(--line); overflow: hidden; pointer-events: none; }
-.cover-pat[data-pattern="none"] { display: none; }
-.pat { display: block; width: 100%; height: 100%; }
-.cover-body { flex: 1; min-height: 0; display: flex; flex-direction: column; justify-content: space-between; gap: .5em; padding: .9em 1em 1em 1.7em; }
-.cover-type { display: flex; align-items: center; gap: .4em; font-size: .78em; color: var(--ink-2); }
-.cover-title { display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 3; overflow: hidden; font-family: var(--f-display); font-weight: 700; font-size: clamp(1.1em, 11cqw, 1.9em); line-height: 1.25; word-break: keep-all; overflow-wrap: anywhere; }
-.cover-title.t-m { font-size: clamp(1.05em, 8.5cqw, 1.5em); }
-.cover-title.t-l { font-size: clamp(1em, 7cqw, 1.25em); }
-.cover-period { display: block; font-size: .84em; color: var(--ink-2); margin-top: .3em; }
-.cover-range { align-self: flex-start; font-family: var(--f-display); font-size: clamp(.7em, 6.4cqw, .82em); font-weight: 700; color: var(--accent); background: var(--accent-soft); border-radius: 10px; padding: .15em .7em; word-break: keep-all; max-width: 90%; line-height: 1.4; }
-/* 세 겹 책갈피: 표지 위쪽 모서리에서 나와(위로 살짝 내밀고) 오른쪽 위에 드리워진다. 아래 끝은 V 홈. 길이(--len, 표지 높이의 %)만 늘어나고 몇 개인지는 어디에도 적지 않는다.
-   길이에는 상한이 있어 위쪽 무늬 띠 안팎에서 끝나므로 제목을 가리지 않는다 */
-.ribbon { position: absolute; top: -7px; right: 9%; width: 20px; height: calc(var(--len, 20) * 1% + 7px); z-index: 3; pointer-events: none; transition: height .3s ease;
-  background: linear-gradient(90deg, var(--accent) 0 calc(33.33% - .5px), transparent 0 calc(33.33% + .5px), var(--accent-mid) 0 calc(66.66% - .5px), transparent 0 calc(66.66% + .5px), var(--ink-2) 0);
-  clip-path: polygon(0 0, 100% 0, 100% 100%, 50% calc(100% - 9px), 0 100%); }
-@media (prefers-reduced-motion: reduce) { .ribbon { transition: none; } }
-.now-cap { font-size: .84em; color: var(--ink-2); margin: .4em 0 0; line-height: 1.5; word-break: keep-all; }
-.now-cap b { font-family: var(--f-display); color: var(--ink); }
-
-/* 책장: 코이데 선반의 나무 색(--wood). 지난 교재는 책등이 보인다 */
-.kind-h { display: flex; align-items: center; gap: .45em; font-size: .86em; font-weight: 600; color: var(--ink-2); margin: .2em 0 .7em; }
-.kind-h + .board { margin-bottom: 1.2em; }
-/* 책장: 코이데 선반의 나무 색(--wood). 지난 교재는 책등이 보인다 */
-.board { position: relative; display: flex; align-items: flex-end; gap: 6px; flex-wrap: wrap; padding: 0 10px 0; min-height: 60px; }
-.board::after { content: ""; position: absolute; left: -4px; right: -4px; bottom: -12px; height: 14px; border-radius: 3px; background: linear-gradient(180deg, color-mix(in srgb, var(--wood) 80%, #fff), var(--wood) 40%, color-mix(in srgb, var(--wood) 85%, #000)); box-shadow: 0 8px 12px -8px var(--shadow); }
-.spine { position: relative; display: flex; flex-direction: column; align-items: center; justify-content: space-between; gap: 8px; width: 48px; min-height: 44px; height: var(--h, 160px); padding: 10px 0 10px; border-radius: 4px 4px 0 0; background: var(--surface); border: 1px solid var(--line-strong); border-bottom: 0; color: var(--ink); cursor: pointer; z-index: 1; overflow: hidden; }
-.spine .band { display: block; width: calc(100% + 2px); margin: -10px -1px 0; height: 40px; background: var(--accent-soft); border-bottom: 1px solid var(--line); flex: none; overflow: hidden; }
-.spine .band[data-pattern="none"] { height: 8px; }
-.spine .sp-title { display: block; writing-mode: vertical-rl; font-family: var(--f-display); font-weight: 700; font-size: .94em; line-height: 1.2; letter-spacing: .04em; flex: 1; min-height: 0; max-width: 1.3em; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
-.spine .sp-period { writing-mode: vertical-rl; font-size: .72em; color: var(--ink-2); white-space: nowrap; flex: none; }
-.spine:hover { transform: translateY(-4px); }
-.spine { transition: transform .15s ease; }
-@media (prefers-reduced-motion: reduce) { .spine { transition: none; } }
+/* 책장 첫 화면: 디다코 노트 탐구하기(note/index.html)의 작은 제목(.xlb)·카드(.xcard, .xct)·한 줄 목록(.xrow)·표지 그림(.wk-cover) 값을 그대로 옮겼다.
+   노트는 html 글씨 크기가 --base라 rem으로 쓰고, 이 앱은 body가 --base라 같은 값을 calc(var(--base) * 배수)로 적었다(큰 글씨 설정도 똑같이 따라간다).
+   .sm은 design-styles.css의 .icon-btn.sm과 이름이 겹칠 수 있어 .sh-sm으로 적었다. 이 앱의 .card는 위아래 바깥 여백(12px)이 있어 .xcard·.xrow에서는 0으로 두고 간격은 자리마다 따로 적었다 */
+.sf { font-family: var(--f-display); }
+.sh-sm { font-size: calc(var(--base) * .875); color: var(--ink-2); }
+.xlb { font-size: calc(var(--base) * .8125); font-weight: 700; color: var(--ink-2); margin: 20px 0 8px; }
+.xcard { padding: 14px 16px; margin: 0; }
+.xcard .xct { font-size: calc(var(--base) * 1.1875); font-weight: 700; line-height: 1.35; }
+.xrow { display: flex; align-items: center; justify-content: space-between; gap: 8px; width: 100%; min-height: 60px; margin: 8px 0 0; padding: 8px 16px; font-family: var(--f-body); font-weight: 400; font-size: calc(var(--base) * .9375); line-height: 1.4; color: var(--ink); text-align: left; cursor: pointer; }
+.xrow .sh-sm { display: block; font-size: calc(var(--base) * .8125); }
+.xch { color: var(--ink-2); font-size: calc(var(--base) * 1.25); }
+.wk-cover { display: block; width: 100%; height: auto; aspect-ratio: 16 / 9; object-fit: cover; border-radius: 12px; margin: 0 0 12px; background: var(--surface-2); }
+/* 책장 머리: 제목 오른쪽에 검색 단추(노트 .page-top과 같은 자리). 검색 칸은 단추를 누르면 열린다 */
+.sh-top { display: flex; justify-content: space-between; align-items: center; gap: 12px; min-height: 44px; }
+.sh-top .icon-btn { margin-right: -10px; }
+/* 지금 읽는 책 카드: 카드 전체가 누르는 자리. 1000px 이상에서 카드가 둘이면 나란히 */
+.sh-stack { display: grid; gap: 10px; }
+@media (min-width: 1000px) { .sh-stack.two { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+.sh-card { display: flex; flex-direction: column; cursor: pointer; }
+.sh-card .sh-body { flex: 1; min-width: 0; }
+.sh-kind { display: flex; align-items: center; gap: 6px; }
+/* 세 겹 책갈피(가로): 카드 맨 아래, 지금 끈과 같은 세 색을 위에서 아래로 쌓은 가는 세 줄. 왼쪽에서 오른쪽으로 길어진다(--len, 카드 안쪽 너비의 %). 몇 개인지는 어디에도 적지 않는다. 오른쪽 끝은 V 홈 */
+.sh-ribbon { display: block; height: 20px; margin-top: 12px; width: calc(var(--len, 20) * 1%); pointer-events: none; transition: width .3s ease;
+  background: linear-gradient(180deg, var(--accent) 0 calc(33.33% - .5px), transparent 0 calc(33.33% + .5px), var(--accent-mid) 0 calc(66.66% - .5px), transparent 0 calc(66.66% + .5px), var(--ink-2) 0);
+  clip-path: polygon(0 0, 100% 0, calc(100% - 9px) 50%, 100% 100%, 0 100%); }
+@media (prefers-reduced-motion: reduce) { .sh-ribbon { transition: none; } }
 
 /* 책 안(목차) */
 .book-head .book-l { margin: 0; }
@@ -646,11 +629,8 @@ body.sharing { overflow: hidden; }
 .card.empty h2 { font-family: var(--f-display); font-size: 1.2em; margin: .5em 0 .3em; }
 .card.empty .btn { margin-top: 14px; text-decoration: none; }
 
-/* 표지·책등·목차 줄도 디자인 스타일(basic·new·classic·glass)을 따른다 */
-:root[data-style="neu"] .cover, :root[data-style="neu"] .spine { background-color: var(--card); border-color: transparent; box-shadow: var(--raise-sm); }
+/* 책장의 카드·한 줄 목록은 .card라 디자인 스타일(basic·new·classic·glass)을 그대로 따른다 */
 :root[data-style="neu"] .field { border-color: transparent; }
-:root[data-style="skeu"] .cover, :root[data-style="skeu"] .spine { background: linear-gradient(180deg, var(--paper-hi), var(--paper-lo)); box-shadow: inset 0 1px 0 rgba(255,255,255,.6), 0 8px 18px -8px rgba(0,0,0,.35); }
-:root[data-style="glass"] .cover, :root[data-style="glass"] .spine { background: var(--glass-strong); border-color: color-mix(in srgb, var(--surface) 65%, transparent); }
 
 /* ── 나의 기록(#record) ── 시안 record.html의 것을 옮겼다 */
 /* 돌아봄 리포트와 상세 */
@@ -742,54 +722,6 @@ body.sharing { overflow: hidden; }
     <symbol id="i-search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="6"/><path d="M15.5 15.5L20 20"/></symbol>
     <!-- 책을 덮는 마지막 장의 작은 책갈피: 세 줄무늬 리본 + 아래 V 홈 (나눔하기 마친 화면의 긴 책갈피와 같은 색) -->
     <symbol id="i-ribbon" viewBox="0 0 26 72"><clipPath id="rib-clip"><path d="M0 0H26V72L13 62L0 72Z"/></clipPath><g clip-path="url(#rib-clip)"><rect x="0" y="0" width="8.67" height="72" fill="var(--accent)"/><rect x="8.67" y="0" width="8.66" height="72" fill="var(--accent-mid)"/><rect x="17.33" y="0" width="8.67" height="72" fill="var(--ink-2)"/></g></symbol>
-    <!-- 표지 무늬 8가지(표지 무늬 후보 시안과 같은 그림). 색은 테마 변수만 쓴다 -->
-    <style>
-      .m1 { fill: none; stroke: var(--accent-mid); stroke-width: 1.3; stroke-linecap: round; stroke-linejoin: round; }
-      .m2 { fill: none; stroke: var(--ink-2); stroke-width: 1; stroke-opacity: .4; stroke-linecap: round; stroke-linejoin: round; }
-      .f1 { fill: var(--accent-mid); }
-      .f2 { fill: var(--ink-2); fill-opacity: .4; }
-    </style>
-    <!-- 1 가는 줄 -->
-    <pattern id="p1" width="12" height="9" patternUnits="userSpaceOnUse"><path class="m1" d="M0 4.5H12"/><path class="m2" d="M0 8.5H12"/></pattern>
-    <!-- 2 격자(리넨) -->
-    <pattern id="p2" width="12" height="12" patternUnits="userSpaceOnUse"><path class="m1" d="M0 0.5H12M0.5 0V12" style="stroke-opacity:.8"/><path class="m2" d="M0 6.5H12M6.5 0V12"/></pattern>
-    <!-- 3 물결 -->
-    <pattern id="p3" width="28" height="12" patternUnits="userSpaceOnUse"><path class="m1" d="M0 6Q7 -0.5 14 6T28 6"/><path class="m2" d="M-7 11Q0 4.5 7 11T21 11T35 11"/></pattern>
-    <!-- 4 점(씨앗) -->
-    <pattern id="p4" width="12" height="12" patternUnits="userSpaceOnUse"><ellipse class="f1" cx="3" cy="3" rx="1.5" ry="2.1" transform="rotate(-30 3 3)"/><ellipse class="f2" cx="9" cy="9" rx="1.5" ry="2.1" transform="rotate(30 9 9)"/></pattern>
-    <!-- 5 포도 잎·넝쿨 -->
-    <pattern id="p5" width="30" height="26" patternUnits="userSpaceOnUse">
-      <path class="m1" d="M0 13Q7.5 5 15 13T30 13"/>
-      <path class="m1" d="M7.5 8 L2.5 5 L4 2 L7.5 3.2 L11 2 L12.5 5Z" style="fill:var(--accent-mid);fill-opacity:.5"/>
-      <path class="m1" d="M22.5 18 L17.5 21 L19 24 L22.5 22.8 L26 24 L27.5 21Z" style="fill:var(--accent-mid);fill-opacity:.5"/>
-      <circle class="f2" cx="15" cy="17" r="1.5"/><circle class="f2" cx="12.8" cy="19.6" r="1.5"/><circle class="f2" cx="17.2" cy="19.6" r="1.5"/>
-      <path class="m2" d="M15 13V15.5"/>
-      <path class="m2" d="M2 6q3 -3 5 0"/>
-    </pattern>
-    <!-- 6 밀 이삭 -->
-    <g id="ear"><path class="m1" d="M0 -9V10"/>
-      <ellipse class="f1" cx="-2.6" cy="-4" rx="1.1" ry="2.5" transform="rotate(-35 -2.6 -4)" style="fill-opacity:.55"/><ellipse class="f1" cx="2.6" cy="-4" rx="1.1" ry="2.5" transform="rotate(35 2.6 -4)" style="fill-opacity:.55"/>
-      <ellipse class="f1" cx="-2.6" cy="0" rx="1.1" ry="2.5" transform="rotate(-35 -2.6 0)" style="fill-opacity:.55"/><ellipse class="f1" cx="2.6" cy="0" rx="1.1" ry="2.5" transform="rotate(35 2.6 0)" style="fill-opacity:.55"/>
-      <ellipse class="f1" cx="-2.6" cy="4" rx="1.1" ry="2.5" transform="rotate(-35 -2.6 4)" style="fill-opacity:.55"/><ellipse class="f1" cx="2.6" cy="4" rx="1.1" ry="2.5" transform="rotate(35 2.6 4)" style="fill-opacity:.55"/>
-      <ellipse class="f1" cx="0" cy="-10" rx="1.1" ry="2.5" style="fill-opacity:.55"/></g>
-    <pattern id="p6" width="24" height="28" patternUnits="userSpaceOnUse">
-      <use href="#ear" transform="translate(6 14)"/><use href="#ear" transform="translate(18 0)"/><use href="#ear" transform="translate(18 28)"/>
-    </pattern>
-    <!-- 7 세 겹 끈 -->
-    <pattern id="p7" width="24" height="14" patternUnits="userSpaceOnUse">
-      <path d="M-24 7Q-18 1 -12 7T0 7T12 7T24 7T36 7T48 7" fill="none" stroke="var(--accent-mid)" stroke-width="1.7" stroke-linecap="round"/>
-      <path d="M-24 7Q-18 1 -12 7T0 7T12 7T24 7T36 7T48 7" transform="translate(8 0)" fill="none" stroke="var(--ink-2)" stroke-opacity=".45" stroke-width="1.7" stroke-linecap="round"/>
-      <path d="M-24 7Q-18 1 -12 7T0 7T12 7T24 7T36 7T48 7" transform="translate(16 0)" fill="none" stroke="var(--accent)" stroke-opacity=".75" stroke-width="1.7" stroke-linecap="round"/>
-    </pattern>
-    <!-- 8 올리브 가지 -->
-    <pattern id="p8" width="32" height="18" patternUnits="userSpaceOnUse">
-      <path class="m1" d="M0 9Q8 7 16 9T32 9"/>
-      <ellipse class="f1" cx="6" cy="5.4" rx="3.6" ry="1.4" transform="rotate(-30 6 5.4)" style="fill-opacity:.555"/>
-      <ellipse class="f1" cx="14" cy="12.8" rx="3.6" ry="1.4" transform="rotate(30 14 12.8)" style="fill-opacity:.555"/>
-      <ellipse class="f1" cx="22" cy="5.6" rx="3.6" ry="1.4" transform="rotate(-30 22 5.6)" style="fill-opacity:.555"/>
-      <ellipse class="f1" cx="30" cy="12.8" rx="3.6" ry="1.4" transform="rotate(30 30 12.8)" style="fill-opacity:.555"/>
-      <circle class="f2" cx="26" cy="11" r="1.4"/>
-    </pattern>
     <symbol id="i-sprout" viewBox="0 0 24 24"><path d="M12 20v-8M12 12c0-3.5-2.5-5.5-6-5.5 0 3.5 2.5 5.5 6 5.5zM12 14c0-3 2-5 5.5-5 0 3-2 5-5.5 5z"/></symbol>
   </defs>
 </svg>
@@ -864,6 +796,8 @@ const ls = {
   del(k) { try { localStorage.removeItem(k); } catch (e) {} }
 };
 const readJson = k => { try { const v = JSON.parse(ls.get(k) || 'null'); return v && typeof v === 'object' ? v : {}; } catch (e) { return {}; } };
+// 책장 머리의 돋보기(디다코 노트의 SEARCH_IC와 같은 그림)
+const SEARCH_IC = '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><circle cx="11" cy="11" r="6.5"/><path d="M16 16l4 4"/></svg>';
 const ic = (n, c) => `<svg class="ic ${c || ''}" aria-hidden="true"><use href="#i-${n}"/></svg>`;
 const root = document.documentElement;
 const BUBBLE = '<svg viewBox="0 0 18 18" width="18" height="18" aria-hidden="true"><path fill="currentColor" d="M9 2.2c-4.1 0-7.4 2.6-7.4 5.8 0 2.1 1.4 3.9 3.5 4.9l-.8 2.9c-.1.3.2.5.4.3l3.4-2.3h.9c4.1 0 7.4-2.6 7.4-5.8S13.1 2.2 9 2.2z"/></svg>';
@@ -878,9 +812,11 @@ const MODES = ['auto', 'light', 'dark'], ACCENTS = ['green', 'amber', 'blue', 'r
 const ROLES = [['member', '회원'], ['leader', '리더'], ['pastor', '목사님'], ['admin', '관리자']];
 const STATUS = [['draft', '준비 중'], ['leader', '리더까지'], ['all', '모두']];
 const pick = (v, list, d) => (list.includes(v) ? v : d);
+// 요한복음 표지 그림(데모용 고르기): 디다코 노트 탐구하기의 그림 묶음 가운데 네 가지. 값은 그림 주소('' 는 그림 없음). 실제 고르기는 교재 관리(P-01)에서 만들 것이다
+const JCOVER_LIST = [['', '그림 없음'], ['../note/img/walk/cover-john-1.webp', '요한복음 1부 표지'], ['../note/img/walk/cover-mark-2.webp', '마가복음 2부 표지'], ['../note/img/w/weekly-01.webp', '이번 주의 질문 1주 그림']];
+const JCOVERS = JCOVER_LIST.map(x => x[0]);
 const S = { mode: 'auto', accent: 'paper', style: 'basic', big: false };
-const D = { entered: false, place: 'room', unit: 'family', role: 'member', status: 'all', lastWeek: true, before: false, alt: false, readOpen: true, readTriple: true, dimSec: 15, two: false, noBooks: false, longTitle: false, jpat: 'vine', newcomer: false };
-const JPATS = ['none', 'line', 'grid', 'wave', 'dot', 'vine', 'wheat', 'braid', 'olive'];
+const D = { entered: false, place: 'room', unit: 'family', role: 'member', status: 'all', lastWeek: true, before: false, alt: false, readOpen: true, readTriple: true, dimSec: 15, two: false, noBooks: false, longTitle: false, jcover: JCOVER_LIST[1][0], newcomer: false };
 function loadState() {
   const a = readJson(K.display), b = readJson(K.demo);
   S.mode = pick(a.mode, MODES, 'auto'); S.accent = pick(a.accent, ACCENTS, 'paper'); S.style = pick(a.style, STYLES, 'basic'); S.big = a.big === true;
@@ -888,7 +824,7 @@ function loadState() {
   D.entered = b.entered === true; D.role = pick(b.role, ROLES.map(r => r[0]), 'member'); D.status = pick(b.status, STATUS.map(r => r[0]), 'all');
   D.lastWeek = b.lastWeek !== false; D.before = b.before === true; D.alt = b.alt === true;
   D.readOpen = b.readOpen !== false; D.readTriple = b.readTriple !== false; D.dimSec = b.dimSec === 5 ? 5 : 15;
-  D.two = b.two === true; D.noBooks = b.noBooks === true; D.longTitle = b.longTitle === true; D.jpat = pick(b.jpat, JPATS, 'vine'); D.newcomer = b.newcomer === true;
+  D.two = b.two === true; D.noBooks = b.noBooks === true; D.longTitle = b.longTitle === true; D.jcover = pick(b.jcover, JCOVERS, JCOVER_LIST[1][0]); D.newcomer = b.newcomer === true;
 }
 const saveDisplay = () => ls.set(K.display, JSON.stringify({ ...readJson(K.display), mode: S.mode, accent: S.accent, style: S.style, big: S.big }));
 const saveDemo = () => ls.set(K.demo, JSON.stringify(D));
@@ -971,8 +907,8 @@ function renderSettings() {
     <p class="set-note">켜면 새가족반도 지금 읽는 책에 나란히 놓여요.</p>
     <p class="mlabel">책 없음</p>${onoff('noBooks', D.noBooks)}
     <p class="mlabel">긴 제목 예시</p>${onoff('longTitle', D.longTitle)}
-    <p class="mlabel">요한복음 표지 무늬</p>
-    <select class="field" id="jpat" aria-label="요한복음 표지 무늬"><option value="none"${D.jpat === 'none' ? ' selected' : ''}>없음</option>${PATTERN_LIST.map(([k, n]) => `<option value="${k}"${D.jpat === k ? ' selected' : ''}>${n}</option>`).join('')}</select>
+    <p class="mlabel">요한복음 표지 그림</p>
+    <select class="field" id="jcover" aria-label="요한복음 표지 그림">${JCOVER_LIST.map(([v, n]) => `<option value="${esc(v)}"${D.jcover === v ? ' selected' : ''}>${n}</option>`).join('')}</select>
     <p class="set-note">실제 앱에서는 목사님이나 교재 담당이 교재를 만들 때 고르는 방향이에요.</p>` : ''}
     ${currentView() === 'record' ? `<p class="mlabel">새가족반 기록</p>${seg('newcomer', [['0', '숨기기'], ['1', '보이기']], D.newcomer ? 1 : 0)}
     <p class="mlabel">예시 기록</p>
@@ -1556,10 +1492,8 @@ function teardown() {
 }
 
 // ══ 책장(#shelf) ══
-// 시안 shelf.html을 옮겼다. 책 자료(종류, 표지 무늬, 과 풀이, 남긴 한 문장)는 demo-data.js의 books에 있다.
-// 이 기기에 남은 책갈피(K.bookmark)와 오늘 남길 것(K.keep)을 읽어서 표지의 세 겹 책갈피 길이와 목차의 책갈피 표시를 정한다(숫자는 어디에도 적지 않는다)
-const PATTERN_LIST = [['line', '가는 줄'], ['grid', '격자'], ['wave', '물결'], ['dot', '점'], ['vine', '포도 잎과 넝쿨'], ['wheat', '밀 이삭'], ['braid', '세 겹 끈'], ['olive', '올리브 가지']];
-const PATTERNS = {}; PATTERN_LIST.forEach(([k], i) => { PATTERNS[k] = `<svg class="pat" aria-hidden="true"><rect width="100%" height="100%" fill="url(#p${i + 1})"/></svg>`; });
+// 시안 shelf.html에서 시작했고, 첫 화면은 디다코 노트 탐구하기와 같은 모양(카드와 한 줄 목록)으로 바꿨다. 책 자료(종류, 표지 그림, 과 풀이, 남긴 한 문장)는 demo-data.js의 books에 있다.
+// 이 기기에 남은 책갈피(K.bookmark)와 오늘 남길 것(K.keep)을 읽어서 카드의 세 겹 책갈피 길이와 목차의 책갈피 표시를 정한다(숫자는 어디에도 적지 않는다)
 const LONG_JOHN = '요한복음 — 예수님께 붙어 있는 삶, 열매 맺는 제자';
 const KIND_ICON = { 'GBS': 'share', '새가족반': 'sprout' };
 const kindIcon = k => ic(KIND_ICON[k] || 'shelf');
@@ -1568,13 +1502,11 @@ const weekSel = () => (D.alt ? DATA.thisWeek.alt : DATA.thisWeek.main);
 const shelfBooks = () => DATA.books.filter(b => b.slot !== 'home' && (b.slot !== 'alt' || D.alt));
 const bookById = id => shelfBooks().find(b => b.id === id);
 const bTitle = b => (b.id === 'john' && D.longTitle ? LONG_JOHN : b.title);
-const bPat = b => (b.id === 'john' ? D.jpat : b.pattern || 'none');
-const patSvg = p => (p !== 'none' && PATTERNS[p]) ? PATTERNS[p] : '';
-const patternHtml = b => { const p = bPat(b); return `<span class="cover-pat" data-pattern="${esc(p)}" aria-hidden="true">${patSvg(p)}</span>`; };
-const bandHtml = b => { const p = bPat(b); return `<span class="band" data-pattern="${esc(p)}" aria-hidden="true">${patSvg(p)}</span>`; };
-// 책갈피 끈의 길이(표지 높이의 %): 오늘 남길 것을 남긴 과가 쌓인 만큼 한 마디씩, 상한이 있다. 이번 주 책에는 지금 남긴 한 문장·작은 실천도 더한다
+// 표지 그림: 교재마다 고른 그림 주소(없으면 '' = 그림 없는 카드). 요한복음은 데모 설정(D.jcover)을 따른다
+const bCover = b => (b.id === 'john' ? D.jcover : b.cover || '');
+// 책갈피의 길이(카드 안쪽 너비의 %): 오늘 남길 것을 남긴 과가 쌓인 만큼 한 마디씩, 상한이 있다. 이번 주 책에는 지금 남긴 한 문장·작은 실천도 더한다
 const keptCount = b => b.lessons.filter(l => l.keep).length + (b.id === weekSel().book && (readJson(K.keep).sentence || readJson(K.keep).action) ? 1 : 0);
-const lenOf = b => 16 + Math.min(keptCount(b), 8) * 3;
+const lenOf = b => 20 + Math.min(keptCount(b), 8) * 10;
 // 지금 읽는 책: 이번 주 과가 있는 책(과 둘이면 둘). 교재를 번갈아 쓰면 쓰는 교재가 모두 나란히 놓이고, 이번 주 과가 있는 책에만 "이번 주"가 붙고 다른 책에는 "다음" 과가 보인다
 const nowBooks = () => shelfBooks().filter(b => b.slot === 'now').slice(0, D.two ? 2 : 1).concat(D.alt ? shelfBooks().filter(b => b.slot === 'alt') : []);
 const pastBooks = () => shelfBooks().filter(b => b.slot === 'done');
@@ -1586,41 +1518,31 @@ function capOf(b) {
 }
 // 아직 회원에게 열리지 않은 과(준비 중)는 목차에 넣지 않는다
 const tocLessons = b => b.lessons.filter(l => l.state !== 'prep');
-const titleCls = t => (t.length > 14 ? 't-l' : t.length > 8 ? 't-m' : '');
+// 지금 읽는 책 카드: 카드 전체를 누르면 책이 열린다. 위에서부터 표지 그림(있으면), 종류 · 기간, 책 이름, 이번 주(다음) 과, 맨 아래 가로 세 겹 책갈피
 function coverHtml(b) {
-  const c = capOf(b);
-  return `<div class="now-item">
-    <div class="cover-wrap" style="--len:${lenOf(b)}">
-      <div class="cover" role="button" tabindex="0" data-act="open-book" data-book="${b.id}" title="${esc(bTitle(b))}" aria-label="${esc(bTitle(b))} ${esc(b.period)} 책 열기">
-        ${patternHtml(b)}
-        <span class="cover-body">
-          <span class="cover-type">${kindIcon(b.kind)}${esc(b.kind)}</span>
-          <span><span class="cover-title ${titleCls(bTitle(b))}">${esc(bTitle(b))}</span><span class="cover-period">${esc(b.period)}</span></span>
-          <span class="cover-range">${esc(b.range)}</span>
-        </span>
-      </div>
-      <span class="ribbon" aria-hidden="true"></span>
+  const c = capOf(b), cv = bCover(b);
+  return `<div class="card xcard sh-card" role="button" tabindex="0" data-act="open-book" data-book="${b.id}" title="${esc(bTitle(b))}" aria-label="${esc(bTitle(b))} ${esc(b.period)} 책 열기">
+    <div class="sh-body">
+      ${cv ? `<img class="wk-cover" src="${esc(cv)}" alt="" width="1200" height="675" decoding="async">` : ''}
+      <div class="sh-sm sh-kind">${kindIcon(b.kind)}<span>${esc(b.kind)} · ${esc(b.period)}</span></div>
+      <div class="sf xct" style="margin-top:4px">${esc(bTitle(b))}</div>
+      ${c ? `<div class="sh-sm" style="margin-top:4px;line-height:1.5">${esc(c.lead)} ${esc(c.text)} · ${esc(c.date)}</div>` : ''}
     </div>
-    ${c ? `<p class="now-cap">${esc(c.lead)} <b>${esc(c.text)}</b><br>${esc(c.date)}</p>` : ''}
+    <span class="sh-ribbon" style="--len:${lenOf(b)}" aria-hidden="true"></span>
   </div>`;
 }
-// 책등에는 부제를 뺀 앞부분만 쓴다(" — ", " · ", ": " 앞). 전체 제목은 title·aria-label에 있다
-const spineTitle = t => t.split(/\s[—·]\s|:\s/)[0];
-const spineHtml = b => `<button class="spine" type="button" style="--h:${b.h || 156}px" data-act="open-book" data-book="${b.id}" title="${esc(bTitle(b))}" aria-label="${esc(bTitle(b))} ${esc(b.period)} 책 열기">
-    ${bandHtml(b)}<span class="sp-title">${esc(spineTitle(bTitle(b)))}</span><span class="sp-period">${esc(b.period)}</span></button>`;
+// 지난 책: 한 줄에 한 권(책 이름, 종류 · 기간)
+const pastRowHtml = b => `<button class="card xrow" type="button" data-act="open-book" data-book="${b.id}" title="${esc(bTitle(b))}" aria-label="${esc(bTitle(b))} ${esc(b.period)} 책 열기"><span><span style="display:block">${esc(bTitle(b))}</span><span class="sh-sm">${esc(b.kind)} · ${esc(b.period)}</span></span><span class="xch" aria-hidden="true">›</span></button>`;
 function browseHtml() {
   if (D.noBooks) {
     return `<section class="card empty" aria-labelledby="emT">${ic('shelf')}<h2 id="emT">아직 책장에 꽂힌 책이 없어요</h2>
       <p class="soft" style="margin:0">이번 주 과가 배포되면 이곳에 책이 놓여요.</p>
       <a class="btn" href="#week">이번 주 보기</a></section>`;
   }
-  const kinds = [...new Set(pastBooks().map(b => b.kind))];
-  return `<h2 class="sec-h">지금 읽는 책</h2>
-    <div class="now">${nowBooks().map(coverHtml).join('')}</div>
-    <h2 class="sec-h">책장</h2>
-    <section class="card" aria-label="지난 교재">
-      ${kinds.map(k => `<p class="kind-h">${kindIcon(k)}${esc(k)}</p><div class="board">${pastBooks().filter(b => b.kind === k).map(spineHtml).join('')}</div>`).join('')}
-    </section>`;
+  const now = nowBooks(), past = pastBooks();
+  return `<h2 class="xlb" style="margin-top:14px">지금 읽는 책</h2>
+    <div class="sh-stack${now.length > 1 ? ' two' : ''}">${now.map(coverHtml).join('')}</div>
+    ${past.length ? `<h2 class="xlb">지난 책</h2>${past.map(pastRowHtml).join('')}` : ''}`;
 }
 // 검색(제목·본문): 책 제목과 과 제목·장절·풀이를 훑는다. 내 기록은 훑지 않는다
 function searchHtml(q) {
@@ -1677,9 +1599,9 @@ function shelfView(arg) {
   const b = arg ? bookById(arg) : null;
   if (b) return bookPage(b);
   return `<div class="shelf-wrap">
-    <div class="page-top"><h1>책장</h1></div>
+    <div class="sh-top"><h1>책장</h1>${D.noBooks ? '' : `<button class="icon-btn" type="button" aria-label="검색" aria-expanded="false" aria-controls="shelfSearch" data-act="shelf-search">${SEARCH_IC}</button>`}</div>
     <p class="eyebrow" style="margin-top:0">${esc(groupName())}</p>
-    ${D.noBooks ? '' : `<div class="search">${ic('search')}<input class="field" id="shelfQ" type="search" placeholder="제목이나 본문으로 찾기" aria-label="책장 검색" autocomplete="off"></div><div id="shelfResults" hidden></div>`}
+    ${D.noBooks ? '' : `<div class="search" id="shelfSearch" hidden>${ic('search')}<input class="field" id="shelfQ" type="search" placeholder="제목이나 본문으로 찾기" aria-label="책장 검색" autocomplete="off"></div><div id="shelfResults" hidden></div>`}
     <div id="shelfBrowse">${browseHtml()}</div>
   </div>`;
 }
@@ -1918,6 +1840,13 @@ const acts = {
   'read-go'(e, el) { readResume = el.dataset.resume === '1'; readFrom = el.dataset.from || ''; if (readFrom && atHome()) { D.place = 'room'; saveDemo(); } if (location.hash === '#read') route(true); else location.hash = '#read'; },
   // 책장
   'open-book'(e, el) { shelfLesson = el.dataset.lesson || ''; location.hash = '#book-' + el.dataset.book; },
+  // 머리의 돋보기: 검색 칸을 열고 바로 입력하게 한다. 칸이 비어 있을 때 다시 누르면 접는다
+  'shelf-search'(e, el) {
+    const box = $('#shelfSearch'), q = $('#shelfQ'); if (!box || !q) return;
+    if (box.hidden) { box.hidden = false; el.setAttribute('aria-expanded', 'true'); q.focus(); }
+    else if (!q.value.trim()) { q.value = ''; box.hidden = true; el.setAttribute('aria-expanded', 'false'); }
+    else q.focus();
+  },
   'lesson-other'() { toast('데모에서는 이번 주 과만 펼칠 수 있어요'); },
   // 나의 기록
   'rec-tab'(e, el) { rec.view = el.dataset.v; recRedraw(); },
@@ -2043,11 +1972,13 @@ document.addEventListener('keydown', e => {
   if ((e.key === 'Enter' || e.key === ' ') && e.target.classList && e.target.classList.contains('wo')) {
     e.preventDefault(); if (e.target.closest('#opening')) hideOpening(); else if (R.on) go(1); return;
   }
-  // 책장의 표지(button이 아닌 칸)를 키보드로 열기
-  if ((e.key === 'Enter' || e.key === ' ') && e.target.classList && e.target.classList.contains('cover')) { e.preventDefault(); e.target.click(); return; }
+  // 책장의 카드(button이 아닌 칸)를 키보드로 열기
+  if ((e.key === 'Enter' || e.key === ' ') && e.target.classList && e.target.classList.contains('sh-card')) { e.preventDefault(); e.target.click(); return; }
   if (e.key !== 'Escape') return;
   if (!$('#pop').hidden) closeSheet(); else if (!$('#opening').hidden) hideOpening(); else closeMenu();
 });
+// 책장 카드의 표지 그림을 못 불러오면 그 자리를 숨긴다(카드는 그대로)
+document.addEventListener('error', e => { if (e.target && e.target.classList && e.target.classList.contains('wk-cover')) e.target.hidden = true; }, true);
 // 한 줄 돌아보기: 쓰는 대로 기기에 남기고, 칸을 벗어날 때 "저장했어요"를 잠깐 보인다(실패하면 그때만 알린다)
 document.addEventListener('input', e => {
   const t = e.target;
@@ -2067,7 +1998,7 @@ window.addEventListener('pagehide', () => { flushAll(); if (keepT) saveKeepRead(
 // 남기고 다음: 눌러서 넘어가기 전에 나눔하기의 오늘 남길 것을 저장
 document.addEventListener('click', e => { const el = e.target.closest('[data-act="next"]'); if (el && R.on && cur().t === 'keep') saveKeepShare(); }, true);
 document.addEventListener('change', e => {
-  if (e.target.id === 'jpat') { D.jpat = pick(e.target.value, JPATS, 'vine'); saveDemo(); rerender(); return; }
+  if (e.target.id === 'jcover') { D.jcover = pick(e.target.value, JCOVERS, JCOVER_LIST[1][0]); saveDemo(); rerender(); return; }
   if (e.target.id === 'lwInput') toast(ls.set(K.reflect, e.target.value) ? '저장했어요' : '저장하지 못했어요 · 다시 시도');
 });
 // 돌아보기: 시간이 지난 뒤 남기는 생각. 쌓아 두고 날짜를 붙인다(오늘은 데모의 오늘)
