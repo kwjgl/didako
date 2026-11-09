@@ -948,6 +948,9 @@ body.fs .xw-top { padding-right: 52px; }   /* 시안 보기 설정(톱니)이 �
 :root[data-vt="vt-in-r"]::view-transition-new(main), :root[data-vt="vt-in-l"]::view-transition-new(main) { animation-duration: .25s; }
 @keyframes vt-old-out { to { opacity: 0; transform: translateX(var(--vt-out, 0px)); } }
 @keyframes vt-new-in { from { opacity: 0; transform: translateX(var(--vt-in, 0px)); } }
+/* 클래식(S-81): 광택 버튼은 진한 버튼만. 바탕이 옅은 버튼(ol·lt·alt)은 종이 버튼으로 두고 제 글자색을 지킨다 */
+:root[data-style="skeu"] .btn:not(.ghost):is(.ol, .lt, .alt) { background-image: linear-gradient(180deg, rgba(255,255,255,.3), rgba(255,255,255,0) 60%, rgba(0,0,0,.06)); background-color: var(--surface); border: 1px solid color-mix(in srgb, var(--line-strong) 85%, #000 10%); box-shadow: inset 0 1px 0 rgba(255,255,255,.7), 0 1px 2px rgba(0,0,0,.15); text-shadow: none; }
+:root[data-style="skeu"] .btn:not(.ghost).lt { background-color: var(--accent-soft); }
 </style>
 <link rel="stylesheet" href="design-styles.css">
 <!-- 시작 화면이 뜨기 전에는 바탕을 단색으로(바탕 무늬가 잠깐 비치지 않게). splash.js가 닫을 때 푼다(S-34) -->
@@ -3607,7 +3610,7 @@ function viewOf(key) {
 }
 function go(h) { routeKey() === h ? render(true) : setHash(h); }
 const routeKey = () => location.hash.replace(/^#\/?/, '').replace(/\/$/, '');
-function setHash(h, replace) { replace ? location.replace('#/' + h) : (location.hash = '#/' + h); }
+function setHash(h, replace) { tapNav = performance.now(); replace ? location.replace('#/' + h) : (location.hash = '#/' + h); }
 function guard(key) {
   const pm = /^today\/past\/(\d{4}-\d{2})$/.exec(key);
   if (me && pm && parseYm(pm[1]) && pm[1] > ymOf(demoDN())) return 'today/past';   // 앞달은 열리지 않으니 이번 달 목록으로
@@ -3624,6 +3627,7 @@ function guard(key) {
 }
 const VT_CLASSES = ['vt-in-r', 'vt-in-l', 'vt-fade', 'vt-push', 'vt-pop'];
 let vtNow = false;   // 겹쳐 넘기는 중(S-73): 안쪽에서 다시 부른 render는 겹쳐 넘기기와 CSS 움직임을 하지 않는다
+let tapNav = 0;   // 앱 안에서 눌러 화면을 옮긴 때(S-81). 이 표시 없이 주소가 바뀌면 뒤로 스와이프·브라우저 뒤로 가기로 보고 겹쳐 넘기지 않는다(아이폰이 직접 넘기는 움직임과 겹치지 않게)
 function vtAnim(el, cls) {
   el.classList.remove(...VT_CLASSES); void el.offsetWidth; el.classList.add(cls);
   el.addEventListener('animationend', () => el.classList.remove(cls), { once: true });
@@ -3643,7 +3647,7 @@ function keepImgs(box, html) {
     im.replaceWith(o);
   });
 }
-function render(fromHash) {
+function render(fromHash, still) {
   const drawStart = performance.now();
   const raw = routeKey(), key = guard(raw);
   if (key !== raw) { setHash(key, true); return; }
@@ -3655,7 +3659,7 @@ function render(fromHash) {
   const tabs = ['today', 'explore', 'write', 'mine', 'more'];
   const from = tabs.indexOf(MENU_OF(lastKey)), to = tabs.indexOf(MENU_OF(key));
   let motion = '';
-  if (fromHash && lastKey && key !== lastKey && !key.startsWith('start') && !lastKey.startsWith('start') &&
+  if (!still && fromHash && lastKey && key !== lastKey && !key.startsWith('start') && !lastKey.startsWith('start') &&
       !(isWide() && wall(key) && wall(lastKey)) && !freeNow && !F.id &&
       !(oldFree && getEx(oldFree[1])?.mode === 'free') && !matchMedia('(prefers-reduced-motion: reduce)').matches && from >= 0 && to >= 0) {
     const depth = k => k.split('/').length;   // 같은 탭 안에서는 주소 마디 수로 들어가는지 나오는지 본다(S-72)
@@ -3665,7 +3669,7 @@ function render(fromHash) {
   if (motion && !vtNow && typeof document.startViewTransition === 'function') {
     vtNow = true; root.dataset.vt = motion;
     let t = null;
-    try { t = document.startViewTransition(() => { try { render(fromHash); } finally { vtNow = false; } }); }
+    try { t = document.startViewTransition(() => { try { render(fromHash, still); } finally { vtNow = false; } }); }
     catch (err) { vtNow = false; delete root.dataset.vt; }
     if (t) { t.finished.finally(() => { delete root.dataset.vt; }); return; }
   }
@@ -4026,6 +4030,8 @@ function resetAll() {
   ob.kakao = ob.church = false; ob.name = ''; dispOpen = false; fb.text = ''; fb.named = false; fb.kind = '이랬으면';
   closeSheet(true); closeMenus(); setHash('start', true); render(true);
 }
+// 앱 안의 화면 링크를 누르면 표시해 둔다(S-81)
+document.addEventListener('click', e => { if (e.target.closest('a[href^="#/"]')) tapNav = performance.now(); }, true);
 document.addEventListener('click', e => {
   // 바깥을 누르면 열려 있는 작은 메뉴를 닫는다
   if (!e.target.closest('.menu, #placeBtn, #setBtn, #gearBtn')) closeMenus(true);
@@ -4111,7 +4117,7 @@ window.addEventListener('scroll', () => {
     lastY = y; tabTick = false;
   });
 }, { passive: true });
-window.addEventListener('hashchange', () => { render(true); if ($('#main') && document.activeElement === document.body) $('#main').focus({ preventScroll: true }); });
+window.addEventListener('hashchange', () => { const byTap = performance.now() - tapNav < 1500; tapNav = 0; render(true, !byTap); if ($('#main') && document.activeElement === document.body) $('#main').focus({ preventScroll: true }); });   // 기록으로 옮기면(뒤로 스와이프) 움직임 없이 그린다(S-81)
 // 화면 폭이 1000px을 넘나들면 배치(상단 바 ↔ 하단 탭, 지난 질문 목록)가 달라져서 다시 그린다
 window.matchMedia('(min-width: 1000px)').addEventListener('change', () => { render(false); });
 
