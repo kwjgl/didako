@@ -648,9 +648,11 @@ mark { background: var(--accent-soft); color: inherit; border-radius: 4px; paddi
 .xsg .xcf p { margin: 0; font-size: .90625rem; line-height: 1.65; word-break: keep-all; }
 .xsg .tx.cl { display: block; margin: 6px 0 -6px auto; }
 .xvl { margin-top: 12px; padding: 4px 16px; }
-.xvl > div { display: flex; align-items: center; min-height: 56px; border-top: 1px solid var(--line); font: 700 1.0625rem var(--f-display); }
+.xvl > div:not(.wk-bible) { display: flex; align-items: center; min-height: 56px; border-top: 1px solid var(--line); font: 700 1.0625rem var(--f-display); }
 .xvl > div:first-child { border-top: 0; }
 /* 질문을 따라 걷기(S-38): 본문 노트는 접어 두고, 풀이 글은 줄 간격을 넉넉히, 머묾은 왼쪽 줄로 구분한다. 아직 안 열린 토막은 흐리게 */
+.wk-bible { margin-top: 8px; }
+.wk-bible .sm + .sm { margin-top: 4px; }
 .wk-notes { margin-top: 12px; }
 .wk-nt { min-height: 44px; padding: 0; font-weight: 700; color: var(--accent-deep); }
 .wk-notes ul { list-style: none; margin: 4px 0 0; padding: 0; }
@@ -1384,7 +1386,7 @@ function viewConsent() {
 const KEEP_ROWS = `<div class="kv"><b>무엇을</b><span>내가 남긴 질문과 발견, 탐구 노트. 카카오 회원번호</span></div>
   <div class="kv"><b>어디에</b><span>교회가 관리하는 비공개 구글 시트. 휴대폰에서 잠근 덩어리로만 보내요</span></div>
   <div class="kv"><b>누가 보나</b><span>나만 봐요. 잠가서 보내기 때문에 교회와 운영자도 읽을 수 없어요</span></div>
-  <div class="kv"><b>얼마나</b><span>교회를 떠나면 1년 뒤 내용을 지우고 개수만 남겨요. 남은 개수는 운영 통계에만 쓰고 누구에게도 보여 주지 않아요. 언제든 내 기록을 지워 달라고 할 수 있어요.</span></div>
+  <div class="kv"><b>얼마나</b><span>교회를 떠나면 바로 지워요. 남겨 두고 싶으면 떠나기 전에 더보기의 '내 기록 내려받기'로 저장해 두세요. 언제든 내 기록을 지워 달라고 할 수 있어요.</span></div>
   <div class="kv"><b>사용 기록</b><span>앱을 좋게 만들기 위해 이름 없는 사용 기록을 남겨요. '탐구하기를 열었다'처럼 누른 것과 숫자만이고, 이름과 질문·발견은 넣지 않아요.</span></div>`;
 
 // ── 오늘의 질문(M1, M10, T8) ──
@@ -1849,6 +1851,37 @@ const BOOKS = [['창세기', '창'], ['출애굽기', '출'], ['레위기', '레
   ['마태복음', '마'], ['마가복음', '막'], ['누가복음', '눅'], ['요한복음', '요'], ['사도행전', '행'], ['로마서', '롬'], ['고린도전서', '고전'], ['고린도후서', '고후'], ['갈라디아서', '갈'], ['에베소서', '엡'], ['빌립보서', '빌'], ['골로새서', '골'], ['데살로니가전서', '살전'], ['데살로니가후서', '살후'], ['디모데전서', '딤전'], ['디모데후서', '딤후'], ['디도서', '딛'], ['빌레몬서', '몬'], ['히브리서', '히'], ['야고보서', '약'], ['베드로전서', '벧전'], ['베드로후서', '벧후'], ['요한일서', '요일'], ['요한이서', '요이'], ['요한삼서', '요삼'], ['유다서', '유'], ['요한계시록', '계']];
 const BOOK_BY = new Map();
 BOOKS.forEach(([n, a]) => { BOOK_BY.set(n, n); BOOK_BY.set(a, n); });
+
+// 성경 펴기(S-80): 장절로 대한성서공회 성경 읽기(개역개정) 주소를 만든다. 본문은 가져오지 않고 길만 연다(철학 ⑥)
+const BIBLE_CODES = 'gen exo lev num deu jos jdg rut 1sa 2sa 1ki 2ki 1ch 2ch ezr neh est job psa pro ecc sng isa jer lam ezk dan hos jol amo oba jnh mic nam hab zep hag zec mal mat mrk luk jhn act rom 1co 2co gal eph php col 1th 2th 1ti 2ti tit phm heb jas 1pe 2pe 1jn 2jn 3jn jud rev'.split(' ');
+const BIBLE_BOOKS = BOOKS.map(([name], i) => ({ name, code: BIBLE_CODES[i] })).sort((a, b) => b.name.length - a.name.length);
+function bibleUrl(ref) {
+  if (typeof ref !== 'string') return '';
+  const text = ref.trim(), book = BIBLE_BOOKS.find(b => text.startsWith(b.name));
+  if (!book) return '';
+  // "34~36장"처럼 장 범위만 있으면 첫 장 1절로 연다(뒤에 붙은 절은 끝 장의 것이라 쓰지 않는다)
+  const m = /^\s*(\d+)\s*(?:([~–-])\s*\d+\s*)?(?:장|편)(?:\s*(\d+))?/.exec(text.slice(book.name.length));
+  const sec = m && !m[2] && m[3] ? +m[3] : 1;
+  if (!m || +m[1] < 1 || sec < 1) return '';
+  return `https://www.bskorea.or.kr/bible/korbibReadpage.php?version=GAE&book=${book.code}&chap=${+m[1]}&sec=${sec}`;
+}
+function bibleLinkHtml(ref) {
+  const url = bibleUrl(ref); if (!url) return '';
+  const online = navigator.onLine;
+  return `<div class="wk-bible">
+    <a class="tx" data-online${online ? '' : ' hidden'} href="${esc(url)}" target="_blank" rel="noopener">성경 펴기 ›</a>
+    <div class="sm" data-online${online ? '' : ' hidden'}>대한성서공회 개역개정으로 열려요</div>
+    <div class="sm" data-offline${online ? ' hidden' : ''}>인터넷에 연결되면 여기서 성경을 바로 펼 수 있어요. 지금은 가지고 계신 성경을 펴 주세요.</div>
+  </div>`;
+}
+// 연결 상태가 바뀌어도 쓰던 묵상 칸은 다시 그리지 않고 안내의 보임만 바꾼다.
+function updateBibleLinks() {
+  document.querySelectorAll('.wk-bible [data-online]').forEach(el => { el.hidden = !navigator.onLine; });
+  document.querySelectorAll('.wk-bible [data-offline]').forEach(el => { el.hidden = navigator.onLine; });
+}
+window.addEventListener('online', updateBibleLinks);
+window.addEventListener('offline', updateBibleLinks);
+
 const BOOK_ALT = [...BOOK_BY.keys()].sort((a, b) => b.length - a.length).join('|');
 const RE_REF = new RegExp(`^\\s*(${BOOK_ALT})\\s*(\\d{1,3})\\s*(?:(?:장|편)\\s*(?:(\\d{1,3})\\s*절?(?:\\s*[-~–]\\s*(\\d{1,3})\\s*절?)?)?|[:.]\\s*(\\d{1,3})(?:\\s*[-~–]\\s*(\\d{1,3}))?)?\\s*$`);
 // 문장 안에서 찾을 때는 오해가 없게 "장·편·콜론"이 꼭 있어야 하고, 앞이 글자이면 건너뛴다
@@ -2321,7 +2354,7 @@ function viewWalkEp(w, ep) {
   const names = ['본문 읽기', '보기', '묵상', '나의 해석', '풀이', '머묾'];
   const sums = [ep.ref, oneLine(ep.look), mine ? oneLine(mine) : '건너뛰었어요', mine2 ? oneLine(mine2) : '건너뛰었어요', oneLine(ep.p[0]), oneLine(ep.stay)];
   const open = [
-    `<div class="xcur"><div class="xnm s" id="xHead" tabindex="-1">본문 읽기</div><div class="card xvl"><div>${esc(ep.ref)}</div></div></div>`,
+    `<div class="xcur"><div class="xnm s" id="xHead" tabindex="-1">본문 읽기</div><div class="card xvl"><div>${esc(ep.ref)}</div>${bibleLinkHtml(ep.ref)}</div></div>`,
     `<div class="xcur"><div class="xnm s" id="xHead" tabindex="-1">보기</div><div class="xgq">${esc(ep.look)}</div></div>`,
     `<div class="xcur"><div class="xnm s" id="xHead" tabindex="-1">묵상</div><div class="xgq">${esc(ep.ask)}</div><textarea class="field xta" id="waTa" rows="4" placeholder="떠오르는 대로 적어 보세요. 적지 않아도 돼요." aria-label="묵상">${esc(mine)}</textarea></div>`,
     `<div class="xcur"><div class="xnm s" id="xHead" tabindex="-1">나의 해석</div><div class="xgq">이 본문이 무엇을 말하는지 내 말로 풀어 보세요.</div><textarea class="field xta" id="wbTa" rows="4" placeholder="떠오르는 대로 적어 보세요. 적지 않아도 돼요." aria-label="나의 해석">${esc(mine2)}</textarea></div>`,
@@ -2356,7 +2389,7 @@ function viewWalkRead(w, ep) {
   const head = `<div class="card xhead"><div class="xlb" style="margin:0 0 6px">${esc(walkName(w))} ${ep.n}편</div><div class="sf xwq">${esc(ep.title)}</div></div>`
     + (ep.img ? `<img class="q-img" src="${esc(ep.img)}" alt="${esc(ep.art || '')}" width="1200" height="675" decoding="async" style="margin-top:12px">` : '');
   const notes = ep.notes && ep.notes.length ? `<div class="wk-notes"><button class="tx wk-nt" type="button" data-act="walk-notes" aria-haspopup="dialog">원어 해설 보기</button></div>` : '';
-  const body = head + notes + `<div class="xlb">본문 읽기</div><div class="card xvl"><div>${esc(ep.ref)}</div></div>
+  const body = head + notes + `<div class="xlb">본문 읽기</div><div class="card xvl"><div>${esc(ep.ref)}</div>${bibleLinkHtml(ep.ref)}</div>
     <div class="xlb">보기</div><div class="xgq">${esc(ep.look)}</div>
     <div class="xlb">풀이</div>${ep.p.map(t => `<p class="wk-p">${esc(t)}</p>`).join('')}`
     + walkStayHtml(w, ep)
