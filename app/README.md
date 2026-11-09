@@ -12,12 +12,12 @@
 - 질문 자료는 `demo-data.js`의 `guides`에 있어요. 지금은 요한복음 제3과만 있어서, 교재 번갈아 쓰기 예시(창세기)나 배포 전일 때는 펼치기·나눔하기가 안내 한 장을 보여요.
 - `design-styles.css`: 코이데(pray-for)의 디자인 스타일(basic·new·classic·glass)을 옮긴 것.
 - `demo-data.js`: 시안 README "시안 공통 예시"(교재, 과, 장절, 날짜, 명단)와 책장·나의 기록 예시(책 종류·표지 무늬·남긴 한 문장, 지난 기록)를 한 곳에 둔 데모 자료. 다음 화면들도 이걸 같이 써요.
-- `manifest.webmanifest`, `icons/`: 홈 화면 앱용. 아이콘은 위쪽 바 로고(세 겹 책갈피)를 테마색 동그라미에 넣은 것이에요(원본 `icons/icon.svg`).
+- `manifest.webmanifest`, `icons/`: 홈 화면 앱용. 아이콘은 디다코 노트와 같은 종이(고동색) 세 겹 책갈피예요(원본 `icons/icon.svg`).
 - `sw.js`: 앱 파일을 기기에 남겨 두는 도우미. 코이데처럼 늘 인터넷의 새 파일을 먼저 받고, 인터넷이 끊겼을 때만 남겨 둔 사본으로 열어요. `CACHE` 번호는 `app/`을 바꿀 때마다 올려요(AGENTS.md).
 
 ## 기기에 남는 것 (localStorage)
 
-- `didako-display`: 화면 설정 한 자리(화면 모드, 색 테마, 디자인, 큰 글씨)
+- `didako-note-display`: 화면 설정 한 자리(화면 모드, 색 테마, 디자인, 큰 글씨). 디다코 노트와 같은 자리라 한쪽에서 바꾸면 둘 다 바뀌어요. 기본 색 테마는 종이예요.
 - `didako-demo`: 데모 설정(들어왔는지, 역할, 보기 설정)
 - `didako-reflect`, `didako-keep`: 데모에서 쓴 글(한 줄 돌아보기, 오늘 남길 것. 펼치기 끝과 나눔하기가 같은 자리를 써요)
 - `didako-read-answers`, `didako-read-bookmark`: 펼치기에서 쓴 내 생각(질문 ID별), 책갈피
