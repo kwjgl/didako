@@ -4,8 +4,8 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover">
 <title>디다코 노트</title>
-<meta name="theme-color" content="#2F5D95">
-<!-- 홈 화면 앱(PWA): 노트 아이콘은 파랑 세 겹 책갈피(icons/icon.svg) -->
+<meta name="theme-color" content="#6B4A2E">
+<!-- 홈 화면 앱(PWA): 노트 아이콘은 종이(고동색) 세 겹 책갈피(icons/icon.svg) -->
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" type="image/png" sizes="32x32" href="icons/favicon-32.png">
 <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
@@ -22,7 +22,7 @@
 try {
   const d = JSON.parse(localStorage.getItem('didako-note-display') || '{}'), r = document.documentElement;
   if (d.mode === 'light' || d.mode === 'dark') r.setAttribute('data-mode', d.mode);
-  if (d.accent !== 'green') r.setAttribute('data-accent', ['amber', 'blue', 'rose', 'ink', 'paper'].includes(d.accent) ? d.accent : 'blue');   // 기본은 파랑(S-64). 초록은 속성 없이 :root 값
+  if (d.accent !== 'green') r.setAttribute('data-accent', ['amber', 'blue', 'rose', 'ink', 'paper'].includes(d.accent) ? d.accent : 'paper');   // 기본은 종이(S-83). 초록은 속성 없이 :root 값
   if (['neu', 'skeu', 'glass'].includes(d.style)) r.setAttribute('data-style', d.style);
   if (d.big === true) r.setAttribute('data-big', '');
 } catch (e) {}
@@ -651,8 +651,9 @@ mark { background: var(--accent-soft); color: inherit; border-radius: 4px; paddi
 .xvl > div:not(.wk-bible) { display: flex; align-items: center; min-height: 56px; border-top: 1px solid var(--line); font: 700 1.0625rem var(--f-display); }
 .xvl > div:first-child { border-top: 0; }
 /* 질문을 따라 걷기(S-38): 본문 노트는 접어 두고, 풀이 글은 줄 간격을 넉넉히, 머묾은 왼쪽 줄로 구분한다. 아직 안 열린 토막은 흐리게 */
-.wk-bible { margin-top: 8px; }
-.wk-bible .sm + .sm { margin-top: 4px; }
+.wk-bible { margin-top: -8px; }   /* 장절 줄(56px)과 링크(44px)의 빈자리가 겹쳐 떠 보여서 당긴다(S-82) */
+.wk-bible .tx { margin-left: -6px; }   /* 링크 글자를 장절 글자와 같은 자리에서 시작한다. 누르는 크기(44px)는 그대로 */
+.wk-bible [data-offline] { margin: 8px 0 12px; }
 .wk-notes { margin-top: 12px; }
 .wk-nt { min-height: 44px; padding: 0; font-weight: 700; color: var(--accent-deep); }
 .wk-notes ul { list-style: none; margin: 4px 0 0; padding: 0; }
@@ -1045,11 +1046,11 @@ const pick = (v, list, d) => (list.includes(v) ? v : d);
 
 // ── 화면 설정(화면 모드·색 테마·디자인·큰 글씨): GBS 앱과 같은 값, 기억 자리만 따로 ──
 const MODES = ['auto', 'light', 'dark'], ACCENTS = ['green', 'amber', 'blue', 'rose', 'ink', 'paper'], STYLES = ['basic', 'neu', 'skeu', 'glass'];
-const S = { mode: 'auto', accent: 'blue', style: 'basic', big: false };
+const S = { mode: 'auto', accent: 'paper', style: 'basic', big: false };
 const root = document.documentElement;
 (function loadDisplay() {
   const a = readJson(K.display);
-  S.mode = pick(a.mode, MODES, 'auto'); S.accent = pick(a.accent, ACCENTS, 'blue'); S.style = pick(a.style, STYLES, 'basic'); S.big = a.big === true;
+  S.mode = pick(a.mode, MODES, 'auto'); S.accent = pick(a.accent, ACCENTS, 'paper'); S.style = pick(a.style, STYLES, 'basic'); S.big = a.big === true;
 })();
 function applySettings() {
   S.mode === 'auto' ? root.removeAttribute('data-mode') : root.setAttribute('data-mode', S.mode);
@@ -1505,7 +1506,7 @@ function viewTodayQ(season, item) {
 let dispOpen = false;
 const RADIO = (key, opts) => opts.map(([v, l]) => `<button type="button" role="radio" aria-checked="false" data-set="${key}:${v}">${l}</button>`).join('');
 const MODE_OPTS = [['auto', '기기 설정'], ['light', '밝게'], ['dark', '어둡게']];
-const SWATCHES = [['green', '#2B6A62', '초록'], ['amber', '#A9561B', '주황'], ['blue', '#2F5D95', '파랑(기본)'], ['rose', '#A8435C', '장미'], ['ink', '#33332F', '먹색'], ['paper', '#6B4A2E', '종이']];
+const SWATCHES = [['green', '#2B6A62', '초록'], ['amber', '#A9561B', '주황'], ['blue', '#2F5D95', '파랑'], ['rose', '#A8435C', '장미'], ['ink', '#33332F', '먹색'], ['paper', '#6B4A2E', '종이(기본)']];
 const STYLE_OPTS = [['basic', 'basic'], ['neu', 'new'], ['skeu', 'classic'], ['glass', 'glass']];
 function displayEx(id = 'dispEx') {
   return `<div class="ex" id="${id}">
@@ -1873,7 +1874,6 @@ function bibleLinkHtml(ref) {
   const online = navigator.onLine;
   return `<div class="wk-bible">
     <a class="tx" data-online${online ? '' : ' hidden'} href="${esc(url)}" target="_blank" rel="noopener">성경 펴기 ›</a>
-    <div class="sm" data-online${online ? '' : ' hidden'}>대한성서공회 개역개정으로 열려요</div>
     <div class="sm" data-offline${online ? ' hidden' : ''}>인터넷에 연결되면 여기서 성경을 바로 펼 수 있어요. 지금은 가지고 계신 성경을 펴 주세요.</div>
   </div>`;
 }

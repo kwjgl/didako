@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover">
 <title>말씀 지도</title>
-<meta name="theme-color" content="#2F5D95">
+<meta name="theme-color" content="#6B4A2E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Gowun+Batang:wght@400;700&family=IBM+Plex+Sans+KR:wght@400;500;600;700&display=swap">
@@ -13,7 +13,7 @@
 // 노트의 화면 설정을 그림이 그려지기 전에 읽어 입힌다. 읽을 수 없으면 기기 설정을 따른다
 try {
   const d = JSON.parse(localStorage.getItem('didako-note-display') || '{}'), r = document.documentElement;
-  if (d.accent !== 'green') r.setAttribute('data-accent', ['amber', 'blue', 'rose', 'ink', 'paper'].includes(d.accent) ? d.accent : 'blue');   // 기본은 파랑(S-64). 초록은 속성 없이 :root 값
+  if (d.accent !== 'green') r.setAttribute('data-accent', ['amber', 'blue', 'rose', 'ink', 'paper'].includes(d.accent) ? d.accent : 'paper');   // 기본은 종이(S-83). 초록은 속성 없이 :root 값
   if (d.mode === 'light' || d.mode === 'dark') r.setAttribute('data-mode', d.mode);
   if (['neu', 'skeu', 'glass'].includes(d.style)) r.setAttribute('data-style', d.style);
   if (d.big === true) r.setAttribute('data-big', '');
