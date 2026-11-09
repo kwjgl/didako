@@ -104,6 +104,10 @@ button, a, label, summary, select, input, [role="button"], [data-act], .brand { 
 .icon-btn[aria-expanded="true"] { background: var(--surface-2); }
 .menu { position: absolute; top: calc(100% + 6px); right: max(16px, env(safe-area-inset-right, 0px)); width: min(300px, calc(100vw - 32px)); background: var(--surface); border: 1px solid var(--line); border-radius: 16px; box-shadow: 0 16px 40px -12px var(--shadow); padding: .5em; display: flex; flex-direction: column; gap: .1em; z-index: 25; }
 .mlabel { font-size: .72em; font-weight: 600; color: var(--ink-2); margin: .6em .7em .3em; }
+#placeMenu .mlabel { font-size: .75rem; margin: 6px; }
+.place-row { display: flex; align-items: center; justify-content: space-between; width: 100%; gap: 8px; min-height: 44px; padding: 10px 6px; border: 0; border-radius: 10px; background: none; color: var(--ink); font: 500 .875rem var(--f-body); text-align: left; text-decoration: none; cursor: pointer; }
+.place-row .role-tag { margin-left: 6px; }
+.place-row:hover, .place-row:focus-visible { background: var(--surface-2); }
 .mitem { display: flex; justify-content: space-between; align-items: center; gap: .6em; width: 100%; text-align: left; font-size: .9em; color: var(--ink); background: none; border: 0; border-radius: 10px; padding: .55em .7em; min-height: 44px; cursor: pointer; text-decoration: none; }
 .mitem:hover { background: var(--surface-2); }
 .mitem.static { cursor: default; flex-direction: column; align-items: flex-start; gap: .1em; }
@@ -296,7 +300,7 @@ a:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
 .soft { color: var(--ink-2); }
 .demo-tag { font: inherit; font-size: .72em; font-weight: 600; color: var(--warn); background: var(--warn-soft); border: 0; border-radius: 999px; padding: 0 .9em; min-height: 36px; display: inline-flex; align-items: center; white-space: nowrap; cursor: pointer; }
 .demo-tag.static { min-height: 0; padding: .15em .7em; cursor: default; }
-span.badge-btn { cursor: default; }
+button.badge-btn { appearance: none; font-family: inherit; line-height: inherit; }
 .menu .set-btns { display: flex; gap: 6px; margin: 0 .3em .3em; }
 .menu .set-btns .btn { flex: 1; }
 .pop-sheet.card { margin: 0; }
@@ -805,7 +809,12 @@ body.sharing { overflow: hidden; }
     </nav>
     <span class="spacer"></span>
     <button class="demo-tag" type="button" data-act="demo-info" aria-label="데모예요. 눌러서 안내 보기">데모</button>
-    <span class="badge-btn" id="badge"></span>
+    <button class="badge-btn" id="badge" type="button" data-act="place-menu" aria-haspopup="true" aria-expanded="false"></button>
+    <div class="menu" id="placeMenu" hidden>
+      <p class="mlabel">함께하는 곳</p>
+      <button class="place-row" type="button" data-act="place-current" aria-current="true"><span id="placeCur"></span><span aria-hidden="true">✓</span></button>
+      <a class="place-row" href="../note/"><span>나의 디다코 노트<span class="role-tag">나</span></span></a>
+    </div>
     <button class="icon-btn" type="button" id="gearBtn" data-act="gear" aria-expanded="false" aria-label="설정"><svg class="ic" aria-hidden="true"><use href="#i-gear"/></svg></button>
     <div class="menu" id="settings" hidden></div>
   </div>
@@ -897,7 +906,7 @@ const isTop = () => D.role === 'pastor' || D.role === 'admin';
 const groupName = () => (isTop() ? DATA.church.dept : DATA.church.room);
 const roleName = () => ROLES.find(x => x[0] === D.role)[1];
 function paintBadge() {
-  $('#badge').innerHTML = `${esc(groupName())} <span class="role-tag${D.role === 'leader' ? ' leader' : isTop() ? ' admin' : ''}">${roleName()}</span>`;
+  $('#placeCur').innerHTML = $('#badge').innerHTML = `${esc(groupName())} <span class="role-tag${D.role === 'leader' ? ' leader' : isTop() ? ' admin' : ''}">${roleName()}</span>`;
 }
 
 // ── 알림과 아래에서 올라오는 창 ──
@@ -960,7 +969,8 @@ function renderSettings() {
     <div class="mdiv"></div>
     <div class="set-btns"><button type="button" class="btn ghost small" data-act="demo-reset-ask">데모 처음으로</button></div>`;
 }
-function closeMenu() { const m = $('#settings'); m.hidden = true; $('#gearBtn').setAttribute('aria-expanded', 'false'); }
+function closePlaceMenu() { $('#placeMenu').hidden = true; $('#badge').setAttribute('aria-expanded', 'false'); }
+function closeMenu() { const m = $('#settings'); m.hidden = true; $('#gearBtn').setAttribute('aria-expanded', 'false'); closePlaceMenu(); }
 
 // ── 화면 이름표 ──
 // 이름표와 어느 탭이 켜지는지는 여기에 모아 둔다. 아직 만들지 않은 화면은 차분한 안내 한 장으로 연다(막다른 길이 없게 이번 주로 가는 링크를 둔다)
@@ -1850,7 +1860,13 @@ function rerender() {
 // ── 눌림 처리 ──
 const acts = {
   home() { location.hash = '#week'; },
-  gear(e, el) { const m = $('#settings'); m.hidden = !m.hidden; el.setAttribute('aria-expanded', String(!m.hidden)); if (!m.hidden) renderSettings(); },
+  gear(e, el) { closePlaceMenu(); const m = $('#settings'); m.hidden = !m.hidden; el.setAttribute('aria-expanded', String(!m.hidden)); if (!m.hidden) renderSettings(); },
+  'place-menu'() {
+    if ($('#badge').hidden) return;
+    const open = $('#placeMenu').hidden; closeMenu();
+    $('#placeMenu').hidden = !open; $('#badge').setAttribute('aria-expanded', String(open));
+  },
+  'place-current'() { closePlaceMenu(); },
   'demo-enter'() { D.entered = true; saveDemo(); location.hash = '#week'; },
   'demo-info'() {
     openSheet(`<h2 id="popT">데모로 열었어요</h2>
@@ -1974,6 +1990,7 @@ const acts = {
   'jump-to'(e, el) { const p = +el.dataset.p; closeSheet(); R.pos = p; renderStep(); }
 };
 document.addEventListener('click', e => {
+  if (!e.target.closest('#placeMenu, #badge')) closePlaceMenu();
   if (e.target.closest('#opening')) { hideOpening(); return; }
   const set = e.target.closest('[data-set]');
   if (set) {

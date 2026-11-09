@@ -986,7 +986,7 @@ body.fs .xw-top { padding-right: 52px; }   /* 시안 보기 설정(톱니)이 �
     <div class="menu" id="placeMenu" hidden>
       <p class="mlabel">함께하는 곳</p>
       <button class="place-row" type="button" data-act="place-current" aria-current="true"><span>나의 디다코 노트<span class="role-tag">나</span></span><span aria-hidden="true">✓</span></button>
-      <button class="place-row" type="button" data-act="place-community"><span class="place-copy"><span>디다코 공동체</span><span class="sm">준비 중이에요.</span></span></button>
+      <button class="place-row" type="button" data-act="place-community"><span class="place-copy"><span>디다코 공동체</span><span class="sm">사랑방 성경공부 데모를 둘러봐요.</span></span></button>
     </div>
     <div class="menu" id="setMenu" hidden></div>
   </div>
@@ -1525,7 +1525,7 @@ function viewMore() {
   const on = D.sync === 'on';
   const me1 = `<div class="gl">나</div><div class="gc">
       <a class="gr" href="#/more/sync"><span class="gt"><b>동기화</b><span class="gd">${on ? `연결됨 · 마지막으로 맡긴 때 ${syncLine()}` : '켜면 기기를 바꿔도 기록이 이어져요'}</span></span>${on ? '<span class="chip">켜짐</span>' : ''}<span class="ch" aria-hidden="true">›</span></a>
-      <button class="gr" type="button" data-act="community"><span class="gt"><b>디다코 공동체</b><span class="gd">준비 중이에요.</span></span><span class="ch" aria-hidden="true">›</span></button>
+      <button class="gr" type="button" data-act="community"><span class="gt"><b>디다코 공동체</b><span class="gd">사랑방 성경공부 데모를 둘러봐요.</span></span><span class="ch" aria-hidden="true">›</span></button>
     </div>`;
   const set1 = `<div class="gl">앱 설정</div><div class="gc">
       <button class="gr${dispOpen ? ' open' : ''}" type="button" data-act="disp" aria-expanded="${dispOpen}" aria-controls="dispEx"><span class="gt"><b>화면 설정</b><span class="gd">화면 모드 · 색 테마 · 디자인 · 큰 글씨</span></span>${dispOpen ? CHEV_DOWN_S : '<span class="ch" aria-hidden="true">›</span>'}</button>
@@ -3756,7 +3756,7 @@ const acts = {
   'past-month'(e, el) { const l = el.getAttribute('aria-label'); after = () => { const b = $(`[data-act="past-month"][aria-label="${l}"]`); if (b && !b.disabled) b.focus({ preventScroll: true }); }; setHash('today/past/' + el.dataset.ym); },
   'date-today'() { setDemoDate(''); },
   'soon'() { toast(SOON); },
-  community() { toast('준비 중이에요'); },   // 디다코 공동체: 아직 열지 않은 곳
+  community() { location.href = '../app/'; },   // 디다코 공동체: 같은 주소 아래 공동체용 데모 앱(app/)으로 간다
   // 탐구하기(③-1)
   'srch-ex'() { srchBack = 'explore'; setHash('mine/search'); },
   'week-open'() { WK = { max: 0, view: 0 }; showOpening(() => setHash('explore/week')); },   // 말씀을 열며 한 장 뒤에 한 단계씩
@@ -4003,7 +4003,7 @@ const acts = {
   'place-menu'() { const m = $('#placeMenu'), open = m.hidden; closeMenus(); m.hidden = !open; $('#placeBtn').setAttribute('aria-expanded', String(open)); },
   'set-menu'() { const m = $('#setMenu'), open = m.hidden; closeMenus(); m.hidden = !open; $('#setBtn').setAttribute('aria-expanded', String(open)); },
   'place-current'() { closeMenus(); },
-  'place-community'() { closeMenus(); toast('준비 중이에요'); },
+  'place-community'() { closeMenus(); location.href = '../app/'; },   // 디다코 공동체: 같은 주소 아래 공동체용 데모 앱(app/)으로 간다
   gear() { const p = $('#gearPanel'), open = p.hidden; closeMenus(); p.hidden = !open; $('#gearBtn').setAttribute('aria-expanded', String(open)); },
   'demo-reset'() { resetAll(); },
   'demo-fill'() { N = sampleNotes(); saveNotes(); closeMenus(); if (me) render(); toast('예시 기록을 채웠어요'); },   // 첫 접속을 마치기 전이면 저장만 한다
