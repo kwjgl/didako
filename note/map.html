@@ -13,7 +13,7 @@
 // 노트의 화면 설정을 그림이 그려지기 전에 읽어 입힌다. 읽을 수 없으면 기기 설정을 따른다
 try {
   const d = JSON.parse(localStorage.getItem('didako-note-display') || '{}'), r = document.documentElement;
-  if (d.accent !== 'green') r.setAttribute('data-accent', ['amber', 'blue', 'rose', 'ink'].includes(d.accent) ? d.accent : 'blue');   // 기본은 파랑(S-64). 초록은 속성 없이 :root 값
+  if (d.accent !== 'green') r.setAttribute('data-accent', ['amber', 'blue', 'rose', 'ink', 'paper'].includes(d.accent) ? d.accent : 'blue');   // 기본은 파랑(S-64). 초록은 속성 없이 :root 값
   if (d.mode === 'light' || d.mode === 'dark') r.setAttribute('data-mode', d.mode);
   if (['neu', 'skeu', 'glass'].includes(d.style)) r.setAttribute('data-style', d.style);
   if (d.big === true) r.setAttribute('data-big', '');
@@ -23,8 +23,8 @@ try {
 /* 말씀 지도 시안을 노트에 옮겼다. 색 변수·글꼴·카드·칩·단추·장소 창·화면 모드·큰 글씨는 디다코 노트의 것을 그대로 쓴다(새 색·새 글꼴 없음).
    색 테마도 노트의 저장값을 그대로 따른다. 디자인 스타일(basic·new·classic·glass)은 note/design-styles.css를 그대로 불러 쓴다. 이름과 내용은 모두 지어낸 예시·AI 초안이다. */
 :root {
-  --page: #F3F5F2; --surface: #FFFFFF; --surface-2: #EEF2EF;
-  --ink: #1B2523; --ink-2: #5B6965; --line: #DDE4E0; --line-strong: #B9C4BF;
+  --page: #E8EBE8; --surface: #F7F8F6; --surface-2: #E9EDEA;
+  --ink: #1B2523; --ink-2: #5B6965; --line: #D7DEDA; --line-strong: #B9C4BF;
   --accent: #2B6A62; --accent-mid: #8DBDB5; --accent-soft: #DCEBE7; --on-accent: #FFFFFF;
   --leader: #62519E; --leader-soft: #ECE7F7; --private: #E8ECEA;
   --warn: #9A5A14; --warn-soft: #F5E8D6; --shadow: rgba(20, 35, 32, .14);
@@ -53,18 +53,21 @@ try {
 @media (min-width: 1000px) { :root[data-big] { --base: 18px; } }
 
 /* 색 테마(초록은 위 기본값). GBS 앱·시안의 THEMES와 같은 값: 밝은 화면 / 어두운 화면 */
-:root[data-accent="amber"] { --page:#F7F2EA;--surface:#FFFDF9;--surface-2:#F1EADF;--ink:#2A221B;--ink-2:#6E6155;--line:#E6DCCD;--line-strong:#C9B9A3;--accent:#A9561B;--accent-mid:#E2B07F;--accent-soft:#F6E3CF;--on-accent:#FFFFFF;--private:#EFE8DE; }
+:root[data-accent="amber"] { --page:#EDE8E0;--surface:#F9F5EE;--surface-2:#ECE5DA;--ink:#2A221B;--ink-2:#6E6155;--line:#E0D6C8;--line-strong:#C9B9A3;--accent:#A9561B;--accent-mid:#E2B07F;--accent-soft:#F6E3CF;--on-accent:#FFFFFF;--private:#EFE8DE; }
 @media (prefers-color-scheme: dark) { :root[data-accent="amber"]:not([data-mode="light"]) { --page:#1A1612;--surface:#231E19;--surface-2:#2B241E;--ink:#EEE6DC;--ink-2:#AE9F8E;--line:#3A3129;--line-strong:#5A4D41;--accent:#E9A066;--accent-mid:#8A5A32;--accent-soft:#3A2818;--on-accent:#1E140C;--private:#2E2721; } }
 :root[data-accent="amber"][data-mode="dark"] { --page:#1A1612;--surface:#231E19;--surface-2:#2B241E;--ink:#EEE6DC;--ink-2:#AE9F8E;--line:#3A3129;--line-strong:#5A4D41;--accent:#E9A066;--accent-mid:#8A5A32;--accent-soft:#3A2818;--on-accent:#1E140C;--private:#2E2721; }
-:root[data-accent="blue"] { --page:#F2F4F8;--surface:#FFFFFF;--surface-2:#EAEEF4;--ink:#1B2230;--ink-2:#5A6475;--line:#DCE2EB;--line-strong:#B6C0CF;--accent:#2F5D95;--accent-mid:#93AFD3;--accent-soft:#DCE6F3;--on-accent:#FFFFFF;--private:#E8EBF0; }
+:root[data-accent="blue"] { --page:#E7E9EE;--surface:#F6F7FA;--surface-2:#E5E9EF;--ink:#1B2230;--ink-2:#5A6475;--line:#D6DCE5;--line-strong:#B6C0CF;--accent:#2F5D95;--accent-mid:#93AFD3;--accent-soft:#DCE6F3;--on-accent:#FFFFFF;--private:#E8EBF0; }
 @media (prefers-color-scheme: dark) { :root[data-accent="blue"]:not([data-mode="light"]) { --page:#12161D;--surface:#1A2029;--surface-2:#212833;--ink:#E4E9F0;--ink-2:#9AA5B5;--line:#2C3542;--line-strong:#485466;--accent:#8EB4E6;--accent-mid:#3C5B85;--accent-soft:#1D2C42;--on-accent:#0E1622;--private:#232A35; } }
 :root[data-accent="blue"][data-mode="dark"] { --page:#12161D;--surface:#1A2029;--surface-2:#212833;--ink:#E4E9F0;--ink-2:#9AA5B5;--line:#2C3542;--line-strong:#485466;--accent:#8EB4E6;--accent-mid:#3C5B85;--accent-soft:#1D2C42;--on-accent:#0E1622;--private:#232A35; }
-:root[data-accent="rose"] { --page:#F8F2F3;--surface:#FFFDFD;--surface-2:#F2E8EA;--ink:#2A1E21;--ink-2:#6E5B60;--line:#E8DADD;--line-strong:#CDB6BC;--accent:#A8435C;--accent-mid:#DDA2B1;--accent-soft:#F5DFE5;--on-accent:#FFFFFF;--private:#F0E7E9; }
+:root[data-accent="rose"] { --page:#EEE7E8;--surface:#FAF5F6;--surface-2:#EDE3E5;--ink:#2A1E21;--ink-2:#6E5B60;--line:#E2D4D7;--line-strong:#CDB6BC;--accent:#A8435C;--accent-mid:#DDA2B1;--accent-soft:#F5DFE5;--on-accent:#FFFFFF;--private:#F0E7E9; }
 @media (prefers-color-scheme: dark) { :root[data-accent="rose"]:not([data-mode="light"]) { --page:#1A1416;--surface:#231B1E;--surface-2:#2B2226;--ink:#EEE3E6;--ink-2:#B09CA2;--line:#3A2D31;--line-strong:#5A464C;--accent:#E896AB;--accent-mid:#86475A;--accent-soft:#3B2029;--on-accent:#200E14;--private:#2E2428; } }
 :root[data-accent="rose"][data-mode="dark"] { --page:#1A1416;--surface:#231B1E;--surface-2:#2B2226;--ink:#EEE3E6;--ink-2:#B09CA2;--line:#3A2D31;--line-strong:#5A464C;--accent:#E896AB;--accent-mid:#86475A;--accent-soft:#3B2029;--on-accent:#200E14;--private:#2E2428; }
-:root[data-accent="ink"] { --page:#F4F4F2;--surface:#FFFFFF;--surface-2:#EDEDEA;--ink:#1D1D1B;--ink-2:#62625E;--line:#E0E0DC;--line-strong:#BDBDB7;--accent:#33332F;--accent-mid:#A3A39C;--accent-soft:#E6E6E1;--on-accent:#FFFFFF;--private:#ECECE8; }
+:root[data-accent="ink"] { --page:#E9E9E7;--surface:#F7F7F6;--surface-2:#E8E8E5;--ink:#1D1D1B;--ink-2:#62625E;--line:#DADAD6;--line-strong:#BDBDB7;--accent:#33332F;--accent-mid:#A3A39C;--accent-soft:#E6E6E1;--on-accent:#FFFFFF;--private:#ECECE8; }
 @media (prefers-color-scheme: dark) { :root[data-accent="ink"]:not([data-mode="light"]) { --page:#141414;--surface:#1D1D1C;--surface-2:#252524;--ink:#ECECE8;--ink-2:#A3A39E;--line:#30302E;--line-strong:#4D4D4A;--accent:#E2E2DC;--accent-mid:#6A6A65;--accent-soft:#2E2E2C;--on-accent:#141414;--private:#262625; } }
 :root[data-accent="ink"][data-mode="dark"] { --page:#141414;--surface:#1D1D1C;--surface-2:#252524;--ink:#ECECE8;--ink-2:#A3A39E;--line:#30302E;--line-strong:#4D4D4A;--accent:#E2E2DC;--accent-mid:#6A6A65;--accent-soft:#2E2E2C;--on-accent:#141414;--private:#262625; }
+:root[data-accent="paper"] { --page:#E8E4DA;--surface:#F6F2E8;--surface-2:#EEE9DD;--ink:#2A2620;--ink-2:#655D52;--line:#DCD5C7;--line-strong:#BFB5A3;--accent:#6B4A2E;--accent-mid:#C4A27F;--accent-soft:#EADFCD;--on-accent:#FFFFFF;--private:#EDE8DC; }
+@media (prefers-color-scheme: dark) { :root[data-accent="paper"]:not([data-mode="light"]) { --page:#1B1814;--surface:#24201B;--surface-2:#2C2721;--ink:#ECE5D9;--ink-2:#ABA08F;--line:#3A332B;--line-strong:#5A5043;--accent:#D2B08A;--accent-mid:#7E6247;--accent-soft:#362B20;--on-accent:#1C150E;--private:#2D2822; } }
+:root[data-accent="paper"][data-mode="dark"] { --page:#1B1814;--surface:#24201B;--surface-2:#2C2721;--ink:#ECE5D9;--ink-2:#ABA08F;--line:#3A332B;--line-strong:#5A5043;--accent:#D2B08A;--accent-mid:#7E6247;--accent-soft:#362B20;--on-accent:#1C150E;--private:#2D2822; }
 /* 색 테마를 고르면 진한 포인트(--accent-deep)도 그 테마색을 따르게 한다: 밝은 화면은 테마색을 조금 어둡게, 어두운 화면은 테마색 그대로 */
 :root[data-accent] { --accent-deep: color-mix(in srgb, var(--accent) 78%, #000); }
 @media (prefers-color-scheme: dark) { :root[data-accent]:not([data-mode="light"]) { --accent-deep: var(--accent); } }
