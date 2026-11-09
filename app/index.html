@@ -161,6 +161,24 @@ textarea.field { resize: vertical; line-height: 1.55; overflow-y: hidden; }
 body.pop-open { overflow: hidden; }
 
 
+/* 더보기(C-03): 디다코 노트 더보기와 같은 모양 */
+.more-grid { display: grid; grid-template-columns: minmax(0, 1fr); gap: 16px; align-items: start; }
+@media (min-width: 1000px) { .more-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+.gl { font-size: .8125rem; color: var(--ink-2); margin: 20px 4px 8px; }
+.more-grid > div:first-child > .gl:first-child { margin-top: 20px; }
+.gc { background: var(--surface); border: 1px solid var(--line); border-radius: 16px; padding: 0 16px; }
+.gr { display: flex; align-items: center; gap: 12px; width: 100%; min-height: 64px; padding: 12px 0; border: 0; border-top: 1px solid var(--line); background: none; text-align: left; font: inherit; color: var(--ink); text-decoration: none; }
+.gr:first-child { border-top: 0; }
+.gr .gt { flex: 1; min-width: 0; }
+.gr b { display: block; font-size: .96875rem; font-weight: 700; }
+.gr .gd { display: block; font-size: .84375rem; color: var(--ink-2); margin-top: 2px; }
+.gr .ch { flex: 0 0 auto; color: var(--ink-2); font-size: 1.25rem; }
+.gr.open { border-bottom: 1px solid var(--line); }   /* 화면 설정을 펼치면 머리줄 아래 구분선 */
+.logout { display: block; margin: 20px auto 0; min-height: 44px; padding: 0 16px; background: none; border: 0; color: var(--ink-2); font: 500 .9375rem var(--f-body); }
+.chip { display: inline-block; padding: 4px 12px; border-radius: 999px; background: var(--accent-soft); color: var(--accent-deep); font-size: .8125rem; font-weight: 500; }
+.kids { display: flex; flex-wrap: wrap; gap: .4em; }
+.kid { display: inline-flex; align-items: center; gap: .35em; font-size: .86em; background: var(--surface-2); border: 1px solid var(--line); border-radius: 999px; padding: .2em .75em; }
+.kid.lead { background: var(--leader-soft); border-color: var(--leader); color: var(--leader); }
 </style>
 <link rel="stylesheet" href="design-styles.css">
 <style>
@@ -171,6 +189,8 @@ html, body { min-height: 100%; }
 body { overflow-x: hidden; }
 .sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
 button:focus-visible, input:focus-visible, textarea:focus-visible, [tabindex]:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+/* 탭을 옮길 때 화면 읽기용으로 초점을 두는 제목과 본문에는 테두리를 그리지 않는다(아이폰에서 네모가 보였다) */
+#view:focus, #view h1[tabindex="-1"]:focus { outline: none; }
 .demo-tag { font-size: .72em; font-weight: 600; color: var(--warn); background: var(--warn-soft); border-radius: 999px; padding: .15em .7em; white-space: nowrap; }
 .topbar .wrap { padding-right: max(8px, env(safe-area-inset-right, 0px)); }
 main.wrap { padding-top: 14px; padding-bottom: calc(110px + env(safe-area-inset-bottom, 0px)); }
@@ -877,15 +897,18 @@ function closeSheet() {
 const seg = (key, opts, cur) => `<div class="seg" style="--n:${opts.length}">${opts.map(([v, l]) => `<button type="button" data-set="${key}:${v}" class="${String(cur) === String(v) ? 'on' : ''}" aria-pressed="${String(cur) === String(v)}">${l}</button>`).join('')}</div>`;
 const onoff = (key, cur) => seg(key, [['0', '끄기'], ['1', '켜기']], cur ? 1 : 0);
 const DISPLAY_KEYS = ['mode', 'accent', 'style', 'big'];
-function renderSettings() {
+function displayControls() {
   const sw = [['green', '#2B6A62', '초록'], ['amber', '#A9561B', '주황'], ['blue', '#2F5D95', '파랑'], ['rose', '#A8435C', '장미'], ['ink', '#33332F', '먹색'], ['paper', '#6B4A2E', '종이(기본)']];
-  const inApp = currentView() !== 'start';
-  $('#settings').innerHTML = `
+  return `
     <p class="mlabel" style="margin-top:.3em">화면 모드</p>${seg('mode', [['auto', '기기'], ['light', '밝게'], ['dark', '어둡게']], S.mode)}
     <p class="mlabel">색 테마</p><div class="swatches">${sw.map(([k, c, n]) => `<button type="button" class="swatch ${S.accent === k ? 'on' : ''}" data-set="accent:${k}" aria-label="${n}" aria-pressed="${S.accent === k}"><i style="background:${c}"></i></button>`).join('')}</div>
     <p class="mlabel">디자인</p>${seg('style', [['basic', 'basic'], ['neu', 'new'], ['skeu', 'classic'], ['glass', 'glass']], S.style)}
     <p class="mlabel">큰 글씨</p>${seg('big', [['0', '끄기'], ['1', '켜기']], S.big ? 1 : 0)}
-    <div class="mdiv"></div>
+`;
+}
+function renderSettings() {
+  const inApp = currentView() !== 'start';
+  $('#settings').innerHTML = `${displayControls()}    <div class="mdiv"></div>
     <p class="mlabel">데모용 <span class="demo-tag static">데모</span></p>
     <p class="set-note">실제 앱에는 없는 설정이에요. 이 기기에만 기억해요.</p>
     <p class="mlabel">역할</p>${seg('role', ROLES, D.role)}
@@ -926,7 +949,7 @@ function closeMenu() { const m = $('#settings'); m.hidden = true; $('#gearBtn').
 // 이름표와 어느 탭이 켜지는지는 여기에 모아 둔다. 아직 만들지 않은 화면은 차분한 안내 한 장으로 연다(막다른 길이 없게 이번 주로 가는 링크를 둔다)
 const PLACE = {
   read: ['펼치기', 'week'], share: ['나눔', 'share'], shelf: ['책장', 'shelf'], record: ['나의 기록', 'record'], more: ['더보기', 'more'],
-  church: ['우리 사랑방', 'more'], prep: ['진행 준비', 'week'], manage: ['교재 관리', 'more']
+  church: ['우리 사랑방', 'more'], prep: ['진행 준비', 'week'], manage: ['교재 관리', 'more'], admin: ['관리', 'more']
 };
 const VIEWS = ['start', 'week'].concat(Object.keys(PLACE));
 // 책 안(#book-교재)과 기록 상세(#rec-기록)는 책장·나의 기록 안의 화면이다
@@ -1032,6 +1055,115 @@ function startView() {
         <p class="hint">말씀을 배우고 함께 나누는 자리예요.</p>
       </footer>
     </div>`;
+}
+
+// ── 더보기(C-03) ──
+let dispOpen = false;
+function moreView() {
+  const room = DATA.rooms.mine;
+  const chevron = '<span class="ch" aria-hidden="true">›</span>';
+  const jobRow = (title, desc, target) => `<a class="gr" href="${target}"><span class="gt"><b>${title}</b><span class="gd">${desc}</span></span><span class="role-tag ${D.role === 'leader' ? 'leader' : 'admin'}">${roleName()}</span>${chevron}</a>`;
+  let jobs = '';
+  if (D.role === 'leader') jobs = jobRow('우리 사랑방', '함께하는 사람 · 연결 승인', '#church');
+  else if (D.role === 'pastor') jobs = jobRow('교재 관리', '교재와 과를 꾸리고 배포해요', '#manage') + `<button class="gr" type="button" data-act="more-soon"><span class="gt"><b>사랑방 전체 보기</b><span class="gd">모든 사랑방의 명단과 연결 상태</span></span><span class="role-tag admin">목사님</span>${chevron}</button>`;
+  else if (D.role === 'admin') jobs = jobRow('관리', '교회 · 부서 · 사랑방 · 명단을 꾸려요', '#admin');
+  return `<div class="page-top"><h1>더보기</h1></div>
+    <div class="more-grid"><div>
+      <div class="gl">나</div><div class="gc">
+        <button class="gr" type="button" data-act="more-sync"><span class="gt"><b>동기화</b><span class="gd">연결됨 · 마지막으로 맡긴 때 오늘 오전 9:12</span></span><span class="chip">켜짐</span>${chevron}</button>
+        <a class="gr" href="../note/"><span class="gt"><b>디다코 노트</b><span class="gd">혼자 묵상하는 노트로 돌아가요.</span></span>${chevron}</a>
+      </div>
+      <div class="gc" style="margin:14px 0;padding-top:14px;padding-bottom:14px">
+        <b>우리 사랑방</b><p>${esc(room.name)}</p>
+        <p class="mlabel">리더</p><div class="kids"><span class="kid lead">${esc(room.leader)}</span><span class="kid lead">${esc(room.coLeader)} · 코리더</span></div>
+        <p class="mlabel">함께하는 사람</p><div class="kids">${room.members.map(n => `<span class="kid">${esc(n)}</span>`).join('')}</div>
+        <p class="hint">이름만 보여요. 서로 얼마나 썼는지는 보이지 않아요.</p>
+        <p class="hint">사랑방이 바뀌면 리더나 관리자에게 알려 주세요.</p>
+      </div>
+    </div><div>
+      ${jobs ? `<div class="gl">맡은 일</div><div class="gc">${jobs}</div>` : ''}
+      <div class="gl">앱 설정</div><div class="gc">
+        <button class="gr${dispOpen ? ' open' : ''}" type="button" data-act="disp" aria-expanded="${dispOpen}" aria-controls="dispEx"><span class="gt"><b>화면 설정</b><span class="gd">화면 모드 · 색 테마 · 디자인 · 큰 글씨</span></span>${dispOpen ? ic('chev', 'ch') : chevron}</button>
+        ${dispOpen ? `<div id="dispEx" style="padding:4px 0 14px">${displayControls()}</div>` : ''}
+      </div>
+      <div class="gl">디다코</div><div class="gc">
+        <button class="gr" type="button" data-act="more-soon"><span class="gt"><b>디다코 소개</b><span class="gd">이름의 뜻과 디다코가 지키는 것</span></span>${chevron}</button>
+        <button class="gr" type="button" data-act="more-soon"><span class="gt"><b>사용법 보기</b><span class="gd">화면마다 무엇을 하는지 한 장씩 봐요</span></span>${chevron}</button>
+        <button class="gr" type="button" data-act="more-soon"><span class="gt"><b>의견 보내기</b><span class="gd">불편한 점, 바라는 점, 고마운 점</span></span>${chevron}</button>
+      </div>
+      <button class="logout" type="button" data-act="more-logout">이 기기에서 로그아웃</button>
+    </div></div>`;
+}
+
+// ── 관리(A-01): 데모는 보기와 시트까지만, 바뀐 것은 저장하지 않는다 ──
+function adminView() {
+  if (D.role !== 'admin') return `<div class="page-top"><h1>관리</h1></div>
+    <section class="card calm"><p class="calm-t">관리자만 여는 화면이에요</p>
+      <p class="soft" style="margin:0">데모 설정에서 역할을 관리자로 바꿔 보세요.</p>
+      <a class="btn ghost" href="#more">더보기로 돌아가기</a></section>`;
+  const a = DATA.admin;
+  const row = (title, desc, action, extra = '') => `<button class="gr" type="button" data-act="${action}" ${extra}><span class="gt"><b>${esc(title)}</b><span class="gd">${esc(desc)}</span></span><span class="ch" aria-hidden="true">›</span></button>`;
+  return `<a class="back-link" href="#more">${ic('back')}<span>더보기</span></a>
+    <div class="page-top"><h1>관리</h1></div><p class="eyebrow" style="margin-top:0">${esc(a.church)} · 관리자</p>
+    <div class="more-grid"><div><div class="gl">교회</div><div class="gc">
+      ${row('교회 초대', '초대 링크와 교회 코드를 나눠요', 'admin-invite')}
+      ${row('교재 종류', '쓸 교재 종류 켜기 · 지금은 ' + a.kinds.filter(k => k[2]).map(k => k[0]).join(' · '), 'admin-kinds')}
+      ${row('교회 밖 모임 열기', a.outKinds.map(k => k[0]).join(' · '), 'admin-out')}
+    </div><div class="gl">사람</div><div class="gc">
+      ${row('사람과 맡은 일', '리더 · 코리더 · 교재 담당 · 관리자', 'admin-people')}
+      ${row('관리자', '2명 이상 두기를 권해요', 'admin-admins')}
+      ${row('연도 개편', '사랑방 편성 바꾸기', 'admin-reorg')}
+    </div></div><div><div class="gl">부서</div><div class="gc">
+      ${a.depts.map((d, i) => row(d.name, `${d.group} · ${d.unit === 'family' ? '가정 단위' : '개인 단위'} · ${d.rooms.length}곳`, 'admin-dept', `data-dept="${i}"`)).join('')}
+      ${row('부서 만들기', '소그룹 이름과 단위를 정해요', 'admin-nochange')}
+    </div></div></div>
+    <p class="soft">${ic('lock')} 앱을 쓰는 사람의 기록은 보이지 않아요.</p>`;
+}
+function adminSheet(kind, index) {
+  if (D.role !== 'admin') return;
+  const a = DATA.admin;
+  let title = '', body = '';
+  if (kind === 'invite') {
+    title = '교회 초대';
+    body = `<p class="lesson-title">${esc(a.code)}</p>
+      <div class="set-btns"><button class="btn" type="button" data-act="admin-copy">초대 링크 복사하기</button><button class="btn ghost" type="button" data-act="admin-copy">교회 코드 복사하기</button></div>
+      <p class="hint">링크나 코드로 들어온 사람은 사랑방 리더가 연결을 승인해요.</p>`;
+  } else if (kind === 'kinds') {
+    title = '교재 종류';
+    body = `<div>${a.kinds.map(([name, desc, on]) => `<div class="gr"><span class="gt"><b>${esc(name)}</b><span class="gd">${esc(desc)}</span></span>${on ? '<span class="chip">켜짐</span>' : '<span class="soft">다음에</span>'}</div>`).join('')}</div>
+      <p class="hint">켜고 끄기는 데모에서 바뀌지 않아요.</p>`;
+  } else if (kind === 'out') {
+    title = '교회 밖 모임 열기';
+    body = `<p class="hint">신우회, 캠퍼스처럼 교회 밖에서 모이는 모임도 이 교회에 속한 모임으로 열어요. 목사님도 열 수 있어요.</p>
+      <div>${a.outKinds.map(([name, desc]) => `<div class="gr"><span class="gt"><b>${esc(name)}</b><span class="gd">${esc(desc)}</span></span><button class="btn ghost small" type="button" data-act="admin-nochange">열기</button></div>`).join('')}</div>
+      <p class="mlabel">열린 모임</p><div>${a.outs.map(o => `<div class="gr"><span class="gt"><b>${esc(o.name)}</b><span class="gd">${esc(o.kind)} · 목회 책임자 ${esc(o.pastor)} · 교회에 속한 모임</span></span></div>`).join('')}</div>`;
+  } else if (kind === 'dept') {
+    const d = a.depts[index]; if (!d) return;
+    title = d.name;
+    body = `<p>소그룹 이름 ${esc(d.group)}</p><p>단위 ${d.unit === 'family' ? '가정' : '개인, 한 사람이 한 줄이라 우리 가정이 없어요'}</p>
+      <p class="mlabel">${esc(d.group)}</p><div>${d.rooms.map(r => `<div class="gr"><span class="gt"><b>${esc(r.name)}</b><span class="gd">리더 ${esc(r.leader)}${r.co ? ' · 코리더 ' + esc(r.co) : ''}</span></span><span class="hint">연결된 사람 ${r.n}명</span></div>`).join('')}</div>
+      <div class="set-btns"><button class="btn" type="button" data-act="admin-nochange">${esc(d.group)} 만들기</button></div>`;
+  } else if (kind === 'people') {
+    title = '사람과 맡은 일';
+    body = `<div>${a.people.map((p, i) => `<div class="gr"><span class="gt"><b>${esc(p.name)}</b><span class="gd">${esc(p.where)}</span><span class="kids">${p.roles.map(role => `<span class="kid${role === '리더' || role === '코리더' ? ' lead' : ''}">${esc(role === '리더' || role === '코리더' ? role + ' · ' + p.where : role)}</span>`).join('')}</span></span><button class="btn ghost small" type="button" data-act="admin-role" data-person="${i}">바꾸기</button></div>`).join('')}</div>
+      <div class="set-btns"><button class="btn" type="button" data-act="admin-nochange">맡은 일 맡기기</button></div>`;
+  } else if (kind === 'role') {
+    const p = a.people[index]; if (!p) return;
+    title = p.name + ' 맡은 일';
+    body = `<div>${['리더', '코리더', '교재 담당', '관리자'].map(role => `<div class="gr"><span class="gt"><b>${role}</b></span><button class="switch${p.roles.includes(role) ? ' on' : ''}" type="button" role="switch" aria-label="${role}" aria-checked="${p.roles.includes(role)}" data-act="admin-toggle"><span></span></button></div>`).join('')}</div>
+      <div class="set-btns"><button class="btn" type="button" data-act="admin-nochange">저장</button></div>`;
+  } else if (kind === 'admins') {
+    title = '관리자';
+    body = `<div>${a.people.filter(p => p.roles.includes('관리자')).map(p => `<div class="gr"><span class="gt"><b>${esc(p.name)}</b></span></div>`).join('')}</div>
+      <p class="hint">한 사람이 빠져도 운영이 멈추지 않도록 관리자는 두 명 이상을 권해요.</p>
+      <div class="set-btns"><button class="btn" type="button" data-act="admin-nochange">관리자 더하기</button><button class="btn ghost" type="button" data-act="admin-nochange">내 자리 넘겨주기</button></div>
+      <p class="soft">마지막 남은 관리자는 자리를 넘겨준 뒤에 교회를 나갈 수 있어요.</p>`;
+  } else if (kind === 'reorg') {
+    title = '연도 개편';
+    body = `<p class="hint">새해 편성표를 붙여 넣으면 새 사랑방 편성을 미리 볼 수 있어요. 바꾸기 전까지 지금 편성은 그대로예요.</p>
+      <div class="set-btns"><button class="btn" type="button" data-act="admin-reorg-soon">${esc(a.nextYear)}년 편성 바꾸기</button></div>`;
+  } else return;
+  openSheet(sheetHead(esc(title)) + body);
 }
 
 // ── 아직 없는 화면 ──
@@ -1782,7 +1914,7 @@ function route(moved) {
   $('#topbar').classList.toggle('bare', start);
   $('#topnav').hidden = start; $('#tabs').hidden = start;
   document.body.dataset.view = v;
-  $('#view').innerHTML = start ? startView() : v === 'week' ? weekView() : v === 'read' ? readView() : v === 'share' ? shareView() : v === 'shelf' ? shelfView(arg) : v === 'record' ? recordView(arg) : placeView(v);
+  $('#view').innerHTML = start ? startView() : v === 'week' ? weekView() : v === 'read' ? readView() : v === 'share' ? shareView() : v === 'shelf' ? shelfView(arg) : v === 'record' ? recordView(arg) : v === 'more' ? moreView() : v === 'admin' ? adminView() : placeView(v);
   const tab = start ? '' : v === 'week' ? 'week' : PLACE[v][1];
   $$('[data-tab]').forEach(a => { const on = a.dataset.tab === tab; a.classList.toggle('on', on); on ? a.setAttribute('aria-current', 'page') : a.removeAttribute('aria-current'); });
   document.title = start ? '디다코' : (v === 'shelf' && arg ? bTitle(bookById(arg)) : v === 'record' && arg ? '기록 상세' : v === 'week' ? '이번 주' : PLACE[v][0]) + ' · 디다코';
@@ -1809,6 +1941,22 @@ function changePlace(place) {
 
 // ── 눌림 처리 ──
 const acts = {
+  'admin-invite'() { adminSheet('invite'); },
+  'admin-kinds'() { adminSheet('kinds'); },
+  'admin-out'() { adminSheet('out'); },
+  'admin-dept'(e, el) { adminSheet('dept', Number(el.dataset.dept)); },
+  'admin-people'() { adminSheet('people'); },
+  'admin-admins'() { adminSheet('admins'); },
+  'admin-reorg'() { adminSheet('reorg'); },
+  'admin-role'(e, el) { adminSheet('role', Number(el.dataset.person)); },
+  'admin-toggle'(e, el) { const on = el.getAttribute('aria-checked') !== 'true'; el.setAttribute('aria-checked', String(on)); el.classList.toggle('on', on); },
+  'admin-reorg-soon'() { toast('편성 바꾸기는 다음에 만들어요'); },
+  'admin-copy'() { toast('데모에서는 복사하지 않아요'); },
+  'admin-nochange'() { toast('데모에서는 바뀌지 않아요'); },
+  disp() { dispOpen = !dispOpen; rerender(); },
+  'more-sync'() { toast('데모에서는 동기화 화면을 열지 않아요'); },
+  'more-soon'() { toast('곧 만들어요'); },
+  'more-logout'() { toast('데모에서는 로그아웃하지 않아요'); },
   home() { location.hash = '#week'; },
   gear(e, el) { closePlaceMenu(); const m = $('#settings'); m.hidden = !m.hidden; el.setAttribute('aria-expanded', String(!m.hidden)); if (!m.hidden) renderSettings(); },
   'place-menu'() {

@@ -158,5 +158,31 @@ window.DIDAKO_DEMO = {
       pending: ['윤서준', '강나은']
     },
     others: { '2부': ['2-21', '2-22'], '1부': ['1-12', '1-13'] }
+  },
+  // 관리 화면(A-01). 지어낸 예시다. 명단은 이름·소속·역할·연결 상태만 있고 기록과 관련된 것은 없다
+  admin: {
+    church: '예시교회', code: 'YESI-2026',
+    kinds: [['GBS', '사랑방 소그룹 성경공부', true], ['가정예배', '우리 가정이 함께 읽는 가정예배지', true], ['새가족반', '새로 온 가족과 함께, 보통 6주', false], ['주일학교 공과', '반마다 교사와 함께', false]],
+    outKinds: [['신우회', '일터에서 모이는 신앙 모임'], ['캠퍼스', '학교에서 모이는 모임']],
+    outs: [{ name: '예시 신우회', kind: '신우회', pastor: '박성은 전도사님' }],
+    depts: [
+      { name: '청장년부', group: '사랑방', unit: 'family', rooms: [
+        { name: '2-20 사랑방', leader: '김도윤', co: '이서연', n: 9 }, { name: '2-21 사랑방', leader: '배지훈', co: '송예은', n: 10 },
+        { name: '2-22 사랑방', leader: '안태오', co: '홍세아', n: 7 }, { name: '1-12 사랑방', leader: '장민호', co: '정유진', n: 6 },
+        { name: '1-13 사랑방', leader: '오세진', co: '차은별', n: 8 }] },
+      { name: '청년부', group: '순', unit: 'single', rooms: [
+        { name: '김하늘 순', leader: '김하늘', co: '', n: 6 }, { name: '유다인 순', leader: '유다인', co: '', n: 5 }] }
+    ],
+    // 맡은 일이 있는 사람만. 이름·소속·맡은 일만 있다
+    people: [
+      { name: '고정민', where: '청장년부', roles: ['관리자'] },
+      { name: '임수진', where: '청장년부', roles: ['관리자'] },
+      { name: '한지혜', where: '청장년부', roles: ['교재 담당'] },
+      { name: '장민호', where: '1-12 사랑방', roles: ['리더', '교재 담당'] },
+      { name: '김도윤', where: '2-20 사랑방', roles: ['리더'] },
+      { name: '이서연', where: '2-20 사랑방', roles: ['코리더'] },
+      { name: '김하늘', where: '김하늘 순', roles: ['리더'] }
+    ],
+    nextYear: 2027
   }
 };
