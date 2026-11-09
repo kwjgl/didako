@@ -907,6 +907,8 @@ function applySettings() {
 const atHome = () => D.place === 'home' && D.unit === 'family';
 const isTop = () => D.role === 'pastor' || D.role === 'admin';
 const groupName = () => (isTop() ? DATA.church.dept : DATA.church.room);
+// '으로/로' 고르기: 받침이 없거나 ㄹ 받침이면 '로'(청장년부로), 그 밖의 받침이면 '으로'
+const ro = s => { const c = String(s).charCodeAt(String(s).length - 1) - 0xAC00, j = c % 28; return c >= 0 && c < 11172 && j && j !== 8 ? '으로' : '로'; };
 const roleName = () => ROLES.find(x => x[0] === D.role)[1];
 function paintBadge() {
   $('#placeRoom').innerHTML = `${esc(groupName())} <span class="role-tag${D.role === 'leader' ? ' leader' : isTop() ? ' admin' : ''}">${roleName()}</span>`;
@@ -1058,7 +1060,7 @@ function weekView() {
     <p class="eyebrow" style="margin-top:0">우리 가정</p>
     <div class="week-grid"><div class="col">${lessonCard()}</div><div class="col"><section class="card calm">
       <h2 class="calm-t">이번 주 GBS 과는 사랑방에서 펼쳐요</h2>
-      <button class="btn ghost" type="button" data-act="place-room">${esc(groupName())}으로</button>
+      <button class="btn ghost" type="button" data-act="place-room">${esc(groupName())}${ro(groupName())}</button>
     </section></div></div>`;
   return `<div class="page-top"><h1>이번 주</h1></div>
     <p class="eyebrow" style="margin-top:0">${esc(groupName())}</p>
