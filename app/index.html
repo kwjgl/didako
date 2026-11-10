@@ -523,6 +523,7 @@ button.badge-btn { appearance: none; font-family: inherit; line-height: inherit;
 .stage-sec:first-child { margin-top: 0; }
 .stage-h { font-family: var(--f-display); font-size: 1.1em; margin: 12px 2px 0; }
 .stage-sec:first-child .stage-h { margin-top: 2px; }
+.r-t { white-space: pre-line; line-height: 1.75; word-break: keep-all; margin: .3em 0 0; }
 .qcard { margin: 0; scroll-margin-top: 84px; }
 .q-meta { display: flex; justify-content: space-between; align-items: center; gap: .6em; min-height: 1.6em; }
 .q-eyebrow { font-size: .8em; color: var(--ink-2); }
@@ -913,7 +914,7 @@ button.gallery-cell { display: block; width: 100%; padding: 0; cursor: pointer; 
 .paper p { margin: 0; }
 .paper h3 { font-family: var(--f-display); font-size: 1.7em; line-height: 1.3; margin: .6em 0 .1em; word-break: keep-all; }
 .pp-ref { font-family: var(--f-display); font-weight: 700; }
-.pp-intro { margin-top: .6em !important; color: #5B6965; }
+.pp-intro { margin-top: .6em !important; color: #5B6965; white-space: pre-line; }
 .pp-text-h { margin-top: 1.4em !important; font-size: .84em; color: #5B6965; border-top: 1px solid #DDE4E0; padding-top: .8em; }
 .pp-text { margin-top: .3em !important; font-family: var(--f-display); font-size: calc(var(--mm) * 3.88); line-height: 1.85; white-space: pre-wrap; word-break: keep-all; }
 .pp-text.fs-s { font-size: calc(var(--mm) * 3.35); }
@@ -925,7 +926,7 @@ button.gallery-cell { display: block; width: 100%; padding: 0; cursor: pointer; 
 .pp-qs { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: .7em; }
 .pp-qs li { display: grid; grid-template-columns: 1.6em 1fr; column-gap: .2em; break-inside: avoid; }
 .pp-n { font-weight: 600; }
-.pp-q { font-family: var(--f-display); font-weight: 700; word-break: keep-all; }
+.pp-q { font-family: var(--f-display); font-weight: 700; word-break: keep-all; white-space: pre-line; }
 .pp-help { font-size: .86em; color: #5B6965; margin-top: .2em !important; word-break: keep-all; }
 .pp-lines { grid-column: 2; height: 2.8em; margin-top: .2em; background-image: repeating-linear-gradient(180deg, transparent 0 1.4em, #B9C4BF 1.4em calc(1.4em + 1px)); }
 .pp-wrap p { margin-top: .3em; white-space: pre-wrap; word-break: keep-all; }
@@ -1491,7 +1492,7 @@ function mgPublishCurrent() {
 }
 function mgPublishMissing(b, L) {
   const qs = mgGuide(b, L).stages.flatMap(st => st.qs);
-  return [...(!String(L.name || '').trim() ? ['과 제목'] : []), ...(!qs.length ? ['질문(하나 이상)'] : []), ...(qs.some(q => !String(q.t || '').trim()) ? ['비어 있는 질문'] : [])];
+  return [...(!String(L.name || '').trim() ? ['과 제목'] : []), ...(!qs.length ? ['질문이나 읽을 글(하나 이상)'] : []), ...(qs.some(q => !isRead(q) && !String(q.t || '').trim()) ? ['비어 있는 질문'] : []), ...(qs.some(q => isRead(q) && !String(q.t || '').trim()) ? ['비어 있는 읽을 글'] : [])];
 }
 function mgPublishTarget(b) {
   const target = b.target || DATA.church.dept;
@@ -1547,10 +1548,12 @@ function ppHeadHtml(src, o) {
 function ppBlocksHtml(src, o) {
   const blocks = [];
   src.stages.forEach((st, si) => {
-    const qs = st.qs.map((q, qi) => ({ q, key: si + '-' + qi })).filter(x => ppHas(x.q.t));
-    qs.forEach(({ q, key }, i) => {
+    const qs = st.qs.map((q, qi) => ({ q, key: si + '-' + qi, no: qNo(st, qi) })).filter(x => ppHas(x.q.t));
+    qs.forEach(({ q, key, no }, i) => {
       const vs = Array.isArray(q.vs) ? q.vs.filter(ppHas) : [];
-      blocks.push(`<div class="pp-blk${i ? ' pp-more' : ''}">${i ? '' : `<h4>${esc(st.name || '단계')}</h4>`}<ul class="pp-qs"><li><span class="pp-n">${i + 1}.</span><div><p class="pp-q">${esc(q.t)}</p>${ppHas(q.sub) ? `<p class="pp-help">${esc(q.sub)}</p>` : ''}${vs.length ? `<p class="pp-help">관련 구절 ${vs.map(esc).join(' · ')}</p>` : ''}${o.leader && ppHas(q.lead) ? `<p class="pp-lead"><b>해설</b>${esc(q.lead)}</p>` : ''}</div>${ppUnder(o, key)}</li></ul></div>`);
+      const help = vs.length ? `<p class="pp-help">관련 구절 ${vs.map(esc).join(' · ')}</p>` : '';
+      const content = isRead(q) ? `<div>${ppHas(q.h) ? `<p class="pp-q">${esc(q.h)}</p>` : ''}<p class="pp-intro">${esc(q.t)}</p>${help}</div>` : `<ul class="pp-qs"><li><span class="pp-n">${no}.</span><div><p class="pp-q">${esc(q.t)}</p>${ppHas(q.sub) ? `<p class="pp-help">${esc(q.sub)}</p>` : ''}${help}${o.leader && ppHas(q.lead) ? `<p class="pp-lead"><b>해설</b>${esc(q.lead)}</p>` : ''}</div>${ppUnder(o, key)}</li></ul>`;
+      blocks.push(`<div class="pp-blk${i ? ' pp-more' : ''}">${i ? '' : `<h4>${esc(st.name || '단계')}</h4>`}${content}</div>`);
     });
   });
   if (blocks.length) src.triple.forEach((t, i) => {
@@ -1708,13 +1711,19 @@ function wordLessonXml(src, o, brk) {
   if (o.leader && ppHas(src.guide)) ps.push(wPara(wRun('진행 안내  ', { b: true, c: W_LEAD, sz: 19 }) + wRun(src.guide, { c: W_LEAD, sz: 19 }), { before: 120 }));
   let first = true;
   src.stages.forEach((st, si) => {
-    const qs = st.qs.map((q, qi) => ({ q, key: si + '-' + qi })).filter(x => ppHas(x.q.t));
+    const qs = st.qs.map((q, qi) => ({ q, key: si + '-' + qi, no: qNo(st, qi) })).filter(x => ppHas(x.q.t));
     if (!qs.length) return;
     ps.push(wPara(wRun(st.name || '단계', { f: W_SERIF, b: true, sz: 26 }), { keep: true, brk: on && first, bot: [W_ACC, 4], before: on && first ? 0 : 320, after: 100 }));
     first = false;
-    qs.forEach(({ q, key }, i) => {
+    qs.forEach(({ q, key, no }, i) => {
       const vs = Array.isArray(q.vs) ? q.vs.filter(ppHas) : [];
-      ps.push(wPara(wRun(`${i + 1}.`, { b: true }) + wTab + wRun(q.t, { f: W_SERIF, b: true, sz: 22 }), { keep: true, before: 40, left: 400, hang: 400 }));
+      if (isRead(q)) {
+        if (ppHas(q.h)) ps.push(wPara(wRun(q.h, { f: W_SERIF, b: true, sz: 22 }), { keep: true, before: 40 }));
+        ps.push(wPara(wRun(q.t, { f: W_SERIF, sz: 22 }), { keep: true }));
+        if (vs.length) ps.push(wPara(wRun('관련 구절 ' + vs.join(' · '), { c: W_GRAY, sz: 19 }), { keep: true }));
+        return;
+      }
+      ps.push(wPara(wRun(`${no}.`, { b: true }) + wTab + wRun(q.t, { f: W_SERIF, b: true, sz: 22 }), { keep: true, before: 40, left: 400, hang: 400 }));
       if (ppHas(q.sub)) ps.push(wPara(wRun(q.sub, { c: W_GRAY, sz: 19 }), { left: 400, keep: true }));
       if (vs.length) ps.push(wPara(wRun(`관련 구절 ${vs.join(' · ')}`, { c: W_GRAY, sz: 19 }), { left: 400, keep: true }));
       if (o.leader && ppHas(q.lead)) ps.push(wPara(wRun('해설  ', { b: true, c: W_LEAD, sz: 19 }) + wRun(q.lead, { c: W_LEAD, sz: 19 }), { left: 400, keep: true, before: 40 }));
@@ -1836,6 +1845,12 @@ function mgPreview() {
 // ── 과 편집(P-02): 쓰기 칸은 유지하고 미리보기만 늦춰서 갱신한다 ──
 let mgEditTab = 'write', mgPvMode = 'member', mgPvOpen = true, mgPvTimer = 0, mgQSerial = 0;
 const mgTouched = new Set();
+// 읽을 글은 질문과 같은 qs 배열에 두되 질문 번호에는 포함하지 않는다.
+const isRead = q => q && q.kind === 'read';
+const qNo = (st, qi) => st.qs.slice(0, qi).filter(q => !isRead(q)).length + 1;
+const stageQuestions = st => st.qs.filter(q => !isRead(q));
+const stageCaption = st => stageQuestions(st).length ? '질문 ' + stageQuestions(st).length + '개' : st.qs.some(isRead) ? '읽을 글' : '질문 0개';
+const readLabel = q => '읽을 글 · ' + (String(q.h || '').trim() || String(q.t || '').split('\n')[0]);
 const mgQuestionId = () => 'q' + Date.now().toString(36) + (++mgQSerial);
 function mgGuide(b, L) {
   const key = b.id + ':' + L.no;
@@ -1869,17 +1884,22 @@ function mgWriteHtml(b, L, g) {
       ${field('name', '과 제목', L.name, { hint: key + ':name' })}${field('date', '날짜', mgDateInput(L.date), { type: 'date' })}${field('ref', '본문 장절', L.ref, { placeholder: '예: 요한복음 15:1~8 · 비워 둘 수 있어요' })}${field('intro', '소개', L.intro, { ta: true })}
     </div></section>
     <section class="card"><div class="keep-form">${field('guide', '전체 진행 안내 <span class="hint">리더에게만 보여요</span>', g.guide, { ta: true })}</div></section>
-    <p class="hint" id="mgEmptyHint"${g.stages.some(s => s.qs.length) ? ' hidden' : ''}>배포하려면 질문이 하나 이상 있어야 해요.</p>
+    <p class="hint" id="mgEmptyHint"${g.stages.some(s => s.qs.length) ? ' hidden' : ''}>배포하려면 질문이나 읽을 글이 하나 이상 있어야 해요.</p>
     ${g.stages.map((st, si) => `<section class="card" data-mg-stage="${si}"><div class="keep-form">${field('stage-name', '단계 이름', st.name, { id: 'mge-stage-' + si, si })}</div>
-      ${st.qs.map((q, qi) => `<div class="gr" data-mg-question="${q.id}"><div class="gt"><p class="q-eyebrow" data-mg-stage-label="${si}">${esc(st.name)} · ${qi + 1}</p><div class="keep-form">
-        ${field('q-t', '질문', q.t, { id: 'mge-' + q.id + '-t', ta: true, si, qi, hint: key + ':' + q.id })}
-        ${field('q-sub', '보조 설명', q.sub, { id: 'mge-' + q.id + '-sub', si, qi })}
-        ${field('q-vs', '관련 구절', (q.vs || []).join(', '), { id: 'mge-' + q.id + '-vs', si, qi, placeholder: '예: 요한복음 10:11, 이사야 5:1~2' })}
-        ${field('q-lead', '리더 해설 · 리더에게만 보여요', q.lead, { id: 'mge-' + q.id + '-lead', ta: true, si, qi })}
-        <div class="set-btns">${[['up', '위로'], ['down', '아래로'], ['dup', '복제'], ['del', '삭제']].map(([act, label]) => `<button class="btn ghost small" type="button" data-act="mg-q-${act}" data-si="${si}" data-qi="${qi}" aria-label="${esc(st.name)} ${qi + 1}번 질문 ${label}"${act === 'up' && qi === 0 || act === 'down' && qi === st.qs.length - 1 ? ' disabled' : ''}>${label}</button>`).join('')}</div>
+      ${st.qs.map((q, qi) => `<div class="gr" data-mg-question="${q.id}"><div class="gt"><p class="q-eyebrow" data-mg-stage-label="${si}">${esc(st.name)} · ${isRead(q) ? '읽을 글' : qNo(st, qi)}</p><div class="keep-form">
+        ${isRead(q) ? `${field('q-h', '제목 (선택)', q.h, { id: 'mge-' + q.id + '-h', si, qi })}
+          ${field('q-t', '글', q.t, { id: 'mge-' + q.id + '-t', ta: true, rows: 6, si, qi })}
+          <p class="hint">성경 구절은 장절만 적어 주세요. 회원은 각자 성경을 펴서 읽어요.</p>
+          ${field('q-vs', '관련 구절 (선택)', (q.vs || []).join(', '), { id: 'mge-' + q.id + '-vs', si, qi, placeholder: '예: 요한복음 3:16' })}` :
+          `${field('q-t', '질문', q.t, { id: 'mge-' + q.id + '-t', ta: true, si, qi, hint: key + ':' + q.id })}
+          ${field('q-sub', '보조 설명', q.sub, { id: 'mge-' + q.id + '-sub', si, qi })}
+          ${field('q-vs', '관련 구절', (q.vs || []).join(', '), { id: 'mge-' + q.id + '-vs', si, qi, placeholder: '예: 요한복음 10:11, 이사야 5:1~2' })}
+          ${field('q-lead', '리더 해설 · 리더에게만 보여요', q.lead, { id: 'mge-' + q.id + '-lead', ta: true, si, qi })}`}
+        <div class="set-btns">${[['up', '위로'], ['down', '아래로'], ['dup', '복제'], ['del', '삭제']].map(([act, label]) => `<button class="btn ghost small" type="button" data-act="mg-q-${act}" data-si="${si}" data-qi="${qi}" aria-label="${esc(st.name)} ${isRead(q) ? '읽을 글' : qNo(st, qi) + '번 질문'} ${label}"${act === 'up' && qi === 0 || act === 'down' && qi === st.qs.length - 1 ? ' disabled' : ''}>${label}</button>`).join('')}</div>
       </div></div></div>`).join('')}
-      ${!st.qs.length ? '<p class="hint">질문이 없는 단계는 회원 화면과 인쇄물에서 빠져요.</p>' : ''}
-      <button class="btn ghost small" type="button" data-act="mg-q-add" data-si="${si}">질문 추가</button></section>`).join('')}
+      ${!st.qs.length ? '<p class="hint">질문과 읽을 글이 없는 단계는 회원 화면과 인쇄물에서 빠져요.</p>' : ''}
+      <button class="btn ghost small" type="button" data-act="mg-q-add" data-si="${si}">질문 추가</button>
+      <button class="btn ghost small" type="button" data-act="mg-read-add" data-si="${si}">읽을 글 추가</button></section>`).join('')}
     <section class="card"><p class="opt-name">깊이 묵상하기</p>${g.triple.map(t => `<div class="tri-item"><span class="who">${esc(t.who)}</span><p class="q-t">${esc(t.t)}</p></div>`).join('')}<p class="hint">깊이 묵상하기 질문은 교재마다 같아요.</p></section>
     <section class="card"><div class="keep-form">${field('wrap', '마무리 적용·기도 안내 (선택)', L.wrap, { ta: true })}</div><p class="hint">비워 두면 보이지 않아요.</p></section>
     <section class="card"><p class="opt-name">성경 본문 (인쇄용)</p>${mgEditSeg('mg-edit-seg', 'print-on', [['0', '넣지 않기'], ['1', '넣기']], L.useText ? '1' : '0')}
@@ -1895,7 +1915,7 @@ function mgPvHtml(b, L, g) {
   const leader = mgPvMode === 'leader';
   return `<section class="card today"><p class="lesson-book">${esc(b.title)} <span class="hint">${esc(b.period)}</span></p><h2 class="lesson-title">제${L.no}과 ${esc(L.name || '(제목을 적어 주세요)')}</h2>${L.ref ? `<span class="passage-chip">${esc(L.ref)}</span>` : ''}${L.intro ? `<p class="fine">${esc(L.intro)}</p>` : ''}</section>
     ${leader && g.guide ? `<section class="card"><p class="opt-name">전체 진행 안내</p><div class="pn lead"><p class="lab">리더·목사님</p><p class="t">${esc(g.guide)}</p></div></section>` : ''}
-    ${g.stages.filter(st => st.qs.length).map(st => `<section class="stage-sec"><h2 class="stage-h">${esc(st.name)}</h2>${st.qs.map((q, qi) => `<article class="card qcard"><div class="q-meta"><span class="q-eyebrow">${esc(st.name)} · ${qi + 1}</span></div><h3 class="q-t">${esc(q.t)}</h3>${q.sub || (q.vs && q.vs.length) ? helpHtml(q) : ''}${leader ? mgPvLead(q) : ''}</article>`).join('')}</section>`).join('')}
+    ${g.stages.filter(st => st.qs.length).map(st => `<section class="stage-sec"><h2 class="stage-h">${esc(st.name)}</h2>${st.qs.map((q, qi) => isRead(q) ? readHtml(st, q) : `<article class="card qcard"><div class="q-meta"><span class="q-eyebrow">${esc(st.name)} · ${qNo(st, qi)}</span></div><h3 class="q-t">${esc(q.t)}</h3>${q.sub || (q.vs && q.vs.length) ? helpHtml(q) : ''}${leader ? mgPvLead(q) : ''}</article>`).join('')}</section>`).join('')}
     ${g.triple.length ? `<section class="card deep"><p class="eyebrow">깊이 묵상하기</p><h2 class="d-lead">오늘 말씀에서 삼위일체 하나님을 묵상해요.</h2>${g.triple.map(t => `<div class="tri-item"><span class="who">${esc(t.who)}</span><h3 class="q-t">${esc(t.t)}</h3></div>`).join('')}</section>` : ''}
     ${L.wrap ? `<section class="card"><p class="opt-name">마무리 적용·기도 안내</p><p class="t">${esc(L.wrap)}</p></section>` : ''}`;
 }
@@ -1909,7 +1929,7 @@ function mgEditInput(t) {
   if (['name', 'ref', 'intro', 'wrap'].includes(name)) L[name] = t.value;
   else if (name === 'date') { const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(t.value); L.date = m ? `${Number(m[2])}월 ${Number(m[3])}일${new Date(Number(m[1]), Number(m[2]) - 1, Number(m[3])).getDay() === 0 ? ' 주일' : ''}` : ''; }
   else if (name === 'guide') g.guide = t.value;
-  else if (name === 'stage-name' && st) { st.name = t.value; $$(`[data-mg-stage-label="${si}"]`).forEach((el, i) => { el.textContent = t.value + ' · ' + (i + 1); }); }
+  else if (name === 'stage-name' && st) { st.name = t.value; $$(`[data-mg-stage-label="${si}"]`).forEach((el, i) => { el.textContent = t.value + ' · ' + (isRead(st.qs[i]) ? '읽을 글' : qNo(st, i)); }); }
   else if (name.startsWith('q-') && q) q[name.slice(2)] = name === 'q-vs' ? t.value.split(',').map(v => v.trim()).filter(Boolean) : t.value;
   else if (name === 'print-text') L.text = t.value;
   else return;
@@ -1926,6 +1946,7 @@ function mgQuestionChange(el, action) {
   const c = mgEditCurrent(); if (!c) return;
   const si = Number(el.dataset.si), qi = Number(el.dataset.qi), st = c.g.stages[si]; if (!st) return;
   if (action === 'add') st.qs.push({ id: mgQuestionId(), t: '', sub: '', vs: [], lead: '' });
+  else if (action === 'read-add') st.qs.push({ id: mgQuestionId(), kind: 'read', h: '', t: '', vs: [] });
   else {
     const q = st.qs[qi]; if (!q) return;
     if (action === 'dup') st.qs.splice(qi + 1, 0, { ...JSON.parse(JSON.stringify(q)), id: mgQuestionId() });
@@ -2161,7 +2182,7 @@ let shareAuto = false;
 const readBack = () => { if (readAsMember) return { href: '#prep', name: '진행 준비' }; const b = readFrom && DATA.books.find(x => x.id === readFrom); return b ? { href: '#book-' + b.id, name: bTitle(b) } : { href: '#shelf', name: '책장' }; };
 const editing = new Set(), status = {}, timers = {}, expanded = new Set();
 let cordDone = false, jumpedAt = 0, lastInput = 0, scrollT = 0;
-const allQs = () => G.stages.flatMap(s => s.qs).concat(D.readTriple ? G.triple : []);
+const allQs = () => G.stages.flatMap(s => stageQuestions(s)).concat(D.readTriple ? G.triple : []);
 const readBm = () => { const v = readJson(K.bookmark); return v.id ? v : null; };
 const hasBm = () => !!readBm();
 function setBookmark(id) {
@@ -2172,9 +2193,16 @@ function paintBookmark() {
   $$('[data-qid]').forEach(el => { const on = !!BM && el.dataset.qid === BM.id; el.classList.toggle('has-bm', on); const b = $('.bm', el); if (b) b.hidden = !on; });
   $$('.toc-q').forEach(el => el.classList.toggle('has-bm', !!BM && el.dataset.id === BM.id));
 }
+function readHtml(st, q) {
+  return `<article class="card qcard rcard" id="q-${q.id}"><div class="q-meta"><span class="q-eyebrow">${esc(st.name)} · 읽을 글</span></div>
+    ${String(q.h || '').trim() ? `<h3 class="q-t">${esc(q.h)}</h3>` : ''}
+    <p class="r-t">${esc(q.t)}</p>
+    ${Array.isArray(q.vs) && q.vs.length ? `<div class="verse-row"><span class="lab">관련 구절</span>${q.vs.map(verseChip).join('')}</div>` : ''}
+    </article>`;
+}
 function qHtml(st, qi, q) {
   return `<article class="card qcard" id="q-${q.id}" data-qid="${q.id}" aria-labelledby="qt-${q.id}">
-    <div class="q-meta"><span class="q-eyebrow">${esc(st.name)} · ${qi + 1}</span><span class="bm" hidden>${mkIc()}책갈피</span></div>
+    <div class="q-meta"><span class="q-eyebrow">${esc(st.name)} · ${qNo(st, qi)}</span><span class="bm" hidden>${mkIc()}책갈피</span></div>
     <h3 class="q-t" id="qt-${q.id}">${esc(q.t)}</h3>
     ${helpHtml(q)}${isLead() && !readAsMember ? leadHtml(q) : ''}
     <div class="ans" data-ans="${q.id}"></div></article>`;
@@ -2204,7 +2232,7 @@ function tocHtml() {
   let h = '';
   G.stages.forEach(st => {
     h += `<p class="toc-grp">${esc(st.name)}</p>`;
-    st.qs.forEach((q, i) => { h += `<button type="button" class="toc-q" data-act="goto" data-to="q-${q.id}" data-id="${q.id}"><span class="tn">${i + 1}</span><span class="tt">${esc(q.t)}</span><span class="tb" role="img" aria-label="책갈피">${mkIc()}</span></button>`; });
+    st.qs.forEach((q, i) => { h += `<button type="button" class="toc-q" data-act="goto" data-to="q-${q.id}"${isRead(q) ? '' : ` data-id="${q.id}"`}><span class="tn">${isRead(q) ? '' : qNo(st, i)}</span><span class="tt">${esc(isRead(q) ? readLabel(q) : q.t)}</span>${isRead(q) ? '<span></span>' : `<span class="tb" role="img" aria-label="책갈피">${mkIc()}</span>`}</button>`; });
   });
   if (D.readTriple && G.triple.length) h += `<p class="toc-grp">깊이 묵상하기</p><button type="button" class="toc-q" data-act="goto" data-to="deep"><span class="tn"></span><span class="tt">아버지 · 아들 · 성령</span><span></span></button>`;
   h += `<p class="toc-grp">마무리</p><button type="button" class="toc-q" data-act="goto" data-to="wrapup"><span class="tn"></span><span class="tt">모임에 가지 못했다면</span><span></span></button>`;
@@ -2219,7 +2247,7 @@ function prepView() {
   G = readyGuide(); if (!G) return noGuideView('진행 준비');
   const L = thisLesson(), memos = readMemo();
   const memo = key => `<div class="pn memo"><label class="lab" for="pm-${key}">${ic('lock')}내 진행 메모</label><textarea class="field" id="pm-${key}" data-memo-key="${key}" rows="2" maxlength="1000" placeholder="진행하며 기억할 것">${esc(memos[key] || '')}</textarea></div>`;
-  const toc = G.stages.map(st => `<p class="toc-grp">${esc(st.name)}</p>${st.qs.map((q, i) => `<button type="button" class="toc-q" data-act="goto" data-to="p-${q.id}"><span class="tn">${i + 1}</span><span class="tt">${esc(q.t)}</span><span></span></button>`).join('')}`).join('')
+  const toc = G.stages.map(st => `<p class="toc-grp">${esc(st.name)}</p>${st.qs.map((q, i) => `<button type="button" class="toc-q" data-act="goto" data-to="p-${q.id}"><span class="tn">${isRead(q) ? '' : qNo(st, i)}</span><span class="tt">${esc(isRead(q) ? readLabel(q) : q.t)}</span><span></span></button>`).join('')}`).join('')
     + (G.triple.length ? `<p class="toc-grp">깊이 묵상하기</p><button type="button" class="toc-q" data-act="goto" data-to="p-deep"><span class="tn"></span><span class="tt">아버지 · 아들 · 성령</span><span></span></button>` : '');
   return `<div class="read-wrap">
     <a class="back-link" href="#share">${ic('back')}<span>나눔하기</span></a>
@@ -2238,8 +2266,8 @@ function prepView() {
         <div class="toc-list" id="tocList" hidden>${toc}</div>
       </section>
       <div class="rg-body">
-        ${G.stages.map((st, si) => `<section class="stage-sec"><h2 class="stage-h">${esc(st.name)}</h2>${st.qs.map((q, qi) => `<article class="card qcard" id="p-${q.id}" aria-labelledby="pt-${q.id}">
-          <div class="q-meta"><span class="q-eyebrow">${esc(st.name)} · ${qi + 1}</span></div>
+        ${G.stages.map((st, si) => `<section class="stage-sec"><h2 class="stage-h">${esc(st.name)}</h2>${st.qs.map((q, qi) => isRead(q) ? readHtml(st, q).replace(`id="q-${q.id}"`, `id="p-${q.id}"`) : `<article class="card qcard" id="p-${q.id}" aria-labelledby="pt-${q.id}">
+          <div class="q-meta"><span class="q-eyebrow">${esc(st.name)} · ${qNo(st, qi)}</span></div>
           <h3 class="q-t" id="pt-${q.id}">${esc(q.t)}</h3>${helpHtml(q)}${leadHtml(q)}${memo(si + '-' + qi)}</article>`).join('')}</section>`).join('')}
         ${G.triple.length ? `<section class="card deep" id="p-deep" aria-labelledby="prepDeepT"><p class="eyebrow" style="margin:0">깊이 묵상하기</p><h2 class="d-lead" id="prepDeepT">오늘 말씀에서 삼위일체 하나님을 묵상해요.</h2>
           ${G.triple.map(t => `<div class="tri-item"><div class="q-meta"><span class="who">${esc(t.who)}</span></div><h3 class="q-t">${esc(t.t)}</h3>${memo(t.id)}</div>`).join('')}</section>` : ''}
@@ -2274,7 +2302,7 @@ function readView() {
 }
 function renderAll() {
   flushAll();
-  $('#rbody').innerHTML = G.stages.map(st => `<section class="stage-sec" aria-label="${esc(st.name)}"><h2 class="stage-h">${esc(st.name)}</h2>${st.qs.map((q, i) => qHtml(st, i, q)).join('')}</section>`).join('')
+  $('#rbody').innerHTML = G.stages.map(st => `<section class="stage-sec" aria-label="${esc(st.name)}"><h2 class="stage-h">${esc(st.name)}</h2>${st.qs.map((q, i) => isRead(q) ? readHtml(st, q) : qHtml(st, i, q)).join('')}</section>`).join('')
     + (D.readTriple && G.triple.length ? deepHtml() : '') + wrapHtml();
   $('#tocList').innerHTML = tocHtml();
   allQs().forEach(q => renderAns(q.id));
@@ -2402,7 +2430,7 @@ function shareView() {
   </div>`;
 }
 function renderStart() {
-  $('#stageChecks').innerHTML = G.stages.map((s, i) => `<button type="button" class="chk ${R.stages[i] ? 'on' : ''}" role="checkbox" aria-checked="${R.stages[i]}" data-act="stage" data-i="${i}"><span class="box">${ic('check')}</span>${esc(s.name)}<small>질문 ${s.qs.length}개</small></button>`).join('');
+  $('#stageChecks').innerHTML = G.stages.map((s, i) => `<button type="button" class="chk ${R.stages[i] ? 'on' : ''}" role="checkbox" aria-checked="${R.stages[i]}" data-act="stage" data-i="${i}"><span class="box">${ic('check')}</span>${esc(s.name)}<small>${stageCaption(s)}</small></button>`).join('');
   $('#segView').innerHTML = [['phone', '각자 휴대폰'], ['big', '한 화면 크게']].map(([v, l]) => `<button type="button" data-sview="${v}" class="${R.view === v ? 'on' : ''}" aria-pressed="${R.view === v}">${l}</button>`).join('');
   for (const [id, k] of [['swOpen', 'open'], ['swTriple', 'triple'], ['swDim', 'dim']]) { const b = $('#' + id); b.classList.toggle('on', R[k]); b.setAttribute('aria-checked', R[k]); }
 }
@@ -2416,9 +2444,9 @@ function buildSteps() {
   if (R.open) st.push({ t: 'open' });
   st.push({ t: 'passage' });
   const inc = G.stages.map((s, i) => i).filter(i => R.stages[i]);
-  const total = inc.reduce((a, i) => a + G.stages[i].qs.length, 0);
+  const total = inc.reduce((a, i) => a + stageQuestions(G.stages[i]).length, 0);
   let n = 0;
-  inc.forEach(si => { st.push({ t: 'cover', si }); G.stages[si].qs.forEach((q, qi) => { n++; st.push({ t: 'q', si, qi, n, total }); }); });
+  inc.forEach(si => { st.push({ t: 'cover', si }); G.stages[si].qs.forEach((q, qi) => { if (isRead(q)) st.push({ t: 'read', si, qi }); else { n++; st.push({ t: 'q', si, qi, n, total }); } }); });
   if (R.triple && G.triple.length) st.push({ t: 'triple' });
   st.push({ t: 'keep' });
   st.push({ t: 'bless' }, { t: 'done' });
@@ -2431,10 +2459,11 @@ function progHtml() {
   const s = cur(); if (!s) return '';
   const time = `<span class="pill pill-t">${ic('clock')}<span class="tm">${elapsed()}</span></span>`;
   if (s.t === 'q') {
-    const sg = G.stages[s.si], n = sg.qs.length;
-    const dots = sg.qs.map((x, k) => `<i class="${k === s.qi ? 'on' : ''}"></i>`).join('');
-    return `<span class="pill pill-p" aria-label="${esc(sg.name)} ${s.qi + 1}/${n}, 전체 ${s.n}/${s.total}"><b>${esc(sg.name)}</b><span class="dots" aria-hidden="true">${dots}</span><span class="dv" aria-hidden="true"></span><span class="pn-n">${s.n}/${s.total}</span></span>${time}`;
+    const sg = G.stages[s.si], n = stageQuestions(sg).length;
+    const dots = stageQuestions(sg).map(x => `<i class="${x === sg.qs[s.qi] ? 'on' : ''}"></i>`).join('');
+    return `<span class="pill pill-p" aria-label="${esc(sg.name)} ${qNo(sg, s.qi)}/${n}, 전체 ${s.n}/${s.total}"><b>${esc(sg.name)}</b><span class="dots" aria-hidden="true">${dots}</span><span class="dv" aria-hidden="true"></span><span class="pn-n">${s.n}/${s.total}</span></span>${time}`;
   }
+  if (s.t === 'read') return `<span class="pill pill-p"><b>${esc(G.stages[s.si].name)}</b></span>${time}`;
   return ['passage', 'cover', 'triple', 'keep'].includes(s.t) ? time : '';
 }
 function tick() { if (R.on) $$('.tm').forEach(e => { e.textContent = elapsed(); }); }
@@ -2483,7 +2512,7 @@ function topHtml(s) {
   if (s.t === 'open' || s.t === 'done') return '';
   const x = `<button class="st-pill" type="button" data-act="ask-close">${ic('x')}닫기</button>`;
   const list = `<button class="st-pill ico" type="button" data-act="jump" aria-label="단계 목록">${ic('list')}<span class="lbl">단계 목록</span></button>`;
-  if (s.t === 'q') return `${x}<div class="st-prog">${progHtml()}</div>${list}`;
+  if (s.t === 'q' || s.t === 'read') return `${x}<div class="st-prog">${progHtml()}</div>${list}`;
   return `${x}<div class="st-prog">${progHtml()}</div>${['passage', 'cover'].includes(s.t) ? list : ''}`;
 }
 function renderStep() {
@@ -2506,7 +2535,12 @@ function renderStep() {
     nav = prev + next();
   } else if (s.t === 'cover') {
     const sg = G.stages[s.si];
-    html = `<div class="st-in" data-act="next" style="cursor:pointer"><svg class="cover-mark" viewBox="0 -20 240 40" aria-hidden="true">${braidPaths(240, 8, 5, false, 4)}</svg><h2 class="cover-name">${esc(sg.name)}</h2><p class="cover-sub">질문 ${sg.qs.length}개</p></div>`;
+    html = `<div class="st-in" data-act="next" style="cursor:pointer"><svg class="cover-mark" viewBox="0 -20 240 40" aria-hidden="true">${braidPaths(240, 8, 5, false, 4)}</svg><h2 class="cover-name">${esc(sg.name)}</h2><p class="cover-sub">${stageCaption(sg)}</p></div>`;
+    nav = prev + next();
+  } else if (s.t === 'read') {
+    const st = G.stages[s.si], q = st.qs[s.qi];
+    html = `<div class="st-in">${readHtml(st, q)}</div>`;
+    $('#stBody').className = 'st-body qmode';
     nav = prev + next();
   } else if (s.t === 'q') {
     const q = G.stages[s.si].qs[s.qi], panels = R.view !== 'big', leader = isLead() && panels;
@@ -2771,7 +2805,7 @@ function liveEntry() {
   const L = lessonOf(weekSel()), g = DATA.guides[L.id], k = readJson(K.keep), ans = readJson(K.answers);
   const sentence = String(k.sentence || '').trim(), action = String(k.action || '').trim(), answers = [], threads = {};
   if (g) {
-    g.stages.forEach(st => st.qs.forEach(q => { if (String(ans[q.id] || '').trim()) answers.push({ q: q.t, a: ans[q.id] }); }));
+    g.stages.forEach(st => st.qs.forEach(q => { if (!isRead(q) && String(ans[q.id] || '').trim()) answers.push({ q: q.t, a: ans[q.id] }); }));
     g.triple.forEach(t => { if (String(ans[t.id] || '').trim()) threads[t.who] = [ans[t.id]]; });
   }
   if (!sentence && !action && !answers.length && !Object.keys(threads).length) return null;
@@ -3119,6 +3153,7 @@ const acts = {
   'mg-pv-fold'() { if (!mgEditCurrent()) return; mgPvOpen = !mgPvOpen; mgRenderPreview(); },
   'mg-edit-seg'(e, el) { const c = mgEditCurrent(); if (!c) return; if (el.dataset.mg === 'print-on') c.L.useText = el.dataset.v === '1'; else if (el.dataset.mg === 'print-size') c.L.fs = el.dataset.v; c.b.edited = true; mgEditRedraw(); },
   'mg-q-add'(e, el) { mgQuestionChange(el, 'add'); },
+  'mg-read-add'(e, el) { mgQuestionChange(el, 'read-add'); },
   'mg-q-dup'(e, el) { mgQuestionChange(el, 'dup'); },
   'mg-q-up'(e, el) { mgQuestionChange(el, 'up'); },
   'mg-q-down'(e, el) { mgQuestionChange(el, 'down'); },
@@ -3298,7 +3333,7 @@ const acts = {
     html += `<button type="button" data-act="jump-to" data-p="${R.steps.findIndex(x => x.t === 'passage')}" class="${s.t === 'passage' ? 'here' : ''}">본문 · ${esc(thisLesson().ref)}</button>`;
     R.steps.forEach((x, p) => {
       if (x.t === 'cover') html += `<p class="grp">${esc(G.stages[x.si].name)}</p>`;
-      if (x.t === 'q') html += `<button type="button" data-act="jump-to" data-p="${p}" class="${R.pos === p ? 'here' : ''}">${esc(G.stages[x.si].qs[x.qi].t)}</button>`;
+      if (x.t === 'q' || x.t === 'read') { const q = G.stages[x.si].qs[x.qi]; html += `<button type="button" data-act="jump-to" data-p="${p}" class="${R.pos === p ? 'here' : ''}">${esc(isRead(q) ? readLabel(q) : q.t)}</button>`; }
     });
     html += '</div>';
     shareOpenSheet(html);
