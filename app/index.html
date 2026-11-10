@@ -2583,6 +2583,25 @@ const bCover = b => b.id === 'john' ? { motif: D.jcoverMotif, color: D.jcoverCol
 // 그림을 한 번 미리 풀어 두고 붙잡아 둔다. 화면을 다시 그릴 때 그림이 한 박자 늦게 들어와 반짝이지 않게 한다(2026-11-10).
 //  표지는 그릴 때, 다른 그림(이번 주의 질문, 올해의 그림)은 화면을 그린 뒤 route에서 붙잡는다
 const COVER_KEEP = new Map();
+// 그림 칸 다시 쓰기(2026-11-10): 화면을 통째로 다시 그리면 <img>가 새로 생겨 그림을 다시 요청하고, 그동안 빈 칸이 한 번 보였다(아이폰 사파리에서 특히, 서비스워커를 거치는 동안).
+//  한 번 그린 그림 칸은 버리지 않고 주소별로 모아 두었다가, 같은 그림이 다시 나오면 새 칸 대신 그 칸을 끼운다. 글자 속성(class, alt 등)만 새 칸의 것으로 맞춘다
+const IMG_POOL = new Map();
+function reuseImgs(root) {
+  if (!root) return;
+  const used = new Set();
+  root.querySelectorAll('img').forEach(im => {
+    const src = im.getAttribute('src'); if (!src) return;
+    keepImg(src);
+    const old = (IMG_POOL.get(src) || []).find(o => !o.isConnected && !used.has(o));
+    if (old) {
+      [...old.attributes].forEach(a => { if (!im.hasAttribute(a.name)) old.removeAttribute(a.name); });
+      [...im.attributes].forEach(a => { if (old.getAttribute(a.name) !== a.value) old.setAttribute(a.name, a.value); });
+      im.replaceWith(old); used.add(old);
+    } else {
+      const list = IMG_POOL.get(src) || []; list.push(im); IMG_POOL.set(src, list); used.add(im);
+    }
+  });
+}
 function keepImg(src) {
   if (!src || COVER_KEEP.has(src)) return;
   const im = new Image(); im.src = src;
@@ -2932,7 +2951,7 @@ function route(moved) {
   $('#topnav').hidden = start; $('#tabs').hidden = start;
   document.body.dataset.view = v;
   $('#view').innerHTML = start ? startView() : v === 'week' ? weekView() : v === 'wq' ? wqView() : v === 'read' ? readView() : v === 'share' ? shareView() : v === 'shelf' ? shelfView(arg) : v === 'record' ? recordView(arg) : v === 'records' ? recordsView() : v === 'gallery' ? galleryView() : v === 'more' ? moreView() : v === 'admin' ? adminView() : v === 'about' ? aboutView() : v === 'feedback' ? feedbackView() : v === 'prep' ? prepView() : v === 'prepprint' ? prepPrintView() : v === 'church' ? churchView() : v === 'rooms' ? roomsView() : v === 'manage' ? manageView(arg) : placeView(v);
-  $$('#view img').forEach(im => keepImg(im.getAttribute('src')));
+  reuseImgs($('#view'));
   const tab = start ? '' : v === 'week' ? 'week' : PLACE[v][1];
   $$('[data-tab]').forEach(a => { const on = a.dataset.tab === tab; a.classList.toggle('on', on); on ? a.setAttribute('aria-current', 'page') : a.removeAttribute('aria-current'); });
   document.title = start ? '디다코' : (v === 'shelf' && arg ? bTitle(bookById(arg)) : v === 'record' && arg ? '기록 상세' : v === 'week' ? '이번 주' : PLACE[v][0]) + ' · 디다코';
