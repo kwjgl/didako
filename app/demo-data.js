@@ -6,11 +6,13 @@ window.DIDAKO_DEMO = {
   // 위쪽 배지: 회원·리더는 사랑방, 목사님·관리자는 부서를 보인다(설계서 7장 시안끼리 맞추는 약속)
   church: { dept: '청장년부', room: '2-20 사랑방' },
   // state: past 지났음 / now 이번 주 / prep 준비 중(회원 목차에는 아직 안 보임) / upcoming 다가오는 과
-  // 책장(shelf)이 쓰는 것: kind 종류(GBS·새가족반), slot(now 지금 읽는 책 / alt 교재 번갈아 쓰기 예시에서만 / done 지난 교재), cover 표지 그림(디다코 노트 탐구하기의 그림 묶음에서 교재마다 자유롭게 고른 것, 없으면 그림 없는 카드), range 본문 범위,
+  // 책장(shelf)이 쓰는 것: kind 종류(GBS·새가족반), cover 표지 그림(디다코 노트 탐구하기의 그림 묶음에서 교재마다 자유롭게 고른 것, 없으면 그림 없는 카드), range 본문 범위,
   //  과의 body(검색에 쓰는 쉬운 풀이. 성경 본문이 아니다), keep(그 과에서 오늘 남길 것을 남겼는가. 책갈피 끈이 길어지지만 숫자로는 보이지 않는다), mine(남긴 한 문장. 지난 책의 마지막 장에만 모인다)
+  // 사랑방이 함께 읽는 교재. 처음에는 이것이 지금 읽는 책으로 놓인다
+  roomBook: 'john',
   books: [
     {
-      id: 'john', title: '요한복음', period: '2026년 9월부터', closed: false, kind: 'GBS', slot: 'now', cover: '../note/img/walk/cover-john-1.webp', range: '요한복음 1~15장',
+      id: 'john', title: '요한복음', period: '2026년 9월부터', closed: false, kind: 'GBS', cover: '../note/img/walk/cover-john-1.webp', range: '요한복음 1~15장',
       lessons: [
         { no: 1, name: '빛으로 오신 분', ref: '요한복음 1:1~14', date: '10월 11일 주일', state: 'past', body: '말씀이 사람이 되어 우리 가운데 오셨다는 이야기를 함께 살펴봐요.', keep: true, mine: '어둠 속에서도 빛은 꺼지지 않는다는 말이 위로가 됐다.' },
         { no: 2, name: '생명의 떡', ref: '요한복음 6:35~51', date: '10월 18일 주일', state: 'past', body: '배고픈 사람들이 떡을 찾아올 때, 예수님이 진짜 필요한 것을 말씀하세요.', keep: true, mine: '필요한 것만 구하던 나를 돌아보게 됐다.' },
@@ -19,7 +21,7 @@ window.DIDAKO_DEMO = {
       ]
     },
     {
-      id: 'fam', title: '새가족반 기초 · 처음 만나는 교회', period: '2026년 9월부터', closed: false, kind: '새가족반', slot: 'now', cover: '../note/img/w/weekly-01.webp', range: '마태복음 · 에베소서',
+      id: 'fam', title: '새가족반 기초 · 처음 만나는 교회', period: '2026년 9월부터', closed: false, kind: '새가족반', cover: '../note/img/w/weekly-01.webp', range: '마태복음 · 에베소서',
       lessons: [
         { no: 1, name: '예수님은 누구신가요', ref: '마태복음 16:13~20', date: '10월 11일 주일', state: 'past', body: '제자들이 예수님을 누구라고 고백하는지 따라가 봐요.', keep: true, mine: '나는 예수님을 누구라고 말할 수 있을까 생각했다.' },
         { no: 2, name: '은혜로 받은 구원', ref: '에베소서 2:8~10', date: '10월 18일 주일', state: 'past', body: '구원은 내가 얻은 것이 아니라 선물로 받은 것이라는 이야기예요.' },
@@ -27,14 +29,14 @@ window.DIDAKO_DEMO = {
       ]
     },
     {
-      id: 'genesis', title: '창세기', period: '2026년 9월부터', closed: false, kind: 'GBS', slot: 'alt', cover: '../note/img/walk/cover-genesis-1.webp', range: '창세기 1~22장 일부',
+      id: 'genesis', title: '창세기', period: '2026년 9월부터', closed: false, kind: 'GBS', cover: '../note/img/walk/cover-genesis-1.webp', range: '창세기 1~22장 일부',
       lessons: [
         { no: 1, name: '빛이 있으라', ref: '창세기 1:1~5', date: '10월 4일 주일', state: 'past', body: '혼돈 가운데서 질서와 빛이 시작되는 장면이에요.', keep: true, mine: '말씀으로 시작되는 하루를 생각했다.' },
         { no: 2, name: '아브람의 부르심', ref: '창세기 12:1~9', date: '11월 8일 주일', state: 'upcoming', intro: '아브람이 익숙한 곳을 떠나 부르심을 따라 나서는 이야기를 함께 살펴봐요.', body: '아브람이 익숙한 곳을 떠나 부르심을 따라 나서는 이야기예요.' }
       ]
     },
     {
-      id: 'mark', title: '마가복음', period: '2026.3~4', closed: true, kind: 'GBS', slot: 'done', cover: '../note/img/walk/cover-mark-1.webp', range: '마가복음 1~9장',
+      id: 'mark', title: '마가복음', period: '2026.3~4', closed: true, kind: 'GBS', cover: '../note/img/walk/cover-mark-1.webp', range: '마가복음 1~9장',
       lessons: [
         { no: 1, name: '광야의 소리', ref: '마가복음 1:1~13', date: '3월 8일 주일', state: 'past', body: '길을 예비하는 사람과 광야에서 시작되는 예수님의 일을 살펴봐요.', mine: '시작은 조용한 광야에서였다는 것이 마음에 남는다.' },
         { no: 2, name: '그물을 버려두고', ref: '마가복음 1:14~20', date: '3월 15일 주일', state: 'past', body: '고기 잡던 이들이 부르심을 듣고 따라나선 이야기예요.', mine: '내가 붙들고 있는 그물이 무엇인지 생각해 본다.' },
@@ -44,7 +46,7 @@ window.DIDAKO_DEMO = {
       ]
     },
     {
-      id: 'psalms', title: '시편 묵상', period: '2025.11~2026.1', closed: true, kind: 'GBS', slot: 'done', cover: '../note/img/w/weekly-30.webp', range: '시편 1·23·103·130편',
+      id: 'psalms', title: '시편 묵상', period: '2025.11~2026.1', closed: true, kind: 'GBS', cover: '../note/img/w/weekly-30.webp', range: '시편 1·23·103·130편',
       lessons: [
         { no: 1, name: '복 있는 사람', ref: '시편 1:1~6', date: '12월 7일 주일', state: 'past', body: '말씀을 즐거워하는 사람이 어떤 나무와 같은지 살펴봐요.', mine: '가까이 두는 것이 나를 만든다.' },
         { no: 2, name: '주는 나의 목자', ref: '시편 23:1~6', date: '12월 14일 주일', state: 'past', body: '목자이신 하나님과 함께 걷는 길을 그려 봐요.', mine: '부족함이 없다는 말을 천천히 읽어 본다.' },
@@ -53,20 +55,17 @@ window.DIDAKO_DEMO = {
       ]
     },
     {
-      id: 'thanks', title: '추수감사 가정예배', period: '2026년 가을', closed: false, kind: '가정예배', slot: 'home', range: '신명기 8장',
+      id: 'thanks', title: '추수감사 가정예배', period: '2026년 가을', closed: false, kind: '가정예배', range: '신명기 8장',
       lessons: [
         { no: 1, name: '감사로 차린 식탁', ref: '신명기 8:7~10', date: '11월 15일 주일 즈음', state: 'now', intro: '한 해 동안 받은 것을 떠올리며 식탁에서 함께 감사해요.', body: '좋은 땅으로 이끄신 하나님을 기억하고, 배불리 먹은 뒤 감사하라는 이야기예요.' }
       ]
     }
   ],
-  // 이번 주(10월 25일 주일)의 과. main은 요한복음 제3과, alt는 "교재 번갈아 쓰기 예시"(창세기 제2과를 이번 주로 옮긴 모습)
+  // 이번 주(10월 25일 주일)의 과. main은 요한복음 제3과
   thisWeek: {
     date: '10월 25일 주일',
-    main: { book: 'john', no: 3 },
-    alt: { book: 'genesis', no: 2 }
+    main: { book: 'john', no: 3 }
   },
-  // 우리 가정의 이번 주: 교회 관리자가 내린 가정예배지(가정 단위 부서에만 간다)
-  homeWeek: { book: 'thanks', no: 1 },
   // 지난주 작은 실천(내가 지난주 모임 끝에 남긴 것)과 "오늘 남길 것" 예시
   lastWeek: { lesson: '제2과 · 생명의 떡', action: '식사 전에 가족에게 먼저 고마운 일 하나 말하기' },
   sampleKeep: { sentence: '붙어 있는 것이 먼저라는 말이 오래 남았다.', action: '출근길에 15장을 한 번 더 읽기', ref: '요한복음 15:1~8' },

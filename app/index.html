@@ -687,6 +687,7 @@ body.sharing { overflow: hidden; }
 .xcard { padding: 14px 16px; margin: 0; }
 .xcard .xct { font-size: calc(var(--base) * 1.1875); font-weight: 700; line-height: 1.35; }
 .xrow { display: flex; align-items: center; justify-content: space-between; gap: 8px; width: 100%; min-height: 60px; margin: 8px 0 0; padding: 8px 16px; font-family: var(--f-body); font-weight: 400; font-size: calc(var(--base) * .9375); line-height: 1.4; color: var(--ink); text-align: left; cursor: pointer; }
+.xrow > span:first-child { flex: 1; min-width: 0; }
 .xrow .sh-sm { display: block; font-size: calc(var(--base) * .8125); }
 .xch { color: var(--ink-2); font-size: calc(var(--base) * 1.25); }
 .wk-cover { display: block; width: 100%; height: auto; aspect-ratio: 16 / 9; object-fit: cover; border-radius: 12px; margin: 0 0 12px; background: var(--surface-2); }
@@ -898,7 +899,6 @@ button.gallery-cell { display: block; width: 100%; padding: 0; cursor: pointer; 
       <p class="mlabel">함께하는 곳</p>
       <a class="place-row" href="../note/"><span>나의 디다코 노트<span class="role-tag">나</span></span></a>
       <button class="place-row" type="button" data-act="place-room"><span id="placeRoom"></span><span class="pk" aria-hidden="true">✓</span></button>
-      <button class="place-row" type="button" data-act="place-home" id="placeHomeRow"><span>우리 가정</span><span class="pk" aria-hidden="true">✓</span></button>
     </div>
     <button class="icon-btn" type="button" id="gearBtn" data-act="gear" aria-expanded="false" aria-label="설정"><svg class="ic" aria-hidden="true"><use href="#i-gear"/></svg></button>
     <div class="menu" id="settings" hidden></div>
@@ -958,7 +958,7 @@ const BUBBLE = '<svg viewBox="0 0 18 18" width="18" height="18" aria-hidden="tru
 // 화면 설정(화면 모드·색 테마·디자인·큰 글씨)은 한 자리에만 적는다. 데모 설정과 쓴 글은 따로 둔다
 // answers 내 생각(펼치기), bookmark 책갈피(펼치기), memo 리더의 내 진행 메모(나눔하기), leadopen 해설 접기/펼치기, keep 오늘 남길 것(펼치기·나눔하기가 같이 쓴다)
 // shareDone 나눔하기를 끝까지 넘겼는지(내 기록에 이번 주 기록이 나타나는 때), record… 내 기록에서 고친 글·돌아보기·지운 기록·비워 둔 상태
-const K = { display: 'didako-note-display', demo: 'didako-demo', reflect: 'didako-reflect', keep: 'didako-keep', answers: 'didako-read-answers', bookmark: 'didako-read-bookmark', memo: 'didako-share-memo', leadopen: 'didako-leadopen',
+const K = { display: 'didako-note-display', demo: 'didako-demo', myBook: 'didako-my-book', shareLesson: 'didako-share-lesson', reflect: 'didako-reflect', keep: 'didako-keep', answers: 'didako-read-answers', bookmark: 'didako-read-bookmark', memo: 'didako-share-memo', leadopen: 'didako-leadopen',
   walkRead: 'didako-weekwalk-read', walkThought: 'didako-weekwalk-thought', walkDone: 'didako-weekwalk-done', walkMeditate: 'didako-weekwalk-meditate',
   shareDone: 'didako-share-done', recRefl: 'didako-record-reflections', recAns: 'didako-record-answers', recEdit: 'didako-record-edits', recDel: 'didako-record-deleted', recHide: 'didako-record-hidden' };
 const MODES = ['auto', 'light', 'dark'], ACCENTS = ['green', 'amber', 'blue', 'rose', 'ink', 'paper'], STYLES = ['basic', 'neu', 'skeu', 'glass'];
@@ -969,15 +969,14 @@ const pick = (v, list, d) => (list.includes(v) ? v : d);
 const JCOVER_LIST = [['', '그림 없음'], ['../note/img/walk/cover-john-1.webp', '요한복음 1부 표지'], ['../note/img/walk/cover-mark-2.webp', '마가복음 2부 표지'], ['../note/img/w/weekly-01.webp', '이번 주의 질문 1주 그림']];
 const JCOVERS = JCOVER_LIST.map(x => x[0]);
 const S = { mode: 'auto', accent: 'paper', style: 'basic', big: false };
-const D = { entered: false, place: 'room', unit: 'family', role: 'member', status: 'all', walk: 1, galleryDemo: false, lastWeek: true, before: false, alt: false, readOpen: true, readTriple: true, dimSec: 15, two: false, noBooks: false, longTitle: false, jcover: JCOVER_LIST[1][0], newcomer: false };
+const D = { entered: false, role: 'member', status: 'all', walk: 1, galleryDemo: false, lastWeek: true, before: false, readOpen: true, readTriple: true, dimSec: 15, noBooks: false, longTitle: false, jcover: JCOVER_LIST[1][0], newcomer: false };
 function loadState() {
   const a = readJson(K.display), b = readJson(K.demo);
   S.mode = pick(a.mode, MODES, 'auto'); S.accent = pick(a.accent, ACCENTS, 'paper'); S.style = pick(a.style, STYLES, 'basic'); S.big = a.big === true;
-  D.unit = pick(b.unit, ['family', 'single'], 'family'); D.place = D.unit === 'single' ? 'room' : pick(b.place, ['room', 'home'], 'room');
   D.entered = b.entered === true; D.role = pick(b.role, ROLES.map(r => r[0]), 'member'); D.status = pick(b.status, STATUS.map(r => r[0]), 'all'); D.walk = Number.isInteger(Number(b.walk)) && Number(b.walk) >= 1 && Number(b.walk) <= 52 && DATA.weekWalk.some(w => w.n === Number(b.walk)) ? Number(b.walk) : 1; D.galleryDemo = b.galleryDemo === true;
-  D.lastWeek = b.lastWeek !== false; D.before = b.before === true; D.alt = b.alt === true;
+  D.lastWeek = b.lastWeek !== false; D.before = b.before === true;
   D.readOpen = b.readOpen !== false; D.readTriple = b.readTriple !== false; D.dimSec = b.dimSec === 5 ? 5 : 15;
-  D.two = b.two === true; D.noBooks = b.noBooks === true; D.longTitle = b.longTitle === true; D.jcover = pick(b.jcover, JCOVERS, JCOVER_LIST[1][0]); D.newcomer = b.newcomer === true;
+  D.noBooks = b.noBooks === true; D.longTitle = b.longTitle === true; D.jcover = pick(b.jcover, JCOVERS, JCOVER_LIST[1][0]); D.newcomer = b.newcomer === true;
 }
 const saveDisplay = () => ls.set(K.display, JSON.stringify({ ...readJson(K.display), mode: S.mode, accent: S.accent, style: S.style, big: S.big }));
 const saveDemo = () => ls.set(K.demo, JSON.stringify(D));
@@ -993,21 +992,15 @@ function applySettings() {
 
 // ── 역할과 위쪽 배지 ──
 // 배지 규칙: 회원·리더는 "2-20 사랑방", 목사님·관리자는 "청장년부" + 역할 이름표
-const atHome = () => D.place === 'home' && D.unit === 'family';
 const isTop = () => D.role === 'pastor' || D.role === 'admin';
 const groupName = () => (isTop() ? DATA.church.dept : DATA.church.room);
-// '으로/로' 고르기: 받침이 없거나 ㄹ 받침이면 '로'(청장년부로), 그 밖의 받침이면 '으로'
-const ro = s => { const c = String(s).charCodeAt(String(s).length - 1) - 0xAC00, j = c % 28; return c >= 0 && c < 11172 && j && j !== 8 ? '으로' : '로'; };
 const roleName = () => ROLES.find(x => x[0] === D.role)[1];
 function paintBadge() {
   $('#placeRoom').innerHTML = `${esc(groupName())} <span class="role-tag${D.role === 'leader' ? ' leader' : isTop() ? ' admin' : ''}">${roleName()}</span>`;
-  $('#badge').innerHTML = atHome() ? '우리 가정' : $('#placeRoom').innerHTML;
-  $('#placeHomeRow').hidden = D.unit === 'single';
-  for (const place of ['room', 'home']) {
-    const row = $(`#placeMenu [data-act="place-${place}"]`), current = (place === 'home') === atHome();
-    if (current) row.setAttribute('aria-current', 'true'); else row.removeAttribute('aria-current');
-    $('.pk', row).hidden = !current;
-  }
+  $('#badge').innerHTML = $('#placeRoom').innerHTML;
+  const row = $('#placeMenu [data-act="place-room"]');
+  row.setAttribute('aria-current', 'true');
+  $('.pk', row).hidden = false;
 }
 
 // ── 알림과 아래에서 올라오는 창 ──
@@ -1047,23 +1040,17 @@ function renderSettings() {
     <p class="mlabel">역할</p>${seg('role', ROLES, D.role)}
     <p class="mlabel">이번 주의 질문</p><select class="field" id="walkSel" aria-label="이번 주의 질문 주 고르기">${DATA.weekWalk.map(w => `<option value="${w.n}"${D.walk === w.n ? ' selected' : ''}>${w.n}주 · ${esc(w.title)}</option>`).join('')}</select>
     <p class="mlabel">올해의 그림</p>${seg('galleryDemo', [['0', '이 기기 기록만'], ['1', '예시로 채움']], D.galleryDemo ? 1 : 0)}
-    <p class="mlabel">부서 단위</p>${seg('unit', [['family', '가정'], ['single', '개인']], D.unit)}
-    <p class="set-note">개인이면 청년부처럼 한 사람이 한 줄이라 우리 가정이 없어요.</p>
     ${inApp && D.role === 'pastor' ? `<p class="mlabel">공개 범위</p>${seg('status', STATUS, D.status)}` : ''}
     ${inApp ? `<p class="mlabel">지난주 작은 실천 있음</p>${onoff('lastWeek', D.lastWeek)}
     <p class="mlabel">책갈피 있음</p>${onoff('bookmark', hasBm())}
     <p class="mlabel">이번 주 과 배포 전</p>${onoff('before', D.before)}
-    <p class="mlabel">교재 번갈아 쓰기 예시</p>${onoff('alt', D.alt)}
-    <p class="set-note">켜면 창세기도 열려 있고, 이번 주는 창세기 과 하나만 보여요.</p>
-    <p class="mlabel">이번 주 작은 실천(오늘 남길 것)</p>
+        <p class="mlabel">이번 주 작은 실천(오늘 남길 것)</p>
     <div class="set-btns"><button type="button" class="btn ghost small" data-act="keep-fill">예시 채우기</button><button type="button" class="btn ghost small" data-act="keep-clear">비우기</button></div>` : ''}
     ${currentView() === 'read' ? `<p class="mlabel">말씀을 열며</p>${onoff('readOpen', D.readOpen)}
     <p class="mlabel">깊이 묵상하기</p>${onoff('readTriple', D.readTriple)}
     <p class="mlabel">내 생각</p>
     <div class="set-btns"><button type="button" class="btn ghost small" data-act="ans-fill">예시 채우기</button><button type="button" class="btn ghost small" data-act="ans-clear">비우기</button></div>` : ''}
-    ${currentView() === 'shelf' ? `<p class="mlabel">이번 주 과 둘</p>${onoff('two', D.two)}
-    <p class="set-note">켜면 새가족반도 지금 읽는 책에 나란히 놓여요.</p>
-    <p class="mlabel">책 없음</p>${onoff('noBooks', D.noBooks)}
+    ${currentView() === 'shelf' ? `    <p class="mlabel">책 없음</p>${onoff('noBooks', D.noBooks)}
     <p class="mlabel">긴 제목 예시</p>${onoff('longTitle', D.longTitle)}
     <p class="mlabel">요한복음 표지 그림</p>
     <select class="field" id="jcover" aria-label="요한복음 표지 그림">${JCOVER_LIST.map(([v, n]) => `<option value="${esc(v)}"${D.jcover === v ? ' selected' : ''}>${n}</option>`).join('')}</select>
@@ -1101,25 +1088,7 @@ function lessonOf(sel) {
   const b = DATA.books.find(x => x.id === sel.book), l = b.lessons.find(x => x.no === sel.no);
   return { id: sel.book + ':' + l.no, book: b.title, period: b.period, no: l.no, title: `제${l.no}과 · ${l.name}`, ref: l.ref, date: l.date, intro: l.intro || '' };
 }
-const thisLesson = () => lessonOf(atHome() ? DATA.homeWeek : D.alt ? DATA.thisWeek.alt : DATA.thisWeek.main);
-function lessonCard() {
-  if (D.before && !atHome()) {
-    return `<section class="card today" aria-labelledby="lessonTitle">
-      <h2 class="lesson-title" id="lessonTitle">이번 주 과를 준비하고 있어요</h2>
-      <p class="soft" style="margin:0">준비가 끝나면 이곳에 보여요. 그동안 아래 지난 책을 볼 수 있어요.</p>
-    </section>`;
-  }
-  const L = thisLesson(), more = isLead();
-  return `<section class="card today" aria-labelledby="lessonTitle">
-    <div class="row lesson-top"><p class="lesson-book"><span class="book-l"><svg class="mk" aria-hidden="true"><use href="#i-didako"/></svg><b>${esc(L.book)}</b><span>${esc(L.period)}</span></span></p><span class="lesson-date">${esc(L.date)}</span></div>
-    <h2 class="lesson-title" id="lessonTitle">${esc(L.title)}</h2>
-    <span class="passage-chip">${esc(L.ref)}</span>
-    <p class="soft lesson-intro">${esc(L.intro)}</p>
-    <a class="btn wide read-btn" href="#read" data-act="read-go" data-resume="1">${hasBm() ? '이어서 펼치기' : '펼치기'}</a>
-    ${hasBm() ? '<p class="fine" style="margin-top:.6em">책갈피가 꽂힌 질문에서 이어서 펼쳐요.</p>' : ''}
-    <div class="act-row"><a class="btn ghost" href="#share">${atHome() ? '함께 읽기' : '나눔하기'}</a>${more ? '<button class="btn ghost" type="button" data-act="prep">진행 준비</button>' : ''}</div>
-  </section>`;
-}
+const thisLesson = () => lessonOf(weekSel());
 function lastWeekCard() {
   if (!D.lastWeek) return '';
   const v = ls.get(K.reflect) || '';
@@ -1281,7 +1250,6 @@ function moreView() {
   return `<div class="page-top"><h1>더보기</h1></div>
     <div class="more-grid"><div>
       <div class="gl">나</div><div class="gc">
-        <button class="gr" type="button" data-act="more-sync"><span class="gt"><b>동기화</b><span class="gd">연결됨 · 마지막으로 맡긴 때 오늘 오전 9:12</span></span><span class="chip">켜짐</span>${chevron}</button>
         <a class="gr" href="../note/"><span class="gt"><b>디다코 노트</b><span class="gd">혼자 묵상하는 노트로 돌아가요.</span></span>${chevron}</a>
       </div>
       <div class="gc" style="margin:14px 0;padding-top:14px;padding-bottom:14px">
@@ -1322,17 +1290,17 @@ function aboutView() {
       <div class="about-names"><div class="about-name"><b>디다케</b><span class="greek">διδαχή</span><span class="soft">가르침</span></div><span aria-hidden="true">+</span><div class="about-name"><b>코이노니아</b><span class="greek">κοινωνία</span><span class="soft">교제</span></div></div>
       <p>디다코는 '가르침'을 뜻하는 디다케(διδαχή, didachē)와 '교제'를 뜻하는 코이노니아(κοινωνία, koinōnia)에서 영감을 얻은 이름이에요.</p><p class="hint" style="margin-top:10px">사도행전 2:42</p></section>
     <section class="card about-card"><h2>세 겹 책갈피 이야기</h2><p>전도서 4장의 세 겹으로 꼰 줄은 쉽게 끊어지지 않는다는 말씀을 떠올려요. 디다코의 로고는 그렇게 꼰 세 가닥이 책갈피가 된 모양이에요. 세 가닥은 성부·성자·성령이에요.</p></section>
-    <section class="card about-card"><h2>보상 대신 흔적</h2><p>디다코에는 점수나 상이 없어요. 대신 흔적이 남아요. 남긴 과마다 책장의 책갈피 끈이 조금씩 자라고, 다 읽은 교재는 지난 책에 놓이고, 교재가 끝나면 그동안 남긴 한 문장이 한 장에 모여요. 이번 주의 질문을 끝까지 펴 본 주의 그림은 내 기록의 올해의 그림에 한 장씩 담겨요. 몇 개인지는 세지 않아요.</p></section>
+    <section class="card about-card"><h2>보상 대신 흔적</h2><p>디다코에는 점수나 상이 없어요. 대신 흔적이 남아요. 남긴 과마다 책장의 책갈피 끈이 조금씩 자라고, 내려놓은 교재는 지난 책에 놓이고, 교재가 끝나면 그동안 남긴 한 문장이 한 장에 모여요. 이번 주의 질문을 끝까지 펴 본 주의 그림은 내 기록의 올해의 그림에 한 장씩 담겨요. 몇 개인지는 세지 않아요.</p></section>
     <section class="card about-card"><h2>디다코는 말씀을 이렇게 이해해요</h2>
       ${steps.map(([title,desc,label,target],i)=>`<div class="about-step"><span class="step-no">${i+1}.</span><div><b>${title}</b><p>${desc}</p><a href="${target}">${label}</a></div></div>`).join('')}
     </section></div>`;
 }
 const GUIDE_CARDS = [
   ['week','이번 주','교회가 함께 이번 주의 질문 하나를 한 주 동안 품어요. 월요일부터 금요일까지 하루 한 곳씩 오늘의 말씀을 펴서, 물음의 답을 본문에서 찾아봐요.'],
-  ['shelf','책장','이번 주 과가 맨 위에 있어요. 펼치기에서 모임 전에 미리 읽고 생각을 남길 수 있어요. 남기는 것은 원할 때만 해요.'],
-  ['share','나눔하기','사랑방이 함께 모여 질문 하나씩 나눠요. 이야기하는 동안에는 화면을 내려놓아요.'],
+  ['shelf','책장','교회가 낸 교재 가운데 지금 읽을 책 한 권을 골라요. 책 안에서 과를 펼쳐 모임 전에 미리 읽고 생각을 남길 수 있어요. 남기는 것은 원할 때만 해요.'],
+  ['share','나눔하기','지금 읽는 책의 과로 함께 모여 질문 하나씩 나눠요. 사랑방에서는 사랑방 교재로, 가정에서는 함께 쓰는 교재로 바꿔서 해요. 이야기하는 동안에는 화면을 내려놓아요.'],
   ['log','내 기록','모임 뒤에 마음에 남은 한 문장과 작은 실천을 남겨요. 지난주에 정한 작은 실천도 여기서 돌아봐요.'],
-  ['more','더보기','화면 모드와 글씨 크기를 바꾸고, 동기화로 기록을 잠가서 맡겨요.']
+  ['more','더보기','화면 모드와 색, 글씨 크기를 바꿔요. 기록을 잠가서 맡기는 동기화는 디다코 노트 더보기에서 해요.']
 ];
 let guideIndex = 0;
 function showGuide() {
@@ -1444,19 +1412,20 @@ function placeView(v) {
 // 질문 자료는 demo-data.js의 guides에 있다. 배포 전이거나 데모에 질문 예시가 없는 과(교재 번갈아 쓰기 예시의 창세기)는 안내 한 장을 보인다.
 // 성경 본문은 싣지 않고 장절만 쓴다
 let G = null;
-const readyGuide = () => (D.before && !atHome() ? null : DATA.guides[thisLesson().id] || null);
+const readyGuide = () => (D.before ? null : DATA.guides[thisLesson().id] || null);
 function noGuideView(name) {
   return `<div class="page-top"><h1>${esc(name)}</h1></div>
     <section class="card calm">
       <p class="calm-t">${D.before ? '이번 주 과를 준비하고 있어요' : '이 과는 데모에 질문 예시가 없어요'}</p>
-      <p class="soft" style="margin:0">${D.before ? '준비가 끝나면 열려요.' : '요한복음 제3과로 돌아가면 걸어 볼 수 있어요.'}</p>
+      <p class="soft" style="margin:0">${D.before ? '준비가 끝나면 열려요.' : (name === '나눔하기' ? '요한복음 제3과나 추수감사 가정예배를 고르면 걸어 볼 수 있어요.' : '요한복음 제3과로 돌아가면 걸어 볼 수 있어요.')}</p>
+      ${name === '나눔하기' ? '<button class="quiet-link" type="button" data-act="share-pick">다른 과 고르기</button>' : ''}
       <a class="btn ghost" href="#shelf">책장으로 돌아가기</a>
     </section>`;
 }
 const bookHtml = noMark => { const L = thisLesson(); return `<span class="book-l">${noMark ? '' : '<svg class="mk" aria-hidden="true"><use href="#i-didako"/></svg>'}<b>${esc(L.book)}</b><span>${esc(L.period)}</span></span>`; };
 const mkIc = () => '<svg class="mk" aria-hidden="true"><use href="#i-didako"/></svg>';
 const calm = () => { try { return matchMedia('(prefers-reduced-motion: reduce)').matches; } catch (e) { return false; } };
-const isLead = () => !atHome() && (D.role === 'leader' || D.role === 'pastor');
+const isLead = () => D.role === 'leader' || D.role === 'pastor';
 const NOLEAD = '등록된 해설이 없어요';
 // 해설 접기/펼치기: 고른 것은 이 기기에 기억하고 모든 질문에 적용한다(기본은 펼침)
 const leadOpen = () => ls.get(K.leadopen) !== '0';
@@ -1533,9 +1502,9 @@ const editing = new Set(), status = {}, timers = {}, expanded = new Set();
 let cordDone = false, jumpedAt = 0, lastInput = 0, scrollT = 0;
 const allQs = () => G.stages.flatMap(s => s.qs).concat(D.readTriple ? G.triple : []);
 const readBm = () => { const v = readJson(K.bookmark); return v.id ? v : null; };
-const hasBm = () => !(atHome() && ['week', 'read', 'share'].includes(currentView())) && !!readBm();
+const hasBm = () => !!readBm();
 function setBookmark(id) {
-  if (atHome() || !id || (BM && BM.id === id)) return;
+  if (!id || (BM && BM.id === id)) return;
   BM = { id, at: Date.now() }; ls.set(K.bookmark, JSON.stringify(BM)); paintBookmark();
 }
 function paintBookmark() {
@@ -1577,7 +1546,7 @@ function tocHtml() {
     st.qs.forEach((q, i) => { h += `<button type="button" class="toc-q" data-act="goto" data-to="q-${q.id}" data-id="${q.id}"><span class="tn">${i + 1}</span><span class="tt">${esc(q.t)}</span><span class="tb" role="img" aria-label="책갈피">${mkIc()}</span></button>`; });
   });
   if (D.readTriple && G.triple.length) h += `<p class="toc-grp">깊이 묵상하기</p><button type="button" class="toc-q" data-act="goto" data-to="deep"><span class="tn"></span><span class="tt">아버지 · 아들 · 성령</span><span></span></button>`;
-  if (!atHome()) h += `<p class="toc-grp">마무리</p><button type="button" class="toc-q" data-act="goto" data-to="wrapup"><span class="tn"></span><span class="tt">모임에 가지 못했다면</span><span></span></button>`;
+  h += `<p class="toc-grp">마무리</p><button type="button" class="toc-q" data-act="goto" data-to="wrapup"><span class="tn"></span><span class="tt">모임에 가지 못했다면</span><span></span></button>`;
   return h;
 }
 function readView() {
@@ -1605,7 +1574,7 @@ function readView() {
 function renderAll() {
   flushAll();
   $('#rbody').innerHTML = G.stages.map(st => `<section class="stage-sec" aria-label="${esc(st.name)}"><h2 class="stage-h">${esc(st.name)}</h2>${st.qs.map((q, i) => qHtml(st, i, q)).join('')}</section>`).join('')
-    + (D.readTriple && G.triple.length ? deepHtml() : '') + (atHome() ? '' : wrapHtml());
+    + (D.readTriple && G.triple.length ? deepHtml() : '') + wrapHtml();
   $('#tocList').innerHTML = tocHtml();
   allQs().forEach(q => renderAns(q.id));
   cordDone = false; paintCord(); paintBookmark();
@@ -1679,7 +1648,7 @@ window.addEventListener('resize', () => { if (currentView() === 'read') measureA
 if (document.fonts && document.fonts.ready) document.fonts.ready.then(() => { if (currentView() === 'read') measureAll(); });
 function readInit() {
   if (!G) return;
-  answers = readJson(K.answers); BM = atHome() ? null : readBm();
+  answers = readJson(K.answers); BM = readBm();
   if (BM && !allQs().concat(G.triple).some(q => q.id === BM.id)) BM = null;
   editing.clear(); expanded.clear();
   renderAll();
@@ -1707,12 +1676,15 @@ function shareView() {
   const L = thisLesson();
   return `<p class="eyebrow top-eyebrow">${esc(groupName())} · 이번 주</p>
   <div class="page-top"><h1>나눔하기</h1></div>
+  ${D.role === 'pastor' ? statusCard() : ''}
   <div class="start-grid">
     <section class="card today" aria-labelledby="lessonTitle">
       <p class="lesson-book">${bookHtml()}</p>
       <h2 class="lesson-title" id="lessonTitle">${esc(L.title)}</h2>
       <span class="passage-chip">${esc(L.ref)}</span>
+      <button class="quiet-link" type="button" data-act="share-pick">다른 과 고르기</button>
       <p class="fine">화면에서 눈을 뗄 시간이에요. 함께 질문과 답을 나눕니다.</p>
+      ${isLead() ? '<button class="btn ghost" type="button" data-act="prep">진행 준비</button>' : ''}
     </section>
     <section class="card" aria-label="나눔 설정">
       <div class="opt">
@@ -1747,7 +1719,7 @@ function buildSteps() {
   let n = 0;
   inc.forEach(si => { st.push({ t: 'cover', si }); G.stages[si].qs.forEach((q, qi) => { n++; st.push({ t: 'q', si, qi, n, total }); }); });
   if (R.triple && G.triple.length) st.push({ t: 'triple' });
-  if (!atHome()) st.push({ t: 'keep' });
+  st.push({ t: 'keep' });
   st.push({ t: 'bless' }, { t: 'done' });
   return st;
 }
@@ -1862,7 +1834,7 @@ function renderStep() {
     html = `<div class="st-in"><div class="bless" aria-live="polite"><div class="st-eyebrow bl-lead">함께 읽어요</div>${BLESS_LINES.map((l, i) => `<p class="${i === BLESS_LINES.length - 1 ? 'lastline' : ''}" style="--i:${i}">${esc(l)}</p>`).join('')}<span class="verse bl-ref">${esc(BLESS_REF)}</span></div></div>`;
     nav = prev + next();
   } else if (s.t === 'done') {
-    if (!atHome()) ls.set(K.shareDone, '1');   // 나눔하기를 끝까지 넘겼다: 이때부터 내 기록에 이번 주 기록이 나타난다
+    ls.set(K.shareDone, '1');   // 나눔하기를 끝까지 넘겼다: 이때부터 내 기록에 이번 주 기록이 나타난다
     html = `<div class="st-in center">${bookmarkSvg()}<div class="center">${bookHtml(true)}</div><h1 class="h2d" style="margin:.5em 0 0;font-size:1.2em">오늘 나눈 말씀 · ${esc(L.ref)}</h1>
       <div class="done-btns"><button class="btn" type="button" data-act="pray">${ic('cord')}함께 기도하기 → 코이데로 이동</button><button class="btn ghost" type="button" data-act="finish">마치기</button></div></div>`;
   }
@@ -1893,24 +1865,31 @@ function teardown() {
 const LONG_JOHN = '요한복음 — 예수님께 붙어 있는 삶, 열매 맺는 제자';
 const KIND_ICON = { 'GBS': 'share', '새가족반': 'sprout' };
 const kindIcon = k => ic(KIND_ICON[k] || 'shelf');
-const weekSel = () => (D.alt ? DATA.thisWeek.alt : DATA.thisWeek.main);
-// 교재를 번갈아 쓰는 예시(slot 'alt')는 그 설정을 켰을 때만 책장에 놓인다
-const shelfBooks = () => DATA.books.filter(b => b.slot !== 'home' && (b.slot !== 'alt' || D.alt));
+const weekSel = () => {
+  const book = bookById(myBookId());
+  const saved = readJson(K.shareLesson);
+  const open = l => l.state === 'past' || l.state === 'now';
+  const lesson = (saved.book === book.id && book.lessons.find(l => l.no === saved.no && open(l)))
+    || book.lessons.find(l => l.state === 'now')
+    || book.lessons.find(l => l.no === 1);
+  return { book: book.id, no: lesson.no };
+};
+const shelfBooks = () => DATA.books;
 const bookById = id => shelfBooks().find(b => b.id === id);
 const bTitle = b => (b.id === 'john' && D.longTitle ? LONG_JOHN : b.title);
 // 표지 그림: 교재마다 고른 그림 주소(없으면 '' = 그림 없는 카드). 요한복음은 데모 설정(D.jcover)을 따른다
 const bCover = b => (b.id === 'john' ? D.jcover : b.cover || '');
-// 책갈피의 길이(카드 안쪽 너비의 %): 오늘 남길 것을 남긴 과가 쌓인 만큼 한 마디씩, 상한이 있다. 이번 주 책에는 지금 남긴 한 문장·작은 실천도 더한다
+// 책갈피의 길이(카드 안쪽 너비의 %): 남긴 과가 쌓인 만큼 길어진다
 const keptCount = b => b.lessons.filter(l => l.keep).length + (b.id === weekSel().book && (readJson(K.keep).sentence || readJson(K.keep).action) ? 1 : 0);
 const lenOf = b => 20 + Math.min(keptCount(b), 8) * 10;
-// 지금 읽는 책: 이번 주 과가 있는 책(과 둘이면 둘). 교재를 번갈아 쓰면 쓰는 교재가 모두 나란히 놓이고, 이번 주 과가 있는 책에만 "이번 주"가 붙고 다른 책에는 "다음" 과가 보인다
-const nowBooks = () => shelfBooks().filter(b => b.slot === 'now').slice(0, D.two ? 2 : 1).concat(D.alt ? shelfBooks().filter(b => b.slot === 'alt') : []);
-const pastBooks = () => shelfBooks().filter(b => b.slot === 'done');
+// 고른 책이 없거나 교재 목록에 없으면 사랑방 기본 교재를 사용한다
+const myBookId = () => shelfBooks().some(b => b.id === ls.get(K.myBook)) ? ls.get(K.myBook) : DATA.roomBook;
+const nowBooks = () => shelfBooks().filter(b => b.id === myBookId());
+const pastBooks = () => shelfBooks().filter(b => b.id !== myBookId()).sort((a, b) => Number(a.closed) - Number(b.closed));
 function capOf(b) {
   const w = weekSel();
-  if (D.alt && b.id !== w.book) { const n = b.lessons.find(l => l.state === 'prep' || l.state === 'upcoming'); return n ? { lead: '다음', text: `제${n.no}과 · ${n.name}`, date: n.date } : null; }
-  const c = b.id === w.book ? b.lessons.find(l => l.no === w.no) : b.lessons.find(l => l.state === 'now');
-  return c ? { lead: '이번 주', text: `제${c.no}과 · ${c.name}`, date: DATA.thisWeek.date } : null;
+  const c = b.id === w.book ? b.lessons.find(l => l.no === w.no) : null;
+  return c ? { lead: '이번 주', text: `제${c.no}과 · ${c.name}`, date: c.date || DATA.thisWeek.date } : null;
 }
 // 아직 회원에게 열리지 않은 과(준비 중)는 목차에 넣지 않는다
 const tocLessons = b => b.lessons.filter(l => l.state !== 'prep');
@@ -1922,22 +1901,19 @@ function coverHtml(b) {
       ${cv ? `<img class="wk-cover" src="${esc(cv)}" alt="" width="1200" height="675" decoding="async">` : ''}
       <div class="sh-sm sh-kind">${kindIcon(b.kind)}<span>${esc(b.kind)} · ${esc(b.period)}</span></div>
       <div class="sf xct" style="margin-top:4px">${esc(bTitle(b))}</div>
-      ${c ? `<div class="sh-sm" style="margin-top:4px;line-height:1.5">${esc(c.lead)} ${esc(c.text)} · ${esc(c.date)}</div>` : ''}
+      ${D.before ? '<div class="sh-sm" style="margin-top:4px;line-height:1.5">이번 주 과를 준비하고 있어요</div>' : c ? `<div class="sh-sm" style="margin-top:4px;line-height:1.5">${esc(c.lead)} ${esc(c.text)} · ${esc(c.date)}</div>` : ''}
     </div>
     <span class="sh-ribbon" style="--len:${lenOf(b)}" aria-hidden="true"></span>
   </div>`;
 }
 // 지난 책: 한 줄에 한 권(책 이름, 종류 · 기간)
-const pastRowHtml = b => `<button class="card xrow" type="button" data-act="open-book" data-book="${b.id}" title="${esc(bTitle(b))}" aria-label="${esc(bTitle(b))} ${esc(b.period)} 책 열기"><span><span style="display:block">${esc(bTitle(b))}</span><span class="sh-sm">${esc(b.kind)} · ${esc(b.period)}</span></span><span class="xch" aria-hidden="true">›</span></button>`;
+const pastRowHtml = b => `<button class="card xrow" type="button" data-act="open-book" data-book="${b.id}" title="${esc(bTitle(b))}" aria-label="${esc(bTitle(b))} ${esc(b.period)} 책 열기"><span><span style="display:block">${esc(bTitle(b))}</span><span class="sh-sm">${esc(b.kind)} · ${esc(b.period)}</span></span>${b.closed ? '' : '<span class="walk-tag">교회에서 읽는 중</span>'}<span class="xch" aria-hidden="true">›</span></button>`;
 function browseHtml() {
   if (D.noBooks) {
     return `<section class="card empty" aria-labelledby="emT">${ic('shelf')}<h2 id="emT">아직 책장에 꽂힌 책이 없어요</h2>
       <p class="soft" style="margin:0">이번 주 과가 배포되면 이곳에 책이 놓여요.</p></section>`;
   }
-  const now = nowBooks(), past = pastBooks();
-  return `<h2 class="xlb" style="margin-top:14px">지금 읽는 책</h2>
-    <div class="sh-stack${now.length > 1 ? ' two' : ''}">${now.map(coverHtml).join('')}</div>
-    ${past.length ? `<h2 class="xlb">지난 책</h2>${past.map(pastRowHtml).join('')}` : ''}`;
+  return `<h2 class="xlb" style="margin-top:14px">지난 책</h2>${pastBooks().map(pastRowHtml).join('')}`;
 }
 // 검색(제목·본문): 책 제목과 과 제목·장절·풀이를 훑는다. 내 기록은 훑지 않는다
 function searchHtml(q) {
@@ -1981,6 +1957,7 @@ function bookPage(b) {
     <a class="back-link" href="#shelf">${ic('back')}<span>책장</span></a>
     <p class="eyebrow top-eyebrow">${esc(b.kind)} · ${esc(b.period)}</p>
     <div class="page-top"><h1>${esc(bTitle(b))}</h1></div>
+    ${b.id === myBookId() ? '<p class="fine">지금 읽는 책이에요</p>' : `<button class="btn ghost" type="button" data-act="book-pick" data-book="${b.id}">지금 읽는 책으로</button>`}
     <section class="card today book-head" aria-label="책 소개">
       <p class="book-l" style="margin-bottom:.7em">${mkIc()}<b>${esc(b.kind)}</b><span>${esc(b.period)}</span></p>
       <div><span class="passage-chip">${esc(b.range)}</span></div>
@@ -1996,17 +1973,13 @@ function shelfView(arg) {
   return `<div class="shelf-wrap shelf-home">
     <p class="eyebrow top-eyebrow">${esc(groupName())}</p>
     <div class="sh-top"><h1>책장</h1>${D.noBooks ? '' : `<button class="icon-btn" type="button" aria-label="검색" aria-expanded="false" aria-controls="shelfSearch" data-act="shelf-search">${SEARCH_IC}</button>`}</div>
-    <div class="sh-grid"><div class="sh-left">
-    ${D.noBooks ? '' : `<div class="week-top">${statusCard()}</div>
-    ${lessonCard()}
-    ${atHome() ? `<section class="card calm">
-      <h2 class="calm-t">이번 주 GBS 과는 사랑방에서 펼쳐요</h2>
-      <button class="btn ghost" type="button" data-act="place-room">${esc(groupName())}${ro(groupName())}</button>
-    </section>` : ''}`}
+    ${D.noBooks ? browseHtml() : `<div class="sh-grid"><div class="sh-left">
+      <h2 class="xlb" style="margin-top:14px">지금 읽는 책</h2>
+      <div class="sh-stack">${nowBooks().map(coverHtml).join('')}</div>
     </div><div class="sh-right">
-    ${D.noBooks ? '' : `<div class="search" id="shelfSearch" hidden>${ic('search')}<input class="field" id="shelfQ" type="search" placeholder="제목이나 본문으로 찾기" aria-label="책장 검색" autocomplete="off"></div><div id="shelfResults" hidden></div>`}
-    <div id="shelfBrowse">${browseHtml()}</div>
-    </div></div>
+      <div class="search" id="shelfSearch" hidden>${ic('search')}<input class="field" id="shelfQ" type="search" placeholder="제목이나 본문으로 찾기" aria-label="책장 검색" autocomplete="off"></div><div id="shelfResults" hidden></div>
+      <div id="shelfBrowse">${browseHtml()}</div>
+    </div></div>`}
   </div>`;
 }
 let shelfLesson = '';
@@ -2040,7 +2013,7 @@ function liveEntry() {
     g.triple.forEach(t => { if (String(ans[t.id] || '').trim()) threads[t.who] = [ans[t.id]]; });
   }
   if (!sentence && !action && !answers.length && !Object.keys(threads).length) return null;
-  const bk = DATA.books.find(b => b.id === weekSel().book), ls0 = bk.lessons.find(l => l.no === weekSel().no), md = /(\d+)월\s*(\d+)일/.exec(DATA.thisWeek.date);
+  const bk = DATA.books.find(b => b.id === weekSel().book), ls0 = bk.lessons.find(l => l.no === weekSel().no), md = /(\d+)월\s*(\d+)일/.exec(L.date || DATA.thisWeek.date);
   return { id: 'live-' + L.id.replace(':', '-'), live: true, year: THIS_YEAR, month: Number(md[1]), date: `${md[1]}월 ${md[2]}일`, title: ls0.name, ref: L.ref, book: `${L.book} · ${L.period}`, keep: sentence, action, answers, threads, tq: tqOf(L.id) };
 }
 // 보이는 기록 모두(지운 것, 숨긴 것 빼고). 고친 글과 돌아보기를 입혀서 돌려준다
@@ -2223,12 +2196,6 @@ function rerender() {
   if (!$('#settings').hidden) renderSettings();
 }
 
-function changePlace(place) {
-  closePlaceMenu();
-  if (D.place === place) return;
-  teardown(); D.place = place; saveDemo();
-  if (location.hash === '#week') route(true); else location.hash = '#week';
-}
 
 // ── 눌림 처리 ──
 const acts = {
@@ -2259,7 +2226,6 @@ const acts = {
   'admin-copy'() { toast('데모에서는 복사하지 않아요'); },
   'admin-nochange'() { toast('데모에서는 바뀌지 않아요'); },
   disp() { dispOpen = !dispOpen; rerender(); },
-  'more-sync'() { toast('데모에서는 동기화 화면을 열지 않아요'); },
   'more-guide'() { guideIndex = 0; showGuide(); },
   'guide-prev'() { if (guideIndex > 0) { guideIndex--; showGuide(); } },
   'guide-next'() { if (guideIndex < GUIDE_CARDS.length - 1) { guideIndex++; showGuide(); } },
@@ -2276,8 +2242,6 @@ const acts = {
     const open = $('#placeMenu').hidden; closeMenu();
     $('#placeMenu').hidden = !open; $('#badge').setAttribute('aria-expanded', String(open));
   },
-  'place-room'() { changePlace('room'); },
-  'place-home'() { if (D.unit === 'family') changePlace('home'); },
   'demo-enter'() { D.entered = true; saveDemo(); location.hash = '#week'; },
   'demo-info'() {
     openSheet(`<h2 id="popT">데모로 열었어요</h2>
@@ -2297,9 +2261,10 @@ const acts = {
     if (location.hash === '#start') route(true); else location.hash = '#start';
   },
   'pop-close'() { closeSheet(); },
-  'read-go'(e, el) { readResume = el.dataset.resume === '1'; readFrom = el.dataset.from || ''; if (readFrom && atHome()) { D.place = 'room'; saveDemo(); } if (location.hash === '#read') route(true); else location.hash = '#read'; },
+  'read-go'(e, el) { readResume = el.dataset.resume === '1'; readFrom = el.dataset.from || ''; if (location.hash === '#read') route(true); else location.hash = '#read'; },
   // 책장
   'open-book'(e, el) { shelfLesson = el.dataset.lesson || ''; location.hash = '#book-' + el.dataset.book; },
+  'book-pick'(e, el) { if (!bookById(el.dataset.book)) return; ls.set(K.myBook, el.dataset.book); ls.del(K.shareLesson); toast('지금 읽는 책을 바꿨어요. 전에 읽던 책은 지난 책에 놓여요'); rerender(); },
   // 머리의 돋보기: 검색 칸을 열고 바로 입력하게 한다. 칸이 비어 있을 때 다시 누르면 접는다
   'shelf-search'(e, el) {
     const box = $('#shelfSearch'), q = $('#shelfQ'); if (!box || !q) return;
@@ -2376,7 +2341,7 @@ const acts = {
   retry(e, el) { const t = $(`#ta-${el.dataset.id}`); if (t) saveAns(el.dataset.id, t); },
   'keep-retry'() { saveKeepRead(); },
   'ans-fill'() { allQs().forEach(q => { if (q.sample && !answers[q.id]) answers[q.id] = q.sample; }); persistAnswers(); editing.clear(); renderAll(); toast('예시를 채웠어요'); },
-  'ans-clear'() { if (atHome()) { allQs().forEach(q => delete answers[q.id]); persistAnswers(); } else { answers = {}; ls.del(K.answers); } editing.clear(); renderAll(); toast('비웠어요'); },
+  'ans-clear'() { answers = {}; ls.del(K.answers); editing.clear(); renderAll(); toast('비웠어요'); },
   // 나눔하기
   'sw-open'() { R.open = !R.open; renderStart(); },
   'sw-triple'() { R.triple = !R.triple; renderStart(); },
@@ -2386,6 +2351,22 @@ const acts = {
     if (R.stages[i]) { if (off.length >= 1) { toast('한 단계만 뺄 수 있어요'); return; } R.stages[i] = false; } else R.stages[i] = true;
     renderStart();
   },
+  'share-pick'() {
+    const book = bookById(myBookId()), picked = weekSel();
+    const lessons = book.lessons.filter(l => l.state === 'past' || l.state === 'now');
+    openSheet(`${sheetHead('나눌 과 고르기')}
+      <p class="fine">${esc(bTitle(book))}</p>
+      <div class="gc">${lessons.map(l => `<button class="gr" type="button" data-act="share-pick-lesson" data-no="${l.no}"><span class="gt"><b>제${l.no}과 · ${esc(l.name)}</b><span class="gd">${esc(l.ref)}</span></span>${l.no === picked.no ? '<span aria-label="선택됨">✓</span>' : ''}</button>`).join('')}</div>
+      <p class="fine">다른 책으로 나누려면 책장에서 지금 읽는 책을 바꿔요.</p>
+      <a class="back-link" href="#shelf" data-act="share-pick-shelf">책장 열기 ›</a>`);
+  },
+  'share-pick-lesson'(e, el) {
+    const book = bookById(myBookId()), no = Number(el.dataset.no);
+    if (!book.lessons.some(l => l.no === no && (l.state === 'past' || l.state === 'now'))) return;
+    ls.set(K.shareLesson, JSON.stringify({ book: book.id, no }));
+    closeSheet(); rerender();
+  },
+  'share-pick-shelf'() { closeSheet(); location.hash = '#shelf'; },
   'share-start'() { startShare(); },
   next() { go(1); }, prev() { go(-1); },
   'skip-keep'() { go(1); },
@@ -2414,9 +2395,8 @@ document.addEventListener('click', e => {
   if (set) {
     const [k, v] = set.dataset.set.split(':');
     if (DISPLAY_KEYS.includes(k)) { S[k] = k === 'big' ? v === '1' : v; saveDisplay(); }
-    else if (k === 'unit') { teardown(); D.unit = pick(v, ['family', 'single'], 'family'); if (D.unit === 'single') D.place = 'room'; saveDemo(); }
     else if (k === 'galleryDemo') { D.galleryDemo = v === '1'; saveDemo(); }
-    else if (k === 'bookmark') { if (atHome()) return; if (v === '1') { if (!hasBm()) ls.set(K.bookmark, JSON.stringify({ id: 'o2', at: Date.now() })); } else ls.del(K.bookmark); }   // 책갈피는 펼치기가 꽂는 것과 같은 자리
+    else if (k === 'bookmark') { if (v === '1') { if (!hasBm()) ls.set(K.bookmark, JSON.stringify({ id: 'o2', at: Date.now() })); } else ls.del(K.bookmark); }   // 책갈피는 펼치기가 꽂는 것과 같은 자리
     else { D[k] = ['lastWeek', 'before', 'alt', 'readOpen', 'readTriple', 'two', 'noBooks', 'longTitle', 'newcomer'].includes(k) ? v === '1' : k === 'dimSec' ? (v === '5' ? 5 : 15) : v; saveDemo(); }
     rerender();
     return;
