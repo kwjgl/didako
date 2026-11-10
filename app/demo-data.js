@@ -207,31 +207,46 @@ window.DIDAKO_DEMO = {
         "d": "월",
         "ref": "로마서 14장 7~9절",
         "url": "https://www.bskorea.or.kr/bible/korbibReadpage.php?version=GAE&book=rom&chap=14&sec=7",
-        "ask": "우리가 살아도 죽어도 누구의 것이라고 하나요?"
+        "ask": "우리가 살아도 죽어도 누구의 것이라고 하나요?",
+        "choices": ["우리 자신의 것","주의 것","세상의 것"],
+        "answer": 1,
+        "where": "로마서 14장 8절"
       },
       {
         "d": "화",
         "ref": "고린도전서 6장 19~20절",
         "url": "https://www.bskorea.or.kr/bible/korbibReadpage.php?version=GAE&book=1co&chap=6&sec=19",
-        "ask": "우리 몸을 무엇이라고 부르나요?"
+        "ask": "우리 몸을 무엇이라고 부르나요?",
+        "choices": ["흙으로 빚은 그릇","우리의 장막","성령의 전"],
+        "answer": 2,
+        "where": "고린도전서 6장 19절"
       },
       {
         "d": "수",
         "ref": "베드로전서 1장 18~19절",
         "url": "https://www.bskorea.or.kr/bible/korbibReadpage.php?version=GAE&book=1pe&chap=1&sec=18",
-        "ask": "나를 무엇으로 사셨다고 말하나요?"
+        "ask": "나를 무엇으로 사셨다고 말하나요?",
+        "choices": ["은과 금","그리스도의 보배로운 피","우리의 착한 행실"],
+        "answer": 1,
+        "where": "베드로전서 1장 19절"
       },
       {
         "d": "목",
         "ref": "요한복음 10장 27~29절",
         "url": "https://www.bskorea.or.kr/bible/korbibReadpage.php?version=GAE&book=jhn&chap=10&sec=27",
-        "ask": "아무도 빼앗을 수 없는 까닭을 무엇이라고 말하나요?"
+        "ask": "아무도 빼앗을 수 없는 까닭을 무엇이라고 말하나요?",
+        "choices": ["아버지께서 만물보다 크시기 때문에","양들이 스스로 강하기 때문에","우리가 늘 깨어 있기 때문에"],
+        "answer": 0,
+        "where": "요한복음 10장 29절"
       },
       {
         "d": "금",
         "ref": "마태복음 10장 29~31절",
         "url": "https://www.bskorea.or.kr/bible/korbibReadpage.php?version=GAE&book=mat&chap=10&sec=29",
-        "ask": "참새와 머리털 이야기로 예수님은 무엇을 말씀하시나요?"
+        "ask": "참새와 머리털 이야기로 예수님은 무엇을 말씀하시나요?",
+        "choices": ["작은 일은 마음 쓰지 말라","두려워하지 말라, 너희는 귀하다","새보다 부지런히 일하라"],
+        "answer": 1,
+        "where": "마태복음 10장 31절"
       }
     ]
   },
@@ -254,31 +269,46 @@ window.DIDAKO_DEMO = {
         "d": "월",
         "ref": "마태복음 22장 37~40절",
         "url": "https://www.bskorea.or.kr/bible/korbibReadpage.php?version=GAE&book=mat&chap=22&sec=37",
-        "ask": "율법과 선지자가 무엇에 달려 있다고 하나요?"
+        "ask": "율법과 선지자가 무엇에 달려 있다고 하나요?",
+        "choices": ["모세의 다섯 책","열 가지 제사","하나님 사랑과 이웃 사랑, 두 계명"],
+        "answer": 2,
+        "where": "마태복음 22장 40절"
       },
       {
         "d": "화",
         "ref": "신명기 6장 4~5절",
         "url": "https://www.bskorea.or.kr/bible/korbibReadpage.php?version=GAE&book=deu&chap=6&sec=4",
-        "ask": "무엇을 다하여 하나님을 사랑하라고 하나요?"
+        "ask": "무엇을 다하여 하나님을 사랑하라고 하나요?",
+        "choices": ["마음과 뜻과 힘","재물과 시간","말과 노래"],
+        "answer": 0,
+        "where": "신명기 6장 5절"
       },
       {
         "d": "수",
         "ref": "레위기 19장 17~18절",
         "url": "https://www.bskorea.or.kr/bible/korbibReadpage.php?version=GAE&book=lev&chap=19&sec=17",
-        "ask": "이웃 사랑을 말하기 바로 앞에 무엇을 하지 말라고 하나요?"
+        "ask": "이웃 사랑을 말하기 바로 앞에 무엇을 하지 말라고 하나요?",
+        "choices": ["이웃의 밭에 들어가지 말라","원수를 갚거나 원망하지 말라","안식일에 일하지 말라"],
+        "answer": 1,
+        "where": "레위기 19장 18절"
       },
       {
         "d": "목",
         "ref": "로마서 3장 10~12절",
         "url": "https://www.bskorea.or.kr/bible/korbibReadpage.php?version=GAE&book=rom&chap=3&sec=10",
-        "ask": "선을 행하는 사람이 얼마나 있다고 하나요?"
+        "ask": "선을 행하는 사람이 얼마나 있다고 하나요?",
+        "choices": ["믿는 사람 모두","절반쯤","하나도 없다"],
+        "answer": 2,
+        "where": "로마서 3장 12절"
       },
       {
         "d": "금",
         "ref": "로마서 7장 18~25절",
         "url": "https://www.bskorea.or.kr/bible/korbibReadpage.php?version=GAE&book=rom&chap=7&sec=18",
-        "ask": "괴로워하던 바울은 마지막에 누구에게 감사하나요?"
+        "ask": "괴로워하던 바울은 마지막에 누구에게 감사하나요?",
+        "choices": ["자기를 가르친 선생에게","예수 그리스도로 말미암아 하나님께","함께한 교회 사람들에게"],
+        "answer": 1,
+        "where": "로마서 7장 25절"
       }
     ]
   }
