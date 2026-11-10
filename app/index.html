@@ -334,9 +334,6 @@ p.walk-today { margin: 0; }
 .status-row .st-off, .status-row .st-sep { font-size: .84em; color: var(--ink-2); }
 .quiet-link { display: inline-block; margin: .1em 0 0; padding: 0; background: none; border: 0; color: var(--ink-2); font-size: .84em; min-height: 36px; cursor: pointer; text-decoration: underline; text-underline-offset: 3px; }
 .sub-h { font-weight: 600; margin: 0; }
-.lw-act { margin-top: .7em; }
-.lw-form { margin-top: .7em; }
-.lw-form label { display: block; font-size: .92em; font-weight: 600; margin-bottom: .3em; }
 .keep-sen { margin: .7em 0 0; font-family: var(--f-display); line-height: 1.7; word-break: keep-all; }
 .keep-act { margin: .5em 0 0; font-family: var(--f-display); font-weight: 700; font-size: 1.15em; line-height: 1.55; word-break: keep-all; }
 
@@ -656,7 +653,7 @@ body.sharing { overflow: hidden; }
 /* 배치: 휴대폰은 한 줄. 640px 이상은 가운데 읽는 폭에 넓게, 1000px 이상은 책 목차를 조금 더 넓게 둔다 */
 .shelf-wrap { max-width: 760px; margin: 0 auto; }
 @media (min-width: 1000px) { .shelf-wrap { max-width: 880px; } }
-/* 책장 첫 화면 PC(1000px 이상): 왼쪽 이번 주 과, 오른쪽 지금 읽는 책·지난 책. 이번 주 화면과 같은 넓이를 쓴다 */
+/* 책장 첫 화면 PC(1000px 이상): 왼쪽 지금 읽는 책, 오른쪽 교재 목록. 이번 주 화면과 같은 넓이를 쓴다 */
 @media (min-width: 1000px) {
   .shelf-wrap.shelf-home { max-width: none; }
   .sh-grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 14px; align-items: start; }
@@ -678,7 +675,7 @@ body.sharing { overflow: hidden; }
 .hit .hit-ref { font-size: .84em; color: var(--accent); font-family: var(--f-display); font-weight: 700; }
 .hit .hit-body { display: block; font-size: .86em; color: var(--ink-2); margin-top: .15em; line-height: 1.55; }
 
-/* 책장 첫 화면: 디다코 노트 탐구하기(note/index.html)의 작은 제목(.xlb)·카드(.xcard, .xct)·한 줄 목록(.xrow)·표지 그림(.wk-cover) 값을 그대로 옮겼다.
+/* 책장 첫 화면: 디다코 노트 탐구하기(note/index.html)의 작은 제목(.xlb)·카드(.xcard, .xct)·한 줄 목록(.xrow)·표지 크기(.wk-cover)를 참고했다.
    노트는 html 글씨 크기가 --base라 rem으로 쓰고, 이 앱은 body가 --base라 같은 값을 calc(var(--base) * 배수)로 적었다(큰 글씨 설정도 똑같이 따라간다).
    .sm은 design-styles.css의 .icon-btn.sm과 이름이 겹칠 수 있어 .sh-sm으로 적었다. 이 앱의 .card는 위아래 바깥 여백(12px)이 있어 .xcard·.xrow에서는 0으로 두고 간격은 자리마다 따로 적었다 */
 .sf { font-family: var(--f-display); }
@@ -687,7 +684,8 @@ body.sharing { overflow: hidden; }
 .xcard { padding: 14px 16px; margin: 0; }
 .xcard .xct { font-size: calc(var(--base) * 1.1875); font-weight: 700; line-height: 1.35; }
 .xrow { display: flex; align-items: center; justify-content: space-between; gap: 8px; width: 100%; min-height: 60px; margin: 8px 0 0; padding: 8px 16px; font-family: var(--f-body); font-weight: 400; font-size: calc(var(--base) * .9375); line-height: 1.4; color: var(--ink); text-align: left; cursor: pointer; }
-.xrow > span:first-child { flex: 1; min-width: 0; }
+.xrow > .xrow-copy { flex: 1; min-width: 0; }
+.xrow > .cover-small { flex: 0 0 40px; width: 40px; height: 52px; border-radius: 6px; border: 1px solid var(--line); margin-right: 4px; }
 .xrow .sh-sm { display: block; font-size: calc(var(--base) * .8125); }
 .xch { color: var(--ink-2); font-size: calc(var(--base) * 1.25); }
 .wk-cover { display: block; width: 100%; height: auto; aspect-ratio: 16 / 9; object-fit: cover; border-radius: 12px; margin: 0 0 12px; background: var(--surface-2); }
@@ -743,7 +741,7 @@ body.sharing { overflow: hidden; }
 :root[data-style="neu"] .field { border-color: transparent; }
 
 /* ── 내 기록(#record) ── 시안 record.html의 것을 옮겼다 */
-/* 돌아봄 리포트와 상세 */
+/* 내 기록 달마다 보기와 상세 */
 .record-wrap { max-width:760px; margin:0 auto; }
 /* 올해의 그림: 기록한 주의 그림만 보여 주는 52칸 격자 */
 .gallery-wrap { max-width: 980px; margin: 0 auto; }
@@ -769,6 +767,8 @@ button.gallery-cell { display: block; width: 100%; padding: 0; cursor: pointer; 
 .report-line { padding:.55em 0; border:0; } .report-card .report-line { padding:0; border-radius:12px; margin:0 -.7em 6px; } .report-card .report-line:last-child { margin-bottom:0; } .report-card .keep-open:hover, .date-row button:hover { background:var(--surface-2); } .report-card .keep-open:active, .date-row button:active { background:var(--surface-2); } :root[data-style="neu"] .report-card .keep-open:active, :root[data-style="neu"] .date-row button:active { background:transparent; box-shadow:var(--press-sm); }
 .keep-quote { border:0; margin:0; padding:.3em 0; }
 .keep-meta { display:block; margin:.2em 0 0; }
+.keep-meta .keep-title { display:block; font-weight:700; }
+.keep-meta .walk-ref { margin-top:4px; }
 .keep-open { display:block; width:100%; background:none; border:0; border-radius:12px; text-align:left; padding:.8em .7em; cursor:pointer; }
 .thread { padding:.55em 0; } .thread + .thread { margin-top:.5em; }
 .thread-name { margin:0 0 .2em; }
@@ -781,12 +781,11 @@ button.gallery-cell { display: block; width: 100%; padding: 0; cursor: pointer; 
 .thread-name { font-family:var(--f-body); font-size:.88em; font-weight:600; color:var(--ink-2); }
 .keep-meta, .reflection { font-family:var(--f-body); font-size:.8em; color:var(--ink-2); }
 .period-options { display:grid; gap:4px; margin-top:10px; } .period-option { display:flex; align-items:center; justify-content:space-between; width:100%; min-height:48px; padding:.6em .75em; border:0; border-radius:10px; background:transparent; color:var(--ink); text-align:left; font:inherit; cursor:pointer; } .period-option:hover, .period-option:active { background:var(--surface-2); } .period-option[aria-pressed="true"] { background:var(--surface-2); } .period-option[aria-pressed="true"] span { color:var(--accent); font-size:.72em; }
-.tab-switch { margin:8px 0 12px; }
 .date-row { display:grid; grid-template-columns:1fr; gap:6px; padding:0; margin:0 -.7em 6px; border:0; border-radius:12px; }
 .date-row button { position:relative; display:grid; grid-template-columns:5.8em minmax(0,1fr); align-items:center; gap:10px; width:100%; min-height:44px; text-align:left; background:none; border:0; border-radius:12px; padding:.8em .7em; color:inherit; cursor:pointer; }
 .date-row .date-copy { min-width:0; padding-right:28px; }
 .date-row .date-title { display:block; font-family:var(--f-display); font-weight:700; }
-.date-row .date-ref { display:block; font-size:.78em; color:var(--ink-2); }
+.date-row .walk-ref { margin-top:4px; }
 .date-row .date-description { display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; font-size:.86em; color:var(--ink-2); line-height:1.45; }
 .date-row .ic { position:absolute; right:0; top:50%; transform:translateY(-50%); color:var(--ink-2); }
 .month-card h2 { margin-bottom:.3em; font-family:var(--f-display); }
@@ -928,6 +927,7 @@ button.gallery-cell { display: block; width: 100%; padding: 0; cursor: pointer; 
   <div class="pop-sheet card" id="popSheet" role="dialog" aria-modal="true" aria-labelledby="popT"></div>
 </div>
 
+<script src="covers.js"></script>
 <script src="demo-data.js"></script>
 <script>
 (() => {
@@ -958,25 +958,32 @@ const BUBBLE = '<svg viewBox="0 0 18 18" width="18" height="18" aria-hidden="tru
 // 화면 설정(화면 모드·색 테마·디자인·큰 글씨)은 한 자리에만 적는다. 데모 설정과 쓴 글은 따로 둔다
 // answers 내 생각(펼치기), bookmark 책갈피(펼치기), memo 리더의 내 진행 메모(나눔하기), leadopen 해설 접기/펼치기, keep 오늘 남길 것(펼치기·나눔하기가 같이 쓴다)
 // shareDone 나눔하기를 끝까지 넘겼는지(내 기록에 이번 주 기록이 나타나는 때), record… 내 기록에서 고친 글·돌아보기·지운 기록·비워 둔 상태
-const K = { display: 'didako-note-display', demo: 'didako-demo', myBook: 'didako-my-book', shareLesson: 'didako-share-lesson', reflect: 'didako-reflect', keep: 'didako-keep', answers: 'didako-read-answers', bookmark: 'didako-read-bookmark', memo: 'didako-share-memo', leadopen: 'didako-leadopen',
+const K = { display: 'didako-note-display', demo: 'didako-demo', myBook: 'didako-my-book', shareLesson: 'didako-share-lesson', keep: 'didako-keep', answers: 'didako-read-answers', bookmark: 'didako-read-bookmark', memo: 'didako-share-memo', leadopen: 'didako-leadopen',
   walkRead: 'didako-weekwalk-read', walkThought: 'didako-weekwalk-thought', walkDone: 'didako-weekwalk-done', walkMeditate: 'didako-weekwalk-meditate',
   shareDone: 'didako-share-done', recRefl: 'didako-record-reflections', recAns: 'didako-record-answers', recEdit: 'didako-record-edits', recDel: 'didako-record-deleted', recHide: 'didako-record-hidden' };
 const MODES = ['auto', 'light', 'dark'], ACCENTS = ['green', 'amber', 'blue', 'rose', 'ink', 'paper'], STYLES = ['basic', 'neu', 'skeu', 'glass'];
 const ROLES = [['member', '회원'], ['leader', '리더'], ['pastor', '목사님'], ['admin', '관리자']];
 const STATUS = [['draft', '준비 중'], ['leader', '리더까지'], ['all', '모두']];
 const pick = (v, list, d) => (list.includes(v) ? v : d);
-// 요한복음 표지 그림(데모용 고르기): 디다코 노트 탐구하기의 그림 묶음 가운데 네 가지. 값은 그림 주소('' 는 그림 없음). 실제 고르기는 교재 관리(P-01)에서 만들 것이다
-const JCOVER_LIST = [['', '그림 없음'], ['../note/img/walk/cover-john-1.webp', '요한복음 1부 표지'], ['../note/img/walk/cover-mark-2.webp', '마가복음 2부 표지'], ['../note/img/w/weekly-01.webp', '이번 주의 질문 1주 그림']];
-const JCOVERS = JCOVER_LIST.map(x => x[0]);
+// 표지 파일을 불러오지 못해도 세 겹 끈·종이색 기본 표지는 그린다
+const COVER_FALLBACK = {
+  colors: [['paper', '#6B4A2E', '종이']],
+  groups: [{ id: 'basic', name: '기본', items: [{ id: 'cord', name: '세 겹 끈', svg: '<path d="M18 7 C18 14 30 14 30 21 S18 28 18 35"/><path d="M24 7 C24 14 18 14 18 21 S30 28 30 35"/><path d="M30 7 C30 14 24 14 24 21 S24 28 24 35"/><path d="M18 35v6M24 35v6M30 35v6"/>' }] }]
+};
+const COVERS = window.DIDAKO_COVERS || COVER_FALLBACK;
+const COVER_ITEMS = COVERS.groups.flatMap(group => group.items);
+const COVER_MOTIFS = COVER_ITEMS.map(item => item.id);
+const COVER_COLORS = COVERS.colors.map(color => color[0]);
+const JOHN_COVER = DATA.books.find(book => book.id === 'john').cover;
 const S = { mode: 'auto', accent: 'paper', style: 'basic', big: false };
-const D = { entered: false, role: 'member', status: 'all', walk: 1, galleryDemo: false, lastWeek: true, before: false, readOpen: true, readTriple: true, dimSec: 15, noBooks: false, longTitle: false, jcover: JCOVER_LIST[1][0], newcomer: false };
+const D = { entered: false, role: 'member', status: 'all', walk: 1, galleryDemo: false, before: false, readOpen: true, readTriple: true, dimSec: 15, noBooks: false, longTitle: false, jcoverMotif: JOHN_COVER.motif, jcoverColor: JOHN_COVER.color, newcomer: false };
 function loadState() {
   const a = readJson(K.display), b = readJson(K.demo);
   S.mode = pick(a.mode, MODES, 'auto'); S.accent = pick(a.accent, ACCENTS, 'paper'); S.style = pick(a.style, STYLES, 'basic'); S.big = a.big === true;
   D.entered = b.entered === true; D.role = pick(b.role, ROLES.map(r => r[0]), 'member'); D.status = pick(b.status, STATUS.map(r => r[0]), 'all'); D.walk = Number.isInteger(Number(b.walk)) && Number(b.walk) >= 1 && Number(b.walk) <= 52 && DATA.weekWalk.some(w => w.n === Number(b.walk)) ? Number(b.walk) : 1; D.galleryDemo = b.galleryDemo === true;
-  D.lastWeek = b.lastWeek !== false; D.before = b.before === true;
+  D.before = b.before === true;
   D.readOpen = b.readOpen !== false; D.readTriple = b.readTriple !== false; D.dimSec = b.dimSec === 5 ? 5 : 15;
-  D.noBooks = b.noBooks === true; D.longTitle = b.longTitle === true; D.jcover = pick(b.jcover, JCOVERS, JCOVER_LIST[1][0]); D.newcomer = b.newcomer === true;
+  D.noBooks = b.noBooks === true; D.longTitle = b.longTitle === true; D.jcoverMotif = pick(b.jcoverMotif, COVER_MOTIFS, JOHN_COVER.motif); D.jcoverColor = pick(b.jcoverColor, COVER_COLORS, JOHN_COVER.color); D.newcomer = b.newcomer === true;
 }
 const saveDisplay = () => ls.set(K.display, JSON.stringify({ ...readJson(K.display), mode: S.mode, accent: S.accent, style: S.style, big: S.big }));
 const saveDemo = () => ls.set(K.demo, JSON.stringify(D));
@@ -1041,8 +1048,7 @@ function renderSettings() {
     <p class="mlabel">이번 주의 질문</p><select class="field" id="walkSel" aria-label="이번 주의 질문 주 고르기">${DATA.weekWalk.map(w => `<option value="${w.n}"${D.walk === w.n ? ' selected' : ''}>${w.n}주 · ${esc(w.title)}</option>`).join('')}</select>
     <p class="mlabel">올해의 그림</p>${seg('galleryDemo', [['0', '이 기기 기록만'], ['1', '예시로 채움']], D.galleryDemo ? 1 : 0)}
     ${inApp && D.role === 'pastor' ? `<p class="mlabel">공개 범위</p>${seg('status', STATUS, D.status)}` : ''}
-    ${inApp ? `<p class="mlabel">지난주 작은 실천 있음</p>${onoff('lastWeek', D.lastWeek)}
-    <p class="mlabel">책갈피 있음</p>${onoff('bookmark', hasBm())}
+    ${inApp ? `<p class="mlabel">책갈피 있음</p>${onoff('bookmark', hasBm())}
     <p class="mlabel">이번 주 과 배포 전</p>${onoff('before', D.before)}
         <p class="mlabel">이번 주 작은 실천(오늘 남길 것)</p>
     <div class="set-btns"><button type="button" class="btn ghost small" data-act="keep-fill">예시 채우기</button><button type="button" class="btn ghost small" data-act="keep-clear">비우기</button></div>` : ''}
@@ -1052,10 +1058,11 @@ function renderSettings() {
     <div class="set-btns"><button type="button" class="btn ghost small" data-act="ans-fill">예시 채우기</button><button type="button" class="btn ghost small" data-act="ans-clear">비우기</button></div>` : ''}
     ${currentView() === 'shelf' ? `    <p class="mlabel">책 없음</p>${onoff('noBooks', D.noBooks)}
     <p class="mlabel">긴 제목 예시</p>${onoff('longTitle', D.longTitle)}
-    <p class="mlabel">요한복음 표지 그림</p>
-    <select class="field" id="jcover" aria-label="요한복음 표지 그림">${JCOVER_LIST.map(([v, n]) => `<option value="${esc(v)}"${D.jcover === v ? ' selected' : ''}>${n}</option>`).join('')}</select>
+    <p class="mlabel">요한복음 표지</p>
+    <select class="field" id="jcoverMotif" aria-label="요한복음 표지 상징">${COVERS.groups.map(group => `<optgroup label="${esc(group.name)}">${group.items.map(item => `<option value="${esc(item.id)}"${D.jcoverMotif === item.id ? ' selected' : ''}>${esc(item.name)}</option>`).join('')}</optgroup>`).join('')}</select>
+    <select class="field" id="jcoverColor" aria-label="요한복음 표지 색">${COVERS.colors.map(([id, hex, name]) => `<option value="${id}"${D.jcoverColor === id ? ' selected' : ''}>${esc(name)}</option>`).join('')}</select>
     <p class="set-note">실제 앱에서는 목사님이나 교재 담당이 교재를 만들 때 고르는 방향이에요.</p>` : ''}
-    ${currentView() === 'record' ? `<p class="mlabel">새가족반 기록</p>${seg('newcomer', [['0', '숨기기'], ['1', '보이기']], D.newcomer ? 1 : 0)}
+    ${['record', 'records'].includes(currentView()) ? `<p class="mlabel">새가족반 기록</p>${seg('newcomer', [['0', '숨기기'], ['1', '보이기']], D.newcomer ? 1 : 0)}
     <p class="mlabel">예시 기록</p>
     <div class="set-btns"><button type="button" class="btn ghost small" data-act="rec-restore">예시 기록 되살리기</button></div>
     <div class="set-btns"><button type="button" class="btn ghost small" data-act="rec-hide">기록 비우기</button></div>
@@ -1070,7 +1077,7 @@ function closeMenu() { const m = $('#settings'); m.hidden = true; $('#gearBtn').
 // ── 화면 이름표 ──
 // 이름표와 어느 탭이 켜지는지는 여기에 모아 둔다. 아직 만들지 않은 화면은 차분한 안내 한 장으로 연다(막다른 길이 없게 이번 주로 가는 링크를 둔다)
 const PLACE = {
-  wq: ['이번 주의 질문', 'week'], read: ['펼치기', 'week'], share: ['나눔하기', 'share'], shelf: ['책장', 'shelf'], record: ['내 기록', 'record'], gallery: ['올해의 그림', 'record'], more: ['더보기', 'more'],
+  wq: ['이번 주의 질문', 'week'], read: ['펼치기', 'week'], share: ['나눔하기', 'share'], shelf: ['책장', 'shelf'], record: ['내 기록', 'record'], records: ['모든 기록', 'record'], gallery: ['올해의 그림', 'record'], more: ['더보기', 'more'],
   church: ['우리 사랑방', 'more'], prep: ['진행 준비', 'week'], manage: ['교재 관리', 'more'], admin: ['관리', 'more'], about: ['디다코 소개', 'more'], feedback: ['의견 보내기', 'more']
 };
 const VIEWS = ['start', 'week'].concat(Object.keys(PLACE));
@@ -1089,15 +1096,6 @@ function lessonOf(sel) {
   return { id: sel.book + ':' + l.no, book: b.title, period: b.period, no: l.no, title: `제${l.no}과 · ${l.name}`, ref: l.ref, date: l.date, intro: l.intro || '' };
 }
 const thisLesson = () => lessonOf(weekSel());
-function lastWeekCard() {
-  if (!D.lastWeek) return '';
-  const v = ls.get(K.reflect) || '';
-  return `<section class="card" aria-labelledby="lwT">
-    <h2 id="lwT">지난주 작은 실천, 어땠나요?</h2>
-    <div class="pn mine lw-act"><p class="lab">${ic('lock')}${esc(DATA.lastWeek.lesson)} · 내가 남긴 실천</p><p class="t">${esc(DATA.lastWeek.action)}</p></div>
-    <div class="lw-form"><label for="lwInput">한 줄 돌아보기</label><input class="field" id="lwInput" maxlength="120" placeholder="떠오르는 대로 한 줄만 적어요" value="${esc(v)}" autocomplete="off"></div>
-  </section>`;
-}
 function keepCard() {
   const k = readJson(K.keep);
   if (!k.sentence && !k.action) return '';
@@ -1290,7 +1288,7 @@ function aboutView() {
       <div class="about-names"><div class="about-name"><b>디다케</b><span class="greek">διδαχή</span><span class="soft">가르침</span></div><span aria-hidden="true">+</span><div class="about-name"><b>코이노니아</b><span class="greek">κοινωνία</span><span class="soft">교제</span></div></div>
       <p>디다코는 '가르침'을 뜻하는 디다케(διδαχή, didachē)와 '교제'를 뜻하는 코이노니아(κοινωνία, koinōnia)에서 영감을 얻은 이름이에요.</p><p class="hint" style="margin-top:10px">사도행전 2:42</p></section>
     <section class="card about-card"><h2>세 겹 책갈피 이야기</h2><p>전도서 4장의 세 겹으로 꼰 줄은 쉽게 끊어지지 않는다는 말씀을 떠올려요. 디다코의 로고는 그렇게 꼰 세 가닥이 책갈피가 된 모양이에요. 세 가닥은 성부·성자·성령이에요.</p></section>
-    <section class="card about-card"><h2>보상 대신 흔적</h2><p>디다코에는 점수나 상이 없어요. 대신 흔적이 남아요. 남긴 과마다 책장의 책갈피 끈이 조금씩 자라고, 내려놓은 교재는 지난 책에 놓이고, 교재가 끝나면 그동안 남긴 한 문장이 한 장에 모여요. 이번 주의 질문을 끝까지 펴 본 주의 그림은 내 기록의 올해의 그림에 한 장씩 담겨요. 몇 개인지는 세지 않아요.</p></section>
+    <section class="card about-card"><h2>보상 대신 흔적</h2><p>디다코에는 점수나 상이 없어요. 대신 흔적이 남아요. 남긴 과마다 책장의 책갈피 끈이 조금씩 자라고, 다 읽은 교재는 교재 목록에 남고, 교재가 끝나면 그동안 남긴 한 문장이 한 장에 모여요. 이번 주의 질문을 끝까지 펴 본 주의 그림은 내 기록의 올해의 그림에 한 장씩 담겨요. 몇 개인지는 세지 않아요.</p></section>
     <section class="card about-card"><h2>디다코는 말씀을 이렇게 이해해요</h2>
       ${steps.map(([title,desc,label,target],i)=>`<div class="about-step"><span class="step-no">${i+1}.</span><div><b>${title}</b><p>${desc}</p><a href="${target}">${label}</a></div></div>`).join('')}
     </section></div>`;
@@ -1299,7 +1297,7 @@ const GUIDE_CARDS = [
   ['week','이번 주','교회가 함께 이번 주의 질문 하나를 한 주 동안 품어요. 월요일부터 금요일까지 하루 한 곳씩 오늘의 말씀을 펴서, 물음의 답을 본문에서 찾아봐요.'],
   ['shelf','책장','교회가 낸 교재 가운데 지금 읽을 책 한 권을 골라요. 책 안에서 과를 펼쳐 모임 전에 미리 읽고 생각을 남길 수 있어요. 남기는 것은 원할 때만 해요.'],
   ['share','나눔하기','지금 읽는 책의 과로 함께 모여 질문 하나씩 나눠요. 사랑방에서는 사랑방 교재로, 가정에서는 함께 쓰는 교재로 바꿔서 해요. 이야기하는 동안에는 화면을 내려놓아요.'],
-  ['log','내 기록','모임 뒤에 마음에 남은 한 문장과 작은 실천을 남겨요. 지난주에 정한 작은 실천도 여기서 돌아봐요.'],
+  ['log','내 기록','모임 뒤에 마음에 남은 한 문장과 작은 실천을 남겨요. 달마다 간직한 말씀과 묵상을 모아 보고, 기록 상세에서 돌아보기를 남겨요.'],
   ['more','더보기','화면 모드와 색, 글씨 크기를 바꿔요. 기록을 잠가서 맡기는 동기화는 디다코 노트 더보기에서 해요.']
 ];
 let guideIndex = 0;
@@ -1877,8 +1875,18 @@ const weekSel = () => {
 const shelfBooks = () => DATA.books;
 const bookById = id => shelfBooks().find(b => b.id === id);
 const bTitle = b => (b.id === 'john' && D.longTitle ? LONG_JOHN : b.title);
-// 표지 그림: 교재마다 고른 그림 주소(없으면 '' = 그림 없는 카드). 요한복음은 데모 설정(D.jcover)을 따른다
-const bCover = b => (b.id === 'john' ? D.jcover : b.cover || '');
+// 같은 상징·색 조합으로 큰 표지와 작은 표지를 그린다. 없거나 알 수 없는 값은 세 겹 끈·종이색으로 대신한다
+const bCover = b => b.id === 'john' ? { motif: D.jcoverMotif, color: D.jcoverColor } : b.cover;
+function coverSvg(cover, cls) {
+  const selectedMotif = COVER_ITEMS.find(item => item.id === (cover || {}).motif);
+  const selectedColor = COVERS.colors.find(row => row[0] === (cover || {}).color);
+  const fallback = !selectedMotif || !selectedColor;
+  const motif = fallback ? COVER_FALLBACK.groups[0].items[0] : selectedMotif;
+  const color = fallback ? (COVERS.colors.find(row => row[0] === 'paper') || COVER_FALLBACK.colors[0]) : selectedColor;
+  const hex = color[1], shade = `color-mix(in srgb, ${hex} 16%, var(--surface))`;
+  const scale = cls === 'wk-cover' ? ' transform="translate(8 8) scale(.6667)"' : '';
+  return `<svg class="${cls}" viewBox="0 0 48 48" aria-hidden="true" style="color:color-mix(in srgb, ${hex} 72%, var(--ink));background:${shade}"><rect x="0" y="0" width="48" height="48" fill="${shade}"/><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"${scale}>${motif.svg}</g></svg>`;
+}
 // 책갈피의 길이(카드 안쪽 너비의 %): 남긴 과가 쌓인 만큼 길어진다
 const keptCount = b => b.lessons.filter(l => l.keep).length + (b.id === weekSel().book && (readJson(K.keep).sentence || readJson(K.keep).action) ? 1 : 0);
 const lenOf = b => 20 + Math.min(keptCount(b), 8) * 10;
@@ -1893,12 +1901,12 @@ function capOf(b) {
 }
 // 아직 회원에게 열리지 않은 과(준비 중)는 목차에 넣지 않는다
 const tocLessons = b => b.lessons.filter(l => l.state !== 'prep');
-// 지금 읽는 책 카드: 카드 전체를 누르면 책이 열린다. 위에서부터 표지 그림(있으면), 종류 · 기간, 책 이름, 이번 주(다음) 과, 맨 아래 가로 세 겹 책갈피
+// 지금 읽는 책 카드: 카드 전체를 누르면 책이 열린다. 위에서부터 표지, 종류 · 기간, 책 이름, 이번 주 과, 맨 아래 가로 세 겹 책갈피
 function coverHtml(b) {
-  const c = capOf(b), cv = bCover(b);
+  const c = capOf(b);
   return `<div class="card xcard sh-card" role="button" tabindex="0" data-act="open-book" data-book="${b.id}" title="${esc(bTitle(b))}" aria-label="${esc(bTitle(b))} ${esc(b.period)} 책 열기">
     <div class="sh-body">
-      ${cv ? `<img class="wk-cover" src="${esc(cv)}" alt="" width="1200" height="675" decoding="async">` : ''}
+      ${coverSvg(bCover(b), 'wk-cover')}
       <div class="sh-sm sh-kind">${kindIcon(b.kind)}<span>${esc(b.kind)} · ${esc(b.period)}</span></div>
       <div class="sf xct" style="margin-top:4px">${esc(bTitle(b))}</div>
       ${D.before ? '<div class="sh-sm" style="margin-top:4px;line-height:1.5">이번 주 과를 준비하고 있어요</div>' : c ? `<div class="sh-sm" style="margin-top:4px;line-height:1.5">${esc(c.lead)} ${esc(c.text)} · ${esc(c.date)}</div>` : ''}
@@ -1906,14 +1914,14 @@ function coverHtml(b) {
     <span class="sh-ribbon" style="--len:${lenOf(b)}" aria-hidden="true"></span>
   </div>`;
 }
-// 지난 책: 한 줄에 한 권(책 이름, 종류 · 기간)
-const pastRowHtml = b => `<button class="card xrow" type="button" data-act="open-book" data-book="${b.id}" title="${esc(bTitle(b))}" aria-label="${esc(bTitle(b))} ${esc(b.period)} 책 열기"><span><span style="display:block">${esc(bTitle(b))}</span><span class="sh-sm">${esc(b.kind)} · ${esc(b.period)}</span></span>${b.closed ? '' : '<span class="walk-tag">교회에서 읽는 중</span>'}<span class="xch" aria-hidden="true">›</span></button>`;
+// 교재 목록: 한 줄에 한 권(작은 표지, 책 이름, 종류 · 기간)
+const pastRowHtml = b => `<button class="card xrow" type="button" data-act="open-book" data-book="${b.id}" title="${esc(bTitle(b))}" aria-label="${esc(bTitle(b))} ${esc(b.period)} 책 열기">${coverSvg(bCover(b), 'cover-small')}<span class="xrow-copy"><span style="display:block">${esc(bTitle(b))}</span><span class="sh-sm">${esc(b.kind)} · ${esc(b.period)}</span></span>${b.closed ? '' : '<span class="walk-tag">교회에서 읽는 중</span>'}<span class="xch" aria-hidden="true">›</span></button>`;
 function browseHtml() {
   if (D.noBooks) {
     return `<section class="card empty" aria-labelledby="emT">${ic('shelf')}<h2 id="emT">아직 책장에 꽂힌 책이 없어요</h2>
       <p class="soft" style="margin:0">이번 주 과가 배포되면 이곳에 책이 놓여요.</p></section>`;
   }
-  return `<h2 class="xlb" style="margin-top:14px">지난 책</h2>${pastBooks().map(pastRowHtml).join('')}`;
+  return `<h2 class="xlb" style="margin-top:14px">교재 목록</h2>${pastBooks().map(pastRowHtml).join('')}`;
 }
 // 검색(제목·본문): 책 제목과 과 제목·장절·풀이를 훑는다. 내 기록은 훑지 않는다
 function searchHtml(q) {
@@ -2000,7 +2008,8 @@ const dayOf = e => Number((String(e.date).match(/(\d+)(?!.*\d)/) || [0])[0]);
 const stamp = e => e.year * 10000 + e.month * 100 + dayOf(e);
 const recNewest = es => es.slice().sort((a, b) => stamp(b) - stamp(a));
 const WHO = ['아버지', '아들', '성령'];
-const recLabel = e => `${esc(e.book)}${e.ref ? ` · ${esc(e.ref)}` : ''}`;
+const recBookName = e => String(e.book || '').split(' · ')[0];
+const recLabel = e => esc(e.ref || recBookName(e));
 const recDeleted = () => { const v = readJson(K.recDel); return Array.isArray(v) ? v : []; };
 // 깊이 묵상하기 질문 글. 기록마다 당시 질문 글을 함께 담아 둔다(M-06): 나중에 과의 질문이 바뀌어도 내 기록에는 그때 질문이 남는다
 const tqOf = id => { const g = DATA.guides[id] || DATA.guides['john:3'], o = {}; if (g) g.triple.forEach(t => { o[t.who] = t.t; }); return o; };
@@ -2014,7 +2023,7 @@ function liveEntry() {
   }
   if (!sentence && !action && !answers.length && !Object.keys(threads).length) return null;
   const bk = DATA.books.find(b => b.id === weekSel().book), ls0 = bk.lessons.find(l => l.no === weekSel().no), md = /(\d+)월\s*(\d+)일/.exec(L.date || DATA.thisWeek.date);
-  return { id: 'live-' + L.id.replace(':', '-'), live: true, year: THIS_YEAR, month: Number(md[1]), date: `${md[1]}월 ${md[2]}일`, title: ls0.name, ref: L.ref, book: `${L.book} · ${L.period}`, keep: sentence, action, answers, threads, tq: tqOf(L.id) };
+  return { id: 'live-' + L.id.replace(':', '-'), live: true, year: THIS_YEAR, month: Number(md[1]), date: `${md[1]}월 ${md[2]}일`, title: ls0.name, ref: L.ref, book: L.book, keep: sentence, action, answers, threads, tq: tqOf(L.id) };
 }
 // 보이는 기록 모두(지운 것, 숨긴 것 빼고). 고친 글과 돌아보기를 입혀서 돌려준다
 function recRows() {
@@ -2032,18 +2041,19 @@ const recById = id => recRows().find(x => x.id === id);
 const savedAns = () => readJson(K.recAns);
 const answersOf = e => { const s = savedAns()[e.id]; return Array.isArray(s) ? s : (e.answers || []); };
 // 보는 자리는 이 화면에 있는 동안 기억한다(상세를 열고 돌아와도 같은 달·같은 칸·같은 검색어)
-const rec = { view: 'report', year: false, key: 0, more: false, q: '', action: null };
+const rec = { year: false, key: 0, more: false, q: '', action: null };
+let recFrom = 'record';
 const recPeriods = rows => { const m = new Map(); rows.forEach(e => m.set(e.year * 100 + e.month, { year: e.year, month: e.month })); return [...m.keys()].sort((a, b) => a - b).map(k => m.get(k)); };
 const periodKey = p => p.year * 100 + p.month;
 const curPeriod = ps => ps.find(p => periodKey(p) === rec.key) || ps[ps.length - 1];
 function monthNav(ps, p) {
   const yrs = [...new Set(ps.map(x => x.year))], first = rec.year ? yrs.indexOf(p.year) <= 0 : ps.indexOf(p) <= 0, last = rec.year ? yrs.indexOf(p.year) >= yrs.length - 1 : ps.indexOf(p) >= ps.length - 1;
-  const title = rec.year ? `${p.year}년의 돌아봄` : `${p.year === THIS_YEAR ? '' : p.year + '년 '}${p.month}월의 돌아봄`;
+  const title = rec.year ? `${p.year}년` : `${p.year}년 ${p.month}월`;
   return `<div class="month-nav"><button type="button" data-act="rec-prev" aria-label="이전 ${rec.year ? '해' : '달'}" ${first ? 'disabled aria-disabled="true"' : ''}>‹</button><button type="button" class="month-label" data-act="rec-period" aria-haspopup="dialog">${title} ▾</button><button type="button" data-act="rec-next" aria-label="다음 ${rec.year ? '해' : '달'}" ${last ? 'disabled aria-disabled="true"' : ''}>›</button></div>`;
 }
 const emptyCard = () => `<section class="card empty"><h2>아직 남긴 기록이 없어요</h2><p class="soft" style="margin:0">이번 주 과가 끝나면 이곳에 모여요.</p><a class="btn" href="#shelf">책장 보기</a></section>`;
 const recSection = (title, body) => (body ? `<section class="card report-card"><h2>${title}</h2>${body}</section>` : '');
-// 돌아봄: 간직한 말씀 · 삼위일체 하나님 묵상(한 해 보기에서는 나의 고백) · 작은 실천의 길. 그달에 내용이 없는 구역은 보이지 않고, 숫자는 어디에도 없다. 모두 최근 것이 위에 온다
+// 달마다 보기: 간직한 말씀 · 삼위일체 하나님 묵상(한 해 보기에서는 나의 고백) · 작은 실천의 길. 그달에 내용이 없는 구역은 보이지 않고, 숫자는 어디에도 없다. 모두 최근 것이 위에 온다
 function reportHtml() {
   const all = recRows(), ps = recPeriods(all);
   if (!ps.length) return emptyCard();
@@ -2051,19 +2061,19 @@ function reportHtml() {
   const withKeep = es.filter(e => e.keep);
   // 한 해 보기의 간직한 말씀은 달마다 가장 최근 한 문장
   const keepRows = rec.year ? withKeep.filter(e => withKeep.find(x => x.month === e.month) === e) : withKeep;
-  const keeps = keepRows.map(e => `<div class="report-line"><button type="button" class="keep-open" data-act="rec-open" data-id="${e.id}"><blockquote class="keep-quote">${esc(e.keep)}</blockquote><p class="keep-meta">${esc(e.book)} · ${esc(e.title)}${e.ref ? ` · ${esc(e.ref)}` : ''}</p></button></div>`).join('');
+  const keeps = keepRows.map(e => `<div class="report-line"><button type="button" class="keep-open" data-act="rec-open" data-id="${e.id}"><blockquote class="keep-quote">${esc(e.keep)}</blockquote><p class="keep-meta"><span class="keep-title">${esc(e.title)}</span><span class="walk-ref">${recLabel(e)}</span></p></button></div>`).join('');
   const threads = WHO.map((k, i) => { const a = es.flatMap(e => (e.threads && e.threads[k]) || []); return a.length ? `<div class="thread"><p class="thread-name ${['father', 'son', 'spirit'][i]}">${k}</p>${a.map(x => `<p>${esc(x)}</p>`).join('')}</div>` : ''; }).join('');
   const prac = es.filter(e => e.action);
-  const acts = prac.slice(0, rec.more ? prac.length : 3).map(e => `<div class="path-item"><strong>${esc(e.action)}</strong><p class="reflection">${e.reflectionDate ? `<small>${esc(e.reflectionDate)} · </small>` : ''}${e.reflection ? esc(e.reflection) : '아직 돌아보지 않았어요'}</p></div>`).join('')
+  const acts = prac.slice(0, rec.more ? prac.length : 3).map(e => `<div class="path-item"><strong>${esc(e.action)}</strong><p class="reflection">${e.reflectionDate ? `<small style="display:block">${esc(e.reflectionDate)}</small>` : ''}${e.reflection ? esc(e.reflection) : '아직 돌아보지 않았어요'}</p></div>`).join('')
     + (prac.length > 3 ? `<button type="button" class="more-practices" data-act="rec-more">${rec.more ? '접기' : '더 보기 ↓'}</button>` : '');
-  return monthNav(ps, p) + `<p class="eyebrow" style="margin:.2em 0 .6em">${esc(DATA.church.room)}과 함께</p><div class="report-grid">${recSection(rec.year ? '간직한 말씀 · 달마다 한 문장' : '간직한 말씀', keeps)}${recSection(rec.year ? '나의 고백' : '삼위일체 하나님 묵상', threads)}${recSection('작은 실천의 길', acts)}</div>`;
+  return monthNav(ps, p) + `<p class="eyebrow" style="margin:.2em 0 .6em">${esc(DATA.church.room)}과 함께</p><div class="report-grid">${recSection('간직한 말씀', rec.year && keeps ? '<p class="fine">달마다 한 문장씩 모았어요</p>' + keeps : keeps)}${recSection(rec.year ? '나의 고백' : '삼위일체 하나님 묵상', threads)}${recSection('작은 실천의 길', acts)}</div>`;
 }
 function listRows(es) {
   if (!es.length) return `<section class="card"><p style="margin:0">찾는 기록이 없어요. 검색어를 바꿔 보세요.</p></section>`;
   const sorted = recNewest(es), keys = [...new Set(sorted.map(e => e.year * 100 + e.month))];
   return keys.map(key => {
     const group = sorted.filter(e => e.year * 100 + e.month === key), e0 = group[0];
-    return `<section class="card month-card"><h2>${e0.year}년 ${e0.month}월</h2>${group.map(e => `<div class="date-row"><button type="button" data-act="rec-open" data-id="${e.id}"><span class="date-stamp">${esc(e.date)}</span><span class="date-copy"><strong class="date-title">${esc(e.title)}</strong><small class="date-ref">${recLabel(e)}</small><span class="date-description">${esc(e.keep || e.action || '')}</span></span>${ic('fwd')}</button></div>`).join('')}</section>`;
+    return `<section class="card month-card"><h2>${e0.year}년 ${e0.month}월</h2>${group.map(e => `<div class="date-row"><button type="button" data-act="rec-open" data-id="${e.id}"><span class="date-stamp">${esc(e.date)}</span><span class="date-copy"><strong class="date-title">${esc(e.title)}</strong><span class="walk-ref">${recLabel(e)}</span><span class="date-description">${esc(e.keep || e.action || '')}</span></span>${ic('fwd')}</button></div>`).join('')}</section>`;
   }).join('');
 }
 const recText = e => [e.title, e.ref, e.book, e.keep, e.action, Object.values(e.threads || {}).flat().join(' '), answersOf(e).map(a => a.a).join(' ')].join(' ').toLowerCase();
@@ -2078,9 +2088,9 @@ function detailHtml(e) {
   const ansHtml = ans.length ? `<section class="card"><h2>미리 쓴 답</h2>${ans.map((a, i) => `<div class="report-line"><b>${esc(a.q)}</b><p>${esc(a.a)}</p><div class="set-btns"><button type="button" class="btn ghost small" data-act="rec-ans-edit" data-i="${i}" data-id="${e.id}">수정하기</button><button type="button" class="delete-answer" data-act="rec-ans-del" data-i="${i}" data-id="${e.id}">삭제</button></div></div>`).join('')}</section>` : '';
   const thr = has ? Object.entries(e.threads).map(([k, vs]) => `<div class="report-line"><b>${esc(k)}${e.tq && e.tq[k] ? ` · ${esc(e.tq[k])}` : ''}</b><p>${vs.map(esc).join('<br>')}</p></div>`).join('') : '';
   return `<div class="record-wrap">
-    <a class="back-link" href="#record">${ic('back')}<span>내 기록</span></a>
+    <a class="back-link" href="${recFrom === 'records' ? '#records' : '#record'}">${ic('back')}<span>${recFrom === 'records' ? '모든 기록' : '내 기록'}</span></a>
     <div class="record-top"><h1>기록 상세</h1></div>
-    <section class="card detail-head"><p class="detail-meta">${esc(e.date)} · ${esc(e.book)}</p><h2 class="detail-title">${esc(e.title)}</h2>${e.ref ? `<p class="detail-meta">${esc(e.ref)}</p>` : ''}</section>
+    <section class="card detail-head"><p class="detail-meta">${esc(e.date)}</p><h2 class="detail-title">${esc(e.title)}</h2><span class="walk-ref">${recLabel(e)}</span></section>
     <section class="card">
       <div class="field-head"><p class="eyebrow" style="margin:0">오늘 남긴 한 문장</p><button type="button" class="quiet-link" data-act="rec-field-edit" data-field="keep" data-id="${e.id}">고치기</button></div>
       ${e.keep ? `<p class="detail-quote">${esc(e.keep)}</p>` : '<p class="soft" style="margin:.4em 0">남기지 않았어요</p>'}
@@ -2100,10 +2110,18 @@ function recordView(arg) {
   const e = arg ? recById(arg) : null;
   if (e) return detailHtml(e);
   return `<div class="record-wrap">
-    <div class="record-top"><h1>내 기록</h1><a class="icon-btn" href="#gallery" aria-label="올해의 그림">${ic('gallery')}</a></div>
-    ${lastWeekCard() + keepCard()}
-    <div class="seg tab-switch" style="--n:2" role="tablist"><button type="button" data-act="rec-tab" data-v="report" class="${rec.view === 'report' ? 'on' : ''}" role="tab" aria-selected="${rec.view === 'report'}">돌아봄</button><button type="button" data-act="rec-tab" data-v="date" class="${rec.view === 'date' ? 'on' : ''}" role="tab" aria-selected="${rec.view === 'date'}">모든 기록</button></div>
-    <div id="recBody">${rec.view === 'report' ? reportHtml() : listHtml()}</div>
+    <div class="record-top"><h1>내 기록</h1>
+      <a class="icon-btn" href="#records" aria-label="모든 기록"><svg class="ic" aria-hidden="true"><use href="#i-list"/></svg></a>
+      <a class="icon-btn" href="#gallery" aria-label="올해의 그림">${ic('gallery')}</a></div>
+    ${keepCard()}
+    <div id="recBody">${reportHtml()}</div>
+  </div>`;
+}
+function recordsView() {
+  return `<div class="record-wrap">
+    <a class="back-link" href="#record">${ic('back')}<span>내 기록</span></a>
+    <div class="record-top"><h1>모든 기록</h1></div>
+    ${listHtml()}
   </div>`;
 }
 // 올해의 그림은 완료 표시를 읽기만 한다. 예시 채우기는 화면에만 적용한다.
@@ -2139,7 +2157,7 @@ function recStep(d) {
   recRedraw();
 }
 function periodSheet() {
-  openSheet(`<h2 id="popT">어떻게 돌아볼까요?</h2><div class="period-options"><button type="button" class="period-option" data-act="rec-period-pick" data-v="0" aria-pressed="${!rec.year}" data-focus>달마다 보기 ${rec.year ? '' : '<span aria-hidden="true">●</span>'}</button><button type="button" class="period-option" data-act="rec-period-pick" data-v="1" aria-pressed="${rec.year}">한 해 보기 ${rec.year ? '<span aria-hidden="true">●</span>' : ''}</button></div>`);
+  openSheet(`<h2 id="popT">기간 고르기</h2><div class="period-options"><button type="button" class="period-option" data-act="rec-period-pick" data-v="0" aria-pressed="${!rec.year}" data-focus>달마다 보기 ${rec.year ? '' : '<span aria-hidden="true">●</span>'}</button><button type="button" class="period-option" data-act="rec-period-pick" data-v="1" aria-pressed="${rec.year}">한 해 보기 ${rec.year ? '<span aria-hidden="true">●</span>' : ''}</button></div>`);
 }
 function fieldSheet(id, field) {
   const e = recById(id); if (!e) return;
@@ -2178,7 +2196,7 @@ function route(moved) {
   $('#topbar').classList.toggle('bare', start);
   $('#topnav').hidden = start; $('#tabs').hidden = start;
   document.body.dataset.view = v;
-  $('#view').innerHTML = start ? startView() : v === 'week' ? weekView() : v === 'wq' ? wqView() : v === 'read' ? readView() : v === 'share' ? shareView() : v === 'shelf' ? shelfView(arg) : v === 'record' ? recordView(arg) : v === 'gallery' ? galleryView() : v === 'more' ? moreView() : v === 'admin' ? adminView() : v === 'about' ? aboutView() : v === 'feedback' ? feedbackView() : placeView(v);
+  $('#view').innerHTML = start ? startView() : v === 'week' ? weekView() : v === 'wq' ? wqView() : v === 'read' ? readView() : v === 'share' ? shareView() : v === 'shelf' ? shelfView(arg) : v === 'record' ? recordView(arg) : v === 'records' ? recordsView() : v === 'gallery' ? galleryView() : v === 'more' ? moreView() : v === 'admin' ? adminView() : v === 'about' ? aboutView() : v === 'feedback' ? feedbackView() : placeView(v);
   const tab = start ? '' : v === 'week' ? 'week' : PLACE[v][1];
   $$('[data-tab]').forEach(a => { const on = a.dataset.tab === tab; a.classList.toggle('on', on); on ? a.setAttribute('aria-current', 'page') : a.removeAttribute('aria-current'); });
   document.title = start ? '디다코' : (v === 'shelf' && arg ? bTitle(bookById(arg)) : v === 'record' && arg ? '기록 상세' : v === 'week' ? '이번 주' : PLACE[v][0]) + ' · 디다코';
@@ -2256,7 +2274,7 @@ const acts = {
   },
   'demo-reset'() {
     closeSheet();
-    ls.del(K.demo); ls.del(K.reflect); ls.del(K.keep); ls.del(K.answers); ls.del(K.walkRead); ls.del(K.walkThought); ls.del(K.walkDone); ls.del(K.walkMeditate); ls.del(K.bookmark); ls.del(K.memo); ls.del(K.leadopen);
+    ls.del(K.demo); ls.del(K.keep); ls.del(K.answers); ls.del(K.walkRead); ls.del(K.walkThought); ls.del(K.walkDone); ls.del(K.walkMeditate); ls.del(K.bookmark); ls.del(K.memo); ls.del(K.leadopen);
     [K.shareDone, K.recRefl, K.recAns, K.recEdit, K.recDel, K.recHide].forEach(ls.del); loadState();
     if (location.hash === '#start') route(true); else location.hash = '#start';
   },
@@ -2264,7 +2282,7 @@ const acts = {
   'read-go'(e, el) { readResume = el.dataset.resume === '1'; readFrom = el.dataset.from || ''; if (location.hash === '#read') route(true); else location.hash = '#read'; },
   // 책장
   'open-book'(e, el) { shelfLesson = el.dataset.lesson || ''; location.hash = '#book-' + el.dataset.book; },
-  'book-pick'(e, el) { if (!bookById(el.dataset.book)) return; ls.set(K.myBook, el.dataset.book); ls.del(K.shareLesson); toast('지금 읽는 책을 바꿨어요. 전에 읽던 책은 지난 책에 놓여요'); rerender(); },
+  'book-pick'(e, el) { if (!bookById(el.dataset.book)) return; ls.set(K.myBook, el.dataset.book); ls.del(K.shareLesson); toast('지금 읽는 책을 바꿨어요. 전에 읽던 책은 교재 목록으로 돌아가요'); rerender(); },
   // 머리의 돋보기: 검색 칸을 열고 바로 입력하게 한다. 칸이 비어 있을 때 다시 누르면 접는다
   'shelf-search'(e, el) {
     const box = $('#shelfSearch'), q = $('#shelfQ'); if (!box || !q) return;
@@ -2274,12 +2292,11 @@ const acts = {
   },
   'lesson-other'() { toast('데모에서는 이번 주 과만 펼칠 수 있어요'); },
   // 내 기록
-  'rec-tab'(e, el) { rec.view = el.dataset.v; recRedraw(); },
   'rec-prev'() { recStep(-1); }, 'rec-next'() { recStep(1); },
   'rec-period'() { periodSheet(); },
   'rec-period-pick'(e, el) { rec.year = el.dataset.v === '1'; closeSheet(); recRedraw(); },
   'rec-more'() { rec.more = !rec.more; recRedraw(); },
-  'rec-open'(e, el) { location.hash = '#rec-' + el.dataset.id; },
+  'rec-open'(e, el) { recFrom = currentView() === 'records' ? 'records' : 'record'; location.hash = '#rec-' + el.dataset.id; },
   'rec-field-edit'(e, el) { fieldSheet(el.dataset.id, el.dataset.field); },
   'rec-field-save'() {
     const { id, field } = rec.action, t = $('#recFieldEdit'), v = t.value.trim();
@@ -2397,7 +2414,7 @@ document.addEventListener('click', e => {
     if (DISPLAY_KEYS.includes(k)) { S[k] = k === 'big' ? v === '1' : v; saveDisplay(); }
     else if (k === 'galleryDemo') { D.galleryDemo = v === '1'; saveDemo(); }
     else if (k === 'bookmark') { if (v === '1') { if (!hasBm()) ls.set(K.bookmark, JSON.stringify({ id: 'o2', at: Date.now() })); } else ls.del(K.bookmark); }   // 책갈피는 펼치기가 꽂는 것과 같은 자리
-    else { D[k] = ['lastWeek', 'before', 'alt', 'readOpen', 'readTriple', 'two', 'noBooks', 'longTitle', 'newcomer'].includes(k) ? v === '1' : k === 'dimSec' ? (v === '5' ? 5 : 15) : v; saveDemo(); }
+    else { D[k] = ['before', 'alt', 'readOpen', 'readTriple', 'two', 'noBooks', 'longTitle', 'newcomer'].includes(k) ? v === '1' : k === 'dimSec' ? (v === '5' ? 5 : 15) : v; saveDemo(); }
     rerender();
     return;
   }
@@ -2426,7 +2443,6 @@ document.addEventListener('input', e => {
   if (t.id === 'feedbackText') { feedbackState.text = t.value; const count = $('#feedbackCount'); if (count) count.textContent = String(t.value.length); const send = $('#feedbackSend'); if (send) send.disabled = !t.value.trim(); }
   else if (t.id === 'wqMed') { const meds = readJson(K.walkMeditate); meds[walkWeek().n] = t.value; ls.set(K.walkMeditate, JSON.stringify(meds)); }
   else if (t.id === 'wqTa') { const thought = readJson(K.walkThought); thought[walkWeek().n] = t.value; ls.set(K.walkThought, JSON.stringify(thought)); }
-  else if (t.id === 'lwInput') ls.set(K.reflect, t.value);
   else if (t.matches && t.matches('textarea[data-id]')) { const id = t.dataset.id; sizeTa(t); setBookmark(id); clearTimeout(timers[id]); timers[id] = setTimeout(() => saveAns(id, t), 450); }
   else if ((t.id === 'kSentence' || t.id === 'kAction') && currentView() === 'read') { clearTimeout(keepT); keepT = setTimeout(saveKeepRead, 450); }
   else if (t.id === 'shelfQ') runShelfSearch();
@@ -2443,8 +2459,8 @@ window.addEventListener('pagehide', () => { flushAll(); if (keepT) saveKeepRead(
 document.addEventListener('click', e => { const el = e.target.closest('[data-act="next"]'); if (el && R.on && cur().t === 'keep') saveKeepShare(); }, true);
 document.addEventListener('change', e => {
   if (e.target.id === 'walkSel') { const n = Number(e.target.value); if (Number.isInteger(n) && DATA.weekWalk.some(w => w.n === n)) { D.walk = n; walkDay = ''; saveDemo(); rerender(); } return; }
-  if (e.target.id === 'jcover') { D.jcover = pick(e.target.value, JCOVERS, JCOVER_LIST[1][0]); saveDemo(); rerender(); return; }
-  if (e.target.id === 'lwInput') toast(ls.set(K.reflect, e.target.value) ? '저장했어요' : '저장하지 못했어요 · 다시 시도');
+  if (e.target.id === 'jcoverMotif') { D.jcoverMotif = pick(e.target.value, COVER_MOTIFS, JOHN_COVER.motif); saveDemo(); rerender(); return; }
+  if (e.target.id === 'jcoverColor') { D.jcoverColor = pick(e.target.value, COVER_COLORS, JOHN_COVER.color); saveDemo(); rerender(); return; }
 });
 // 돌아보기: 시간이 지난 뒤 남기는 생각. 쌓아 두고 날짜를 붙인다(오늘은 데모의 오늘)
 document.addEventListener('submit', e => {
