@@ -137,6 +137,9 @@ h2 { font-size: 1.05em; margin: 0; }
 .btn.wide { width: 100%; }
 .btn:disabled { opacity: .5; cursor: default; }
 .field { width: 100%; min-height: 44px; padding: .5em .75em; border-radius: 10px; border: 1px solid var(--line-strong); background: var(--surface); }
+/* 날짜 칸: 아이폰은 날짜 칸을 따로 그려서 폭이 달라지고 시트가 옆으로 밀렸다. 다른 칸과 같은 폭으로 묶는다(D-16) */
+input.field[type="date"] { -webkit-appearance: none; appearance: none; display: block; width: 100%; max-width: 100%; min-width: 0; text-align: left; }
+input.field[type="date"]::-webkit-date-and-time-value { text-align: left; }
 textarea.field { resize: vertical; line-height: 1.55; overflow-y: hidden; }
 .tabs[hidden] { display: none !important; }
 .tabs { position: fixed; left: 0; right: 0; bottom: 0; display: grid; grid-template-columns: repeat(5, 1fr); background: var(--surface); border-top: 1px solid var(--line); padding: 0 env(safe-area-inset-right, 0px) max(6px, env(safe-area-inset-bottom, 0px)) env(safe-area-inset-left, 0px); z-index: 10; transition: transform .25s ease; }
@@ -156,6 +159,7 @@ textarea.field { resize: vertical; line-height: 1.55; overflow-y: hidden; }
 .pop[hidden] { display: none; }
 .pop-scrim { position: absolute; inset: 0; background: rgb(0 0 0 / .4); animation: pop-fade .2s ease-out; }
 .pop-sheet { position: relative; width: 100%; max-width: 480px; max-height: 85vh; overflow-y: auto; border-radius: 18px 18px 0 0; padding: 1.1em 1.1em max(1.1em, env(safe-area-inset-bottom)); box-shadow: 0 -6px 24px rgb(0 0 0 / .18); animation: pop-up .25s ease-out; }
+.pop-sheet { overflow-x: hidden; }
 @media (min-width: 640px) { .pop { align-items: center; } .pop-sheet { border-radius: 18px; } }
 @keyframes pop-up { from { transform: translateY(24px); opacity: 0; } }
 @keyframes pop-fade { from { opacity: 0; } }
@@ -287,7 +291,6 @@ main.wrap { padding-top: 14px; padding-bottom: calc(110px + env(safe-area-inset-
 .walk-today { font-size: .9375rem; color: var(--ink); font-weight: 600; }
 .walk-scripture .quiet-link { display: inline-flex; align-items: center; margin: 0; }
 .walk-ask { margin: .2em 0 1em; font-size: 1rem; line-height: 1.6; color: var(--ink); word-break: keep-all; }
-.walk-ask-lbl { margin-top: .4em; }
 .walk-scripture { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; margin: .7em 0; }
 /* 말씀에서 찾아보기 문답(철학 ⑪ 2026-11-10): 맞으면 본문 위치를 알려 주고, 틀리면 다시 펴 보게 한다. 점수·맞힌 수·틀린 기록은 없다 */
 .walk-days { display: flex; gap: 6px; margin: 0 0 10px; }
@@ -808,6 +811,23 @@ button.gallery-cell { display: block; width: 100%; padding: 0; cursor: pointer; 
 .gallery-cell.empty span { opacity: .5; font-size: .85rem; }
 .gallery-cell .gallery-week { position: absolute; bottom: 5px; left: 7px; color: white; font-size: .75rem; font-weight: 700; text-shadow: 0 1px 4px rgba(0,0,0,.75); }
 .gallery-preview { display: block; width: 100%; max-height: 55vh; object-fit: contain; border-radius: 12px; }
+/* 교재 정보: 이름과 값을 두 칸으로(D-16) */
+.mg-info { margin: 10px 0 4px; padding: 0 0 6px; }
+.mg-info div { display: flex; gap: 12px; padding: 6px 0; font-size: .875rem; }
+.mg-info dt { flex: 0 0 5.5em; color: var(--ink-2); }
+.mg-info dd { margin: 0; color: var(--ink); font-weight: 600; }
+/* 과 편집의 질문 도구: 기호 단추, 사이 띄움(D-16) */
+.mg-tools { display: flex; gap: 8px; margin-top: 10px; }
+.mg-tools .btn { min-width: 44px; padding: 0; display: inline-flex; align-items: center; justify-content: center; }
+.mg-tools .btn .ic { width: 1.15em; height: 1.15em; }
+/* 배포: 경고 상자, 한 줄 단추(D-16) */
+.mg-warn { display: flex; gap: 8px; align-items: flex-start; margin-top: 10px; padding: 10px 12px; border-radius: 10px; background: var(--warn-soft); color: var(--warn); font-size: .84em; line-height: 1.5; word-break: keep-all; }
+.mg-warn .ic { margin-top: .2em; }
+.mg-pub-lbl { margin: 14px 0 6px; font-size: .84em; font-weight: 700; color: var(--ink-2); }
+.mg-pub-row { display: flex; align-items: center; gap: 6px; }
+.mg-pub-row .btn { flex: 1; min-width: 0; padding-left: .6em; padding-right: .6em; line-height: 1.3; word-break: keep-all; }
+.mg-pub-row .st-sep { flex: none; color: var(--ink-2); }
+.mg-pub-more { margin-top: 6px; }
 .mg-tabs { margin-bottom: 12px; }
 .mg-steps { padding: 14px 0 14px; }
 .mg-step-list { list-style: none; margin: 0 0 6px; padding: 0; }
@@ -981,6 +1001,10 @@ button.gallery-cell { display: block; width: 100%; padding: 0; cursor: pointer; 
     <symbol id="i-back" viewBox="0 0 24 24"><path d="M14.5 6l-6 6 6 6"/></symbol>
     <symbol id="i-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><path d="M12 7.5V12l3 2"/></symbol>
     <symbol id="i-x" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></symbol>
+    <symbol id="i-up" viewBox="0 0 24 24"><path d="M12 19V5M6 11l6-6 6 6"/></symbol>
+    <symbol id="i-down" viewBox="0 0 24 24"><path d="M12 5v14M6 13l6 6 6-6"/></symbol>
+    <symbol id="i-copy" viewBox="0 0 24 24"><rect x="8" y="8" width="11" height="11" rx="2"/><path d="M5 15V7a2 2 0 0 1 2-2h8"/></symbol>
+    <symbol id="i-trash" viewBox="0 0 24 24"><path d="M4.5 7h15M9.5 7V5h5v2M6.5 7l1 12h9l1-12M10.5 11v5M13.5 11v5"/></symbol>
     <symbol id="i-cord" viewBox="0 0 16 12"><path d="M.5 8.5h3.8c1.2 0 1.7-1.5 1.7-2.8C6 3.7 7.3 2.5 9 2.5s3 1.2 3 3.1-1.8 3.1-4 3.3"/><path d="M5.6 10.1C7.6 9 9.6 8.5 15.5 8.5"/></symbol>
     <symbol id="i-chevr" viewBox="0 0 16 16"><path d="M6 3.5L10.5 8 6 12.5"/></symbol>
     <!-- 디다코 짧은 마크: 위에 작은 고리, 짧은 끈, 세 줄무늬 책갈피(아래 V 홈). 테마색 동그라미 안에 넣어 쓴다.
@@ -1272,8 +1296,7 @@ function weekView() {
     <section class="card">
       <div class="walk-days" role="group" aria-label="월요일부터 금요일까지의 말씀">${days}</div>
       <p class="walk-today">${selected === today ? '오늘 우리 교회가 함께 읽는 말씀' : walkNames[selected] + '에 함께 읽은 말씀'}</p>
-      <div class="walk-scripture"><span class="passage-chip">${esc(day.ref)}</span><a class="quiet-link" href="${day.url}" target="_blank" rel="noopener">성경 펴기 ›</a></div>
-      <div class="walk-head walk-ask-lbl"><span class="walk-tag">말씀에서 찾아보기</span></div>
+      <div class="walk-scripture"><span class="walk-ref">${esc(day.ref)}</span><a class="quiet-link" href="${day.url}" target="_blank" rel="noopener">성경 펴기 ›</a></div>
       <p class="walk-ask">${esc(day.ask)}</p>
       <div class="walk-choices" role="group" aria-label="답 고르기">${day.choices.map((c, i) => {
         const st = solved ? (i === day.answer ? ' right' : ' dim') : (i === wrong ? ' wrong' : '');
@@ -1314,10 +1337,11 @@ function wqView() {
     <div class="act-row wq-end"><button class="btn" type="button" data-act="wq-pray" style="background:var(--accent-soft);color:var(--accent);border-color:var(--accent-soft)">이 질문으로 하나님께 기도하기</button><a class="btn" href="#week">마치기</a></div>`;
   let past = '';
   for (let i = Math.min(WQ.max, 3); i >= 0; i--) if (i !== WQ.view) past += fold(i);
+  // 그림은 첫 단계와 마친 화면에만 둔다. 가운데 단계에서는 물음이 그림에 밀려 스크롤해야 했다(D-15)
   return `<div class="record-wrap wq-wrap">
     <a class="back-link" href="#week">${ic('back')}<span>이번 주</span></a>
     <section class="card"><div class="walk-head"><span class="walk-kicker">이번 주의 질문</span><span class="walk-tag">${w.n}주</span><span class="walk-tag">${esc(w.group)}</span></div><h1 class="lesson-title" style="margin:.4em 0 0">${esc(w.q)}</h1></section>
-    <img class="q-img" src="${w.img}" alt="${esc(w.alt)}">
+    ${WQ.view === 0 || WQ.view === 4 ? `<img class="q-img" src="${w.img}" alt="${esc(w.alt)}">` : ''}
     ${WQ.view === 4 ? finished : steps[WQ.view]}
     ${past ? `<div class="xpast">${past}</div>` : ''}</div>`;
 }
@@ -1505,7 +1529,7 @@ function mgPublishView(b, L) {
   const missing = mgPublishMissing(b, L), { target, count } = mgPublishTarget(b);
   const edit = '#me-' + b.id + '.' + L.no;
   const disabled = !!missing.length;
-  const button = (title, status, cls, off) => `<button class="btn${cls ? ' ghost' : ''}" type="button" data-act="mg-pub" data-v="${status}"${off || disabled ? ' disabled' : ''}>${title}</button>`;
+  const button = (title, status, cls, off, aria) => `<button class="btn${cls ? ' ghost' : ''}" type="button" data-act="mg-pub" data-v="${status}" aria-label="${aria}"${off || disabled ? ' disabled' : ''}>${title}</button>`;
   return `<a class="back-link" href="#mb-${b.id}">${ic('back')}<span>${esc(b.title)}</span></a>
     <p class="eyebrow top-eyebrow">${esc(b.title)} · ${esc(b.period)}</p>
     <div class="record-top"><h1>배포</h1><a class="btn ghost small" href="${edit}">편집</a></div>
@@ -1513,14 +1537,14 @@ function mgPublishView(b, L) {
     <section class="card">
       <p class="opt-name">제${L.no}과 ${esc(L.name || '(제목을 적어 주세요)')}</p>
       <p class="status-row" aria-label="공개 범위: ${label}">${STATUS.map(([v, l], i) => (i ? '<span class="st-sep" aria-hidden="true">›</span>' : '') + (v === st ? `<span class="pill pill-p">${ic('check')}<b>${l}</b></span>` : `<span class="st-off">${l}</span>`)).join('')}</p>
-      ${st === 'draft' ? '<p class="hint">아직 공개하지 않았어요. 회원에게는 "이번 주 과를 준비하고 있어요"가 보여요.</p>' : `<p class="hint">${ic('check')} ${st === 'leader' ? '리더까지 공개됨' : '모두에게 공개됨'}${L.pubAt ? ' · ' + esc(L.pubAt) : ''}</p>`}
-      <p class="fine">해설과 진행 안내는 늘 리더에게만 보여요.</p>
-      ${!missing.length && !String(L.ref || '').trim() ? '<p class="hint">본문 장절이 비어 있어요. 본문이 없는 과라면 그대로 배포해도 돼요.</p>' : ''}
-      <div class="set-btns">${button('리더 ' + count + '명에게 배포', 'leader', false, st !== 'draft')}${button(esc(target) + ' 회원에게 배포', 'all', st === 'draft', st !== 'leader')}</div>
-      ${st === 'draft' ? `<p class="hint">회원에게는 리더에게 먼저 배포한 뒤에 열 수 있어요.</p><button class="quiet-link" type="button" data-act="mg-pub" data-v="both"${disabled ? ' disabled' : ''}>한 번에 둘 다</button>` : ''}
+      ${st === 'draft' ? '<p class="fine">회원에게는 "이번 주 과를 준비하고 있어요"가 보여요.</p>' : `<p class="fine">${ic('check')} ${st === 'leader' ? '리더까지 공개했어요' : '모두에게 공개했어요'}${L.pubAt ? ` (${esc(L.pubAt)})` : ''}</p>`}
+      <p class="fine" style="margin-top:.2em">해설과 진행 안내는 리더에게만 보여요.</p>
+      ${!missing.length && !String(L.ref || '').trim() ? `<p class="mg-warn">${ic('info')}<span>본문 장절이 비어 있어요. 본문이 없는 과라면 그대로 배포해도 돼요.</span></p>` : ''}
+      <p class="mg-pub-lbl">배포</p>
+      <div class="mg-pub-row">${button('리더 ' + count + '명에게', 'leader', false, st !== 'draft', '리더 ' + count + '명에게 배포')}<span class="st-sep" aria-hidden="true">›</span>${button(esc(target) + ' 회원에게', 'all', st === 'draft', st !== 'leader', esc(target) + ' 회원에게 배포')}</div>
+      <div class="mg-pub-more">${st === 'draft' ? `<button class="quiet-link" type="button" data-act="mg-pub" data-v="both"${disabled ? ' disabled' : ''}>한 번에 둘 다</button>` : '<button class="quiet-link" type="button" data-act="mg-unpub">배포 중단</button>'}</div>
     </section>
-    <div class="gc"><a class="gr" href="#mx-${b.id}.${L.no}"><span class="gt"><b>인쇄용 보기 · PDF·Word로 내려받기</b></span><span class="ch" aria-hidden="true">›</span></a></div>
-    ${st !== 'draft' ? '<div class="set-btns"><button class="btn ghost" type="button" data-act="mg-unpub">배포 중단</button></div><p class="hint">회원 기기의 기록은 그대로예요.</p>' : ''}`;
+    <div class="gc"><a class="gr" href="#mx-${b.id}.${L.no}"><span class="gt"><b>인쇄용 보기</b><span class="gd">PDF나 Word로 내려받아요</span></span><span class="ch" aria-hidden="true">›</span></a></div>`;
 }
 // ── 인쇄(C-02): A4 종이와 쪽 나누기. 시안 manage.html의 인쇄용(ppHead·ppBlocks·paginate·paperPages)을 앱 자료에 맞게 옮겼다 ──
 // 종이 위아래 여백 16mm씩, 2mm는 넉넉하게 남긴다. 교재 관리의 인쇄에는 회원의 개인 기록을 넣지 않는다
@@ -1813,8 +1837,8 @@ function mgBookView(b) {
   return `<a class="back-link" href="#manage">${ic('back')}<span>교재 관리</span></a><p class="eyebrow top-eyebrow">${esc(b.kind)} · ${esc(b.period)}</p><div class="page-top"><h1>${esc(b.title)}</h1></div>${b.edited ? '<p class="fine">오늘 고침</p>' : ''}
     <div class="more-grid"><div>${!b.closed ? '<button class="btn wide" type="button" data-act="mg-lesson-add">과 추가</button>' : ''}<div class="gl">과</div><div class="gc">
       ${b.lessons.map(L => `<a class="gr" href="#me-${b.id}.${L.no}"><span class="gt"><b>제${L.no}과 ${esc(L.name || '(제목을 적어 주세요)')}</b><span class="gd">${esc(L.date)}${L.ref ? ' · ' + esc(L.ref) : ''}</span></span>${mgPill(b, L)}</a>`).join('') || '<div class="gr"><span class="gt"><span class="gd">아직 과가 없어요. 과를 더해 시작해요.</span></span></div>'}
-    </div></div><div><div class="gc"><div class="gr"><span class="mg-cover big">${bookCover({ ...b, id: '' }, 'list')}</span><span class="gt"><b>${esc(b.title)}</b><span class="gd">${esc(b.kind)}</span></span></div><p class="hint">대상 모임 · ${esc(b.target || DATA.church.dept)}</p>${b.start ? `<p class="hint">시작 날짜 · ${esc(mgLongDate(b.start))}</p>` : ''}${b.closed ? `<p class="hint">끝난 날짜 · ${esc(b.end || '')}</p>` : ''}</div>
-    <div class="gc">${row('교재 정보 편집', '제목, 표지 이름, 표지, 대상 모임, 시작 날짜', 'mg-edit')}${row('교재 통째로 복제', '내용만 가져오고 배포 이력은 가져오지 않아요', 'mg-dup')}${`<a class="gr" href="#mxb-${b.id}"><span class="gt"><b>인쇄용 보기 · PDF·Word로 내려받기</b></span><span class="ch" aria-hidden="true">›</span></a>`}${b.closed ? '' : row('교재 닫기', '오늘 날짜로 끝내고 지난 교재로 옮겨요', 'mg-close')}</div>${b.closed ? '<button class="quiet-link" type="button" data-act="mg-reopen">다시 열기</button>' : ''}</div></div>`;
+    </div></div><div><div class="gc"><div class="gr"><span class="mg-cover big">${bookCover({ ...b, id: '' }, 'list')}</span><span class="gt"><b>${esc(b.title)}</b><span class="gd">${esc(b.kind)}</span></span></div><dl class="mg-info"><div><dt>대상 모임</dt><dd>${esc(b.target || DATA.church.dept)}</dd></div>${b.start ? `<div><dt>시작 날짜</dt><dd>${esc(mgLongDate(b.start))}</dd></div>` : ''}${b.closed ? `<div><dt>끝난 날짜</dt><dd>${esc(b.end || '')}</dd></div>` : ''}</dl></div>
+    <div class="gc">${row('교재 정보 편집', '제목, 표지 이름, 표지, 대상 모임, 시작 날짜', 'mg-edit')}${row('교재 통째로 복제', '내용만 가져오고 배포 이력은 가져오지 않아요', 'mg-dup')}${`<a class="gr" href="#mxb-${b.id}"><span class="gt"><b>인쇄용 보기</b><span class="gd">PDF나 Word로 내려받아요</span></span><span class="ch" aria-hidden="true">›</span></a>`}${b.closed ? '' : row('교재 닫기', '오늘 날짜로 끝내고 지난 교재로 옮겨요', 'mg-close')}</div>${b.closed ? '<button class="quiet-link" type="button" data-act="mg-reopen">다시 열기</button>' : ''}</div></div>`;
 }
 function mgForm(b) {
   mgEditing = b ? b.id : '';
@@ -1886,6 +1910,7 @@ function mgWriteHtml(b, L, g) {
     <section class="card"><div class="keep-form">${field('guide', '전체 진행 안내 <span class="hint">리더에게만 보여요</span>', g.guide, { ta: true })}</div></section>
     <p class="hint" id="mgEmptyHint"${g.stages.some(s => s.qs.length) ? ' hidden' : ''}>배포하려면 질문이나 읽을 글이 하나 이상 있어야 해요.</p>
     ${g.stages.map((st, si) => `<section class="card" data-mg-stage="${si}"><div class="keep-form">${field('stage-name', '단계 이름', st.name, { id: 'mge-stage-' + si, si })}</div>
+      ${g.stages.length > 1 ? `<div class="mg-tools" style="justify-content:flex-end"><button class="btn ghost small" type="button" data-act="mg-stage-del" data-si="${si}" aria-label="${esc(st.name)} 단계 삭제" title="단계 삭제">${ic('trash')}</button></div>` : ''}
       ${st.qs.map((q, qi) => `<div class="gr" data-mg-question="${q.id}"><div class="gt"><p class="q-eyebrow" data-mg-stage-label="${si}">${esc(st.name)} · ${isRead(q) ? '읽을 글' : qNo(st, qi)}</p><div class="keep-form">
         ${isRead(q) ? `${field('q-h', '제목 (선택)', q.h, { id: 'mge-' + q.id + '-h', si, qi })}
           ${field('q-t', '글', q.t, { id: 'mge-' + q.id + '-t', ta: true, rows: 6, si, qi })}
@@ -1895,11 +1920,12 @@ function mgWriteHtml(b, L, g) {
           ${field('q-sub', '보조 설명', q.sub, { id: 'mge-' + q.id + '-sub', si, qi })}
           ${field('q-vs', '관련 구절', (q.vs || []).join(', '), { id: 'mge-' + q.id + '-vs', si, qi, placeholder: '예: 요한복음 10:11, 이사야 5:1~2' })}
           ${field('q-lead', '리더 해설 · 리더에게만 보여요', q.lead, { id: 'mge-' + q.id + '-lead', ta: true, si, qi })}`}
-        <div class="set-btns">${[['up', '위로'], ['down', '아래로'], ['dup', '복제'], ['del', '삭제']].map(([act, label]) => `<button class="btn ghost small" type="button" data-act="mg-q-${act}" data-si="${si}" data-qi="${qi}" aria-label="${esc(st.name)} ${isRead(q) ? '읽을 글' : qNo(st, qi) + '번 질문'} ${label}"${act === 'up' && qi === 0 || act === 'down' && qi === st.qs.length - 1 ? ' disabled' : ''}>${label}</button>`).join('')}</div>
+        <div class="mg-tools">${[['up', '위로', 'up'], ['down', '아래로', 'down'], ['dup', '복제', 'copy'], ['del', '삭제', 'trash']].map(([act, label, symbol]) => `<button class="btn ghost small" type="button" data-act="mg-q-${act}" data-si="${si}" data-qi="${qi}" aria-label="${esc(st.name)} ${isRead(q) ? '읽을 글' : qNo(st, qi) + '번 질문'} ${label}" title="${label}"${act === 'up' && qi === 0 || act === 'down' && qi === st.qs.length - 1 ? ' disabled' : ''}>${ic(symbol)}</button>`).join('')}</div>
       </div></div></div>`).join('')}
       ${!st.qs.length ? '<p class="hint">질문과 읽을 글이 없는 단계는 회원 화면과 인쇄물에서 빠져요.</p>' : ''}
       <button class="btn ghost small" type="button" data-act="mg-q-add" data-si="${si}">질문 추가</button>
       <button class="btn ghost small" type="button" data-act="mg-read-add" data-si="${si}">읽을 글 추가</button></section>`).join('')}
+    <button class="btn ghost wide" type="button" data-act="mg-stage-add">단계 추가</button>
     <section class="card"><p class="opt-name">깊이 묵상하기</p>${g.triple.map(t => `<div class="tri-item"><span class="who">${esc(t.who)}</span><p class="q-t">${esc(t.t)}</p></div>`).join('')}<p class="hint">깊이 묵상하기 질문은 교재마다 같아요.</p></section>
     <section class="card"><div class="keep-form">${field('wrap', '마무리 적용·기도 안내 (선택)', L.wrap, { ta: true })}</div><p class="hint">비워 두면 보이지 않아요.</p></section>
     <section class="card"><p class="opt-name">성경 본문 (인쇄용)</p>${mgEditSeg('mg-edit-seg', 'print-on', [['0', '넣지 않기'], ['1', '넣기']], L.useText ? '1' : '0')}
@@ -1941,6 +1967,13 @@ function mgEditBlur(t) {
   if (!mgEditCurrent() || !['name', 'q-t'].includes(t.dataset.mg)) return;
   const hint = t.parentElement.querySelector('[data-mg-hint]'); if (!hint) return;
   mgTouched.add(hint.dataset.mgHint); hint.hidden = !!t.value.trim();
+}
+// 단계는 하나 이상 남기고, 단계 변경 뒤에는 질문과 읽을 글의 번호를 새로 그린다.
+function mgStageDelete(si) {
+  const c = mgEditCurrent(); if (!c || c.g.stages.length <= 1 || !c.g.stages[si]) return;
+  c.g.stages.splice(si, 1);
+  c.b.edited = true;
+  mgEditRedraw();
 }
 function mgQuestionChange(el, action) {
   const c = mgEditCurrent(); if (!c) return;
@@ -3152,6 +3185,23 @@ const acts = {
   'mg-pv-mode'(e, el) { if (!mgEditCurrent()) return; mgPvMode = el.dataset.v; $$('#mgPvPane [data-act="mg-pv-mode"]').forEach(b => { const on = b.dataset.v === mgPvMode; b.classList.toggle('on', on); b.setAttribute('aria-pressed', String(on)); }); mgRenderPreview(); },
   'mg-pv-fold'() { if (!mgEditCurrent()) return; mgPvOpen = !mgPvOpen; mgRenderPreview(); },
   'mg-edit-seg'(e, el) { const c = mgEditCurrent(); if (!c) return; if (el.dataset.mg === 'print-on') c.L.useText = el.dataset.v === '1'; else if (el.dataset.mg === 'print-size') c.L.fs = el.dataset.v; c.b.edited = true; mgEditRedraw(); },
+  'mg-stage-add'() {
+    const c = mgEditCurrent(); if (!c) return;
+    const si = c.g.stages.length;
+    c.g.stages.push({ name: '새 단계', qs: [] });
+    c.b.edited = true; mgEditRedraw();
+    const input = $('#mge-stage-' + si);
+    if (input) { input.scrollIntoView({ block: 'center' }); input.focus({ preventScroll: true }); }
+  },
+  'mg-stage-del'(e, el) {
+    const c = mgEditCurrent(), si = Number(el.dataset.si);
+    if (!c || c.g.stages.length <= 1 || !c.g.stages[si]) return;
+    const st = c.g.stages[si], qs = st.qs.filter(q => !isRead(q)).length, reads = st.qs.filter(isRead).length;
+    if (!qs && !reads) { mgStageDelete(si); return; }
+    const parts = [qs ? '질문 ' + qs + '개' : '', reads ? '읽을 글 ' + reads + '개' : ''].filter(Boolean).join('와 ');
+    openSheet(sheetHead('단계 삭제') + `<p>'${esc(st.name)}' 단계를 지울까요? 안에 있는 ${parts}도 함께 지워져요.</p><div class="set-btns"><button class="btn ghost" type="button" data-act="pop-close">취소</button><button class="btn" type="button" data-act="mg-stage-del-do" data-si="${si}">삭제</button></div>`);
+  },
+  'mg-stage-del-do'(e, el) { closeSheet(); mgStageDelete(Number(el.dataset.si)); },
   'mg-q-add'(e, el) { mgQuestionChange(el, 'add'); },
   'mg-read-add'(e, el) { mgQuestionChange(el, 'read-add'); },
   'mg-q-dup'(e, el) { mgQuestionChange(el, 'dup'); },
