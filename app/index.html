@@ -168,6 +168,10 @@ body.pop-open { overflow: hidden; }
 @media (min-width: 1000px) { .more-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
 .gl { font-size: .8125rem; color: var(--ink-2); margin: 20px 4px 8px; }
 .more-grid > div:first-child > .gl:first-child { margin-top: 20px; }
+.mg-edit { display: grid; gap: 16px; align-items: start; }
+@media (min-width: 1000px) { .mg-edit { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); } .mg-edit-tabs { display: none; } .mg-edit > [hidden] { display: block !important; } }
+.mg-cover { flex: 0 0 40px; width: 40px; }
+.mg-cover.big { flex-basis: 72px; width: 72px; }
 .gc { background: var(--surface); border: 1px solid var(--line); border-radius: 16px; padding: 0 16px; }
 .gr { display: flex; align-items: center; gap: 12px; width: 100%; min-height: 64px; padding: 12px 0; border: 0; border-top: 1px solid var(--line); background: none; text-align: left; font: inherit; color: var(--ink); text-decoration: none; }
 .gr:first-child { border-top: 0; }
@@ -772,6 +776,8 @@ button.gallery-cell { display: block; width: 100%; padding: 0; cursor: pointer; 
 .gallery-cell.empty span { opacity: .5; font-size: .85rem; }
 .gallery-cell .gallery-week { position: absolute; bottom: 5px; left: 7px; color: white; font-size: .75rem; font-weight: 700; text-shadow: 0 1px 4px rgba(0,0,0,.75); }
 .gallery-preview { display: block; width: 100%; max-height: 55vh; object-fit: contain; border-radius: 12px; }
+.mg-tabs { margin-bottom: 12px; }
+.mg-steps { padding: 12px 0 14px; }
 .record-top { display:flex; align-items:center; gap:10px; }
 .record-top h1 { margin-right:auto; }
 .month-nav { display:grid; grid-template-columns:44px 1fr 44px; align-items:center; gap:8px; margin:.8em 0; }
@@ -1064,7 +1070,7 @@ function renderSettings() {
     <p class="mlabel">역할</p>${seg('role', ROLES, D.role)}
     <p class="mlabel">이번 주의 질문</p><select class="field" id="walkSel" aria-label="이번 주의 질문 주 고르기">${DATA.weekWalk.map(w => `<option value="${w.n}"${D.walk === w.n ? ' selected' : ''}>${w.n}주 · ${esc(w.title)}</option>`).join('')}</select>
     <p class="mlabel">올해의 그림</p>${seg('galleryDemo', [['0', '이 기기 기록만'], ['1', '예시로 채움']], D.galleryDemo ? 1 : 0)}
-    ${inApp && D.role === 'pastor' ? `<p class="mlabel">공개 범위</p>${seg('status', STATUS, D.status)}` : ''}
+    ${inApp && isTop() ? `<p class="mlabel">공개 범위</p>${seg('status', STATUS, D.status)}` : ''}
     ${inApp ? `<p class="mlabel">책갈피 있음</p>${onoff('bookmark', hasBm())}
     <p class="mlabel">이번 주 과 배포 전</p>${onoff('before', D.before)}
         <p class="mlabel">이번 주 작은 실천(오늘 남길 것)</p>
@@ -1102,9 +1108,10 @@ const VIEWS = ['start', 'week'].concat(Object.keys(PLACE));
 function parseHash() {
   const h = location.hash.replace(/^#/, ''), m = /^(book|rec)-([\w-]+)$/.exec(h);
   if (m) return { v: m[1] === 'book' ? 'shelf' : 'record', arg: m[2] };
+  if (/^(mb|me|mp)-([\w.-]+)$/.test(h)) return { v: 'manage', arg: h };
   return { v: VIEWS.includes(h) ? h : null, arg: '' };
 }
-const hashFor = (v, arg) => '#' + (arg ? (v === 'shelf' ? 'book-' : 'rec-') + arg : v);
+const hashFor = (v, arg) => v === 'manage' && arg ? '#' + arg : '#' + (arg ? (v === 'shelf' ? 'book-' : 'rec-') + arg : v);
 const currentView = () => parseHash().v;
 
 // ── 이번 주 ──
@@ -1129,7 +1136,7 @@ function statusCard() {
     <p class="opt-name">제${L.no}과 공개 범위</p>
     <p class="status-row" aria-label="공개 범위: ${esc(cur)}">${STATUS.map(([v, l], i) => (i ? '<span class="st-sep" aria-hidden="true">›</span>' : '') + (v === D.status ? `<span class="pill pill-p">${ic('check')}<b>${l}</b></span>` : `<span class="st-off">${l}</span>`)).join('')}</p>
     <p class="fine" style="margin-top:.6em">해설과 진행 안내는 늘 리더에게만 보여요.</p>
-    <button class="quiet-link" type="button" data-act="later">교재 관리에서 바꾸기</button>
+    <a class="quiet-link" href="#mp-${DATA.thisWeek.main.book}.${DATA.thisWeek.main.no}">교재 관리에서 바꾸기</a>
   </section>`;
 }
 // 이번 주의 질문: 고른 날과 고백 열기 상태는 화면에서만 기억한다
@@ -1263,7 +1270,7 @@ function moreView() {
   let jobs = '';
   if (D.role === 'leader') jobs = jobRow('우리 사랑방', '함께하는 사람 · 연결 승인', '#church');
   else if (D.role === 'pastor') jobs = jobRow('교재 관리', '교재와 과를 꾸리고 배포해요', '#manage') + jobRow('사랑방 전체 보기', '모든 사랑방의 명단과 연결 상태', '#rooms');
-  else if (D.role === 'admin') jobs = jobRow('관리', '교회 · 부서 · 사랑방 · 명단을 꾸려요', '#admin');
+  else if (D.role === 'admin') jobs = jobRow('교재 관리', '교재와 과를 꾸리고 배포해요', '#manage') + jobRow('관리', '교회 · 부서 · 사랑방 · 명단을 꾸려요', '#admin');
   return `<div class="page-top"><h1>더보기</h1></div>
     <div class="more-grid"><div>
       <div class="gl">나</div><div class="gc">
@@ -1342,6 +1349,222 @@ function feedbackView() {
         <button class="switch${s.named?' on':''}" type="button" role="switch" aria-label="이름 밝히기" aria-checked="${s.named}" data-act="fb-named"><span></span></button></div>
       <button class="btn wide" id="feedbackSend" type="button" data-act="fb-send" ${s.text.trim()?'':'disabled'}>보내기</button>
       <p class="hint">디다코를 만드는 사람이 읽어요. 답장은 따로 오지 않아요.</p></section></div>`;
+}
+
+// ── 교재 관리(P-01): 원본과 회원 화면은 건드리지 않고 복사본만 고친다 ──
+const canManage = () => D.role === 'pastor' || D.role === 'admin';
+let MG = null, mgTab = 'now', mgEditing = '', mgSerial = 0;
+const mg = () => MG || (MG = { books: JSON.parse(JSON.stringify(DATA.books)), guides: JSON.parse(JSON.stringify(DATA.guides)) });
+const isWeekMain = (b, L) => b.id === DATA.thisWeek.main.book && L.no === DATA.thisWeek.main.no;
+function setMgStatus(b, L, st) {
+  if (isWeekMain(b, L)) { D.status = st; saveDemo(); }
+  else L.status = st;
+  if (st === 'draft') delete L.pubAt;
+  else {
+    const now = new Date();
+    L.pubAt = DATA.today + ' ' + String(now.getHours()).padStart(2, '0') + ':' + String(now.getMinutes()).padStart(2, '0');
+  }
+  b.edited = true;
+}
+const mgStatus = (b, L) => L.status || (b.id === DATA.thisWeek.main.book && L.no === DATA.thisWeek.main.no ? D.status : (L.state === 'past' || L.state === 'now') ? 'all' : 'draft');
+const mgPill = (b, L) => { const s = mgStatus(b, L); return `<span class="walk-tag${s === 'all' ? ' on' : ''}">${esc((STATUS.find(x => x[0] === s) || STATUS[0])[1])}</span>`; };
+const mgBook = id => mg().books.find(b => b.id === id);
+const mgId = () => { let id; do { id = 'nb' + (++mgSerial); } while (mgBook(id)); return id; };
+function mgGo(arg, message) { window.addEventListener('hashchange', () => toast(message), { once: true }); location.hash = '#' + arg; }
+const mgCurrent = () => { const a = parseHash().arg; return a && a.startsWith('mb-') ? mgBook(a.slice(3)) : null; };
+function manageView(arg) {
+  if (!canManage()) return `<div class="page-top"><h1>교재 관리</h1></div><section class="card calm"><p class="calm-t">목사님과 관리자가 여는 화면이에요</p><p class="soft" style="margin:0">데모 설정에서 역할을 목사님이나 관리자로 바꿔 보세요.</p><a class="btn ghost" href="#more">더보기로 돌아가기</a></section>`;
+  if (arg && arg.startsWith('mb-')) { const b = mgBook(arg.slice(3)); if (b) return mgBookView(b); }
+  const m = /^(me|mp)-([\w-]+)\.(\d+)$/.exec(arg || '');
+  if (m) {
+    const b = mgBook(m[2]), L = b && b.lessons.find(l => l.no === Number(m[3]));
+    if (L && m[1] === 'me') return mgEditView(b, L);
+    if (L) return mgPublishView(b, L);
+  }
+  return mgBooksView();
+}
+// ── 과 배포(P-03): 이번 주 과만 데모 공개 범위와 같은 상태를 쓴다 ──
+function mgPublishCurrent() {
+  if (!canManage()) return null;
+  const m = /^mp-([\w-]+)\.(\d+)$/.exec(parseHash().arg || '');
+  const b = m && mgBook(m[1]), L = b && b.lessons.find(l => l.no === Number(m[2]));
+  return L ? { b, L } : null;
+}
+function mgPublishMissing(b, L) {
+  const qs = mgGuide(b, L).stages.flatMap(st => st.qs);
+  return [...(!String(L.name || '').trim() ? ['과 제목'] : []), ...(!qs.length ? ['질문(하나 이상)'] : []), ...(qs.some(q => !String(q.t || '').trim()) ? ['비어 있는 질문'] : [])];
+}
+function mgPublishTarget(b) {
+  const target = b.target || DATA.church.dept;
+  const dept = DATA.admin.depts.find(d => d.name === target);
+  const count = dept ? dept.rooms.reduce((n, r) => n + (r.leader && r.leader.trim() ? 1 : 0) + (r.co && r.co.trim() ? 1 : 0), 0) : 0;
+  return { target, count };
+}
+function mgPublishView(b, L) {
+  const st = mgStatus(b, L), label = (STATUS.find(x => x[0] === st) || STATUS[0])[1];
+  const missing = mgPublishMissing(b, L), { target, count } = mgPublishTarget(b);
+  const edit = '#me-' + b.id + '.' + L.no;
+  const disabled = !!missing.length;
+  const button = (title, status, cls, off) => `<button class="btn${cls ? ' ghost' : ''}" type="button" data-act="mg-pub" data-v="${status}"${off || disabled ? ' disabled' : ''}>${title}</button>`;
+  return `<a class="back-link" href="#mb-${b.id}">${ic('back')}<span>${esc(b.title)}</span></a>
+    <p class="eyebrow top-eyebrow">${esc(b.title)} · ${esc(b.period)}</p>
+    <div class="record-top"><h1>배포</h1><a class="btn ghost small" href="${edit}">편집</a></div>
+    ${missing.length ? `<section class="card"><p class="opt-name">배포하기 전에 채워 주세요</p><ul>${missing.map(v => '<li>' + v + '</li>').join('')}</ul><a class="btn ghost small" href="${edit}">편집으로 가서 채우기</a></section>` : ''}
+    <section class="card">
+      <p class="opt-name">제${L.no}과 ${esc(L.name || '(제목을 적어 주세요)')}</p>
+      <p class="status-row" aria-label="공개 범위: ${label}">${STATUS.map(([v, l], i) => (i ? '<span class="st-sep" aria-hidden="true">›</span>' : '') + (v === st ? `<span class="pill pill-p">${ic('check')}<b>${l}</b></span>` : `<span class="st-off">${l}</span>`)).join('')}</p>
+      ${st === 'draft' ? '<p class="hint">아직 공개하지 않았어요. 회원에게는 "이번 주 과를 준비하고 있어요"가 보여요.</p>' : `<p class="hint">${ic('check')} ${st === 'leader' ? '리더까지 공개됨' : '모두에게 공개됨'}${L.pubAt ? ' · ' + esc(L.pubAt) : ''}</p>`}
+      <p class="fine">해설과 진행 안내는 늘 리더에게만 보여요.</p>
+      ${!missing.length && !String(L.ref || '').trim() ? '<p class="hint">본문 장절이 비어 있어요. 본문이 없는 과라면 그대로 배포해도 돼요.</p>' : ''}
+      <div class="set-btns">${button('리더 ' + count + '명에게 배포', 'leader', false, st !== 'draft')}${button(esc(target) + ' 회원에게 배포', 'all', st === 'draft', st !== 'leader')}</div>
+      ${st === 'draft' ? `<p class="hint">회원에게는 리더에게 먼저 배포한 뒤에 열 수 있어요.</p><button class="quiet-link" type="button" data-act="mg-pub" data-v="both"${disabled ? ' disabled' : ''}>한 번에 둘 다</button>` : ''}
+    </section>
+    <div class="gc"><button class="gr" type="button" data-act="later"><span class="gt"><b>인쇄용 보기 · PDF·Word로 내려받기</b></span><span class="ch" aria-hidden="true">›</span></button></div>
+    ${st !== 'draft' ? '<div class="set-btns"><button class="btn ghost" type="button" data-act="mg-unpub">배포 중단</button></div><p class="hint">회원 기기의 기록은 그대로예요.</p>' : ''}`;
+}
+function mgBooksView() {
+  const books = mg().books.filter(b => !!b.closed === (mgTab === 'past'));
+  const dateKey = L => { const m = /(\d+)월\s*(\d+)일/.exec(L.date || ''); return m ? Number(m[1]) * 100 + Number(m[2]) : Infinity; };
+  const upcoming = mgTab === 'now' ? mg().books.filter(b => !b.closed).flatMap(b => b.lessons.filter(L => ['now', 'upcoming', 'prep'].includes(L.state)).map(L => ({ b, L }))).sort((a, b) => dateKey(a.L) - dateKey(b.L)).slice(0, 4) : [];
+  return `<a class="back-link" href="#more">${ic('back')}<span>더보기</span></a><p class="eyebrow top-eyebrow">${esc(DATA.church.dept)} · ${esc(roleName())}</p><div class="page-top"><h1>교재 관리</h1></div>
+    <div class="mg-tabs"><div class="seg" style="--n:2">${[['now', '지금 쓰는 교재'], ['past', '지난 교재']].map(([v, name]) => `<button type="button" data-act="mg-tab" data-v="${v}" class="${mgTab === v ? 'on' : ''}" aria-pressed="${mgTab === v}">${name}</button>`).join('')}</div></div>
+    <div class="more-grid"><div>
+      ${mgTab === 'now' ? '<button class="btn wide" type="button" data-act="mg-new">새 교재 만들기</button>' : ''}
+      <div class="gl">교재</div><div class="gc">${books.map(b => `<a class="gr mg-row" href="#mb-${b.id}"><span class="mg-cover">${bookCover({ ...b, id: '' }, 'list')}</span><span class="gt"><b>${esc(b.title)}</b><span class="gd">${esc(b.kind)} · ${esc(b.period)}${b.edited ? ' · 오늘 고침' : ''}</span></span><span class="ch" aria-hidden="true">›</span></a>`).join('') || `<div class="gr"><span class="gt"><span class="gd">${mgTab === 'now' ? '지금 쓰는 교재가 없어요. 새 교재를 만들어 시작해요.' : '지난 교재가 아직 없어요.'}</span></span></div>`}</div>
+      ${upcoming.length ? `<div class="gl">다가오는 과</div><div class="gc">${upcoming.map(({ b, L }) => `<a class="gr" href="#me-${b.id}.${L.no}"><span class="gt"><b>제${L.no}과 ${esc(L.name || '(제목을 적어 주세요)')}</b><span class="gd">${esc(L.date)} · ${esc(b.title)}</span></span>${mgPill(b, L)}</a>`).join('')}</div>` : ''}
+    </div><div><div class="gl">교재 제작 순서</div><div class="gc"><div class="mg-steps"><ol><li>'새 교재 만들기'를 눌러 교재를 만들어요.</li><li>교재 안에 과를 추가하고 편집해요.</li><li>미리보기로 화면을 확인할 수 있어요.</li><li>확인이 끝나면 배포해요.</li></ol><p class="hint">배포는 과마다 할 수 있어요. 리더에게 먼저, 회원에게 나중에 공개해요.</p><p class="hint">${ic('lock')} 회원이 쓴 답과 기록은 잠겨 있어서 아무도 볼 수 없어요.</p></div></div></div></div>`;
+}
+const mgLongDate = v => { const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(v || ''); return m ? `${m[1]}년 ${Number(m[2])}월 ${Number(m[3])}일` : (v || ''); };
+function mgBookView(b) {
+  const row = (name, desc, act) => `<button class="gr" type="button" data-act="${act}"><span class="gt"><b>${name}</b>${desc ? `<span class="gd">${desc}</span>` : ''}</span><span class="ch" aria-hidden="true">›</span></button>`;
+  return `<a class="back-link" href="#manage">${ic('back')}<span>교재 관리</span></a><p class="eyebrow top-eyebrow">${esc(b.kind)} · ${esc(b.period)}</p><div class="page-top"><h1>${esc(b.title)}</h1></div>${b.edited ? '<p class="fine">오늘 고침</p>' : ''}
+    <div class="more-grid"><div>${!b.closed ? '<button class="btn wide" type="button" data-act="mg-lesson-add">과 추가</button>' : ''}<div class="gl">과</div><div class="gc">
+      ${b.lessons.map(L => `<a class="gr" href="#me-${b.id}.${L.no}"><span class="gt"><b>제${L.no}과 ${esc(L.name || '(제목을 적어 주세요)')}</b><span class="gd">${esc(L.date)}${L.ref ? ' · ' + esc(L.ref) : ''}</span></span>${mgPill(b, L)}</a>`).join('') || '<div class="gr"><span class="gt"><span class="gd">아직 과가 없어요. 과를 더해 시작해요.</span></span></div>'}
+    </div></div><div><div class="gc"><div class="gr"><span class="mg-cover big">${bookCover({ ...b, id: '' }, 'list')}</span><span class="gt"><b>${esc(b.title)}</b><span class="gd">${esc(b.kind)}</span></span></div><p class="hint">대상 모임 · ${esc(b.target || DATA.church.dept)}</p>${b.start ? `<p class="hint">시작 날짜 · ${esc(mgLongDate(b.start))}</p>` : ''}${b.closed ? `<p class="hint">끝난 날짜 · ${esc(b.end || '')}</p>` : ''}</div>
+    <div class="gc">${row('교재 정보 편집', '제목, 표지, 대상 모임, 시작 날짜', 'mg-edit')}${row('교재 통째로 복제', '내용만 가져오고 배포 이력은 가져오지 않아요', 'mg-dup')}${row('인쇄용 보기 · PDF·Word로 내려받기', '', 'later')}${b.closed ? '' : row('교재 닫기', '오늘 날짜로 끝내고 지난 교재로 옮겨요', 'mg-close')}</div>${b.closed ? '<button class="quiet-link" type="button" data-act="mg-reopen">다시 열기</button>' : ''}</div></div>`;
+}
+function mgForm(b) {
+  mgEditing = b ? b.id : '';
+  const cover = b && b.cover || { motif: COVERS.groups[0].items[0].id, color: COVERS.colors[0][0] };
+  const group = COVERS.groups.find(g => g.items.some(i => i.id === cover.motif)) || COVERS.groups[0];
+  const options = (rows, val) => rows.map(([v, name]) => `<option value="${esc(v)}"${v === val ? ' selected' : ''}>${esc(name)}</option>`).join('');
+  openSheet(sheetHead(b ? '교재 정보 편집' : '새 교재 만들기') + `<div class="keep-form">
+    <div><label for="mgKind">종류</label><select class="field" id="mgKind">${options(DATA.admin.kinds.filter(k => k[2]).map(k => [k[0], k[0]]), b && b.kind)}</select></div>
+    <div><label for="mgTitle">제목</label><input class="field" id="mgTitle" maxlength="40" value="${esc(b ? b.title : '')}"><p class="hint" id="mgTitleHint" hidden>교재 제목을 적어 주세요</p></div>
+    <div><label for="mgGroup">표지 묶음</label><select class="field" id="mgGroup">${options(COVERS.groups.map(g => [g.id, g.name]), group.id)}</select></div>
+    <div><label for="mgMotif">상징</label><select class="field" id="mgMotif">${options(group.items.map(i => [i.id, i.name]), cover.motif)}</select></div>
+    <div><label for="mgColor">색</label><select class="field" id="mgColor">${options(COVERS.colors.map(c => [c[0], c[2]]), cover.color)}</select></div>
+    <span class="mg-cover big" id="mgPreview">${bookCover({ cover }, 'list')}</span>
+    <div><label for="mgTarget">대상 모임</label><select class="field" id="mgTarget">${options(DATA.admin.depts.map(d => [d.name, d.name]), b && b.target || DATA.church.dept)}</select></div>
+    <div><label for="mgStart">시작 날짜</label><input class="field" type="date" id="mgStart" value="${esc(b ? b.start || '' : '2026-10-25')}"></div>
+    </div><div class="set-btns"><button class="btn ghost" type="button" data-act="pop-close">취소</button><button class="btn" type="button" data-act="mg-save">${b ? '저장하기' : '만들기'}</button></div>`);
+}
+function mgPreview() {
+  const group = COVERS.groups.find(g => g.id === $('#mgGroup').value);
+  if (!group.items.some(i => i.id === $('#mgMotif').value)) $('#mgMotif').innerHTML = group.items.map(i => `<option value="${i.id}">${esc(i.name)}</option>`).join('');
+  $('#mgPreview').innerHTML = bookCover({ cover: { motif: $('#mgMotif').value, color: $('#mgColor').value } }, 'list');
+}
+
+// ── 과 편집(P-02): 쓰기 칸은 유지하고 미리보기만 늦춰서 갱신한다 ──
+let mgEditTab = 'write', mgPvMode = 'member', mgPvOpen = true, mgPvTimer = 0, mgQSerial = 0;
+const mgTouched = new Set();
+const mgQuestionId = () => 'q' + Date.now().toString(36) + (++mgQSerial);
+function mgGuide(b, L) {
+  const key = b.id + ':' + L.no;
+  return mg().guides[key] || (mg().guides[key] = { stages: ['마음 열기', '말씀 관찰', '말씀 해석', '삶에 적용'].map(name => ({ name, qs: [] })), triple: JSON.parse(JSON.stringify(DATA.guides['john:3'].triple)) });
+}
+function mgEditCurrent() {
+  if (!canManage()) return null;
+  const m = /^me-([\w-]+)\.(\d+)$/.exec(parseHash().arg || ''), b = m && mgBook(m[1]), L = b && b.lessons.find(l => l.no === Number(m[2]));
+  return L ? { b, L, g: mgGuide(b, L), key: b.id + ':' + L.no } : null;
+}
+function mgEditSeg(act, key, values, selected) {
+  return `<div class="seg" style="--n:${values.length}">${values.map(([v, name]) => `<button type="button" data-act="${act}"${key ? ` data-mg="${key}"` : ''} data-v="${v}" class="${String(selected) === v ? 'on' : ''}" aria-pressed="${String(selected) === v}">${name}</button>`).join('')}</div>`;
+}
+const mgDateInput = date => { const m = /(\d+)월\s*(\d+)일/.exec(date || ''); return m ? `2026-${m[1].padStart(2, '0')}-${m[2].padStart(2, '0')}` : ''; };
+function mgEditView(b, L) {
+  const g = mgGuide(b, L);
+  return `<a class="back-link" href="#mb-${b.id}">${ic('back')}<span>${esc(b.title)}</span></a><p class="eyebrow top-eyebrow">${esc(b.title)} · ${esc(b.period)}</p><div class="page-top"><h1>제${L.no}과 편집</h1></div>
+    <p class="fine">쓰는 대로 저장돼요. 배포하기 전까지 회원에게는 보이지 않아요.</p>
+    <div class="mg-edit-tabs">${mgEditSeg('mg-edit-tab', '', [['write', '쓰기'], ['preview', '미리보기']], mgEditTab)}</div>
+    <div class="mg-edit"><div id="mgWrite"${mgEditTab !== 'write' ? ' hidden' : ''}>${mgWriteHtml(b, L, g)}</div>
+      <div id="mgPvPane"${mgEditTab !== 'preview' ? ' hidden' : ''}><section class="card"><p class="opt-name">미리보기</p>${mgEditSeg('mg-pv-mode', '', [['member', '회원용'], ['leader', '리더용']], mgPvMode)}</section><div id="mgPvBody">${mgPvHtml(b, L, g)}</div></div>
+    </div>`;
+}
+function mgWriteHtml(b, L, g) {
+  const key = b.id + ':' + L.no;
+  const field = (name, label, value, opts = {}) => {
+    const id = opts.id || 'mge-' + name, attrs = `class="field" id="${id}" data-mg="${name}"${opts.si !== undefined ? ` data-si="${opts.si}"` : ''}${opts.qi !== undefined ? ` data-qi="${opts.qi}"` : ''}${opts.placeholder ? ` placeholder="${esc(opts.placeholder)}"` : ''}`;
+    return `<div><label for="${id}">${label}</label>${opts.ta ? `<textarea ${attrs} rows="${opts.rows || 3}">${esc(value || '')}</textarea>` : `<input ${attrs} type="${opts.type || 'text'}" value="${esc(value || '')}">`}${opts.hint ? `<p class="hint" data-mg-hint="${opts.hint}"${mgTouched.has(opts.hint) && !String(value || '').trim() ? '' : ' hidden'}>${name === 'name' ? '과 제목을 적어 주세요' : '질문을 적어 주세요'}</p>` : ''}</div>`;
+  };
+  return `<section class="card"><p class="opt-name">기본 정보</p><div class="keep-form">
+      ${field('name', '과 제목', L.name, { hint: key + ':name' })}${field('date', '날짜', mgDateInput(L.date), { type: 'date' })}${field('ref', '본문 장절', L.ref, { placeholder: '예: 요한복음 15:1~8 · 비워 둘 수 있어요' })}${field('intro', '소개', L.intro, { ta: true })}
+    </div></section>
+    <section class="card"><div class="keep-form">${field('guide', '전체 진행 안내 <span class="hint">리더에게만 보여요</span>', g.guide, { ta: true })}</div></section>
+    <p class="hint" id="mgEmptyHint"${g.stages.some(s => s.qs.length) ? ' hidden' : ''}>배포하려면 질문이 하나 이상 있어야 해요.</p>
+    ${g.stages.map((st, si) => `<section class="card" data-mg-stage="${si}"><div class="keep-form">${field('stage-name', '단계 이름', st.name, { id: 'mge-stage-' + si, si })}</div>
+      ${st.qs.map((q, qi) => `<div class="gr" data-mg-question="${q.id}"><div class="gt"><p class="q-eyebrow" data-mg-stage-label="${si}">${esc(st.name)} · ${qi + 1}</p><div class="keep-form">
+        ${field('q-t', '질문', q.t, { id: 'mge-' + q.id + '-t', ta: true, si, qi, hint: key + ':' + q.id })}
+        ${field('q-sub', '보조 설명', q.sub, { id: 'mge-' + q.id + '-sub', si, qi })}
+        ${field('q-vs', '관련 구절', (q.vs || []).join(', '), { id: 'mge-' + q.id + '-vs', si, qi, placeholder: '예: 요한복음 10:11, 이사야 5:1~2' })}
+        ${field('q-lead', '리더 해설 · 리더에게만 보여요', q.lead, { id: 'mge-' + q.id + '-lead', ta: true, si, qi })}
+        <div class="set-btns">${[['up', '위로'], ['down', '아래로'], ['dup', '복제'], ['del', '삭제']].map(([act, label]) => `<button class="btn ghost small" type="button" data-act="mg-q-${act}" data-si="${si}" data-qi="${qi}" aria-label="${esc(st.name)} ${qi + 1}번 질문 ${label}"${act === 'up' && qi === 0 || act === 'down' && qi === st.qs.length - 1 ? ' disabled' : ''}>${label}</button>`).join('')}</div>
+      </div></div></div>`).join('')}
+      ${!st.qs.length ? '<p class="hint">질문이 없는 단계는 회원 화면과 인쇄물에서 빠져요.</p>' : ''}
+      <button class="btn ghost small" type="button" data-act="mg-q-add" data-si="${si}">질문 추가</button></section>`).join('')}
+    <section class="card"><p class="opt-name">깊이 묵상하기</p>${g.triple.map(t => `<div class="tri-item"><span class="who">${esc(t.who)}</span><p class="q-t">${esc(t.t)}</p></div>`).join('')}<p class="hint">깊이 묵상하기 질문은 교재마다 같아요.</p></section>
+    <section class="card"><div class="keep-form">${field('wrap', '마무리 적용·기도 안내 (선택)', L.wrap, { ta: true })}</div><p class="hint">비워 두면 보이지 않아요.</p></section>
+    <section class="card"><p class="opt-name">성경 본문 (인쇄용)</p>${mgEditSeg('mg-edit-seg', 'print-on', [['0', '넣지 않기'], ['1', '넣기']], L.useText ? '1' : '0')}
+      ${L.useText ? `<div class="keep-form">${field('print-text', '성경 본문', L.text, { ta: true, rows: 8 })}<div><p class="mlabel">글자 크기</p>${mgEditSeg('mg-edit-seg', 'print-size', [['s', '작게'], ['m', '보통'], ['l', '크게']], L.fs || 'm')}</div></div>` : ''}
+      <p class="hint">앱에서는 장절만 보여요. 직접 성경을 펴서 읽고 찾아보게 해요.</p></section>
+    <div class="end-btns"><a class="btn" href="#mp-${b.id}.${L.no}">배포로 가기</a><button class="btn ghost" type="button" data-act="mg-q-lesson-dup">이 과 복제</button>${mgStatus(b, L) === 'draft' ? '<button class="btn ghost" type="button" data-act="mg-lesson-del">이 과 지우기</button>' : ''}</div>
+    ${mgStatus(b, L) !== 'draft' ? '<p class="hint">배포한 과는 배포 화면에서 배포를 멈출 수 있어요.</p>' : ''}`;
+}
+function mgPvLead(q) {
+  return `<div class="pn lead${mgPvOpen ? '' : ' closed'}"><div class="pn-h"><p class="lab">리더·목사님</p><button class="fold" type="button" data-act="mg-pv-fold" aria-expanded="${mgPvOpen}">${mgPvOpen ? '접기' : '펼치기'}</button></div><p class="t${q.lead ? '' : ' empty'}">${esc(q.lead || '등록된 해설이 없어요')}</p></div>`;
+}
+function mgPvHtml(b, L, g) {
+  const leader = mgPvMode === 'leader';
+  return `<section class="card today"><p class="lesson-book">${esc(b.title)} <span class="hint">${esc(b.period)}</span></p><h2 class="lesson-title">제${L.no}과 ${esc(L.name || '(제목을 적어 주세요)')}</h2>${L.ref ? `<span class="passage-chip">${esc(L.ref)}</span>` : ''}${L.intro ? `<p class="fine">${esc(L.intro)}</p>` : ''}</section>
+    ${leader && g.guide ? `<section class="card"><p class="opt-name">전체 진행 안내</p><div class="pn lead"><p class="lab">리더·목사님</p><p class="t">${esc(g.guide)}</p></div></section>` : ''}
+    ${g.stages.filter(st => st.qs.length).map(st => `<section class="stage-sec"><h2 class="stage-h">${esc(st.name)}</h2>${st.qs.map((q, qi) => `<article class="card qcard"><div class="q-meta"><span class="q-eyebrow">${esc(st.name)} · ${qi + 1}</span></div><h3 class="q-t">${esc(q.t)}</h3>${q.sub || (q.vs && q.vs.length) ? helpHtml(q) : ''}${leader ? mgPvLead(q) : ''}</article>`).join('')}</section>`).join('')}
+    ${g.triple.length ? `<section class="card deep"><p class="eyebrow">깊이 묵상하기</p><h2 class="d-lead">오늘 말씀에서 삼위일체 하나님을 묵상해요.</h2>${g.triple.map(t => `<div class="tri-item"><span class="who">${esc(t.who)}</span><h3 class="q-t">${esc(t.t)}</h3></div>`).join('')}</section>` : ''}
+    ${L.wrap ? `<section class="card"><p class="opt-name">마무리 적용·기도 안내</p><p class="t">${esc(L.wrap)}</p></section>` : ''}`;
+}
+function mgRenderPreview() {
+  const c = mgEditCurrent(), pane = $('#mgPvBody'); if (c && pane) pane.innerHTML = mgPvHtml(c.b, c.L, c.g);
+}
+function mgEditRedraw() { clearTimeout(mgPvTimer); const y = window.scrollY; route(false); window.scrollTo(0, y); }
+function mgEditInput(t) {
+  const c = mgEditCurrent(); if (!c) return;
+  const { b, L, g, key } = c, name = t.dataset.mg, si = Number(t.dataset.si), qi = Number(t.dataset.qi), st = g.stages[si], q = st && st.qs[qi];
+  if (['name', 'ref', 'intro', 'wrap'].includes(name)) L[name] = t.value;
+  else if (name === 'date') { const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(t.value); L.date = m ? `${Number(m[2])}월 ${Number(m[3])}일${new Date(Number(m[1]), Number(m[2]) - 1, Number(m[3])).getDay() === 0 ? ' 주일' : ''}` : ''; }
+  else if (name === 'guide') g.guide = t.value;
+  else if (name === 'stage-name' && st) { st.name = t.value; $$(`[data-mg-stage-label="${si}"]`).forEach((el, i) => { el.textContent = t.value + ' · ' + (i + 1); }); }
+  else if (name.startsWith('q-') && q) q[name.slice(2)] = name === 'q-vs' ? t.value.split(',').map(v => v.trim()).filter(Boolean) : t.value;
+  else if (name === 'print-text') L.text = t.value;
+  else return;
+  b.edited = true;
+  const hint = t.parentElement.querySelector('[data-mg-hint]'); if (hint && mgTouched.has(hint.dataset.mgHint)) hint.hidden = !!t.value.trim();
+  clearTimeout(mgPvTimer); mgPvTimer = setTimeout(() => { const cur = mgEditCurrent(); if (cur && cur.key === key) mgRenderPreview(); }, 300);
+}
+function mgEditBlur(t) {
+  if (!mgEditCurrent() || !['name', 'q-t'].includes(t.dataset.mg)) return;
+  const hint = t.parentElement.querySelector('[data-mg-hint]'); if (!hint) return;
+  mgTouched.add(hint.dataset.mgHint); hint.hidden = !!t.value.trim();
+}
+function mgQuestionChange(el, action) {
+  const c = mgEditCurrent(); if (!c) return;
+  const si = Number(el.dataset.si), qi = Number(el.dataset.qi), st = c.g.stages[si]; if (!st) return;
+  if (action === 'add') st.qs.push({ id: mgQuestionId(), t: '', sub: '', vs: [], lead: '' });
+  else {
+    const q = st.qs[qi]; if (!q) return;
+    if (action === 'dup') st.qs.splice(qi + 1, 0, { ...JSON.parse(JSON.stringify(q)), id: mgQuestionId() });
+    else if (action === 'del') st.qs.splice(qi, 1);
+    else { const target = qi + (action === 'up' ? -1 : 1); if (target < 0 || target >= st.qs.length) return; [st.qs[qi], st.qs[target]] = [st.qs[target], st.qs[qi]]; }
+  }
+  c.b.edited = true; mgEditRedraw();
 }
 
 // ── 우리 사랑방(L-02): 바뀐 명단은 화면에서만 기억한다 ──
@@ -1471,12 +1694,13 @@ function placeView(v) {
 // 질문 자료는 demo-data.js의 guides에 있다. 배포 전이거나 데모에 질문 예시가 없는 과(교재 번갈아 쓰기 예시의 창세기)는 안내 한 장을 보인다.
 // 성경 본문은 싣지 않고 장절만 쓴다
 let G = null;
-const readyGuide = () => (D.before ? null : DATA.guides[thisLesson().id] || null);
+const weekHidden = () => D.before || D.status === 'draft' || (D.status === 'leader' && !isLead());
+const readyGuide = () => (weekHidden() ? null : DATA.guides[thisLesson().id] || null);
 function noGuideView(name) {
   return `<div class="page-top"><h1>${esc(name)}</h1></div>
     <section class="card calm">
-      <p class="calm-t">${D.before ? '이번 주 과를 준비하고 있어요' : '이 과는 데모에 질문 예시가 없어요'}</p>
-      <p class="soft" style="margin:0">${D.before ? '준비가 끝나면 열려요.' : (name === '나눔하기' ? '요한복음 제3과나 추수감사 가정예배를 고르면 걸어 볼 수 있어요.' : '요한복음 제3과로 돌아가면 걸어 볼 수 있어요.')}</p>
+      <p class="calm-t">${weekHidden() ? '이번 주 과를 준비하고 있어요' : '이 과는 데모에 질문 예시가 없어요'}</p>
+      <p class="soft" style="margin:0">${weekHidden() ? '준비가 끝나면 열려요.' : (name === '나눔하기' ? '요한복음 제3과나 추수감사 가정예배를 고르면 걸어 볼 수 있어요.' : '요한복음 제3과로 돌아가면 걸어 볼 수 있어요.')}</p>
       ${name === '나눔하기' ? '<button class="quiet-link" type="button" data-act="share-pick">다른 과 고르기</button>' : ''}
       <a class="btn ghost" href="#shelf">책장으로 돌아가기</a>
     </section>`;
@@ -2028,7 +2252,7 @@ function coverHtml(b) {
     <div class="sh-body">
       <div class="sh-sm sh-kind"><span class="walk-tag">${esc(b.kind)}</span><span>${esc(b.period)}</span></div>
       <div class="sf xct" style="margin-top:4px">${esc(bTitle(b))}</div>
-      ${D.before ? '<div class="sh-sm sh-lesson">이번 주 과를 준비하고 있어요</div>' : c ? `<div class="sh-sm sh-lesson">${esc(c.lead)} ${esc(c.text)}</div><div class="sh-sm sh-date">${esc(c.date)}</div>` : ''}
+      ${weekHidden() ? '<div class="sh-sm sh-lesson">이번 주 과를 준비하고 있어요</div>' : c ? `<div class="sh-sm sh-lesson">${esc(c.lead)} ${esc(c.text)}</div><div class="sh-sm sh-date">${esc(c.date)}</div>` : ''}
       <span class="sh-ribbon" style="--len:${lenOf(b)}" aria-hidden="true"></span>
     </div>
     <div class="sh-actions">
@@ -2311,14 +2535,14 @@ function route(moved) {
   // 없는 책, 없는 기록이면 목록으로(책이 하나도 없게 한 상태에서도)
   if (v === 'shelf' && arg && (D.noBooks || !bookById(arg))) arg = '';
   if (v === 'record' && arg && !recById(arg)) arg = '';
-  if (v !== 'shelf' && v !== 'record') arg = '';
+  if (v !== 'shelf' && v !== 'record' && v !== 'manage') arg = '';
   if (location.hash !== hashFor(v, arg)) history.replaceState(null, '', hashFor(v, arg));
   if (moved) { closeMenu(); $('#toast').hidden = true; }
   const start = v === 'start';
   $('#topbar').classList.toggle('bare', start);
   $('#topnav').hidden = start; $('#tabs').hidden = start;
   document.body.dataset.view = v;
-  $('#view').innerHTML = start ? startView() : v === 'week' ? weekView() : v === 'wq' ? wqView() : v === 'read' ? readView() : v === 'share' ? shareView() : v === 'shelf' ? shelfView(arg) : v === 'record' ? recordView(arg) : v === 'records' ? recordsView() : v === 'gallery' ? galleryView() : v === 'more' ? moreView() : v === 'admin' ? adminView() : v === 'about' ? aboutView() : v === 'feedback' ? feedbackView() : v === 'prep' ? prepView() : v === 'church' ? churchView() : v === 'rooms' ? roomsView() : placeView(v);
+  $('#view').innerHTML = start ? startView() : v === 'week' ? weekView() : v === 'wq' ? wqView() : v === 'read' ? readView() : v === 'share' ? shareView() : v === 'shelf' ? shelfView(arg) : v === 'record' ? recordView(arg) : v === 'records' ? recordsView() : v === 'gallery' ? galleryView() : v === 'more' ? moreView() : v === 'admin' ? adminView() : v === 'about' ? aboutView() : v === 'feedback' ? feedbackView() : v === 'prep' ? prepView() : v === 'church' ? churchView() : v === 'rooms' ? roomsView() : v === 'manage' ? manageView(arg) : placeView(v);
   const tab = start ? '' : v === 'week' ? 'week' : PLACE[v][1];
   $$('[data-tab]').forEach(a => { const on = a.dataset.tab === tab; a.classList.toggle('on', on); on ? a.setAttribute('aria-current', 'page') : a.removeAttribute('aria-current'); });
   document.title = start ? '디다코' : (v === 'shelf' && arg ? bTitle(bookById(arg)) : v === 'record' && arg ? '기록 상세' : v === 'week' ? '이번 주' : PLACE[v][0]) + ' · 디다코';
@@ -2395,7 +2619,7 @@ const acts = {
       <div class="set-btns" style="margin:0"><button class="btn ghost" type="button" data-act="pop-close" data-focus>그대로 둘게요</button><button class="btn" type="button" data-act="demo-reset">처음으로</button></div>`);
   },
   'demo-reset'() {
-    closeSheet(); roomState = null;
+    closeSheet(); roomState = null; MG = null; mgTab = 'now'; mgEditing = ''; mgSerial = 0; clearTimeout(mgPvTimer); mgEditTab = 'write'; mgPvMode = 'member'; mgPvOpen = true; mgTouched.clear();
     ls.del(K.demo); ls.del(K.keep); ls.del(K.answers); ls.del(K.walkRead); ls.del(K.walkThought); ls.del(K.walkDone); ls.del(K.walkMeditate); ls.del(K.bookmark); ls.del(K.memo); ls.del(K.leadopen);
     [K.shareDone, K.recRefl, K.recAns, K.recEdit, K.recDel, K.recHide].forEach(ls.del); loadState();
     if (location.hash === '#start') route(true); else location.hash = '#start';
@@ -2451,6 +2675,99 @@ const acts = {
   },
   'rec-restore'() { ls.del(K.recDel); ls.del(K.recHide); rerender(); toast('예시 기록을 되살렸어요'); },
   'rec-hide'() { ls.set(K.recHide, '1'); rerender(); toast('기록을 비웠어요'); },
+  // 배포 확인 창. 실제 회원 자료가 아닌 교재 관리 복사본만 바꾼다.
+  'mg-pub'(e, el) {
+    const c = mgPublishCurrent(); if (!c || mgPublishMissing(c.b, c.L).length) return;
+    const st = mgStatus(c.b, c.L), v = el.dataset.v;
+    if (st !== 'draft' && !(st === 'leader' && v === 'all')) return;
+    if (!['leader', 'all', 'both'].includes(v) || (st === 'draft' && v === 'all')) return;
+    const { target, count } = mgPublishTarget(c.b);
+    const who = v === 'leader' ? '리더 ' + count + '명' : v === 'all' ? target + ' 회원' : '리더 ' + count + '명과 ' + target + ' 회원';
+    openSheet(sheetHead('배포') + '<p>' + esc(who) + '에게 제' + c.L.no + '과를 배포할까요?</p><div class="set-btns"><button class="btn ghost" type="button" data-act="pop-close">그만두기</button><button class="btn" type="button" data-act="mg-pub-do" data-v="' + v + '">배포하기</button></div>');
+  },
+  'mg-pub-do'(e, el) {
+    const c = mgPublishCurrent(); if (!c || mgPublishMissing(c.b, c.L).length) return;
+    const v = el.dataset.v, st = mgStatus(c.b, c.L);
+    if (!['leader', 'all', 'both'].includes(v) || (st !== 'draft' && !(st === 'leader' && v === 'all')) || (st === 'draft' && v === 'all')) return;
+    setMgStatus(c.b, c.L, v === 'leader' ? 'leader' : 'all');
+    closeSheet(); route(false); toast(v === 'leader' ? '리더에게 배포했어요' : '회원에게 배포했어요');
+  },
+  'mg-unpub'() {
+    const c = mgPublishCurrent(); if (!c || mgStatus(c.b, c.L) === 'draft') return;
+    openSheet(sheetHead('배포 중단') + '<p>배포를 멈출까요? 회원에게는 다시 \'이번 주 과를 준비하고 있어요\'가 보여요. 회원 기기에 있는 기록은 그대로예요.</p><div class="set-btns"><button class="btn ghost" type="button" data-act="pop-close">그만두기</button><button class="btn" type="button" data-act="mg-unpub-do">배포 중단</button></div>');
+  },
+  'mg-unpub-do'() {
+    const c = mgPublishCurrent(); if (!c || mgStatus(c.b, c.L) === 'draft') return;
+    setMgStatus(c.b, c.L, 'draft'); closeSheet(); route(false); toast('배포를 멈췄어요');
+  },
+  // 과 편집과 미리보기
+  'mg-edit-tab'(e, el) {
+    if (!mgEditCurrent()) return; mgEditTab = el.dataset.v;
+    $('#mgWrite').hidden = mgEditTab !== 'write'; $('#mgPvPane').hidden = mgEditTab !== 'preview';
+    $$('.mg-edit-tabs button').forEach(b => { const on = b.dataset.v === mgEditTab; b.classList.toggle('on', on); b.setAttribute('aria-pressed', String(on)); });
+  },
+  'mg-pv-mode'(e, el) { if (!mgEditCurrent()) return; mgPvMode = el.dataset.v; $$('#mgPvPane [data-act="mg-pv-mode"]').forEach(b => { const on = b.dataset.v === mgPvMode; b.classList.toggle('on', on); b.setAttribute('aria-pressed', String(on)); }); mgRenderPreview(); },
+  'mg-pv-fold'() { if (!mgEditCurrent()) return; mgPvOpen = !mgPvOpen; mgRenderPreview(); },
+  'mg-edit-seg'(e, el) { const c = mgEditCurrent(); if (!c) return; if (el.dataset.mg === 'print-on') c.L.useText = el.dataset.v === '1'; else if (el.dataset.mg === 'print-size') c.L.fs = el.dataset.v; c.b.edited = true; mgEditRedraw(); },
+  'mg-q-add'(e, el) { mgQuestionChange(el, 'add'); },
+  'mg-q-dup'(e, el) { mgQuestionChange(el, 'dup'); },
+  'mg-q-up'(e, el) { mgQuestionChange(el, 'up'); },
+  'mg-q-down'(e, el) { mgQuestionChange(el, 'down'); },
+  'mg-q-del'(e, el) {
+    const c = mgEditCurrent(), si = Number(el.dataset.si), qi = Number(el.dataset.qi); if (!c || !c.g.stages[si] || !c.g.stages[si].qs[qi]) return;
+    openSheet(sheetHead('질문 지우기') + `<p>이 질문을 지울까요?</p><div class="set-btns"><button class="btn ghost" type="button" data-act="pop-close">그만두기</button><button class="btn" type="button" data-act="mg-q-del-do" data-si="${si}" data-qi="${qi}">지우기</button></div>`);
+  },
+  'mg-q-del-do'(e, el) { closeSheet(); mgQuestionChange(el, 'del'); },
+  'mg-q-lesson-dup'() {
+    const c = mgEditCurrent(); if (!c) return;
+    const { b, L, g } = c, no = Math.max(0, ...b.lessons.map(l => l.no)) + 1, copy = JSON.parse(JSON.stringify(L)), guide = JSON.parse(JSON.stringify(g));
+    copy.no = no; copy.state = 'prep'; delete copy.status; delete copy.pubAt;
+    guide.stages.forEach(st => st.qs.forEach(q => { q.id = mgQuestionId(); })); guide.triple.forEach(t => { t.id = mgQuestionId(); });
+    b.lessons.push(copy); mg().guides[b.id + ':' + no] = guide; b.edited = true; mgGo('me-' + b.id + '.' + no, '과를 복제했어요');
+  },
+  'mg-lesson-del'() {
+    const c = mgEditCurrent(); if (!c || mgStatus(c.b, c.L) !== 'draft') return;
+    openSheet(sheetHead('과 지우기') + '<p>작성 중인 과를 지울까요? 지우면 되돌릴 수 없어요.</p><div class="set-btns"><button class="btn ghost" type="button" data-act="pop-close">그만두기</button><button class="btn" type="button" data-act="mg-lesson-del-do">지우기</button></div>');
+  },
+  'mg-lesson-del-do'() {
+    const c = mgEditCurrent(); if (!c || mgStatus(c.b, c.L) !== 'draft') return;
+    c.b.lessons = c.b.lessons.filter(l => l !== c.L); delete mg().guides[c.key]; c.b.edited = true; closeSheet(); mgGo('mb-' + c.b.id, '과를 지웠어요');
+  },
+  // 교재 관리 복사본의 편집
+  'mg-tab'(e, el) { if (!canManage()) return; mgTab = el.dataset.v; route(false); },
+  'mg-new'() { if (canManage()) mgForm(null); },
+  'mg-edit'() { const b = canManage() && mgCurrent(); if (b) mgForm(b); },
+  'mg-save'() {
+    if (!canManage()) return;
+    const title = $('#mgTitle').value.trim(); $('#mgTitleHint').hidden = !!title; if (!title) { $('#mgTitle').focus(); return; }
+    const b = mgEditing && mgBook(mgEditing), start = $('#mgStart').value;
+    const fields = { title, kind: $('#mgKind').value, cover: { motif: $('#mgMotif').value, color: $('#mgColor').value }, target: $('#mgTarget').value, start, period: start ? `${Number(start.slice(0, 4))}년 ${Number(start.slice(5, 7))}월부터` : b ? b.period : '', edited: true };
+    if (b) { Object.assign(b, fields); closeSheet(); route(false); toast('저장했어요'); }
+    else { const id = mgId(); mg().books.unshift({ id, ...fields, closed: false, lessons: [] }); mgTab = 'now'; closeSheet(); mgGo('mb-' + id, '교재를 만들었어요'); }
+  },
+  'mg-lesson-add'() {
+    const b = canManage() && mgCurrent(); if (!b || b.closed) return;
+    const no = (b.lessons.length ? b.lessons[b.lessons.length - 1].no : 0) + 1;
+    b.lessons.push({ no, name: '', ref: '', date: '', state: 'prep', intro: '' });
+    mg().guides[b.id + ':' + no] = { stages: ['마음 열기', '말씀 관찰', '말씀 해석', '삶에 적용'].map(name => ({ name, qs: [] })), triple: JSON.parse(JSON.stringify(DATA.guides['john:3'].triple)) };
+    b.edited = true; location.hash = '#me-' + b.id + '.' + no;
+  },
+  'mg-dup'() {
+    const source = canManage() && mgCurrent(); if (!source) return;
+    const id = mgId(), b = JSON.parse(JSON.stringify(source)); b.id = id; b.title += ' (복사본)'; b.closed = false; b.edited = true; delete b.end;
+    b.lessons.forEach(L => {
+      delete L.status; delete L.pubAt; L.state = 'prep';
+      const guide = mg().guides[source.id + ':' + L.no];
+      if (guide) { const g = JSON.parse(JSON.stringify(guide)); g.stages.forEach((st, si) => st.qs.forEach((q, qi) => { q.id = `${id}-${L.no}-${si}-${qi}`; })); g.triple.forEach((t, i) => { t.id = `${id}-${L.no}-tri-${i}`; }); mg().guides[id + ':' + L.no] = g; }
+    });
+    mg().books.unshift(b); mgTab = 'now'; mgGo('mb-' + id, '복제했어요. 배포 이력은 가져오지 않아요');
+  },
+  'mg-close'() {
+    const b = canManage() && mgCurrent(); if (!b || b.closed) return;
+    openSheet(sheetHead('교재 닫기') + '<p>오늘 날짜로 교재를 닫아요. 닫은 교재는 지난 교재로 옮겨지고 교재 목록에 놓여요.</p><div class="set-btns"><button class="btn ghost" type="button" data-act="pop-close">그만두기</button><button class="btn" type="button" data-act="mg-close-do">교재 닫기</button></div>');
+  },
+  'mg-close-do'() { const b = canManage() && mgCurrent(); if (!b) return; b.closed = true; b.end = DATA.today; b.edited = true; closeSheet(); route(false); toast('교재를 닫았어요'); },
+  'mg-reopen'() { const b = canManage() && mgCurrent(); if (!b) return; b.closed = false; delete b.end; b.edited = true; route(false); toast('다시 열었어요'); },
   // 사랑방 전체 명단은 보기만 한다
   'rooms-open'(e, el) {
     if (D.role !== 'pastor') return;
@@ -2599,7 +2916,9 @@ document.addEventListener('error', e => {
 // 한 줄 돌아보기: 쓰는 대로 기기에 남기고, 칸을 벗어날 때 "저장했어요"를 잠깐 보인다(실패하면 그때만 알린다)
 document.addEventListener('input', e => {
   const t = e.target;
-  if (t.id === 'feedbackText') { feedbackState.text = t.value; const count = $('#feedbackCount'); if (count) count.textContent = String(t.value.length); const send = $('#feedbackSend'); if (send) send.disabled = !t.value.trim(); }
+  if (t.dataset && t.dataset.mg) { mgEditInput(t); return; }
+  if (t.id === 'mgTitle') { const h = $('#mgTitleHint'); if (h && t.value.trim()) h.hidden = true; }
+  else if (t.id === 'feedbackText') { feedbackState.text = t.value; const count = $('#feedbackCount'); if (count) count.textContent = String(t.value.length); const send = $('#feedbackSend'); if (send) send.disabled = !t.value.trim(); }
   else if (t.id === 'wqMed') { const meds = readJson(K.walkMeditate); meds[walkWeek().n] = t.value; ls.set(K.walkMeditate, JSON.stringify(meds)); }
   else if (t.id === 'wqTa') { const thought = readJson(K.walkThought); thought[walkWeek().n] = t.value; ls.set(K.walkThought, JSON.stringify(thought)); }
   else if (t.dataset && t.dataset.memoKey) { const m = readMemo(); if (t.value.trim()) m[t.dataset.memoKey] = t.value; else delete m[t.dataset.memoKey]; ls.set(K.memo, JSON.stringify(m)); }
@@ -2611,6 +2930,7 @@ document.addEventListener('input', e => {
 });
 document.addEventListener('focusout', e => {
   const t = e.target;
+  if (t.dataset && t.dataset.mg) { mgEditBlur(t); return; }
   if (t.matches && t.matches('textarea[data-id]') && timers[t.dataset.id]) saveAns(t.dataset.id, t);
   else if ((t.id === 'kSentence' || t.id === 'kAction') && keepT) saveKeepRead(true);
 });
@@ -2618,6 +2938,7 @@ window.addEventListener('pagehide', () => { flushAll(); if (keepT) saveKeepRead(
 // 남기고 다음: 눌러서 넘어가기 전에 나눔하기의 오늘 남길 것을 저장
 document.addEventListener('click', e => { const el = e.target.closest('[data-act="next"]'); if (el && R.on && cur().t === 'keep') saveKeepShare(); }, true);
 document.addEventListener('change', e => {
+  if (['mgGroup', 'mgMotif', 'mgColor'].includes(e.target.id)) { mgPreview(); return; }
   if (e.target.id === 'walkSel') { const n = Number(e.target.value); if (Number.isInteger(n) && DATA.weekWalk.some(w => w.n === n)) { D.walk = n; walkDay = ''; saveDemo(); rerender(); } return; }
   if (e.target.id === 'jcoverMotif') { D.jcoverMotif = pick(e.target.value, COVER_MOTIFS, JOHN_COVER.motif); saveDemo(); rerender(); return; }
   if (e.target.id === 'jcoverColor') { D.jcoverColor = pick(e.target.value, COVER_COLORS, JOHN_COVER.color); saveDemo(); rerender(); return; }
