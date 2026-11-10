@@ -613,6 +613,7 @@ body.sharing { overflow: hidden; }
 .tri { padding: 1em 0; border-top: 1px solid var(--line); display: grid; grid-template-columns: auto 1fr; gap: .4em 1em; align-items: baseline; }
 .tri:first-child { border-top: 0; }
 .tri .who { align-self: start; margin-top: .3em; }
+.tri .tri-memo { grid-column: 2; font-size: .88em; margin-top: .3em; }
 .tri p { margin: 0; font-family: var(--f-display); font-weight: 700; font-size: 1.2em; line-height: 1.55; word-break: keep-all; }
 .h2d.tri-lead { white-space: nowrap; font-size: clamp(14px, calc((100vw - 32px) / 20.5), 2em); }
 :root[data-big] .h2d.tri-lead, .stage.big .h2d.tri-lead { white-space: normal; font-size: clamp(1.4em, 5.5vmin, 2.1em); }
@@ -1380,7 +1381,7 @@ function roomsView() {
     <p class="eyebrow top-eyebrow">${esc(DATA.church.dept)} 전체 · 목사님</p><div class="page-top"><h1>사랑방 전체 보기</h1></div>
     ${statusCard()}
     <div class="gl">사랑방</div><div class="gc">
-      ${rooms.map((r, i) => `<button class="gr" type="button" data-act="rooms-open" data-i="${i}" aria-label="${esc(r.name)} 명단 보기"><span class="gt"><b>${esc(r.name)}</b><span class="gd">${esc(r.leader)}${r.co ? ' · ' + esc(r.co) : ''}</span></span><span class="hint">연결된 사람 ${r.name === DATA.rooms.mine.name ? 2 + myRoom().members.length : r.n}명</span><span class="ch" aria-hidden="true">›</span></button>`).join('')}
+      ${rooms.map((r, i) => `<button class="gr" type="button" data-act="rooms-open" data-i="${i}" aria-label="${esc(r.name)} 명단 보기"><span class="gt"><b>${esc(r.name)}</b><span class="gd">리더 ${esc(r.leader)}${r.co ? ' · 코리더 ' + esc(r.co) : ''}</span></span><span class="hint">연결된 사람 ${r.name === DATA.rooms.mine.name ? 2 + myRoom().members.length : r.n}명</span><span class="ch" aria-hidden="true">›</span></button>`).join('')}
     </div>
     <p class="soft">${ic('lock')} 묵상 기록은 잠겨 있어서 목사님도 볼 수 없어요. 이름과 연결 상태만 보여요.</p>`;
 }
@@ -1930,7 +1931,7 @@ function renderStep() {
     nav = prev + next();
     armDim();
   } else if (s.t === 'triple') {
-    html = `<div class="st-in"><p class="st-eyebrow">깊이 묵상하기</p><h2 class="h2d tri-lead">오늘 말씀에서 삼위일체 하나님을 묵상해요.</h2><div class="card triple">${G.triple.map(t => `<div class="tri"><span class="who">${esc(t.who)}</span><p>${esc(t.t)}</p></div>`).join('')}</div></div>`;
+    html = `<div class="st-in"><p class="st-eyebrow">깊이 묵상하기</p><h2 class="h2d tri-lead">오늘 말씀에서 삼위일체 하나님을 묵상해요.</h2><div class="card triple">${G.triple.map(t => `<div class="tri"><span class="who">${esc(t.who)}</span><p>${esc(t.t)}</p>${isLead() && R.view !== 'big' ? `<div class="pn memo tri-memo"><label class="lab" for="sm-${t.id}">${ic('lock')}내 메모</label><textarea class="field" id="sm-${t.id}" data-memo-key="${t.id}" rows="2" maxlength="1000" placeholder="진행하며 기억할 것">${esc(readMemo()[t.id] || '')}</textarea></div>` : ''}</div>`).join('')}</div></div>`;
     nav = prev + next();
   } else if (s.t === 'keep') {
     const sv = readJson(K.keep);
