@@ -809,6 +809,34 @@ button.gallery-cell { display: block; width: 100%; padding: 0; cursor: pointer; 
 .record-wrap .set-btns .delete-answer { min-height:44px; padding:0 .8em; border:0; border-radius:10px; background:none; color:var(--ink-2); font:inherit; cursor:pointer; }
 .ps-topics { margin-top: 8px; padding: 8px 10px; border-radius: 12px; background: var(--surface-2); }
 .menu select.field { margin: 0 .3em .3em; width: calc(100% - .6em); }
+/* 디다코 소개(C-03): 노트 소개(M8c)와 같은 모양 */
+.about-page, .feedback-page { max-width: 760px; margin: 0 auto; }
+.about-page .ab-mark { margin: 0 auto; }
+.about-page .about-head { text-align: center; padding: 24px 18px; }
+.about-page .about-head h1 { margin-top: 14px; }
+.about-page .about-names { display: flex; align-items: center; justify-content: center; gap: 12px; margin: 18px 0; }
+.about-page .about-name { display: flex; flex: 1; min-width: 0; flex-direction: column; align-items: center; gap: 4px; padding: 12px 6px; border: 1px solid var(--line); border-radius: 12px; }
+.about-page .about-name .greek { color: var(--ink-2); }
+.about-page .about-card { margin-top: 14px; padding: 20px; }
+.about-page .about-card h2 { margin-bottom: 12px; }
+.about-page .about-card p { line-height: 1.75; margin: 0; }
+.about-page .about-step { display: grid; grid-template-columns: 27px 1fr; gap: 10px; padding: 13px 0; border-top: 1px solid var(--line); }
+.about-page .about-step:first-of-type { border-top: 0; }
+.about-page .about-step .step-no { color: var(--accent); font-weight: 700; }
+.about-page .about-step p { margin: 5px 0; line-height: 1.7; }
+.about-page .about-step a { display: inline-block; margin-top: 6px; color: var(--accent); font-weight: 600; text-decoration: none; }
+.feedback-page .feedback-card { max-width: 760px; margin-top: 16px; padding: 20px; display: flex; flex-direction: column; gap: 12px; }
+.feedback-page .feedback-card .seg { width: 100%; display: grid; grid-template-columns: repeat(3, minmax(0,1fr)); }
+.feedback-page .feedback-card textarea { min-height: 140px; }
+.feedback-page .feedback-card .warning { color: var(--ink-2); }
+.feedback-page .feedback-card .feedback-count { text-align: right; margin: 0; color: var(--ink-2); }
+.feedback-page .feedback-card .set-row > span { display: flex; flex-direction: column; gap: 3px; }
+.guide-icon { display: grid; place-items: center; margin: 12px auto; width: 56px; height: 56px; border-radius: 50%; background: var(--surface-2); color: var(--accent); }
+.guide-icon .ic { width: 30px; height: 30px; }
+.guide-dots { display: flex; justify-content: center; gap: 8px; margin: 18px 0; }
+.guide-dots i { width: 9px; height: 9px; border: 1px solid var(--accent); border-radius: 50%; }
+.guide-dots i.on { background: var(--accent); }
+.guide-nav { display: grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap: 8px; }
 </style>
 </head>
 <body>
@@ -946,7 +974,7 @@ function loadState() {
   const a = readJson(K.display), b = readJson(K.demo);
   S.mode = pick(a.mode, MODES, 'auto'); S.accent = pick(a.accent, ACCENTS, 'paper'); S.style = pick(a.style, STYLES, 'basic'); S.big = a.big === true;
   D.unit = pick(b.unit, ['family', 'single'], 'family'); D.place = D.unit === 'single' ? 'room' : pick(b.place, ['room', 'home'], 'room');
-  D.entered = b.entered === true; D.role = pick(b.role, ROLES.map(r => r[0]), 'member'); D.status = pick(b.status, STATUS.map(r => r[0]), 'all'); D.walk = b.walk === 2 || b.walk === '2' ? 2 : 1; D.galleryDemo = b.galleryDemo === true;
+  D.entered = b.entered === true; D.role = pick(b.role, ROLES.map(r => r[0]), 'member'); D.status = pick(b.status, STATUS.map(r => r[0]), 'all'); D.walk = Number.isInteger(Number(b.walk)) && Number(b.walk) >= 1 && Number(b.walk) <= 52 && DATA.weekWalk.some(w => w.n === Number(b.walk)) ? Number(b.walk) : 1; D.galleryDemo = b.galleryDemo === true;
   D.lastWeek = b.lastWeek !== false; D.before = b.before === true; D.alt = b.alt === true;
   D.readOpen = b.readOpen !== false; D.readTriple = b.readTriple !== false; D.dimSec = b.dimSec === 5 ? 5 : 15;
   D.two = b.two === true; D.noBooks = b.noBooks === true; D.longTitle = b.longTitle === true; D.jcover = pick(b.jcover, JCOVERS, JCOVER_LIST[1][0]); D.newcomer = b.newcomer === true;
@@ -1017,7 +1045,7 @@ function renderSettings() {
     <p class="mlabel">데모용 <span class="demo-tag static">데모</span></p>
     <p class="set-note">실제 앱에는 없는 설정이에요. 이 기기에만 기억해요.</p>
     <p class="mlabel">역할</p>${seg('role', ROLES, D.role)}
-    <p class="mlabel">이번 주의 질문</p>${seg('walk', [['1', '1주 위로'], ['2', '2주 사랑의 어려움']], D.walk)}
+    <p class="mlabel">이번 주의 질문</p><select class="field" id="walkSel" aria-label="이번 주의 질문 주 고르기">${DATA.weekWalk.map(w => `<option value="${w.n}"${D.walk === w.n ? ' selected' : ''}>${w.n}주 · ${esc(w.title)}</option>`).join('')}</select>
     <p class="mlabel">올해의 그림</p>${seg('galleryDemo', [['0', '이 기기 기록만'], ['1', '예시로 채움']], D.galleryDemo ? 1 : 0)}
     <p class="mlabel">부서 단위</p>${seg('unit', [['family', '가정'], ['single', '개인']], D.unit)}
     <p class="set-note">개인이면 청년부처럼 한 사람이 한 줄이라 우리 가정이 없어요.</p>
@@ -1056,7 +1084,7 @@ function closeMenu() { const m = $('#settings'); m.hidden = true; $('#gearBtn').
 // 이름표와 어느 탭이 켜지는지는 여기에 모아 둔다. 아직 만들지 않은 화면은 차분한 안내 한 장으로 연다(막다른 길이 없게 이번 주로 가는 링크를 둔다)
 const PLACE = {
   wq: ['이번 주의 질문', 'week'], read: ['펼치기', 'week'], share: ['나눔하기', 'share'], shelf: ['책장', 'shelf'], record: ['내 기록', 'record'], gallery: ['올해의 그림', 'record'], more: ['더보기', 'more'],
-  church: ['우리 사랑방', 'more'], prep: ['진행 준비', 'week'], manage: ['교재 관리', 'more'], admin: ['관리', 'more']
+  church: ['우리 사랑방', 'more'], prep: ['진행 준비', 'week'], manage: ['교재 관리', 'more'], admin: ['관리', 'more'], about: ['디다코 소개', 'more'], feedback: ['의견 보내기', 'more']
 };
 const VIEWS = ['start', 'week'].concat(Object.keys(PLACE));
 // 책 안(#book-교재)과 기록 상세(#rec-기록)는 책장·내 기록 안의 화면이다
@@ -1270,12 +1298,65 @@ function moreView() {
         ${dispOpen ? `<div id="dispEx" style="padding:4px 0 14px">${displayControls()}</div>` : ''}
       </div>
       <div class="gl">디다코</div><div class="gc">
-        <button class="gr" type="button" data-act="more-soon"><span class="gt"><b>디다코 소개</b><span class="gd">이름의 뜻과 디다코가 지키는 것</span></span>${chevron}</button>
-        <button class="gr" type="button" data-act="more-soon"><span class="gt"><b>사용법 보기</b><span class="gd">화면마다 무엇을 하는지 한 장씩 봐요</span></span>${chevron}</button>
-        <button class="gr" type="button" data-act="more-soon"><span class="gt"><b>의견 보내기</b><span class="gd">불편한 점, 바라는 점, 고마운 점</span></span>${chevron}</button>
+        <a class="gr" href="#about"><span class="gt"><b>디다코 소개</b><span class="gd">이름의 뜻과 디다코가 지키는 것</span></span>${chevron}</a>
+        <button class="gr" type="button" data-act="more-guide"><span class="gt"><b>사용법 보기</b><span class="gd">화면마다 무엇을 하는지 한 장씩 봐요</span></span>${chevron}</button>
+        <a class="gr" href="#feedback"><span class="gt"><b>의견 보내기</b><span class="gd">불편한 점, 바라는 점, 고마운 점</span></span>${chevron}</a>
       </div>
       <button class="logout" type="button" data-act="more-logout">이 기기에서 로그아웃</button>
     </div></div>`;
+}
+
+// ── 디다코 소개·사용법·의견 보내기(C-03) ──
+function aboutView() {
+  const steps = [
+    ['말씀은 교회에서 선포돼요.', '성령께서 말씀을 읽고 듣는 가운데, 특히 설교로 일하세요. 그래서 우리 과는 주일 설교에서 출발해요.', '책장 열기 ›', '#shelf'],
+    ['성령께서 깨닫게 해 주세요.', '그래서 읽기 전에 말씀 앞에 잠시 머물러요.', '펼치기 › 말씀을 열며 ›', '#read'],
+    ['들은 말씀을 서로 나누고 간직해요.', '이야기하고, 마음에 새기고, 한 주 동안 작은 실천으로 열매를 맺어요.', '나눔하기 열기 ›', '#share'],
+    ['말씀은 그리스도를 가리켜요.', '성경은 예수님에 대해 말해 주어요(요한복음 5장). 그래서 깊이 묵상하기에서 예수님을 만나요.', '펼치기 › 깊이 묵상하기 ›', '#read'],
+    ['말씀 앞에서는 모두 배우는 사람이에요.', '목사님도 리더도 함께 배워요. 배운 것을 문답으로 스스로 확인하지만, 점수를 매기거나 서로 견주지 않아요.', '이번 주의 질문 열기 ›', '#week']
+  ];
+  return `<div class="about-page"><a class="back-link" href="#more">${ic('back')}<span>더보기</span></a>
+    <div class="card about-head"><span class="ab-mark" aria-hidden="true"><svg class="mk"><use href="#i-didako"/></svg></span>
+      <h1>디다코</h1><p class="soft">말씀을 함께 읽고 나누고 간직해요</p></div>
+    <section class="card about-card"><h2>이름의 뜻</h2>
+      <div class="about-names"><div class="about-name"><b>디다케</b><span class="greek">διδαχή</span><span class="soft">가르침</span></div><span aria-hidden="true">+</span><div class="about-name"><b>코이노니아</b><span class="greek">κοινωνία</span><span class="soft">교제</span></div></div>
+      <p>디다코는 '가르침'을 뜻하는 디다케(διδαχή, didachē)와 '교제'를 뜻하는 코이노니아(κοινωνία, koinōnia)에서 영감을 얻은 이름이에요.</p><p class="hint" style="margin-top:10px">사도행전 2:42</p></section>
+    <section class="card about-card"><h2>세 겹 책갈피 이야기</h2><p>전도서 4장의 세 겹으로 꼰 줄은 쉽게 끊어지지 않는다는 말씀을 떠올려요. 디다코의 로고는 그렇게 꼰 세 가닥이 책갈피가 된 모양이에요. 세 가닥은 성부·성자·성령이에요.</p></section>
+    <section class="card about-card"><h2>보상 대신 흔적</h2><p>디다코에는 점수나 상이 없어요. 대신 흔적이 남아요. 남긴 과마다 책장의 책갈피 끈이 조금씩 자라고, 다 읽은 교재는 지난 책에 놓이고, 교재가 끝나면 그동안 남긴 한 문장이 한 장에 모여요. 이번 주의 질문을 끝까지 펴 본 주의 그림은 내 기록의 올해의 그림에 한 장씩 담겨요. 몇 개인지는 세지 않아요.</p></section>
+    <section class="card about-card"><h2>디다코는 말씀을 이렇게 이해해요</h2>
+      ${steps.map(([title,desc,label,target],i)=>`<div class="about-step"><span class="step-no">${i+1}.</span><div><b>${title}</b><p>${desc}</p><a href="${target}">${label}</a></div></div>`).join('')}
+    </section></div>`;
+}
+const GUIDE_CARDS = [
+  ['week','이번 주','교회가 함께 이번 주의 질문 하나를 한 주 동안 품어요. 월요일부터 금요일까지 하루 한 곳씩 오늘의 말씀을 펴서, 물음의 답을 본문에서 찾아봐요.'],
+  ['shelf','책장','이번 주 과가 맨 위에 있어요. 펼치기에서 모임 전에 미리 읽고 생각을 남길 수 있어요. 남기는 것은 원할 때만 해요.'],
+  ['share','나눔하기','사랑방이 함께 모여 질문 하나씩 나눠요. 이야기하는 동안에는 화면을 내려놓아요.'],
+  ['log','내 기록','모임 뒤에 마음에 남은 한 문장과 작은 실천을 남겨요. 지난주에 정한 작은 실천도 여기서 돌아봐요.'],
+  ['more','더보기','화면 모드와 글씨 크기를 바꾸고, 동기화로 기록을 잠가서 맡겨요.']
+];
+let guideIndex = 0;
+function showGuide() {
+  const [symbol,title,desc] = GUIDE_CARDS[guideIndex];
+  openSheet(`<div class="sheet-h"><h3 id="popT">사용법</h3><button type="button" class="sheet-x" aria-label="닫기" data-act="pop-close" data-focus>×</button></div>
+    <div class="card" style="text-align:center;padding:20px"><span class="guide-icon">${ic(symbol)}</span><h3>${title}</h3><p class="hint">${desc}</p>
+    ${guideIndex === 4 ? '<a href="#about" data-act="guide-about">더 알아보기 › 디다코 소개</a>' : ''}</div>
+    <div class="guide-dots" aria-label="사용법 진행">${GUIDE_CARDS.map((_,i)=>`<i class="${i===guideIndex?'on':''}" aria-hidden="true"></i>`).join('')}</div>
+    <div class="guide-nav"><button type="button" class="btn ghost" data-act="guide-prev" ${guideIndex===0?'disabled':''}>이전</button><button type="button" class="btn" data-act="${guideIndex===4?'pop-close':'guide-next'}">${guideIndex===4?'닫기':'다음'}</button></div>`);
+}
+const feedbackState = { kind:'이랬으면', named:false, text:'' };
+function feedbackView() {
+  const s = feedbackState;
+  return `<div class="feedback-page"><a class="back-link" href="#more">${ic('back')}<span>더보기</span></a>
+    <p class="eyebrow">디다코를 함께 만들어요</p><div class="page-top"><h1>의견 보내기</h1></div>
+    <section class="card feedback-card"><div class="seg" role="radiogroup" aria-label="의견 종류">
+      ${['불편해요','이랬으면','고마워요'].map(k=>`<button type="button" role="radio" aria-checked="${s.kind===k}" class="${s.kind===k?'on':''}" data-act="fb-kind" data-kind="${k}">${k}</button>`).join('')}</div>
+      <p class="warning">내 답변과 기록은 여기 쓰지 말아 주세요.</p>
+      <textarea class="field" id="feedbackText" rows="6" maxlength="500" aria-label="의견" placeholder="불편한 점, 바라는 점, 고마운 점 무엇이든 좋아요.">${esc(s.text)}</textarea>
+      <p class="feedback-count"><span id="feedbackCount">${s.text.length}</span>/500</p>
+      <div class="set-row"><span><b>이름 밝히기</b><small class="hint">끄면 누가 보냈는지 남기지 않아요.</small></span>
+        <button class="switch${s.named?' on':''}" type="button" role="switch" aria-label="이름 밝히기" aria-checked="${s.named}" data-act="fb-named"><span></span></button></div>
+      <button class="btn wide" id="feedbackSend" type="button" data-act="fb-send" ${s.text.trim()?'':'disabled'}>보내기</button>
+      <p class="hint">디다코를 만드는 사람이 읽어요. 답장은 따로 오지 않아요.</p></section></div>`;
 }
 
 // ── 관리(A-01): 데모는 보기와 시트까지만, 바뀐 것은 저장하지 않는다 ──
@@ -2124,7 +2205,7 @@ function route(moved) {
   $('#topbar').classList.toggle('bare', start);
   $('#topnav').hidden = start; $('#tabs').hidden = start;
   document.body.dataset.view = v;
-  $('#view').innerHTML = start ? startView() : v === 'week' ? weekView() : v === 'wq' ? wqView() : v === 'read' ? readView() : v === 'share' ? shareView() : v === 'shelf' ? shelfView(arg) : v === 'record' ? recordView(arg) : v === 'gallery' ? galleryView() : v === 'more' ? moreView() : v === 'admin' ? adminView() : placeView(v);
+  $('#view').innerHTML = start ? startView() : v === 'week' ? weekView() : v === 'wq' ? wqView() : v === 'read' ? readView() : v === 'share' ? shareView() : v === 'shelf' ? shelfView(arg) : v === 'record' ? recordView(arg) : v === 'gallery' ? galleryView() : v === 'more' ? moreView() : v === 'admin' ? adminView() : v === 'about' ? aboutView() : v === 'feedback' ? feedbackView() : placeView(v);
   const tab = start ? '' : v === 'week' ? 'week' : PLACE[v][1];
   $$('[data-tab]').forEach(a => { const on = a.dataset.tab === tab; a.classList.toggle('on', on); on ? a.setAttribute('aria-current', 'page') : a.removeAttribute('aria-current'); });
   document.title = start ? '디다코' : (v === 'shelf' && arg ? bTitle(bookById(arg)) : v === 'record' && arg ? '기록 상세' : v === 'week' ? '이번 주' : PLACE[v][0]) + ' · 디다코';
@@ -2179,6 +2260,13 @@ const acts = {
   'admin-nochange'() { toast('데모에서는 바뀌지 않아요'); },
   disp() { dispOpen = !dispOpen; rerender(); },
   'more-sync'() { toast('데모에서는 동기화 화면을 열지 않아요'); },
+  'more-guide'() { guideIndex = 0; showGuide(); },
+  'guide-prev'() { if (guideIndex > 0) { guideIndex--; showGuide(); } },
+  'guide-next'() { if (guideIndex < GUIDE_CARDS.length - 1) { guideIndex++; showGuide(); } },
+  'guide-about'(e) { e.preventDefault(); closeSheet(); location.hash = '#about'; },
+  'fb-kind'(e,el) { feedbackState.kind = el.dataset.kind; route(false); },
+  'fb-named'() { feedbackState.named = !feedbackState.named; route(false); },
+  'fb-send'() { if (!feedbackState.text.trim()) return; feedbackState.text = ''; const t = $('#feedbackText'); if (t) t.value = ''; const n = $('#feedbackCount'); if (n) n.textContent='0'; const b = $('#feedbackSend'); if (b) b.disabled = true; toast('데모라 보내지 않았어요. 고마워요'); },
   'more-soon'() { toast('곧 만들어요'); },
   'more-logout'() { toast('데모에서는 로그아웃하지 않아요'); },
   home() { location.hash = '#week'; },
@@ -2327,7 +2415,6 @@ document.addEventListener('click', e => {
     const [k, v] = set.dataset.set.split(':');
     if (DISPLAY_KEYS.includes(k)) { S[k] = k === 'big' ? v === '1' : v; saveDisplay(); }
     else if (k === 'unit') { teardown(); D.unit = pick(v, ['family', 'single'], 'family'); if (D.unit === 'single') D.place = 'room'; saveDemo(); }
-    else if (k === 'walk') { D.walk = v === '2' ? 2 : 1; walkDay = ''; saveDemo(); }
     else if (k === 'galleryDemo') { D.galleryDemo = v === '1'; saveDemo(); }
     else if (k === 'bookmark') { if (atHome()) return; if (v === '1') { if (!hasBm()) ls.set(K.bookmark, JSON.stringify({ id: 'o2', at: Date.now() })); } else ls.del(K.bookmark); }   // 책갈피는 펼치기가 꽂는 것과 같은 자리
     else { D[k] = ['lastWeek', 'before', 'alt', 'readOpen', 'readTriple', 'two', 'noBooks', 'longTitle', 'newcomer'].includes(k) ? v === '1' : k === 'dimSec' ? (v === '5' ? 5 : 15) : v; saveDemo(); }
@@ -2356,7 +2443,8 @@ document.addEventListener('error', e => { if (e.target && e.target.classList && 
 // 한 줄 돌아보기: 쓰는 대로 기기에 남기고, 칸을 벗어날 때 "저장했어요"를 잠깐 보인다(실패하면 그때만 알린다)
 document.addEventListener('input', e => {
   const t = e.target;
-  if (t.id === 'wqMed') { const meds = readJson(K.walkMeditate); meds[walkWeek().n] = t.value; ls.set(K.walkMeditate, JSON.stringify(meds)); }
+  if (t.id === 'feedbackText') { feedbackState.text = t.value; const count = $('#feedbackCount'); if (count) count.textContent = String(t.value.length); const send = $('#feedbackSend'); if (send) send.disabled = !t.value.trim(); }
+  else if (t.id === 'wqMed') { const meds = readJson(K.walkMeditate); meds[walkWeek().n] = t.value; ls.set(K.walkMeditate, JSON.stringify(meds)); }
   else if (t.id === 'wqTa') { const thought = readJson(K.walkThought); thought[walkWeek().n] = t.value; ls.set(K.walkThought, JSON.stringify(thought)); }
   else if (t.id === 'lwInput') ls.set(K.reflect, t.value);
   else if (t.matches && t.matches('textarea[data-id]')) { const id = t.dataset.id; sizeTa(t); setBookmark(id); clearTimeout(timers[id]); timers[id] = setTimeout(() => saveAns(id, t), 450); }
@@ -2374,6 +2462,7 @@ window.addEventListener('pagehide', () => { flushAll(); if (keepT) saveKeepRead(
 // 남기고 다음: 눌러서 넘어가기 전에 나눔하기의 오늘 남길 것을 저장
 document.addEventListener('click', e => { const el = e.target.closest('[data-act="next"]'); if (el && R.on && cur().t === 'keep') saveKeepShare(); }, true);
 document.addEventListener('change', e => {
+  if (e.target.id === 'walkSel') { const n = Number(e.target.value); if (Number.isInteger(n) && DATA.weekWalk.some(w => w.n === n)) { D.walk = n; walkDay = ''; saveDemo(); rerender(); } return; }
   if (e.target.id === 'jcover') { D.jcover = pick(e.target.value, JCOVERS, JCOVER_LIST[1][0]); saveDemo(); rerender(); return; }
   if (e.target.id === 'lwInput') toast(ls.set(K.reflect, e.target.value) ? '저장했어요' : '저장하지 못했어요 · 다시 시도');
 });
