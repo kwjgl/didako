@@ -734,6 +734,28 @@ body.sharing { overflow: hidden; }
 .sh-dots i.now { width: 20px; background: var(--accent); border-color: var(--accent); }
 
 /* 책 안(목차) */
+/* 책 안 머리와 표지 색(2026-11-10): --cover-color를 옅게 섞어 머리 카드, 과 번호, 장절, 단추에 입힌다 */
+.book-in { --bk: color-mix(in srgb, var(--cover-color) 82%, var(--ink)); --bk-solid: color-mix(in srgb, var(--cover-color) 88%, var(--ink)); --bk-on: #fff; }
+.book-hero { margin-top: 10px; background: color-mix(in srgb, var(--cover-color) 11%, var(--surface)); border-color: color-mix(in srgb, var(--cover-color) 28%, var(--line)); }
+.bh-row { display: grid; grid-template-columns: 104px minmax(0, 1fr); gap: 16px; align-items: center; }
+.book-cover-hero { width: 104px; }
+.bh-info { display: grid; gap: 6px; min-width: 0; justify-items: start; }
+.bh-t { font-family: var(--f-display); font-size: 1.5em; line-height: 1.3; margin: 0; word-break: keep-all; overflow-wrap: anywhere; }
+.bh-range { background: color-mix(in srgb, var(--cover-color) 18%, var(--surface)); color: var(--bk); }
+.bh-mine { margin: 0; }
+.bh-read { width: 100%; margin-top: 16px; }
+.sh-actions .ic, .bh-read .ic { width: 1.15em; height: 1.15em; }
+.book-in .bh-read:not(.ghost) { background: var(--bk-solid); border-color: var(--bk-solid); color: var(--bk-on); }
+.book-in .bh-read.ghost { border-color: var(--bk); color: var(--bk); }
+.book-toc { margin-top: 12px; }
+.book-in .les-ref { color: var(--bk); }
+.les-no { flex: none; width: 30px; height: 30px; border-radius: 999px; display: grid; place-items: center; font-size: .82em; font-weight: 600; border: 1.5px solid var(--line-strong); color: var(--ink-2); }
+.les-no.past { background: color-mix(in srgb, var(--cover-color) 26%, var(--surface)); border-color: transparent; color: var(--bk); }
+.les-no.now { background: var(--bk-solid); border-color: transparent; color: var(--bk-on); }
+.les-now { display: inline-block; font-size: .85em; font-weight: 600; padding: 0 .55em; border-radius: 999px; background: var(--bk-solid); color: var(--bk-on); margin-left: .2em; }
+@media (prefers-color-scheme: dark) { :root:not([data-mode="light"]) .book-in { --bk: color-mix(in srgb, var(--cover-color) 45%, var(--ink)); --bk-solid: color-mix(in srgb, var(--cover-color) 55%, var(--ink)); --bk-on: #1C150E; } }
+:root[data-mode="dark"] .book-in { --bk: color-mix(in srgb, var(--cover-color) 45%, var(--ink)); --bk-solid: color-mix(in srgb, var(--cover-color) 55%, var(--ink)); --bk-on: #1C150E; }
+@media (min-width: 1000px) { .bh-row { grid-template-columns: 140px minmax(0, 1fr); gap: 22px; } .book-cover-hero { width: 140px; } .bh-read { width: auto; min-width: 200px; } }
 .book-head .book-l { margin: 0; }
 .book-head h2.book-t { font-family: var(--f-display); font-size: 1.55em; margin: .3em 0 .4em; word-break: keep-all; }
 .book-head .passage-chip { font-size: .96em; }
@@ -786,7 +808,18 @@ button.gallery-cell { display: block; width: 100%; padding: 0; cursor: pointer; 
 .gallery-cell .gallery-week { position: absolute; bottom: 5px; left: 7px; color: white; font-size: .75rem; font-weight: 700; text-shadow: 0 1px 4px rgba(0,0,0,.75); }
 .gallery-preview { display: block; width: 100%; max-height: 55vh; object-fit: contain; border-radius: 12px; }
 .mg-tabs { margin-bottom: 12px; }
-.mg-steps { padding: 12px 0 14px; }
+.mg-steps { padding: 14px 0 14px; }
+.mg-step-list { list-style: none; margin: 0 0 6px; padding: 0; }
+.mg-step { position: relative; display: grid; grid-template-columns: 40px minmax(0, 1fr); gap: 12px; padding-bottom: 16px; }
+.mg-step:not(:last-child)::before { content: ''; position: absolute; left: 19px; top: 40px; bottom: 0; width: 2px; background: var(--line-strong); }
+.mg-step-ic { width: 40px; height: 40px; border-radius: 999px; display: grid; place-items: center; background: var(--accent-soft); color: var(--accent); }
+.mg-step-ic svg { width: 20px; height: 20px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+.mg-step-tx { display: grid; gap: 2px; padding-top: 2px; min-width: 0; }
+.mg-step-tx b { display: flex; align-items: center; gap: 6px; }
+.mg-step-no { font-size: .75em; color: var(--ink-2); font-weight: 600; }
+.mg-step-d { font-size: .9em; color: var(--ink-2); line-height: 1.5; }
+.mg-flow { display: flex; flex-wrap: wrap; align-items: center; gap: 4px; margin-top: 6px; }
+.mg-arrow { color: var(--ink-2); }
 .record-top { display:flex; align-items:center; gap:10px; }
 .record-top h1 { margin-right:auto; }
 .month-nav { display:grid; grid-template-columns:44px 1fr 44px; align-items:center; gap:8px; margin:.8em 0; }
@@ -940,6 +973,7 @@ button.gallery-cell { display: block; width: 100%; padding: 0; cursor: pointer; 
     <symbol id="i-people" viewBox="0 0 16 16"><circle cx="6" cy="5.5" r="2"/><path d="M2.5 13c0-2 1.6-3.5 3.5-3.5s3.5 1.5 3.5 3.5"/><circle cx="11.2" cy="6" r="1.6"/><path d="M10.5 9.6c1.8 0 3 1.3 3 3.1"/></symbol>
     <symbol id="i-book" viewBox="0 0 16 16"><rect x="3" y="2.5" width="10" height="11" rx="1.5"/><path d="M5.8 5.5h4.4M5.8 8h4.4M5.8 10.5h2.5"/></symbol>
     <symbol id="i-info" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><path d="M12 11v5.2"/><circle cx="12" cy="7.9" r=".5"/></symbol>
+    <symbol id="i-read" viewBox="0 0 24 24"><path d="M4 5.5C6.5 4.5 9.5 4.5 12 6c2.5-1.5 5.5-1.5 8-.5v13c-2.5-1-5.5-1-8 .5-2.5-1.5-5.5-1.5-8-.5z"/><path d="M12 6v13"/></symbol>
     <symbol id="i-list" viewBox="0 0 24 24"><path d="M8 7h11M8 12h11M8 17h11"/><circle cx="4.5" cy="7" r=".6"/><circle cx="4.5" cy="12" r=".6"/><circle cx="4.5" cy="17" r=".6"/></symbol>
     <symbol id="i-note" viewBox="0 0 24 24"><path d="M5 19l1-4 10-10 3 3-10 10z"/><path d="M14.5 6.5l3 3"/></symbol>
     <symbol id="i-chev" viewBox="0 0 24 24"><path d="M7 10l5 5 5-5"/></symbol>
@@ -1225,7 +1259,7 @@ function weekView() {
     <div class="page-top"><h1>이번 주</h1></div>
     <div class="week-grid"><div class="col">
     <section class="card walk-hero">
-      <img src="${w.img}" alt="${esc(w.alt)}" loading="lazy">
+      <img src="${w.img}" alt="${esc(w.alt)}">
       <div class="walk-hero-body">
         <div class="walk-head"><span class="walk-kicker">이번 주의 질문</span><span class="walk-tag">${w.n}주</span><span class="walk-tag">${esc(w.group)}</span></div>
         <h2 class="lesson-title">${esc(w.q)}</h2>
@@ -1282,7 +1316,7 @@ function wqView() {
   return `<div class="record-wrap wq-wrap">
     <a class="back-link" href="#week">${ic('back')}<span>이번 주</span></a>
     <section class="card"><div class="walk-head"><span class="walk-kicker">이번 주의 질문</span><span class="walk-tag">${w.n}주</span><span class="walk-tag">${esc(w.group)}</span></div><h1 class="lesson-title" style="margin:.4em 0 0">${esc(w.q)}</h1></section>
-    <img class="q-img" src="${w.img}" alt="${esc(w.alt)}" decoding="async">
+    <img class="q-img" src="${w.img}" alt="${esc(w.alt)}">
     ${WQ.view === 4 ? finished : steps[WQ.view]}
     ${past ? `<div class="xpast">${past}</div>` : ''}</div>`;
 }
@@ -1735,6 +1769,23 @@ function downloadDocx(blob, name) {
   setTimeout(() => URL.revokeObjectURL(url), 4000);
   toast('Word 파일을 내려받았어요');
 }
+// 교재 제작 순서(2026-11-10): 글만 있던 네 줄을 그림 단계표로. 동그라미 기호를 선으로 잇고, 배포 단계에는 공개 순서(준비 중 → 리더까지 → 모두)를 작은 알약으로 보인다
+const MG_STEP_IC = {
+  book: '<path d="M4 5.5C6.5 4.5 9.5 4.5 12 6c2.5-1.5 5.5-1.5 8-.5v13c-2.5-1-5.5-1-8 .5-2.5-1.5-5.5-1.5-8-.5z"/><path d="M12 6v13"/>',
+  pen: '<path d="M4 20h4L19 9a2.8 2.8 0 0 0-4-4L4 16z"/><path d="M13.5 6.5l4 4"/>',
+  eye: '<path d="M2.5 12S6 5.5 12 5.5 21.5 12 21.5 12 18 18.5 12 18.5 2.5 12 2.5 12z"/><circle cx="12" cy="12" r="3"/>',
+  send: '<path d="M21 3L10 14"/><path d="M21 3l-7 18-4-7-7-4z"/>'
+};
+function mgStepsHtml() {
+  const steps = [
+    ['book', '교재 만들기', "'새 교재 만들기'에서 제목, 표지, 대상 모임을 정해요."],
+    ['pen', '과 쓰기', '교재 안에서 과를 더하고, 단계와 질문을 적어요.'],
+    ['eye', '미리보기', '회원과 리더에게 어떻게 보이는지 확인해요.'],
+    ['send', '배포', '과마다 공개해요. 리더에게 먼저, 회원에게 나중에 열 수 있어요.']
+  ];
+  const flow = `<span class="mg-flow">${STATUS.map(([, name]) => `<span class="chip">${esc(name)}</span>`).join('<span class="mg-arrow" aria-hidden="true">›</span>')}</span>`;
+  return `<ol class="mg-step-list">${steps.map(([icon, name, desc], i) => `<li class="mg-step"><span class="mg-step-ic" aria-hidden="true"><svg viewBox="0 0 24 24">${MG_STEP_IC[icon]}</svg></span><span class="mg-step-tx"><b><span class="mg-step-no">${i + 1}</span>${esc(name)}</b><span class="mg-step-d">${esc(desc)}</span>${i === steps.length - 1 ? flow : ''}</span></li>`).join('')}</ol>`;
+}
 function mgBooksView() {
   const books = mg().books.filter(b => !!b.closed === (mgTab === 'past'));
   const dateKey = L => { const m = /(\d+)월\s*(\d+)일/.exec(L.date || ''); return m ? Number(m[1]) * 100 + Number(m[2]) : Infinity; };
@@ -1745,7 +1796,7 @@ function mgBooksView() {
       ${mgTab === 'now' ? '<button class="btn wide" type="button" data-act="mg-new">새 교재 만들기</button>' : ''}
       <div class="gl">교재</div><div class="gc">${books.map(b => `<a class="gr mg-row" href="#mb-${b.id}"><span class="mg-cover">${bookCover({ ...b, id: '' }, 'list')}</span><span class="gt"><b>${esc(b.title)}</b><span class="gd">${esc(b.kind)} · ${esc(b.period)}${b.edited ? ' · 오늘 고침' : ''}</span></span><span class="ch" aria-hidden="true">›</span></a>`).join('') || `<div class="gr"><span class="gt"><span class="gd">${mgTab === 'now' ? '지금 쓰는 교재가 없어요. 새 교재를 만들어 시작해요.' : '지난 교재가 아직 없어요.'}</span></span></div>`}</div>
       ${upcoming.length ? `<div class="gl">다가오는 과</div><div class="gc">${upcoming.map(({ b, L }) => `<a class="gr" href="#me-${b.id}.${L.no}"><span class="gt"><b>제${L.no}과 ${esc(L.name || '(제목을 적어 주세요)')}</b><span class="gd">${esc(L.date)} · ${esc(b.title)}</span></span>${mgPill(b, L)}</a>`).join('')}</div>` : ''}
-    </div><div><div class="gl">교재 제작 순서</div><div class="gc"><div class="mg-steps"><ol><li>'새 교재 만들기'를 눌러 교재를 만들어요.</li><li>교재 안에 과를 추가하고 편집해요.</li><li>미리보기로 화면을 확인할 수 있어요.</li><li>확인이 끝나면 배포해요.</li></ol><p class="hint">배포는 과마다 할 수 있어요. 리더에게 먼저, 회원에게 나중에 공개해요.</p><p class="hint">${ic('lock')} 회원이 쓴 답과 기록은 잠겨 있어서 아무도 볼 수 없어요.</p></div></div></div></div>`;
+    </div><div><div class="gl">교재 제작 순서</div><div class="gc"><div class="mg-steps">${mgStepsHtml()}<p class="hint">${ic('lock')} 회원이 쓴 답과 기록은 잠겨 있어서 아무도 볼 수 없어요.</p></div></div></div></div>`;
 }
 const mgLongDate = v => { const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(v || ''); return m ? `${m[1]}년 ${Number(m[2])}월 ${Number(m[3])}일` : (v || ''); };
 function mgBookView(b) {
@@ -2529,10 +2580,11 @@ const bookById = id => shelfBooks().find(b => b.id === id);
 const bTitle = b => (b.id === 'john' && D.longTitle ? LONG_JOHN : b.title);
 // 같은 상징·색 조합으로 지금 읽는 책과 교재 목록의 표지를 그린다. 없거나 알 수 없는 값은 세 겹 끈·종이색으로 대신한다
 const bCover = b => b.id === 'john' ? { motif: D.jcoverMotif, color: D.jcoverColor } : b.cover;
-// 표지 그림을 한 번 미리 풀어 두고 붙잡아 둔다. 화면을 다시 그릴 때 그림이 한 박자 늦게 들어와 반짝이지 않게 한다(2026-11-10)
+// 그림을 한 번 미리 풀어 두고 붙잡아 둔다. 화면을 다시 그릴 때 그림이 한 박자 늦게 들어와 반짝이지 않게 한다(2026-11-10).
+//  표지는 그릴 때, 다른 그림(이번 주의 질문, 올해의 그림)은 화면을 그린 뒤 route에서 붙잡는다
 const COVER_KEEP = new Map();
-function keepCover(src) {
-  if (COVER_KEEP.has(src)) return;
+function keepImg(src) {
+  if (!src || COVER_KEEP.has(src)) return;
   const im = new Image(); im.src = src;
   if (im.decode) im.decode().catch(() => {});
   COVER_KEEP.set(src, im);
@@ -2546,16 +2598,20 @@ function coverSvg(cover, cls) {
   const hex = color[1];
   const svg = `<svg class="${motif.img ? '' : cls}" viewBox="0 0 48 48" aria-hidden="true" style="color:color-mix(in srgb, ${hex} 72%, var(--ink))"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">${motif.svg}</g></svg>`;
   if (!motif.img) return svg;
-  keepCover(motif.img);
+  keepImg(motif.img);
   return `<span class="${cls} cover-art" aria-hidden="true">${svg}<img src="${esc(motif.img)}" alt=""></span>`;
 }
-function bookCover(b, size) {
+// 표지 색(교재가 고른 색, 없으면 종이색). 책 안도 이 색을 옅게 입는다(2026-11-10)
+function coverHex(b) {
   const cover = bCover(b);
   const valid = COVER_ITEMS.some(item => item.id === (cover || {}).motif);
   const color = valid && COVERS.colors.find(row => row[0] === (cover || {}).color);
-  const hex = (color || COVERS.colors.find(row => row[0] === 'paper') || COVER_FALLBACK.colors[0])[1];
+  return (color || COVERS.colors.find(row => row[0] === 'paper') || COVER_FALLBACK.colors[0])[1];
+}
+function bookCover(b, size) {
+  const cover = bCover(b), hex = coverHex(b);
   const name = String(b.coverName || '').trim();
-  return `<span class="book-cover${size === 'current' ? ' book-cover-current' : ''}${name ? ' has-name' : ''}" style="--cover-color:${hex}" aria-hidden="true">${name ? `<span class="book-name">${esc(name)}</span>` : ''}${coverSvg(cover, 'book-symbol')}</span>`;
+  return `<span class="book-cover${size === 'current' ? ' book-cover-current' : size === 'hero' ? ' book-cover-hero' : ''}${name ? ' has-name' : ''}" style="--cover-color:${hex}" aria-hidden="true">${name ? `<span class="book-name">${esc(name)}</span>` : ''}${coverSvg(cover, 'book-symbol')}</span>`;
 }
 // 고른 책이 없거나 교재 목록에 없으면 사랑방 기본 교재를 사용한다
 const myBookId = () => shelfBooks().some(b => b.id === ls.get(K.myBook)) ? ls.get(K.myBook) : DATA.roomBook;
@@ -2574,7 +2630,7 @@ const dotsHtml = b => `<span class="sh-dots" aria-hidden="true">${tocLessons(b).
   const hidden = weekHidden() && b.id === DATA.thisWeek.main.book && l.no === DATA.thisWeek.main.no;
   return `<i class="${l.state === 'past' ? 'past' : l.state === 'now' && !hidden ? 'now' : ''}"></i>`;
 }).join('')}</span>`;
-// 지금 읽는 책 카드: 책 모양 표지와 글, 따로 누르는 책 열기·펼치기 단추
+// 지금 읽는 책 카드: 책 모양 표지와 글, 따로 누르는 목차·읽기 단추(책갈피가 있으면 이어 읽기, 2026-11-10)
 function coverHtml(b) {
   const c = capOf(b);
   return `<div class="card xcard sh-card">
@@ -2586,8 +2642,8 @@ function coverHtml(b) {
       ${dotsHtml(b)}
     </div>
     <div class="sh-actions">
-      <button class="btn ghost" type="button" data-act="open-book" data-book="${b.id}">책 열기</button>
-      <button class="btn sh-read" type="button" data-act="read-go" data-resume="1" data-from="${b.id}">${hasBm() ? '이어서 펼치기' : '펼치기'}</button>
+      <button class="btn ghost" type="button" data-act="open-book" data-book="${b.id}">${ic('list')}목차</button>
+      <button class="btn sh-read" type="button" data-act="read-go" data-resume="1" data-from="${b.id}">${ic('read')}${hasBm() ? '이어 읽기' : '읽기'}</button>
     </div>
   </div>`;
 }
@@ -2598,7 +2654,7 @@ function browseHtml() {
     return `<section class="card empty" aria-labelledby="emT">${ic('shelf')}<h2 id="emT">아직 책장에 꽂힌 책이 없어요</h2>
       <p class="soft" style="margin:0">이번 주 과가 배포되면 이곳에 책이 놓여요.</p></section>`;
   }
-  return `<h2 class="xlb" style="margin-top:14px">교재 목록</h2><div class="sh-books">${pastBooks().map(shelfBookHtml).join('')}</div>`;
+  return `<h2 class="xlb" style="margin:32px 0 12px">교재 목록</h2><div class="sh-books">${pastBooks().map(shelfBookHtml).join('')}</div>`;
 }
 // 검색(제목·본문): 책 제목과 과 제목·장절·풀이를 훑는다. 내 기록은 훑지 않는다
 function searchHtml(q) {
@@ -2622,7 +2678,8 @@ function runShelfSearch() {
 // 책 안: 과 목차. 이번 주 과만 펼치기로 이어지고(책갈피가 있으면 그 질문으로), 어디서 왔는지(data-from)를 알려서 펼치기의 돌아가는 길이 이 책 목차로 이어지게 한다
 function lessonLi(b, l) {
   const live = `${b.id}:${l.no}` === lessonOf(weekSel()).id, mark = live && hasBm();
-  const head = `<span class="les-txt"><span class="les-date">${esc(l.date)}</span><span class="les-t">제${l.no}과 · ${esc(l.name)}</span><span class="les-ref">${esc(l.ref)}</span>${mark ? `<span class="bm">${mkIc()}책갈피</span>` : ''}</span>${ic('fwd')}`;
+  const noCls = l.state === 'past' ? ' past' : l.state === 'now' ? ' now' : '';
+  const head = `<span class="les-no${noCls}" aria-hidden="true">${l.no}</span><span class="les-txt"><span class="les-date">${esc(l.date)}${l.state === 'now' ? ' <span class="les-now">이번 주</span>' : ''}</span><span class="les-t">제${l.no}과 · ${esc(l.name)}</span><span class="les-ref">${esc(l.ref)}</span>${mark ? `<span class="bm">${mkIc()}책갈피</span>` : ''}</span>${ic('fwd')}`;
   return `<li class="les${mark ? ' has-bm' : ''}" id="les-${b.id}-${l.no}">${live
     ? `<a class="les-head" href="#read" data-act="read-go" data-resume="1" data-from="${b.id}">${head}</a>`
     : `<button class="les-head" type="button" data-act="lesson-other">${head}</button>`}</li>`;
@@ -2637,18 +2694,20 @@ function lastPageHtml(b) {
     <ul class="ls">${items.map(l => `<li><p>${esc(l.mine)}</p><small>제${l.no}과 · ${esc(l.ref)}</small></li>`).join('')}</ul>
   </section>`;
 }
+// 책 안 머리(2026-11-10): 큰 표지와 책 정보, 지금 읽는 책이면 [읽기]. 머리 카드와 과 목차는 표지 색을 옅게 입어서 책마다 느낌이 다르다
 function bookPage(b) {
-  return `<div class="shelf-wrap">
+  const mine = b.id === myBookId();
+  return `<div class="shelf-wrap book-in" style="--cover-color:${coverHex(b)}">
     <a class="back-link" href="#shelf">${ic('back')}<span>책장</span></a>
     <p class="eyebrow top-eyebrow">${esc(b.kind)} · ${esc(b.period)}</p>
-    <div class="page-top"><h1>${esc(bTitle(b))}</h1></div>
-    ${b.id === myBookId() ? '<p class="fine">지금 읽는 책이에요</p>' : `<button class="btn ghost" type="button" data-act="book-pick" data-book="${b.id}">지금 읽는 책으로</button>`}
-    <section class="card today book-head" aria-label="책 소개">
-      <p class="book-l" style="margin-bottom:.7em">${mkIc()}<b>${esc(b.kind)}</b><span>${esc(b.period)}</span></p>
-      <div><span class="passage-chip">${esc(b.range)}</span></div>
-      ${b.closed ? '<p class="fine">교재를 닫아서 책장에 꽂혀 있어요.</p>' : ''}
+    <section class="card book-hero" aria-label="책 소개">
+      <div class="bh-row">${bookCover(b, 'hero')}
+        <div class="bh-info"><h1 class="bh-t">${esc(bTitle(b))}</h1><span class="passage-chip bh-range">${esc(b.range)}</span>
+          ${mine ? '<span class="fine bh-mine">지금 읽는 책이에요</span>' : ''}${b.closed ? '<span class="fine bh-mine">교재를 닫아서 책장에 꽂혀 있어요.</span>' : ''}</div>
+      </div>
+      ${mine ? `<button class="btn bh-read" type="button" data-act="read-go" data-resume="1" data-from="${b.id}">${ic('read')}${hasBm() ? '이어 읽기' : '읽기'}</button>` : `<button class="btn ghost bh-read" type="button" data-act="book-pick" data-book="${b.id}">지금 읽는 책으로</button>`}
     </section>
-    <section class="card" aria-label="과 목차"><ol class="les-list">${tocLessons(b).map(l => lessonLi(b, l)).join('')}</ol></section>
+    <section class="card book-toc" aria-label="과 목차"><ol class="les-list">${tocLessons(b).map(l => lessonLi(b, l)).join('')}</ol></section>
     ${b.closed ? lastPageHtml(b) : ''}
   </div>`;
 }
@@ -2660,7 +2719,7 @@ function shelfView(arg) {
     <div class="sh-top"><h1>책장</h1>${D.noBooks ? '' : `<button class="icon-btn" type="button" aria-label="검색" aria-expanded="false" aria-controls="shelfSearch" data-act="shelf-search">${SEARCH_IC}</button>`}</div>
     ${D.noBooks ? browseHtml() : `
       <div class="search" id="shelfSearch" hidden>${ic('search')}<input class="field" id="shelfQ" type="search" placeholder="제목이나 본문으로 찾기" aria-label="책장 검색" autocomplete="off"></div><div id="shelfResults" hidden></div>
-      <h2 class="xlb" style="margin-top:14px">지금 읽는 책</h2>
+      <h2 class="xlb" style="margin:20px 0 12px">지금 읽는 책</h2>
       ${nowBooks().map(coverHtml).join('')}
       <div id="shelfBrowse">${browseHtml()}</div>`}
   </div>`;
@@ -2873,6 +2932,7 @@ function route(moved) {
   $('#topnav').hidden = start; $('#tabs').hidden = start;
   document.body.dataset.view = v;
   $('#view').innerHTML = start ? startView() : v === 'week' ? weekView() : v === 'wq' ? wqView() : v === 'read' ? readView() : v === 'share' ? shareView() : v === 'shelf' ? shelfView(arg) : v === 'record' ? recordView(arg) : v === 'records' ? recordsView() : v === 'gallery' ? galleryView() : v === 'more' ? moreView() : v === 'admin' ? adminView() : v === 'about' ? aboutView() : v === 'feedback' ? feedbackView() : v === 'prep' ? prepView() : v === 'prepprint' ? prepPrintView() : v === 'church' ? churchView() : v === 'rooms' ? roomsView() : v === 'manage' ? manageView(arg) : placeView(v);
+  $$('#view img').forEach(im => keepImg(im.getAttribute('src')));
   const tab = start ? '' : v === 'week' ? 'week' : PLACE[v][1];
   $$('[data-tab]').forEach(a => { const on = a.dataset.tab === tab; a.classList.toggle('on', on); on ? a.setAttribute('aria-current', 'page') : a.removeAttribute('aria-current'); });
   document.title = start ? '디다코' : (v === 'shelf' && arg ? bTitle(bookById(arg)) : v === 'record' && arg ? '기록 상세' : v === 'week' ? '이번 주' : PLACE[v][0]) + ' · 디다코';

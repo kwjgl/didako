@@ -4,7 +4,7 @@
  * 아래 CACHE 번호는 남겨 둔 사본의 이름표다. 번호를 올리면 예전 사본을 지운다(AGENTS.md 서비스워커 캐시).
  * 데모에는 서버가 없다. 같은 주소의 파일만 다루고, 글꼴 같은 다른 주소의 요청은 건드리지 않는다.
  */
-const CACHE = 'didako-v61';
+const CACHE = 'didako-v63';
 const SHELL = ['./', 'index.html', 'design-styles.css', 'covers.js', 'demo-data.js', 'book-gospel.js', 'manifest.webmanifest', 'icons/icon-192.png', 'icons/icon-512.png', 'icons/icon-maskable-512.png', 'icons/apple-touch-icon.png', 'icons/favicon-32.png'];
 
 self.addEventListener('install', e => {
@@ -17,6 +17,16 @@ self.addEventListener('activate', e => {
 self.addEventListener('fetch', e => {
   const req = e.request, url = new URL(req.url);
   if (req.method !== 'GET' || url.origin !== location.origin) return;
+  // 그림(표지, 이번 주의 질문 그림 등)은 남겨 둔 사본을 바로 보이고, 새 그림은 뒤에서 받아 바꿔 둔다.
+  //  화면을 다시 그릴 때마다 서버에 물어보느라 그림이 비었다가 들어오는(반짝이는) 것을 막는다(2026-11-10). note/ 그림도 같은 주소라 함께 다룬다
+  if (req.destination === 'image') {
+    e.respondWith(caches.open(CACHE).then(c => c.match(req, { ignoreSearch: true }).then(hit => {
+      const net = fetch(req).then(res => { if (res.ok) c.put(req, res.clone()); return res; });
+      if (hit) { e.waitUntil(net.catch(() => {})); return hit; }
+      return net;
+    })));
+    return;
+  }
   if (!url.pathname.startsWith(new URL('./', location).pathname)) return;
   // GitHub Pages가 파일을 10분 동안 그대로 쓰라고 해도, 서버에 바뀌었는지 늘 물어본다(바뀌지 않았으면 확인만 하고 끝난다).
   //  화면 주소 요청(navigate)에는 옵션을 붙일 수 없어서 주소로 새 요청을 만든다 (코이데와 같다)
