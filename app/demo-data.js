@@ -185,8 +185,8 @@ window.DIDAKO_DEMO = {
     ],
     nextYear: 2027
   },
-  // 한 주 함께 묵상하기(이번 주 탭). 질문·말씀·고백은 note/questions-data.js의 weekly 1·2주와 같다.
-  // 월~금 말씀과 작은 물음은 AI 초안이고 교역자 확인 전이다(철학 ⑥·⑫). 성경 원문은 싣지 않고 장절과 대한성서공회 링크만 둔다
+  // 이번 주의 질문(이번 주 탭). 질문·말씀·고백은 note/questions-data.js의 weekly 1·2주와 같다.
+  // 월~금 말씀과 말씀에서 찾아보기 물음은 AI 초안이고 교역자 확인 전이다(철학 ⑥·⑫). 성경 원문은 싣지 않고 장절과 대한성서공회 링크만 둔다
   weekWalk: [
   {
     "n": 1,
@@ -199,6 +199,7 @@ window.DIDAKO_DEMO = {
     ],
     "confess": "살아서도 죽어서도 나는 내 것이 아니라, 나를 값 주고 사 가신 예수님의 것이라고 교회는 고백해 왔어요. 그래서 어떤 일을 만나도 하나님이 아버지로서 나를 지켜 주신다는 것이 위로예요. 그 위로는 내가 잘해서가 아니라 예수님이 이미 이루신 일에서 와요.",
     "short": "살아서도 죽어서도 나는 내 것이 아니라 예수님의 것이에요",
+    "base": "하이델베르크 1주일(1~2문) · 소요리문답 1문",
     "img": "../note/img/w/weekly-01.webp",
     "alt": "위로 주의 상징 정물: 의자에 개어 둔 따뜻한 담요, 곁에 켜진 등잔",
     "days": [
@@ -206,13 +207,13 @@ window.DIDAKO_DEMO = {
         "d": "월",
         "ref": "로마서 14장 7~9절",
         "url": "https://www.bskorea.or.kr/bible/korbibReadpage.php?version=GAE&book=rom&chap=14&sec=7",
-        "ask": "나는 누구의 것이라고 여기며 오늘을 시작하나요?"
+        "ask": "우리가 살아도 죽어도 누구의 것이라고 하나요?"
       },
       {
         "d": "화",
         "ref": "고린도전서 6장 19~20절",
         "url": "https://www.bskorea.or.kr/bible/korbibReadpage.php?version=GAE&book=1co&chap=6&sec=19",
-        "ask": "값 주고 사신 몸이라는 말이 오늘 내 하루에 무엇을 말해 주나요?"
+        "ask": "우리 몸을 무엇이라고 부르나요?"
       },
       {
         "d": "수",
@@ -224,13 +225,13 @@ window.DIDAKO_DEMO = {
         "d": "목",
         "ref": "요한복음 10장 27~29절",
         "url": "https://www.bskorea.or.kr/bible/korbibReadpage.php?version=GAE&book=jhn&chap=10&sec=27",
-        "ask": "아무도 빼앗을 수 없다는 약속이 오늘 어디에 필요한가요?"
+        "ask": "아무도 빼앗을 수 없는 까닭을 무엇이라고 말하나요?"
       },
       {
         "d": "금",
         "ref": "마태복음 10장 29~31절",
         "url": "https://www.bskorea.or.kr/bible/korbibReadpage.php?version=GAE&book=mat&chap=10&sec=29",
-        "ask": "참새 한 마리도 아시는 분이 오늘 나의 무엇을 아실까요?"
+        "ask": "참새와 머리털 이야기로 예수님은 무엇을 말씀하시나요?"
       }
     ]
   },
@@ -245,6 +246,7 @@ window.DIDAKO_DEMO = {
     ],
     "confess": "하나님의 계명은 하나님을 온 마음으로 사랑하고 이웃을 내 몸처럼 사랑하라는 한 줄로 모인다고 교회는 고백해 왔어요. 그런데 이 말씀 앞에 서 보면 누구도 이것을 온전히 지키지 못하고, 마음 깊은 곳에서는 하나님과 이웃보다 나를 앞세우는 자신을 보게 된다고요. 그래서 계명은 내가 얼마나 도움이 필요한 사람인지 보여 주는 거울이라고 해요.",
     "short": "계명은 내게 도움이 필요하다는 걸 보여 줘요",
+    "base": "하이델베르크 2주일(3~5문) · 소요리문답 42문",
     "img": "../note/img/w/weekly-02.webp",
     "alt": "사랑의 어려움 주의 상징 정물: 창빛을 비추는 작은 손거울",
     "days": [
@@ -252,31 +254,31 @@ window.DIDAKO_DEMO = {
         "d": "월",
         "ref": "마태복음 22장 37~40절",
         "url": "https://www.bskorea.or.kr/bible/korbibReadpage.php?version=GAE&book=mat&chap=22&sec=37",
-        "ask": "두 계명 가운데 오늘 나에게 더 어렵게 느껴지는 쪽은 어디인가요?"
+        "ask": "율법과 선지자가 무엇에 달려 있다고 하나요?"
       },
       {
         "d": "화",
         "ref": "신명기 6장 4~5절",
         "url": "https://www.bskorea.or.kr/bible/korbibReadpage.php?version=GAE&book=deu&chap=6&sec=4",
-        "ask": "마음과 뜻과 힘을 다한다는 건 오늘 하루에서 어떤 모습일까요?"
+        "ask": "무엇을 다하여 하나님을 사랑하라고 하나요?"
       },
       {
         "d": "수",
         "ref": "레위기 19장 17~18절",
         "url": "https://www.bskorea.or.kr/bible/korbibReadpage.php?version=GAE&book=lev&chap=19&sec=17",
-        "ask": "내 몸처럼 사랑하기 어려운 이웃이 떠오르나요?"
+        "ask": "이웃 사랑을 말하기 바로 앞에 무엇을 하지 말라고 하나요?"
       },
       {
         "d": "목",
         "ref": "로마서 3장 10~12절",
         "url": "https://www.bskorea.or.kr/bible/korbibReadpage.php?version=GAE&book=rom&chap=3&sec=10",
-        "ask": "이 말씀이 나를 꾸짖는 말로 들리나요, 나를 비추는 거울로 보이나요?"
+        "ask": "선을 행하는 사람이 얼마나 있다고 하나요?"
       },
       {
         "d": "금",
         "ref": "로마서 7장 18~25절",
         "url": "https://www.bskorea.or.kr/bible/korbibReadpage.php?version=GAE&book=rom&chap=7&sec=18",
-        "ask": "원하는 선을 하지 못하는 마음을 바울은 어디로 가져가나요?"
+        "ask": "괴로워하던 바울은 마지막에 누구에게 감사하나요?"
       }
     ]
   }
