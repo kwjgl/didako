@@ -859,6 +859,60 @@ button.gallery-cell { display: block; width: 100%; padding: 0; cursor: pointer; 
 .guide-dots i { width: 9px; height: 9px; border: 1px solid var(--accent); border-radius: 50%; }
 .guide-dots i.on { background: var(--accent); }
 .guide-nav { display: grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap: 8px; }
+/* ── 인쇄(C-02): A4 종이와 쪽 나누기. 시안 manage.html·prep.html의 인쇄용을 옮겼다. 종이 안 색은 화면 색 테마와 상관없이 흰 종이 ── */
+.print-bar { display: flex; flex-direction: column; align-items: flex-start; gap: 6px; margin: 12px 0 14px; }
+.print-bar .btn { align-self: flex-start; }
+.print-bar .pb-btns { display: flex; flex-wrap: wrap; gap: 8px; }
+.paper { --accent: #2B6A62; --accent-mid: #8DBDB5; --accent-soft: #DCEBE7; --ink-2: #5B6965; --s1: #2B6A62; --s2: #8DBDB5; --s3: #5B6965; --cord-bg: #FFFFFF; position: relative; }
+.paper .mk { width: 1.5em; height: 1.5em; flex: none; }
+.pp-pg { position: absolute; left: 0; right: 0; bottom: calc(var(--mm) * 8); text-align: center; font-size: .8em; color: #5B6965; letter-spacing: .04em; }
+.paper-wrap { container-type: inline-size; width: 100%; max-width: 640px; margin: 0 auto 14px; }
+.paper { --mm: calc(100cqw / 210); width: 100%; aspect-ratio: 210 / 297; overflow: hidden; background: #FFFFFF; color: #1B2523; border: 1px solid #DDE4E0; box-shadow: 0 12px 28px -14px var(--shadow); padding: calc(var(--mm) * 16) calc(var(--mm) * 18); font-family: var(--f-body); font-size: calc(var(--mm) * 3.88); line-height: 1.6; box-sizing: border-box; }
+.paper p { margin: 0; }
+.paper h3 { font-family: var(--f-display); font-size: 1.7em; line-height: 1.3; margin: .6em 0 .1em; word-break: keep-all; }
+.pp-ref { font-family: var(--f-display); font-weight: 700; }
+.pp-intro { margin-top: .6em !important; color: #5B6965; }
+.pp-text-h { margin-top: 1.4em !important; font-size: .84em; color: #5B6965; border-top: 1px solid #DDE4E0; padding-top: .8em; }
+.pp-text { margin-top: .3em !important; font-family: var(--f-display); font-size: calc(var(--mm) * 3.88); line-height: 1.85; white-space: pre-wrap; word-break: keep-all; }
+.pp-text.fs-s { font-size: calc(var(--mm) * 3.35); }
+.pp-text.fs-l { font-size: calc(var(--mm) * 4.41); }
+.pp-blk.pp-more { margin-top: .7em; }
+.pp-measure { position: fixed; left: -9999px; top: 0; width: 210mm; max-width: none; margin: 0; container-type: normal; visibility: hidden; pointer-events: none; }
+.pp-measure .paper { --mm: 1mm; width: 210mm; height: auto; aspect-ratio: auto; overflow: visible; }
+.paper h4 { font-family: var(--f-display); font-size: 1.1em; margin: 1em 0 .3em; padding-bottom: .15em; border-bottom: calc(var(--mm) * .25) solid var(--accent); }
+.pp-qs { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: .7em; }
+.pp-qs li { display: grid; grid-template-columns: 1.6em 1fr; column-gap: .2em; break-inside: avoid; }
+.pp-n { font-weight: 600; }
+.pp-q { font-family: var(--f-display); font-weight: 700; word-break: keep-all; }
+.pp-help { font-size: .86em; color: #5B6965; margin-top: .2em !important; word-break: keep-all; }
+.pp-lines { grid-column: 2; height: 2.8em; margin-top: .2em; background-image: repeating-linear-gradient(180deg, transparent 0 1.4em, #B9C4BF 1.4em calc(1.4em + 1px)); }
+.pp-wrap p { margin-top: .3em; white-space: pre-wrap; word-break: keep-all; }
+.pp-toc { list-style: none; margin: .8em 0 0; padding: 0; }
+.pp-toc li { display: flex; justify-content: space-between; gap: 1em; padding: .3em 0; border-bottom: 1px solid #DDE4E0; }
+.pp-toc span:last-child { color: #5B6965; font-size: .9em; white-space: nowrap; }
+.paper-cap { text-align: center; font-size: .82em; color: var(--ink-2); margin: 0 0 12px; }
+.pp-lead { margin-top: .5em !important; padding: .3em .7em; background: #ECE7F7; border-left: calc(var(--mm) * 1) solid #62519E; font-size: .86em; line-height: 1.55; word-break: keep-all; }
+.pp-lead b { color: #62519E; margin-right: .7em; }
+.pp-qs.pp-tri li { grid-template-columns: 1fr; }
+.pp-who { display: inline-block; margin-right: .6em; padding: 0 .6em; border-radius: 999px; background: #DCEBE7; color: #2B6A62; font-family: var(--f-body); font-size: .82em; font-weight: 600; }
+.pp-lines.wide { height: 5.6em; }
+.pp-qs.pp-tri .pp-lines { grid-column: 1; }
+.pp-memo { margin-top: .5em; }
+.pp-lab { font-size: .8em; font-weight: 600; color: #5B6965; }
+.pp-memotext { margin-top: .15em !important; padding-left: .7em; border-left: calc(var(--mm) * .5) solid #B9C4BF; white-space: pre-wrap; word-break: keep-all; }
+.pp-memo .pp-lines { height: 4.2em; margin-top: .1em; }
+.pp-qs li > .pp-memo { grid-column: 2; }
+.pp-qs.pp-tri li > .pp-memo { grid-column: 1; }
+@page { size: A4; margin: 0; }
+@media print {
+  body:has(.print-area) { background: #fff !important; overflow: visible; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  body:has(.print-area) :is(#topbar, #topnav, #tabs, #toast, #pop, #settings, #opening, #stage) { display: none !important; }
+  body:has(.print-area) #view { max-width: none; padding: 0; margin: 0; }
+  body:has(.print-area) #view > :not(.print-area) { display: none !important; }
+  .print-area .paper-wrap { max-width: none; width: 210mm; margin: 0; container-type: normal; break-after: page; page-break-after: always; }
+  .print-area .paper-wrap:last-child { break-after: auto; page-break-after: auto; }
+  .print-area .paper { --mm: 1mm; width: 210mm; height: 297mm; aspect-ratio: auto; border: 0; box-shadow: none; }
+}
 </style>
 </head>
 <body>
@@ -1101,14 +1155,14 @@ function closeMenu() { const m = $('#settings'); m.hidden = true; $('#gearBtn').
 // 이름표와 어느 탭이 켜지는지는 여기에 모아 둔다. 아직 만들지 않은 화면은 차분한 안내 한 장으로 연다(막다른 길이 없게 이번 주로 가는 링크를 둔다)
 const PLACE = {
   wq: ['이번 주의 질문', 'week'], read: ['펼치기', 'week'], share: ['나눔하기', 'share'], shelf: ['책장', 'shelf'], record: ['내 기록', 'record'], records: ['모든 기록', 'record'], gallery: ['올해의 그림', 'record'], rooms: ['사랑방 전체 보기', 'more'], more: ['더보기', 'more'],
-  church: ['우리 사랑방', 'more'], prep: ['진행 준비', 'share'], manage: ['교재 관리', 'more'], admin: ['관리', 'more'], about: ['디다코 소개', 'more'], feedback: ['의견 보내기', 'more']
+  church: ['우리 사랑방', 'more'], prep: ['진행 준비', 'share'], prepprint: ['리더용 인쇄', 'share'], manage: ['교재 관리', 'more'], admin: ['관리', 'more'], about: ['디다코 소개', 'more'], feedback: ['의견 보내기', 'more']
 };
 const VIEWS = ['start', 'week'].concat(Object.keys(PLACE));
 // 책 안(#book-교재)과 기록 상세(#rec-기록)는 책장·내 기록 안의 화면이다
 function parseHash() {
   const h = location.hash.replace(/^#/, ''), m = /^(book|rec)-([\w-]+)$/.exec(h);
   if (m) return { v: m[1] === 'book' ? 'shelf' : 'record', arg: m[2] };
-  if (/^(mb|me|mp)-([\w.-]+)$/.test(h)) return { v: 'manage', arg: h };
+  if (/^(mb|me|mp|mx|mxb)-([\w.-]+)$/.test(h)) return { v: 'manage', arg: h };
   return { v: VIEWS.includes(h) ? h : null, arg: '' };
 }
 const hashFor = (v, arg) => v === 'manage' && arg ? '#' + arg : '#' + (arg ? (v === 'shelf' ? 'book-' : 'rec-') + arg : v);
@@ -1375,10 +1429,12 @@ const mgCurrent = () => { const a = parseHash().arg; return a && a.startsWith('m
 function manageView(arg) {
   if (!canManage()) return `<div class="page-top"><h1>교재 관리</h1></div><section class="card calm"><p class="calm-t">목사님과 관리자가 여는 화면이에요</p><p class="soft" style="margin:0">데모 설정에서 역할을 목사님이나 관리자로 바꿔 보세요.</p><a class="btn ghost" href="#more">더보기로 돌아가기</a></section>`;
   if (arg && arg.startsWith('mb-')) { const b = mgBook(arg.slice(3)); if (b) return mgBookView(b); }
-  const m = /^(me|mp)-([\w-]+)\.(\d+)$/.exec(arg || '');
+  if (arg && arg.startsWith('mxb-')) { const b = mgBook(arg.slice(4)); if (b) return mgBookPrintView(b); }
+  const m = /^(me|mp|mx)-([\w-]+)\.(\d+)$/.exec(arg || '');
   if (m) {
     const b = mgBook(m[2]), L = b && b.lessons.find(l => l.no === Number(m[3]));
     if (L && m[1] === 'me') return mgEditView(b, L);
+    if (L && m[1] === 'mx') return mgPrintView(b, L);
     if (L) return mgPublishView(b, L);
   }
   return mgBooksView();
@@ -1419,8 +1475,256 @@ function mgPublishView(b, L) {
       <div class="set-btns">${button('리더 ' + count + '명에게 배포', 'leader', false, st !== 'draft')}${button(esc(target) + ' 회원에게 배포', 'all', st === 'draft', st !== 'leader')}</div>
       ${st === 'draft' ? `<p class="hint">회원에게는 리더에게 먼저 배포한 뒤에 열 수 있어요.</p><button class="quiet-link" type="button" data-act="mg-pub" data-v="both"${disabled ? ' disabled' : ''}>한 번에 둘 다</button>` : ''}
     </section>
-    <div class="gc"><button class="gr" type="button" data-act="later"><span class="gt"><b>인쇄용 보기 · PDF·Word로 내려받기</b></span><span class="ch" aria-hidden="true">›</span></button></div>
+    <div class="gc"><a class="gr" href="#mx-${b.id}.${L.no}"><span class="gt"><b>인쇄용 보기 · PDF·Word로 내려받기</b></span><span class="ch" aria-hidden="true">›</span></a></div>
     ${st !== 'draft' ? '<div class="set-btns"><button class="btn ghost" type="button" data-act="mg-unpub">배포 중단</button></div><p class="hint">회원 기기의 기록은 그대로예요.</p>' : ''}`;
+}
+// ── 인쇄(C-02): A4 종이와 쪽 나누기. 시안 manage.html의 인쇄용(ppHead·ppBlocks·paginate·paperPages)을 앱 자료에 맞게 옮겼다 ──
+// 종이 위아래 여백 16mm씩, 2mm는 넉넉하게 남긴다. 교재 관리의 인쇄에는 회원의 개인 기록을 넣지 않는다
+const PAGE_AV = 297 - 16 * 2 - 2;
+const ppPg = n => `<span class="pp-pg">${n}</span>`;
+const ppHas = v => !!String(v || '').trim();
+// 인쇄 자료를 한 모양으로 맞춘다(교재 관리는 화면에서만 기억하는 mg() 자료)
+function ppSource(b, L) {
+  const g = mgGuide(b, L);
+  return { book: b.title, no: L.no, name: L.name, ref: L.ref, intro: L.intro, useText: L.useText, text: L.text, fs: L.fs || 'm', wrap: L.wrap, guide: g.guide, stages: g.stages, triple: g.triple || [] };
+}
+const ppBodyOn = src => !!src.useText && ppHas(src.text);
+const ppSpace = o => (o.space === 'none' ? '' : `<div class="pp-lines${o.space === 'wide' ? ' wide' : ''}"></div>`);
+// 리더용 인쇄: 답변 공간 대신 내 진행 메모(메모가 없으면 빈 줄). key는 나눔하기 내 메모와 같다
+const ppUnder = (o, key) => { if (!o.memo) return ppSpace(o); const m = String(o.memo(key) || '').trim(); return `<div class="pp-memo"><span class="pp-lab">내 진행 메모</span>${m ? `<p class="pp-memotext">${esc(m)}</p>` : '<div class="pp-lines"></div>'}</div>`; };
+function ppHeadHtml(src, o) {
+  return `<h3>제${src.no}과${ppHas(src.name) ? ' ' + esc(src.name) : ''}</h3>
+    ${ppHas(src.ref) ? `<p class="pp-ref">${esc(src.ref)}</p>` : ''}
+    ${ppBodyOn(src) ? `<p class="pp-text-h">성경 본문</p><p class="pp-text fs-${['s', 'm', 'l'].includes(src.fs) ? src.fs : 'm'}">${esc(src.text)}</p>` : ''}
+    ${ppHas(src.intro) ? `<p class="pp-intro">${esc(src.intro)}</p>` : ''}
+    ${o.leader && ppHas(src.guide) ? `<p class="pp-lead"><b>진행 안내</b>${esc(src.guide)}</p>` : ''}`;
+}
+// 질문 조각: 단계 이름은 그 단계 첫 질문과 한 덩어리로 묶어 쪽 맨 아래에 홀로 남지 않게 한다. 글이 빈 질문과 질문이 없는 단계는 뺀다
+// o.memo(key → 글)는 리더용 인쇄(D-11)에서 쓴다. key는 나눔하기 내 메모와 같은 "단계 번호-질문 번호"(빈 질문을 빼기 전 자리)
+function ppBlocksHtml(src, o) {
+  const blocks = [];
+  src.stages.forEach((st, si) => {
+    const qs = st.qs.map((q, qi) => ({ q, key: si + '-' + qi })).filter(x => ppHas(x.q.t));
+    qs.forEach(({ q, key }, i) => {
+      const vs = Array.isArray(q.vs) ? q.vs.filter(ppHas) : [];
+      blocks.push(`<div class="pp-blk${i ? ' pp-more' : ''}">${i ? '' : `<h4>${esc(st.name || '단계')}</h4>`}<ul class="pp-qs"><li><span class="pp-n">${i + 1}.</span><div><p class="pp-q">${esc(q.t)}</p>${ppHas(q.sub) ? `<p class="pp-help">${esc(q.sub)}</p>` : ''}${vs.length ? `<p class="pp-help">관련 구절 ${vs.map(esc).join(' · ')}</p>` : ''}${o.leader && ppHas(q.lead) ? `<p class="pp-lead"><b>해설</b>${esc(q.lead)}</p>` : ''}</div>${ppUnder(o, key)}</li></ul></div>`);
+    });
+  });
+  if (blocks.length) src.triple.forEach((t, i) => {
+    blocks.push(`<div class="pp-blk${i ? ' pp-more' : ''}">${i ? '' : '<h4>깊이 묵상하기</h4>'}<ul class="pp-qs pp-tri"><li><div><p class="pp-q"><span class="pp-who">${esc(t.who)}</span>${esc(t.t)}</p></div>${ppUnder(o, t.id)}</li></ul></div>`);
+  });
+  if (blocks.length && ppHas(src.wrap)) blocks.push(`<div class="pp-blk"><h4>마무리 적용·기도 안내</h4><div class="pp-wrap"><p>${esc(src.wrap)}</p></div></div>`);
+  if (!blocks.length) blocks.push('<div class="pp-blk"><p class="pp-intro">질문을 쓰면 여기에 이렇게 찍혀요.</p></div>');
+  return blocks;
+}
+// 보이지 않는 종이에 그려서 잰다
+function ppMeasure(inner, fn) {
+  const w = document.createElement('div'); w.className = 'paper-wrap pp-measure';
+  w.innerHTML = `<article class="paper">${inner}</article>`;
+  document.body.appendChild(w);
+  try { return fn(w.firstElementChild, w.getBoundingClientRect().width / 210); } finally { w.remove(); }
+}
+// 질문 조각을 쪽마다 나눈다: 쪽마다 조각 번호 묶음을 돌려준다
+function ppPaginate(inner, blocks, firstPageOpen) {
+  return ppMeasure(inner + blocks.join(''), (art, mm) => {
+    const top0 = art.getBoundingClientRect().top + 16 * mm;
+    const els = Array.from(art.querySelectorAll(':scope > .pp-blk')), pages = [[]];
+    let lim = top0 + PAGE_AV * mm;
+    els.forEach((el, i) => {
+      const r = el.getBoundingClientRect();
+      if (r.bottom > lim && (pages[pages.length - 1].length || firstPageOpen)) { pages.push([]); lim = r.top + PAGE_AV * mm; firstPageOpen = false; }
+      pages[pages.length - 1].push(i);
+    });
+    return pages;
+  });
+}
+// 본문을 넣었으면 1쪽은 머리만, 2쪽부터 질문. 넣지 않았으면 머리 바로 아래부터 질문을 잇고 넘칠 때만 다음 쪽
+function ppPagesHtml(src, o, n0) {
+  n0 = n0 || 1;
+  const on = ppBodyOn(src), blocks = ppBlocksHtml(src, o), head = ppHeadHtml(src, o), name = `제${src.no}과 ${src.name || ''}`.trim();
+  const groups = ppPaginate(on ? '' : head, blocks, !on);
+  let n = n0, html = '';
+  const page = inner => { const h = `<div class="paper-wrap"><article class="paper" aria-label="${esc(name)} 인쇄용 ${n - n0 + 1}쪽">${inner}${ppPg(n)}</article></div>`; n++; return h; };
+  if (on) html += page(head);
+  groups.forEach((g, gi) => { html += page((!on && gi === 0 ? head : '') + g.map(i => blocks[i]).join('')); });
+  return { html, count: n - n0 };
+}
+// 인쇄 단추: PDF는 기기의 인쇄 창을 연다(거기서 'PDF로 저장'). 인쇄할 때는 종이 쪽만 나간다
+const ppBar = wordAct => `<div class="print-bar"><div class="pb-btns"><button class="btn" type="button" data-act="pp-pdf">PDF로 내려받기</button><button class="btn ghost" type="button" data-act="${wordAct}">Word로 내려받기</button></div><p class="hint">A4 종이 크기로 미리 볼 수 있어요.</p></div>`;
+// 고르는 칸(대상·답변 공간)은 화면에서만 기억한다
+const PP = { leader: false, space: 'mid' };
+const ppOptsHtml = () => `<section class="card"><p class="opt-name">대상</p><div class="seg" style="--n:2">${[['0', '회원용'], ['1', '리더용']].map(([v, l]) => `<button type="button" data-act="pp-target" data-v="${v}" class="${PP.leader === (v === '1') ? 'on' : ''}" aria-pressed="${PP.leader === (v === '1')}">${l}</button>`).join('')}</div>
+    <p class="opt-name" style="margin-top:12px">답변 공간</p><div class="seg" style="--n:3">${[['none', '없음'], ['mid', '보통'], ['wide', '넓게']].map(([v, l]) => `<button type="button" data-act="pp-space" data-v="${v}" class="${PP.space === v ? 'on' : ''}" aria-pressed="${PP.space === v}">${l}</button>`).join('')}</div></section>`;
+// 과 하나의 인쇄용 보기(#mx-교재.과)
+function mgPrintView(b, L) {
+  return `<a class="back-link" href="#mp-${b.id}.${L.no}">${ic('back')}<span>배포</span></a>
+    <p class="eyebrow top-eyebrow">${esc(b.title)} · 제${L.no}과${L.name ? ' ' + esc(L.name) : ''}</p><div class="page-top"><h1>인쇄용 보기</h1></div>
+    ${ppOptsHtml()}${ppBar('pp-word')}
+    <div class="print-area" id="ppArea"></div>`;
+}
+// 교재 전체 인쇄용 보기(#mxb-교재): 1쪽 차례, 2쪽부터 과마다 새 쪽
+function mgBookPrintView(b) {
+  return `<a class="back-link" href="#mb-${b.id}">${ic('back')}<span>${esc(b.title)}</span></a>
+    <p class="eyebrow top-eyebrow">${esc(b.kind)} · ${esc(b.period)}</p><div class="page-top"><h1>인쇄용 보기</h1></div>
+    ${ppOptsHtml()}${ppBar('pp-word-book')}
+    <div class="print-area" id="ppArea"></div>`;
+}
+function ppTocHtml(b) {
+  return `<div class="paper-wrap"><article class="paper" aria-label="${esc(b.title)} 차례"><h3 style="display:flex;align-items:center;gap:.4em">${mkIc()}${esc(b.title)}</h3><p class="pp-ref">${esc(b.target || DATA.church.dept)}</p>
+    <h4>차례</h4><ul class="pp-toc">${b.lessons.map(L => `<li><span>제${L.no}과${L.name ? ' ' + esc(L.name) : ''}</span><span>${esc(L.ref || L.date || '')}</span></li>`).join('') || '<li><span>아직 과가 없어요</span><span></span></li>'}</ul>${ppPg(1)}</article></div>`;
+}
+// 진행 준비의 리더용 인쇄(#prepprint): 이번 주 과에 해설과 내 진행 메모(이 기기의 내 것만)
+function prepSource() {
+  const L = thisLesson();
+  return { book: L.book, no: L.no, name: L.title.replace(/^제\d+과 · /, ''), ref: L.ref, intro: L.intro, useText: false, text: '', fs: 'm', wrap: '', guide: G.guide, stages: G.stages, triple: G.triple || [] };
+}
+const prepPrintOpts = () => ({ leader: true, space: 'mid', memo: key => readMemo()[key] || '' });
+function prepPrintView() {
+  if (!isLead()) return `<div class="page-top"><h1>리더용 인쇄</h1></div>
+    <section class="card calm"><p class="calm-t">리더와 목사님이 여는 화면이에요</p>
+      <p class="soft" style="margin:0">데모 설정에서 역할을 리더나 목사님으로 바꿔 보세요.</p>
+      <a class="btn ghost" href="#share">나눔하기로 돌아가기</a></section>`;
+  G = readyGuide(); if (!G) return noGuideView('리더용 인쇄');
+  return `<a class="back-link" href="#prep">${ic('back')}<span>진행 준비</span></a>
+    <p class="eyebrow top-eyebrow">${esc(groupName())} · 이번 주</p><div class="page-top"><h1>리더용 인쇄</h1></div>
+    ${ppBar('pp-word-prep')}<p class="hint">${ic('lock')} 내 진행 메모는 이 기기에 있는 내 것만 들어가요.</p>
+    <div class="print-area" id="ppArea"></div>`;
+}
+// 종이는 화면에 붙은 뒤에 재야 해서 그린 다음에 채운다
+function ppFill() {
+  const area = $('#ppArea'); if (!area) return;
+  if (currentView() === 'prepprint') { if (G) area.innerHTML = ppPagesHtml(prepSource(), prepPrintOpts()).html; return; }
+  const arg = parseHash().arg || '', o = { leader: PP.leader, space: PP.space, memo: null };
+  if (arg.startsWith('mxb-')) {
+    const b = mgBook(arg.slice(4)); if (!b) return;
+    let n = 2; area.innerHTML = ppTocHtml(b) + b.lessons.map(L => { const r = ppPagesHtml(ppSource(b, L), o, n); n += r.count; return r.html; }).join('');
+    return;
+  }
+  const m = /^mx-([\w-]+)\.(\d+)$/.exec(arg), b = m && mgBook(m[1]), L = b && b.lessons.find(l => l.no === Number(m[2]));
+  if (L) area.innerHTML = ppPagesHtml(ppSource(b, L), o).html;
+}
+// ── Word(.docx) 내려받기(D-10): 시안 manage.html처럼 라이브러리 없이 압축 없는 ZIP을 직접 만든다. 종이와 같은 순서·같은 쪽 나누기 규칙이다 ──
+const CRC_T = (() => { const t = []; for (let n = 0; n < 256; n++) { let c = n; for (let k = 0; k < 8; k++) c = c & 1 ? 0xEDB88320 ^ (c >>> 1) : c >>> 1; t[n] = c >>> 0; } return t; })();
+const crc32 = u => { let c = 0xFFFFFFFF; for (let i = 0; i < u.length; i++) c = CRC_T[(c ^ u[i]) & 255] ^ (c >>> 8); return (c ^ 0xFFFFFFFF) >>> 0; };
+function zipStore(files) {
+  const enc = new TextEncoder(), out = [], cen = [];
+  const u16 = n => [n & 255, (n >> 8) & 255], u32 = n => [n & 255, (n >>> 8) & 255, (n >>> 16) & 255, (n >>> 24) & 255];
+  let off = 0;
+  files.forEach(([name, text]) => {
+    const nm = enc.encode(name), data = enc.encode(text), crc = crc32(data);
+    const common = [...u16(0x0800), ...u16(0), ...u16(0), ...u16(33), ...u32(crc), ...u32(data.length), ...u32(data.length), ...u16(nm.length), ...u16(0)];
+    out.push(new Uint8Array([0x50, 0x4b, 3, 4, ...u16(20), ...common]), nm, data);
+    cen.push(new Uint8Array([0x50, 0x4b, 1, 2, ...u16(20), ...u16(20), ...common, ...u16(0), ...u16(0), ...u16(0), ...u32(0), ...u32(off)]), nm);
+    off += 30 + nm.length + data.length;
+  });
+  const cs = cen.reduce((a, x) => a + x.length, 0);
+  const end = new Uint8Array([0x50, 0x4b, 5, 6, ...u16(0), ...u16(0), ...u16(files.length), ...u16(files.length), ...u32(cs), ...u32(off), ...u16(0)]);
+  return new Blob([...out, ...cen, end], { type: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' });
+}
+const W_NS = 'xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships"';
+const wRun = (t, o) => {
+  o = o || {};
+  const pr = (o.f ? `<w:rFonts w:ascii="${o.f}" w:hAnsi="${o.f}" w:eastAsia="${o.f}"/>` : '') + (o.b ? '<w:b/>' : '') + (o.c ? `<w:color w:val="${o.c}"/>` : '') + (o.sz ? `<w:sz w:val="${o.sz}"/><w:szCs w:val="${o.sz}"/>` : '');
+  return `<w:r><w:rPr>${pr}</w:rPr>${String(t).split('\n').map(x => `<w:t xml:space="preserve">${esc(x)}</w:t>`).join('<w:br/>')}</w:r>`;
+};
+const wTab = '<w:r><w:tab/></w:r>';
+const wBdr = (side, color, sz) => `<w:${side} w:val="single" w:sz="${sz}" w:space="2" w:color="${color}"/>`;
+function wPara(runs, o) {
+  o = o || {};
+  const pr = (o.keep ? '<w:keepNext/>' : '') + (o.brk ? '<w:pageBreakBefore/>' : '')
+    + (o.top || o.bot ? `<w:pBdr>${o.top ? wBdr('top', o.top[0], o.top[1]) : ''}${o.bot ? wBdr('bottom', o.bot[0], o.bot[1]) : ''}</w:pBdr>` : '')
+    + (o.tab ? '<w:tabs><w:tab w:val="right" w:pos="9866"/></w:tabs>' : '')
+    + `<w:spacing w:before="${o.before || 0}" w:after="${o.after || 0}" w:line="${o.line || 320}" w:lineRule="auto"/>`
+    + (o.left ? `<w:ind w:left="${o.left}"${o.right ? ` w:right="${o.right}"` : ''}${o.hang ? ` w:hanging="${o.hang}"` : ''}/>` : '');
+  return `<w:p><w:pPr>${pr}</w:pPr>${runs}</w:p>`;
+}
+const W_SERIF = 'Batang', W_GRAY = '5B6965', W_ACC = '2B6A62', W_LEAD = '62519E';
+const W_FS = { s: 19, m: 22, l: 25 };
+// 답변 공간: 없음 0줄, 보통 2줄, 넓게 4줄. o.memo가 있으면(리더용 인쇄) 줄 대신 "내 진행 메모"
+function wordUnder(o, key) {
+  if (o.memo) {
+    const m = String(o.memo(key) || '').trim(), ps = [wPara(wRun('내 진행 메모', { b: true, c: W_GRAY, sz: 16 }), { left: 400, before: 60, keep: true })];
+    if (m) ps.push(wPara(wRun(m, { sz: 19 }), { left: 400, top: null }));
+    else for (let k = 0; k < 3; k++) ps.push(wPara('', { bot: ['B9C4BF', 4], left: 400, right: k * 8, line: 250, keep: k < 2 }));
+    return ps.join('');
+  }
+  const n = o.space === 'none' ? 0 : o.space === 'wide' ? 4 : 2, ps = [];
+  // 줄마다 오른쪽 여백을 조금씩 달리한다. 같으면 Word가 이어진 테두리를 한 줄로 합친다(시안과 같은 방법)
+  for (let k = 0; k < n; k++) ps.push(wPara('', { bot: ['B9C4BF', 4], left: 400, right: k * 8, line: 250, keep: k < n - 1 }));
+  return ps.join('');
+}
+function wordLessonXml(src, o, brk) {
+  const on = ppBodyOn(src), ps = [];
+  ps.push(wPara(wRun(`제${src.no}과${ppHas(src.name) ? ' ' + src.name : ''}`, { f: W_SERIF, b: true, sz: 52 }), { brk, before: 0, after: 80, line: 380 }));
+  if (ppHas(src.ref)) ps.push(wPara(wRun(src.ref, { f: W_SERIF, b: true, sz: 24 }), { after: 120 }));
+  if (on) {
+    ps.push(wPara(wRun('성경 본문', { sz: 18, c: W_GRAY }), { top: ['DDE4E0', 6], before: 360, after: 80 }));
+    ps.push(wPara(wRun(src.text, { f: W_SERIF, sz: W_FS[src.fs] || W_FS.m }), { line: 400 }));
+  }
+  if (ppHas(src.intro)) ps.push(wPara(wRun(src.intro, { c: W_GRAY, sz: 21 }), { before: 200 }));
+  if (o.leader && ppHas(src.guide)) ps.push(wPara(wRun('진행 안내  ', { b: true, c: W_LEAD, sz: 19 }) + wRun(src.guide, { c: W_LEAD, sz: 19 }), { before: 120 }));
+  let first = true;
+  src.stages.forEach((st, si) => {
+    const qs = st.qs.map((q, qi) => ({ q, key: si + '-' + qi })).filter(x => ppHas(x.q.t));
+    if (!qs.length) return;
+    ps.push(wPara(wRun(st.name || '단계', { f: W_SERIF, b: true, sz: 26 }), { keep: true, brk: on && first, bot: [W_ACC, 4], before: on && first ? 0 : 320, after: 100 }));
+    first = false;
+    qs.forEach(({ q, key }, i) => {
+      const vs = Array.isArray(q.vs) ? q.vs.filter(ppHas) : [];
+      ps.push(wPara(wRun(`${i + 1}.`, { b: true }) + wTab + wRun(q.t, { f: W_SERIF, b: true, sz: 22 }), { keep: true, before: 40, left: 400, hang: 400 }));
+      if (ppHas(q.sub)) ps.push(wPara(wRun(q.sub, { c: W_GRAY, sz: 19 }), { left: 400, keep: true }));
+      if (vs.length) ps.push(wPara(wRun(`관련 구절 ${vs.join(' · ')}`, { c: W_GRAY, sz: 19 }), { left: 400, keep: true }));
+      if (o.leader && ppHas(q.lead)) ps.push(wPara(wRun('해설  ', { b: true, c: W_LEAD, sz: 19 }) + wRun(q.lead, { c: W_LEAD, sz: 19 }), { left: 400, keep: true, before: 40 }));
+      ps.push(wordUnder(o, key));
+    });
+  });
+  if (first) ps.push(wPara(wRun('질문을 쓰면 여기에 이렇게 들어가요.', { c: W_GRAY }), { brk: on }));
+  else {
+    if (src.triple.length) {
+      ps.push(wPara(wRun('깊이 묵상하기', { f: W_SERIF, b: true, sz: 26 }), { keep: true, bot: [W_ACC, 4], before: 320, after: 100 }));
+      src.triple.forEach(t => {
+        ps.push(wPara(wRun(t.who + '  ', { b: true, c: W_ACC }) + wRun(t.t, { f: W_SERIF, b: true, sz: 22 }), { keep: true, before: 40, left: 400 }));
+        ps.push(wordUnder(o, t.id));
+      });
+    }
+    if (ppHas(src.wrap)) {
+      ps.push(wPara(wRun('마무리 적용·기도 안내', { f: W_SERIF, b: true, sz: 26 }), { keep: true, bot: [W_ACC, 4], before: 320, after: 120 }));
+      ps.push(wPara(wRun(src.wrap)));
+    }
+  }
+  return ps.join('');
+}
+// body는 이미 만든 본문 XML 글이다(과 하나, 교재 전체, 리더용이 같이 쓴다). A4, 아래 가운데 쪽 번호
+function buildDocxBlob(body) {
+  const sect = '<w:sectPr><w:footerReference w:type="default" r:id="rId2"/><w:pgSz w:w="11906" w:h="16838"/><w:pgMar w:top="907" w:right="1020" w:bottom="907" w:left="1020" w:header="567" w:footer="567" w:gutter="0"/></w:sectPr>';
+  const X = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>\n';
+  const fr = c => `<w:r><w:rPr><w:color w:val="${W_GRAY}"/><w:sz w:val="16"/></w:rPr>${c}</w:r>`;
+  const footer = `${X}<w:ftr ${W_NS}><w:p><w:pPr><w:jc w:val="center"/></w:pPr>${fr('<w:fldChar w:fldCharType="begin"/>')}${fr('<w:instrText xml:space="preserve"> PAGE </w:instrText>')}${fr('<w:fldChar w:fldCharType="separate"/>')}${fr('<w:t>1</w:t>')}${fr('<w:fldChar w:fldCharType="end"/>')}</w:p></w:ftr>`;
+  const styles = `${X}<w:styles ${W_NS}><w:docDefaults><w:rPrDefault><w:rPr><w:rFonts w:ascii="Malgun Gothic" w:hAnsi="Malgun Gothic" w:eastAsia="Malgun Gothic" w:cs="Malgun Gothic"/><w:sz w:val="20"/><w:szCs w:val="20"/><w:lang w:val="ko-KR" w:eastAsia="ko-KR"/></w:rPr></w:rPrDefault></w:docDefaults><w:style w:type="paragraph" w:default="1" w:styleId="Normal"><w:name w:val="Normal"/><w:qFormat/></w:style></w:styles>`;
+  const REL = 'http://schemas.openxmlformats.org/officeDocument/2006/relationships';
+  return zipStore([
+    ['[Content_Types].xml', `${X}<Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types"><Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/><Default Extension="xml" ContentType="application/xml"/><Override PartName="/word/document.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml"/><Override PartName="/word/styles.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.styles+xml"/><Override PartName="/word/footer1.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.footer+xml"/></Types>`],
+    ['_rels/.rels', `${X}<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="${REL}/officeDocument" Target="word/document.xml"/></Relationships>`],
+    ['word/_rels/document.xml.rels', `${X}<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="${REL}/styles" Target="styles.xml"/><Relationship Id="rId2" Type="${REL}/footer" Target="footer1.xml"/></Relationships>`],
+    ['word/document.xml', `${X}<w:document ${W_NS}><w:body>${body}${sect}</w:body></w:document>`],
+    ['word/styles.xml', styles],
+    ['word/footer1.xml', footer]
+  ]);
+}
+function wordTocXml(b) {
+  const ps = [];
+  ps.push(wPara(wRun(b.title, { f: W_SERIF, b: true, sz: 52 }), { before: 0, after: 80, line: 380 }));
+  ps.push(wPara(wRun(b.target || DATA.church.dept, { f: W_SERIF, b: true, sz: 24 }), { after: 120 }));
+  ps.push(wPara(wRun('차례', { f: W_SERIF, b: true, sz: 26 }), { keep: true, bot: [W_ACC, 4], before: 240, after: 120 }));
+  b.lessons.forEach(L => ps.push(wPara(wRun(`제${L.no}과${L.name ? ' ' + L.name : ''}`) + wTab + wRun(L.ref || L.date || '', { c: W_GRAY, sz: 19 }), { tab: true, bot: ['DDE4E0', 4], before: 60, after: 60 })));
+  if (!b.lessons.length) ps.push(wPara(wRun('아직 과가 없어요', { c: W_GRAY })));
+  return ps.join('');
+}
+function downloadDocx(blob, name) {
+  const url = URL.createObjectURL(blob), a = document.createElement('a');
+  a.href = url; a.download = String(name).replace(/[\\/:*?"<>|]/g, '').trim() + '.docx'; document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(() => URL.revokeObjectURL(url), 4000);
+  toast('Word 파일을 내려받았어요');
 }
 function mgBooksView() {
   const books = mg().books.filter(b => !!b.closed === (mgTab === 'past'));
@@ -1441,7 +1745,7 @@ function mgBookView(b) {
     <div class="more-grid"><div>${!b.closed ? '<button class="btn wide" type="button" data-act="mg-lesson-add">과 추가</button>' : ''}<div class="gl">과</div><div class="gc">
       ${b.lessons.map(L => `<a class="gr" href="#me-${b.id}.${L.no}"><span class="gt"><b>제${L.no}과 ${esc(L.name || '(제목을 적어 주세요)')}</b><span class="gd">${esc(L.date)}${L.ref ? ' · ' + esc(L.ref) : ''}</span></span>${mgPill(b, L)}</a>`).join('') || '<div class="gr"><span class="gt"><span class="gd">아직 과가 없어요. 과를 더해 시작해요.</span></span></div>'}
     </div></div><div><div class="gc"><div class="gr"><span class="mg-cover big">${bookCover({ ...b, id: '' }, 'list')}</span><span class="gt"><b>${esc(b.title)}</b><span class="gd">${esc(b.kind)}</span></span></div><p class="hint">대상 모임 · ${esc(b.target || DATA.church.dept)}</p>${b.start ? `<p class="hint">시작 날짜 · ${esc(mgLongDate(b.start))}</p>` : ''}${b.closed ? `<p class="hint">끝난 날짜 · ${esc(b.end || '')}</p>` : ''}</div>
-    <div class="gc">${row('교재 정보 편집', '제목, 표지, 대상 모임, 시작 날짜', 'mg-edit')}${row('교재 통째로 복제', '내용만 가져오고 배포 이력은 가져오지 않아요', 'mg-dup')}${row('인쇄용 보기 · PDF·Word로 내려받기', '', 'later')}${b.closed ? '' : row('교재 닫기', '오늘 날짜로 끝내고 지난 교재로 옮겨요', 'mg-close')}</div>${b.closed ? '<button class="quiet-link" type="button" data-act="mg-reopen">다시 열기</button>' : ''}</div></div>`;
+    <div class="gc">${row('교재 정보 편집', '제목, 표지, 대상 모임, 시작 날짜', 'mg-edit')}${row('교재 통째로 복제', '내용만 가져오고 배포 이력은 가져오지 않아요', 'mg-dup')}${`<a class="gr" href="#mxb-${b.id}"><span class="gt"><b>인쇄용 보기 · PDF·Word로 내려받기</b></span><span class="ch" aria-hidden="true">›</span></a>`}${b.closed ? '' : row('교재 닫기', '오늘 날짜로 끝내고 지난 교재로 옮겨요', 'mg-close')}</div>${b.closed ? '<button class="quiet-link" type="button" data-act="mg-reopen">다시 열기</button>' : ''}</div></div>`;
 }
 function mgForm(b) {
   mgEditing = b ? b.id : '';
@@ -1875,7 +2179,7 @@ function prepView() {
           <h3 class="q-t" id="pt-${q.id}">${esc(q.t)}</h3>${helpHtml(q)}${leadHtml(q)}${memo(si + '-' + qi)}</article>`).join('')}</section>`).join('')}
         ${G.triple.length ? `<section class="card deep" id="p-deep" aria-labelledby="prepDeepT"><p class="eyebrow" style="margin:0">깊이 묵상하기</p><h2 class="d-lead" id="prepDeepT">오늘 말씀에서 삼위일체 하나님을 묵상해요.</h2>
           ${G.triple.map(t => `<div class="tri-item"><div class="q-meta"><span class="who">${esc(t.who)}</span></div><h3 class="q-t">${esc(t.t)}</h3>${memo(t.id)}</div>`).join('')}</section>` : ''}
-        <div class="end-btns"><button type="button" class="btn" data-act="prep-start">나눔 시작</button><button type="button" class="btn ghost" data-act="later">리더용 인쇄</button><button type="button" class="btn ghost" data-act="prep-member">회원 화면으로 보기</button></div>
+        <div class="end-btns"><button type="button" class="btn" data-act="prep-start">나눔 시작</button><a class="btn ghost" href="#prepprint">리더용 인쇄</a><button type="button" class="btn ghost" data-act="prep-member">회원 화면으로 보기</button></div>
       </div>
     </div>
   </div>`;
@@ -2542,7 +2846,7 @@ function route(moved) {
   $('#topbar').classList.toggle('bare', start);
   $('#topnav').hidden = start; $('#tabs').hidden = start;
   document.body.dataset.view = v;
-  $('#view').innerHTML = start ? startView() : v === 'week' ? weekView() : v === 'wq' ? wqView() : v === 'read' ? readView() : v === 'share' ? shareView() : v === 'shelf' ? shelfView(arg) : v === 'record' ? recordView(arg) : v === 'records' ? recordsView() : v === 'gallery' ? galleryView() : v === 'more' ? moreView() : v === 'admin' ? adminView() : v === 'about' ? aboutView() : v === 'feedback' ? feedbackView() : v === 'prep' ? prepView() : v === 'church' ? churchView() : v === 'rooms' ? roomsView() : v === 'manage' ? manageView(arg) : placeView(v);
+  $('#view').innerHTML = start ? startView() : v === 'week' ? weekView() : v === 'wq' ? wqView() : v === 'read' ? readView() : v === 'share' ? shareView() : v === 'shelf' ? shelfView(arg) : v === 'record' ? recordView(arg) : v === 'records' ? recordsView() : v === 'gallery' ? galleryView() : v === 'more' ? moreView() : v === 'admin' ? adminView() : v === 'about' ? aboutView() : v === 'feedback' ? feedbackView() : v === 'prep' ? prepView() : v === 'prepprint' ? prepPrintView() : v === 'church' ? churchView() : v === 'rooms' ? roomsView() : v === 'manage' ? manageView(arg) : placeView(v);
   const tab = start ? '' : v === 'week' ? 'week' : PLACE[v][1];
   $$('[data-tab]').forEach(a => { const on = a.dataset.tab === tab; a.classList.toggle('on', on); on ? a.setAttribute('aria-current', 'page') : a.removeAttribute('aria-current'); });
   document.title = start ? '디다코' : (v === 'shelf' && arg ? bTitle(bookById(arg)) : v === 'record' && arg ? '기록 상세' : v === 'week' ? '이번 주' : PLACE[v][0]) + ' · 디다코';
@@ -2551,7 +2855,7 @@ function route(moved) {
     window.scrollTo(0, 0);
     const h = $('h1', $('#view')); if (h) { h.setAttribute('tabindex', '-1'); h.focus({ preventScroll: true }); }
   }
-  if (v === 'wq') wqInit(); else if (v === 'read') readInit(); else if (v === 'share') shareInit(); else if (v === 'shelf') shelfInit(arg);
+  if (v === 'wq') wqInit(); else if (v === 'read') readInit(); else if (v === 'share') shareInit(); else if (v === 'shelf') shelfInit(arg); else if (v === 'manage' || v === 'prepprint') ppFill();
   if (v === 'share' && shareAuto) { shareAuto = false; if (G) startShare(); }
 }
 // 설정을 바꿔 다시 그릴 때는 보던 자리를 지키고, 말씀을 열며를 다시 띄우지 않는다
@@ -2804,6 +3108,24 @@ const acts = {
   'prep-start'() { shareAuto = true; location.hash = '#share'; },
   'prep-member'() { readAsMember = true; readFrom = ''; if (location.hash === '#read') route(true); else location.hash = '#read'; },
   later() { toast('다음 단계에서 열려요'); },
+  // 인쇄: PDF는 기기의 인쇄 창, 대상·답변 공간을 바꾸면 종이를 다시 그린다
+  'pp-pdf'() { window.print(); },
+  'pp-word-book'() {
+    const b = mgBook((parseHash().arg || '').slice(4)); if (!b) return;
+    const o = { leader: PP.leader, space: PP.space, memo: null };
+    downloadDocx(buildDocxBlob(wordTocXml(b) + b.lessons.map(L => wordLessonXml(ppSource(b, L), o, true)).join('')), `${b.title} 전체${PP.leader ? ' (리더용)' : ''}`);
+  },
+  'pp-word-prep'() {
+    if (!isLead() || !(G = readyGuide())) return;
+    const src = prepSource();
+    downloadDocx(buildDocxBlob(wordLessonXml(src, prepPrintOpts(), false)), `${src.book} 제${src.no}과 ${src.name} (리더용 · 내 메모)`);
+  },
+  'pp-word'() {
+    const m = /^mx-([\w-]+)\.(\d+)$/.exec(parseHash().arg || ''), b = m && mgBook(m[1]), L = b && b.lessons.find(l => l.no === Number(m[2])); if (!L) return;
+    downloadDocx(buildDocxBlob(wordLessonXml(ppSource(b, L), { leader: PP.leader, space: PP.space, memo: null }, false)), `${b.title} 제${L.no}과 ${L.name || ''}${PP.leader ? ' (리더용)' : ''}`);
+  },
+  'pp-target'(e, el) { PP.leader = el.dataset.v === '1'; recRedraw(); },
+  'pp-space'(e, el) { PP.space = ['none', 'mid', 'wide'].includes(el.dataset.v) ? el.dataset.v : 'mid'; recRedraw(); },
   'keep-fill'() { ls.set(K.keep, JSON.stringify(Object.assign({ at: Date.now() }, DATA.sampleKeep))); rerender(); toast('예시를 채웠어요'); },
   'keep-clear'() { ls.del(K.keep); rerender(); toast('비웠어요'); },
   // 펼치기
