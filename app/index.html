@@ -113,8 +113,8 @@ button, a, label, summary, select, input, [role="button"], [data-act], .brand { 
 .mitem.static { cursor: default; flex-direction: column; align-items: flex-start; gap: .1em; }
 .mitem.static:hover { background: none; }
 .mitem small { font-size: .82em; color: var(--ink-2); }
-.swatches { display: flex; gap: 4px; margin: .2em .2em .4em; flex-wrap: wrap; }   /* 색 테마 여섯 개가 설정 창(300px) 한 줄에 들어가게. 간격은 노트 설정과 같은 4px(S-77) */
-.swatch { width: 40px; height: 40px; border-radius: 50%; padding: 0; border: 2px solid transparent; background: none; cursor: pointer; display: grid; place-items: center; }
+.swatches { display: flex; gap: 4px; margin: .2em .2em .4em; flex-wrap: nowrap; }   /* 색 테마 여섯 개는 늘 한 줄. 칸이 좁으면(더보기 화면 설정, 320px 휴대폰) 동그라미가 조금 작아진다. 간격은 노트 설정과 같은 4px(S-77) */
+.swatch { flex: 0 1 40px; min-width: 0; max-width: 40px; aspect-ratio: 1; height: auto; border-radius: 50%; padding: 0; border: 2px solid transparent; background: none; cursor: pointer; display: grid; place-items: center; }
 .swatch i { width: 28px; height: 28px; border-radius: 50%; display: block; box-shadow: inset 0 0 0 1px rgba(0, 0, 0, .12); }
 .swatch.on { border-color: var(--ink); }
 .menu .seg { margin: 0 .3em .3em; }
@@ -235,6 +235,23 @@ main.wrap { padding-top: 14px; padding-bottom: calc(110px + env(safe-area-inset-
 
 /* ── 이 시안에만 있는 것 ── */
 /* 카드 배치: 휴대폰은 한 줄, 태블릿(640px 이상)부터 카드 2열. 왼쪽은 과, 오른쪽은 지난주와 이번 주 실천 */
+.walk-hero { padding: 0; overflow: hidden; }
+.walk-hero img { display: block; width: 100%; aspect-ratio: 4 / 3; object-fit: cover; }
+.walk-hero-body { padding: 16px; }
+.walk-hero-body .lesson-title { margin: .6em 0; }
+/* 640px 이상: 그림은 왼쪽 2, 글은 오른쪽 3. 그림이 첫 화면을 다 차지하지 않게 한다 */
+@media (min-width: 640px) {
+  .walk-hero { display: grid; grid-template-columns: minmax(0, 2fr) minmax(0, 3fr); align-items: center; }
+  .walk-hero img { height: 100%; max-height: 360px; }
+  .walk-hero-body { padding: 20px 24px; }
+}
+.walk-scripture { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; margin: .7em 0; }
+.walk-days { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 6px; margin-top: 12px; }
+.walk-day { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; min-width: 0; min-height: 44px; border: 1px solid var(--line); border-radius: 10px; background: transparent; color: var(--ink-2); cursor: pointer; }
+.walk-day.today { border-color: var(--accent); }
+.walk-day.chosen { background: var(--accent-soft); }
+.walk-day.future { opacity: .45; }
+.walk-day .ic { width: .9em; height: .9em; color: var(--accent); }
 .week-top .card { margin: 12px 0 0; }
 .week-grid { display: grid; gap: 14px; align-items: start; margin-top: 12px; }
 .week-grid .col { display: flex; flex-direction: column; gap: 14px; min-width: 0; }
@@ -570,7 +587,7 @@ body.sharing { overflow: hidden; }
 }
 
 
-/* ══ 책장·나의 기록 ══ */
+/* ══ 책장·내 기록 ══ */
 /* ── 책장(#shelf) ── 시안 shelf.html의 것을 옮겼다. 앱에 이미 있는 이름(.toc-list, .bm, .back-link)과 겹치는 것만 이름을 바꾸거나 범위를 좁혔다 */
 /* 배치: 휴대폰은 한 줄. 640px 이상은 가운데 읽는 폭에 넓게, 1000px 이상은 책 목차를 조금 더 넓게 둔다 */
 .shelf-wrap { max-width: 760px; margin: 0 auto; }
@@ -652,7 +669,7 @@ body.sharing { overflow: hidden; }
 /* 책장의 카드·한 줄 목록은 .card라 디자인 스타일(basic·new·classic·glass)을 그대로 따른다 */
 :root[data-style="neu"] .field { border-color: transparent; }
 
-/* ── 나의 기록(#record) ── 시안 record.html의 것을 옮겼다 */
+/* ── 내 기록(#record) ── 시안 record.html의 것을 옮겼다 */
 /* 돌아봄 리포트와 상세 */
 .record-wrap { max-width:760px; margin:0 auto; }
 .record-top { display:flex; align-items:center; gap:10px; }
@@ -755,8 +772,8 @@ body.sharing { overflow: hidden; }
     <nav class="topnav" id="topnav" aria-label="메뉴">
       <a href="#week" data-tab="week">이번 주</a>
       <a href="#shelf" data-tab="shelf">책장</a>
-      <a href="#share" data-tab="share">나눔</a>
-      <a href="#record" data-tab="record">나의 기록</a>
+      <a href="#share" data-tab="share">나눔하기</a>
+      <a href="#record" data-tab="record">내 기록</a>
       <a href="#more" data-tab="more">더보기</a>
     </nav>
     <span class="spacer"></span>
@@ -778,8 +795,8 @@ body.sharing { overflow: hidden; }
 <nav class="tabs" id="tabs" aria-label="메뉴">
   <a href="#week" data-tab="week" aria-label="이번 주"><svg class="ic" aria-hidden="true"><use href="#i-week"/></svg></a>
   <a href="#shelf" data-tab="shelf" aria-label="책장"><svg class="ic" aria-hidden="true"><use href="#i-shelf"/></svg></a>
-  <a class="pray-tab" href="#share" data-tab="share" aria-label="나눔"><svg class="ic" aria-hidden="true"><use href="#i-share"/></svg></a>
-  <a href="#record" data-tab="record" aria-label="나의 기록"><svg class="ic" aria-hidden="true"><use href="#i-log"/></svg></a>
+  <a class="pray-tab" href="#share" data-tab="share" aria-label="나눔하기"><svg class="ic" aria-hidden="true"><use href="#i-share"/></svg></a>
+  <a href="#record" data-tab="record" aria-label="내 기록"><svg class="ic" aria-hidden="true"><use href="#i-log"/></svg></a>
   <a href="#more" data-tab="more" aria-label="더보기"><svg class="ic" aria-hidden="true"><use href="#i-more"/></svg></a>
 </nav>
 
@@ -825,8 +842,9 @@ const BUBBLE = '<svg viewBox="0 0 18 18" width="18" height="18" aria-hidden="tru
 // ── 저장 자리 ──
 // 화면 설정(화면 모드·색 테마·디자인·큰 글씨)은 한 자리에만 적는다. 데모 설정과 쓴 글은 따로 둔다
 // answers 내 생각(펼치기), bookmark 책갈피(펼치기), memo 리더의 내 진행 메모(나눔하기), leadopen 해설 접기/펼치기, keep 오늘 남길 것(펼치기·나눔하기가 같이 쓴다)
-// shareDone 나눔하기를 끝까지 넘겼는지(나의 기록에 이번 주 기록이 나타나는 때), record… 나의 기록에서 고친 글·돌아보기·지운 기록·비워 둔 상태
+// shareDone 나눔하기를 끝까지 넘겼는지(내 기록에 이번 주 기록이 나타나는 때), record… 내 기록에서 고친 글·돌아보기·지운 기록·비워 둔 상태
 const K = { display: 'didako-note-display', demo: 'didako-demo', reflect: 'didako-reflect', keep: 'didako-keep', answers: 'didako-read-answers', bookmark: 'didako-read-bookmark', memo: 'didako-share-memo', leadopen: 'didako-leadopen',
+  walkRead: 'didako-weekwalk-read', walkThought: 'didako-weekwalk-thought',
   shareDone: 'didako-share-done', recRefl: 'didako-record-reflections', recAns: 'didako-record-answers', recEdit: 'didako-record-edits', recDel: 'didako-record-deleted', recHide: 'didako-record-hidden' };
 const MODES = ['auto', 'light', 'dark'], ACCENTS = ['green', 'amber', 'blue', 'rose', 'ink', 'paper'], STYLES = ['basic', 'neu', 'skeu', 'glass'];
 const ROLES = [['member', '회원'], ['leader', '리더'], ['pastor', '목사님'], ['admin', '관리자']];
@@ -836,12 +854,12 @@ const pick = (v, list, d) => (list.includes(v) ? v : d);
 const JCOVER_LIST = [['', '그림 없음'], ['../note/img/walk/cover-john-1.webp', '요한복음 1부 표지'], ['../note/img/walk/cover-mark-2.webp', '마가복음 2부 표지'], ['../note/img/w/weekly-01.webp', '이번 주의 질문 1주 그림']];
 const JCOVERS = JCOVER_LIST.map(x => x[0]);
 const S = { mode: 'auto', accent: 'paper', style: 'basic', big: false };
-const D = { entered: false, place: 'room', unit: 'family', role: 'member', status: 'all', lastWeek: true, before: false, alt: false, readOpen: true, readTriple: true, dimSec: 15, two: false, noBooks: false, longTitle: false, jcover: JCOVER_LIST[1][0], newcomer: false };
+const D = { entered: false, place: 'room', unit: 'family', role: 'member', status: 'all', walk: 1, lastWeek: true, before: false, alt: false, readOpen: true, readTriple: true, dimSec: 15, two: false, noBooks: false, longTitle: false, jcover: JCOVER_LIST[1][0], newcomer: false };
 function loadState() {
   const a = readJson(K.display), b = readJson(K.demo);
   S.mode = pick(a.mode, MODES, 'auto'); S.accent = pick(a.accent, ACCENTS, 'paper'); S.style = pick(a.style, STYLES, 'basic'); S.big = a.big === true;
   D.unit = pick(b.unit, ['family', 'single'], 'family'); D.place = D.unit === 'single' ? 'room' : pick(b.place, ['room', 'home'], 'room');
-  D.entered = b.entered === true; D.role = pick(b.role, ROLES.map(r => r[0]), 'member'); D.status = pick(b.status, STATUS.map(r => r[0]), 'all');
+  D.entered = b.entered === true; D.role = pick(b.role, ROLES.map(r => r[0]), 'member'); D.status = pick(b.status, STATUS.map(r => r[0]), 'all'); D.walk = b.walk === 2 || b.walk === '2' ? 2 : 1;
   D.lastWeek = b.lastWeek !== false; D.before = b.before === true; D.alt = b.alt === true;
   D.readOpen = b.readOpen !== false; D.readTriple = b.readTriple !== false; D.dimSec = b.dimSec === 5 ? 5 : 15;
   D.two = b.two === true; D.noBooks = b.noBooks === true; D.longTitle = b.longTitle === true; D.jcover = pick(b.jcover, JCOVERS, JCOVER_LIST[1][0]); D.newcomer = b.newcomer === true;
@@ -912,6 +930,7 @@ function renderSettings() {
     <p class="mlabel">데모용 <span class="demo-tag static">데모</span></p>
     <p class="set-note">실제 앱에는 없는 설정이에요. 이 기기에만 기억해요.</p>
     <p class="mlabel">역할</p>${seg('role', ROLES, D.role)}
+    <p class="mlabel">한 주 함께 묵상하기</p>${seg('walk', [['1', '1주 위로'], ['2', '2주 사랑의 어려움']], D.walk)}
     <p class="mlabel">부서 단위</p>${seg('unit', [['family', '가정'], ['single', '개인']], D.unit)}
     <p class="set-note">개인이면 청년부처럼 한 사람이 한 줄이라 우리 가정이 없어요.</p>
     ${inApp && D.role === 'pastor' ? `<p class="mlabel">공개 범위</p>${seg('status', STATUS, D.status)}` : ''}
@@ -948,11 +967,11 @@ function closeMenu() { const m = $('#settings'); m.hidden = true; $('#gearBtn').
 // ── 화면 이름표 ──
 // 이름표와 어느 탭이 켜지는지는 여기에 모아 둔다. 아직 만들지 않은 화면은 차분한 안내 한 장으로 연다(막다른 길이 없게 이번 주로 가는 링크를 둔다)
 const PLACE = {
-  read: ['펼치기', 'week'], share: ['나눔', 'share'], shelf: ['책장', 'shelf'], record: ['나의 기록', 'record'], more: ['더보기', 'more'],
+  read: ['펼치기', 'week'], share: ['나눔하기', 'share'], shelf: ['책장', 'shelf'], record: ['내 기록', 'record'], more: ['더보기', 'more'],
   church: ['우리 사랑방', 'more'], prep: ['진행 준비', 'week'], manage: ['교재 관리', 'more'], admin: ['관리', 'more']
 };
 const VIEWS = ['start', 'week'].concat(Object.keys(PLACE));
-// 책 안(#book-교재)과 기록 상세(#rec-기록)는 책장·나의 기록 안의 화면이다
+// 책 안(#book-교재)과 기록 상세(#rec-기록)는 책장·내 기록 안의 화면이다
 function parseHash() {
   const h = location.hash.replace(/^#/, ''), m = /^(book|rec)-([\w-]+)$/.exec(h);
   if (m) return { v: m[1] === 'book' ? 'shelf' : 'record', arg: m[2] };
@@ -971,8 +990,7 @@ function lessonCard() {
   if (D.before && !atHome()) {
     return `<section class="card today" aria-labelledby="lessonTitle">
       <h2 class="lesson-title" id="lessonTitle">이번 주 과를 준비하고 있어요</h2>
-      <p class="soft" style="margin:0">준비가 끝나면 이곳에 보여요. 그동안 책장에서 지난 교재를 볼 수 있어요.</p>
-      <a class="btn wide read-btn" href="#shelf">${ic('shelf')}책장 보기</a>
+      <p class="soft" style="margin:0">준비가 끝나면 이곳에 보여요. 그동안 아래 지난 책을 볼 수 있어요.</p>
     </section>`;
   }
   const L = thisLesson(), more = isLead();
@@ -1014,17 +1032,47 @@ function statusCard() {
     <button class="quiet-link" type="button" data-act="later">교재 관리에서 바꾸기</button>
   </section>`;
 }
+// 한 주 함께 묵상하기: 고른 날과 고백 열기 상태는 화면에서만 기억한다
+let walkDay = '', walkConfess = false;
+const walkNames = { 월: '월요일', 화: '화요일', 수: '수요일', 목: '목요일', 금: '금요일' };
+const walkWeek = () => DATA.weekWalk.find(w => w.n === D.walk) || DATA.weekWalk[0];
+const walkToday = () => '목'; // 데모 오늘(DATA.today)은 목요일
+function walkRedraw() { const y = window.scrollY; route(false); window.scrollTo(0, y); }
 function weekView() {
-  if (atHome()) return `<div class="page-top"><h1>이번 주</h1></div>
-    <p class="eyebrow" style="margin-top:0">우리 가정</p>
-    <div class="week-grid"><div class="col">${lessonCard()}</div><div class="col"><section class="card calm">
-      <h2 class="calm-t">이번 주 GBS 과는 사랑방에서 펼쳐요</h2>
-      <button class="btn ghost" type="button" data-act="place-room">${esc(groupName())}${ro(groupName())}</button>
-    </section></div></div>`;
+  const w = walkWeek(), today = walkToday(), selected = walkDay || today;
+  const day = w.days.find(x => x.d === selected) || w.days[3];
+  const read = readJson(K.walkRead), thought = readJson(K.walkThought);
+  const done = read[w.n + '-' + day.d] === true;
+  const days = w.days.map(x => {
+    const future = w.days.findIndex(y => y.d === x.d) > w.days.findIndex(y => y.d === today);
+    const chosen = x.d === selected, isToday = x.d === today, checked = read[w.n + '-' + x.d] === true;
+    return `<button class="walk-day${chosen ? ' chosen' : ''}${isToday ? ' today' : ''}${future ? ' future' : ''}" type="button" data-act="walk-day" data-d="${x.d}" aria-pressed="${chosen}"${future ? ' aria-disabled="true"' : ''}><span>${x.d}</span>${checked ? ic('check') : ''}</button>`;
+  }).join('');
   return `<div class="page-top"><h1>이번 주</h1></div>
-    <p class="eyebrow" style="margin-top:0">${esc(groupName())}</p>
-    <div class="week-top">${statusCard()}</div>
-    <div class="week-grid"><div class="col">${lessonCard()}</div><div class="col" id="colR">${lastWeekCard() + keepCard()}</div></div>`;
+    <p class="eyebrow" style="margin-top:0">${esc(DATA.admin.church)}</p>
+    <section class="card walk-hero">
+      <img src="${w.img}" alt="${esc(w.alt)}" loading="lazy">
+      <div class="walk-hero-body">
+        <p class="hint">한 주 함께 묵상하기 · ${w.n}주 · ${esc(w.group)}</p>
+        <h2 class="lesson-title">${esc(w.q)}</h2>
+        <p class="fine">함께 볼 말씀 ${w.refs.map(esc).join(' · ')}</p>
+      </div>
+    </section>
+    <section class="card">
+      <p class="hint">${selected === today ? walkNames[today] + ' · 오늘 우리 교회가 함께 읽는 말씀' : walkNames[selected] + '에 함께 읽은 말씀'}</p>
+      <div class="walk-scripture"><span class="passage-chip">${esc(day.ref)}</span><a class="quiet-link" href="${day.url}" target="_blank" rel="noopener">성경 펴기 ›</a></div>
+      <p class="soft">${esc(day.ask)}</p>
+      <button class="btn ${done ? 'ghost ' : ''}wide" type="button" data-act="walk-read">${done ? ic('check') : ''}읽었어요</button>
+      <div class="walk-days" role="group" aria-label="월요일부터 금요일까지의 말씀">${days}</div>
+    </section>
+    <section class="card">
+      <label class="lab" for="walkInput">${ic('lock')}이번 주 질문에 대한 내 생각</label>
+      <input class="field" id="walkInput" maxlength="200" placeholder="떠오르는 대로 한 줄만 적어요" autocomplete="off" value="${esc(thought[w.n] || '')}">
+      <p class="hint">나만 봐요</p>
+      <button class="quiet-link" type="button" data-act="walk-confess" aria-expanded="${walkConfess}">${walkConfess ? '접기' : '교회가 고백해 온 것 펴 보기'}</button>
+      ${walkConfess ? `<p class="soft">${esc(w.confess)}</p><p><b>${esc(w.short)}</b></p>` : ''}
+    </section>
+    <p class="fine">말씀과 물음은 교역자 확인 전 예시예요.</p>`;
 }
 
 // ── 첫 화면(C-01): 데모에서는 카카오 대신 "데모로 둘러보기" ──
@@ -1172,7 +1220,7 @@ function placeView(v) {
     <section class="card calm">
       <p class="calm-t">곧 만들어요</p>
       <p class="soft" style="margin:0">이 화면은 다음 단계에서 열려요.</p>
-      <a class="btn ghost" href="#week">이번 주로 돌아가기</a>
+      <a class="btn ghost" href="#shelf">책장으로 돌아가기</a>
     </section>`;
 }
 
@@ -1186,7 +1234,7 @@ function noGuideView(name) {
     <section class="card calm">
       <p class="calm-t">${D.before ? '이번 주 과를 준비하고 있어요' : '이 과는 데모에 질문 예시가 없어요'}</p>
       <p class="soft" style="margin:0">${D.before ? '준비가 끝나면 열려요.' : '요한복음 제3과로 돌아가면 걸어 볼 수 있어요.'}</p>
-      <a class="btn ghost" href="#week">이번 주로 돌아가기</a>
+      <a class="btn ghost" href="#shelf">책장으로 돌아가기</a>
     </section>`;
 }
 const bookHtml = noMark => { const L = thisLesson(); return `<span class="book-l">${noMark ? '' : '<svg class="mk" aria-hidden="true"><use href="#i-didako"/></svg>'}<b>${esc(L.book)}</b><span>${esc(L.period)}</span></span>`; };
@@ -1264,7 +1312,7 @@ function saveKeepRead(fromBlur) {
 let answers = {}, BM = null, readResume = false, reflow = false;
 // 책장에서 펼치면 어느 책에서 왔는지(교재 id). 위쪽 돌아가기와 맨 끝의 돌아가기가 그 책의 과 목차로 이어진다(설계서 M-04). 이번 주에서 오면 비어 있고 이번 주로 돌아간다
 let readFrom = '';
-const readBack = () => { const b = readFrom && DATA.books.find(x => x.id === readFrom); return b ? { href: '#book-' + b.id, name: bTitle(b) } : { href: '#week', name: '이번 주' }; };
+const readBack = () => { const b = readFrom && DATA.books.find(x => x.id === readFrom); return b ? { href: '#book-' + b.id, name: bTitle(b) } : { href: '#shelf', name: '책장' }; };
 const editing = new Set(), status = {}, timers = {}, expanded = new Set();
 let cordDone = false, jumpedAt = 0, lastInput = 0, scrollT = 0;
 const allQs = () => G.stages.flatMap(s => s.qs).concat(D.readTriple ? G.triple : []);
@@ -1598,7 +1646,7 @@ function renderStep() {
     html = `<div class="st-in"><div class="bless" aria-live="polite"><div class="st-eyebrow bl-lead">함께 읽어요</div>${BLESS_LINES.map((l, i) => `<p class="${i === BLESS_LINES.length - 1 ? 'lastline' : ''}" style="--i:${i}">${esc(l)}</p>`).join('')}<span class="verse bl-ref">${esc(BLESS_REF)}</span></div></div>`;
     nav = prev + next();
   } else if (s.t === 'done') {
-    if (!atHome()) ls.set(K.shareDone, '1');   // 나눔하기를 끝까지 넘겼다: 이때부터 나의 기록에 이번 주 기록이 나타난다
+    if (!atHome()) ls.set(K.shareDone, '1');   // 나눔하기를 끝까지 넘겼다: 이때부터 내 기록에 이번 주 기록이 나타난다
     html = `<div class="st-in center">${bookmarkSvg()}<div class="center">${bookHtml(true)}</div><h1 class="h2d" style="margin:.5em 0 0;font-size:1.2em">오늘 나눈 말씀 · ${esc(L.ref)}</h1>
       <div class="done-btns"><button class="btn" type="button" data-act="pray">${ic('cord')}함께 기도하기 → 코이데로 이동</button><button class="btn ghost" type="button" data-act="finish">마치기</button></div></div>`;
   }
@@ -1668,8 +1716,7 @@ const pastRowHtml = b => `<button class="card xrow" type="button" data-act="open
 function browseHtml() {
   if (D.noBooks) {
     return `<section class="card empty" aria-labelledby="emT">${ic('shelf')}<h2 id="emT">아직 책장에 꽂힌 책이 없어요</h2>
-      <p class="soft" style="margin:0">이번 주 과가 배포되면 이곳에 책이 놓여요.</p>
-      <a class="btn" href="#week">이번 주 보기</a></section>`;
+      <p class="soft" style="margin:0">이번 주 과가 배포되면 이곳에 책이 놓여요.</p></section>`;
   }
   const now = nowBooks(), past = pastBooks();
   return `<h2 class="xlb" style="margin-top:14px">지금 읽는 책</h2>
@@ -1733,6 +1780,12 @@ function shelfView(arg) {
   return `<div class="shelf-wrap">
     <div class="sh-top"><h1>책장</h1>${D.noBooks ? '' : `<button class="icon-btn" type="button" aria-label="검색" aria-expanded="false" aria-controls="shelfSearch" data-act="shelf-search">${SEARCH_IC}</button>`}</div>
     <p class="eyebrow" style="margin-top:0">${esc(groupName())}</p>
+    ${D.noBooks ? '' : `<div class="week-top">${statusCard()}</div>
+    ${lessonCard()}
+    ${atHome() ? `<section class="card calm">
+      <h2 class="calm-t">이번 주 GBS 과는 사랑방에서 펼쳐요</h2>
+      <button class="btn ghost" type="button" data-act="place-room">${esc(groupName())}${ro(groupName())}</button>
+    </section>` : ''}`}
     ${D.noBooks ? '' : `<div class="search" id="shelfSearch" hidden>${ic('search')}<input class="field" id="shelfQ" type="search" placeholder="제목이나 본문으로 찾기" aria-label="책장 검색" autocomplete="off"></div><div id="shelfResults" hidden></div>`}
     <div id="shelfBrowse">${browseHtml()}</div>
   </div>`;
@@ -1746,7 +1799,7 @@ function shelfInit(arg) {
   if (li) li.scrollIntoView({ block: 'start' });
 }
 
-// ══ 나의 기록(#record) ══
+// ══ 내 기록(#record) ══
 // 시안 record.html을 옮겼다. 지난 기록은 demo-data.js의 records(지어낸 예시)이고, 그 위에 이번 주에 직접 쓴 것이 맨 위 기록으로 더해진다.
 // 이번 주 기록은 나눔하기를 마쳤을 때(K.shareDone) 기기에 남은 글(오늘 남길 것, 펼치기에서 쓴 내 생각)을 모아 만든다. 쓴 것이 없으면 나타나지 않는다.
 // 기록을 고치고, 지우고, 돌아보기를 남긴 것은 didako-record-… 자리에 따로 둔다(예시를 고쳐도 원본은 그대로)
@@ -1796,7 +1849,7 @@ function monthNav(ps, p) {
   const title = rec.year ? `${p.year}년의 돌아봄` : `${p.year === THIS_YEAR ? '' : p.year + '년 '}${p.month}월의 돌아봄`;
   return `<div class="month-nav"><button type="button" data-act="rec-prev" aria-label="이전 ${rec.year ? '해' : '달'}" ${first ? 'disabled aria-disabled="true"' : ''}>‹</button><button type="button" class="month-label" data-act="rec-period" aria-haspopup="dialog">${title} ▾</button><button type="button" data-act="rec-next" aria-label="다음 ${rec.year ? '해' : '달'}" ${last ? 'disabled aria-disabled="true"' : ''}>›</button></div>`;
 }
-const emptyCard = () => `<section class="card empty"><h2>아직 남긴 기록이 없어요</h2><p class="soft" style="margin:0">이번 주 과가 끝나면 이곳에 모여요.</p><a class="btn" href="#week">이번 주 보기</a></section>`;
+const emptyCard = () => `<section class="card empty"><h2>아직 남긴 기록이 없어요</h2><p class="soft" style="margin:0">이번 주 과가 끝나면 이곳에 모여요.</p><a class="btn" href="#shelf">책장 보기</a></section>`;
 const recSection = (title, body) => (body ? `<section class="card report-card"><h2>${title}</h2>${body}</section>` : '');
 // 돌아봄: 간직한 말씀 · 삼위일체 하나님 묵상(한 해 보기에서는 나의 고백) · 작은 실천의 길. 그달에 내용이 없는 구역은 보이지 않고, 숫자는 어디에도 없다. 모두 최근 것이 위에 온다
 function reportHtml() {
@@ -1833,7 +1886,7 @@ function detailHtml(e) {
   const ansHtml = ans.length ? `<section class="card"><h2>미리 쓴 답</h2>${ans.map((a, i) => `<div class="report-line"><b>${esc(a.q)}</b><p>${esc(a.a)}</p><div class="set-btns"><button type="button" class="btn ghost small" data-act="rec-ans-edit" data-i="${i}" data-id="${e.id}">수정하기</button><button type="button" class="delete-answer" data-act="rec-ans-del" data-i="${i}" data-id="${e.id}">삭제</button></div></div>`).join('')}</section>` : '';
   const thr = has ? Object.entries(e.threads).map(([k, vs]) => `<div class="report-line"><b>${esc(k)}${e.tq && e.tq[k] ? ` · ${esc(e.tq[k])}` : ''}</b><p>${vs.map(esc).join('<br>')}</p></div>`).join('') : '';
   return `<div class="record-wrap">
-    <a class="back-link" href="#record">${ic('back')}<span>나의 기록</span></a>
+    <a class="back-link" href="#record">${ic('back')}<span>내 기록</span></a>
     <div class="record-top"><h1>기록 상세</h1></div>
     <section class="card detail-head"><p class="detail-meta">${esc(e.date)} · ${esc(e.book)}</p><h2 class="detail-title">${esc(e.title)}</h2>${e.ref ? `<p class="detail-meta">${esc(e.ref)}</p>` : ''}</section>
     <section class="card">
@@ -1855,7 +1908,8 @@ function recordView(arg) {
   const e = arg ? recById(arg) : null;
   if (e) return detailHtml(e);
   return `<div class="record-wrap">
-    <div class="record-top"><h1>나의 기록</h1></div>
+    <div class="record-top"><h1>내 기록</h1></div>
+    ${lastWeekCard() + keepCard()}
     <div class="seg tab-switch" style="--n:2" role="tablist"><button type="button" data-act="rec-tab" data-v="report" class="${rec.view === 'report' ? 'on' : ''}" role="tab" aria-selected="${rec.view === 'report'}">돌아봄</button><button type="button" data-act="rec-tab" data-v="date" class="${rec.view === 'date' ? 'on' : ''}" role="tab" aria-selected="${rec.view === 'date'}">모든 기록</button></div>
     <div id="recBody">${rec.view === 'report' ? reportHtml() : listHtml()}</div>
   </div>`;
@@ -1941,6 +1995,9 @@ function changePlace(place) {
 
 // ── 눌림 처리 ──
 const acts = {
+  'walk-read'() { const w = walkWeek(), d = walkDay || walkToday(), saved = readJson(K.walkRead), key = w.n + '-' + d; saved[key] = !saved[key]; ls.set(K.walkRead, JSON.stringify(saved)); walkRedraw(); },
+  'walk-day'(e, el) { const days = ['월', '화', '수', '목', '금'], d = el.dataset.d; if (days.indexOf(d) > days.indexOf(walkToday())) { toast(walkNames[d] + '에 열려요'); return; } walkDay = d; walkRedraw(); },
+  'walk-confess'() { walkConfess = !walkConfess; walkRedraw(); },
   'admin-invite'() { adminSheet('invite'); },
   'admin-kinds'() { adminSheet('kinds'); },
   'admin-out'() { adminSheet('out'); },
@@ -1980,7 +2037,7 @@ const acts = {
   },
   'demo-reset'() {
     closeSheet();
-    ls.del(K.demo); ls.del(K.reflect); ls.del(K.keep); ls.del(K.answers); ls.del(K.bookmark); ls.del(K.memo); ls.del(K.leadopen);
+    ls.del(K.demo); ls.del(K.reflect); ls.del(K.keep); ls.del(K.answers); ls.del(K.walkRead); ls.del(K.walkThought); ls.del(K.bookmark); ls.del(K.memo); ls.del(K.leadopen);
     [K.shareDone, K.recRefl, K.recAns, K.recEdit, K.recDel, K.recHide].forEach(ls.del); loadState();
     if (location.hash === '#start') route(true); else location.hash = '#start';
   },
@@ -1996,7 +2053,7 @@ const acts = {
     else q.focus();
   },
   'lesson-other'() { toast('데모에서는 이번 주 과만 펼칠 수 있어요'); },
-  // 나의 기록
+  // 내 기록
   'rec-tab'(e, el) { rec.view = el.dataset.v; recRedraw(); },
   'rec-prev'() { recStep(-1); }, 'rec-next'() { recStep(1); },
   'rec-period'() { periodSheet(); },
@@ -2103,6 +2160,7 @@ document.addEventListener('click', e => {
     const [k, v] = set.dataset.set.split(':');
     if (DISPLAY_KEYS.includes(k)) { S[k] = k === 'big' ? v === '1' : v; saveDisplay(); }
     else if (k === 'unit') { teardown(); D.unit = pick(v, ['family', 'single'], 'family'); if (D.unit === 'single') D.place = 'room'; saveDemo(); }
+    else if (k === 'walk') { D.walk = v === '2' ? 2 : 1; walkDay = ''; walkConfess = false; saveDemo(); }
     else if (k === 'bookmark') { if (atHome()) return; if (v === '1') { if (!hasBm()) ls.set(K.bookmark, JSON.stringify({ id: 'o2', at: Date.now() })); } else ls.del(K.bookmark); }   // 책갈피는 펼치기가 꽂는 것과 같은 자리
     else { D[k] = ['lastWeek', 'before', 'alt', 'readOpen', 'readTriple', 'two', 'noBooks', 'longTitle', 'newcomer'].includes(k) ? v === '1' : k === 'dimSec' ? (v === '5' ? 5 : 15) : v; saveDemo(); }
     rerender();
@@ -2130,7 +2188,8 @@ document.addEventListener('error', e => { if (e.target && e.target.classList && 
 // 한 줄 돌아보기: 쓰는 대로 기기에 남기고, 칸을 벗어날 때 "저장했어요"를 잠깐 보인다(실패하면 그때만 알린다)
 document.addEventListener('input', e => {
   const t = e.target;
-  if (t.id === 'lwInput') ls.set(K.reflect, t.value);
+  if (t.id === 'walkInput') { const thought = readJson(K.walkThought); thought[walkWeek().n] = t.value; ls.set(K.walkThought, JSON.stringify(thought)); }
+  else if (t.id === 'lwInput') ls.set(K.reflect, t.value);
   else if (t.matches && t.matches('textarea[data-id]')) { const id = t.dataset.id; sizeTa(t); setBookmark(id); clearTimeout(timers[id]); timers[id] = setTimeout(() => saveAns(id, t), 450); }
   else if ((t.id === 'kSentence' || t.id === 'kAction') && currentView() === 'read') { clearTimeout(keepT); keepT = setTimeout(saveKeepRead, 450); }
   else if (t.id === 'shelfQ') runShelfSearch();
