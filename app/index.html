@@ -718,11 +718,11 @@ body.sharing { overflow: hidden; }
   .sh-actions .btn { min-height: 44px; padding: 0 1.15em; font-size: 1em; border-radius: 12px; }
   .sh-books { grid-template-columns: repeat(6, minmax(0, 1fr)); column-gap: 22px; row-gap: 26px; }
 }
-/* 세 겹 책갈피(가로): 카드 맨 아래, 지금 끈과 같은 세 색을 위에서 아래로 쌓은 가는 세 줄. 왼쪽에서 오른쪽으로 길어진다(--len, 카드 안쪽 너비의 %). 몇 개인지는 어디에도 적지 않는다. 오른쪽 끝은 V 홈 */
-.sh-ribbon { display: block; height: 20px; margin-top: 12px; width: calc(var(--len, 20) * 1%); pointer-events: none; transition: width .3s ease;
-  background: linear-gradient(180deg, var(--accent) 0 calc(33.33% - .5px), transparent 0 calc(33.33% + .5px), var(--accent-mid) 0 calc(66.66% - .5px), transparent 0 calc(66.66% + .5px), var(--ink-2) 0);
-  clip-path: polygon(0 0, 100% 0, calc(100% - 9px) 50%, 100% 100%, 0 100%); }
-@media (prefers-reduced-motion: reduce) { .sh-ribbon { transition: none; } }
+/* 지금 읽는 책 카드의 과 점: 교회 진도(지난 과 · 이번 주 과 · 남은 과). 내가 쓴 것과 상관없고 숫자는 적지 않는다(철학 ③, 2026-11-10) */
+.sh-dots { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; margin-top: 12px; }
+.sh-dots i { display: block; width: 8px; height: 8px; border-radius: 999px; box-sizing: border-box; border: 1.5px solid var(--line-strong); }
+.sh-dots i.past { background: var(--accent-mid); border-color: var(--accent-mid); }
+.sh-dots i.now { width: 20px; background: var(--accent); border-color: var(--accent); }
 
 /* 책 안(목차) */
 .book-head .book-l { margin: 0; }
@@ -1368,7 +1368,7 @@ function aboutView() {
       <div class="about-names"><div class="about-name"><b>디다케</b><span class="greek">διδαχή</span><span class="soft">가르침</span></div><span aria-hidden="true">+</span><div class="about-name"><b>코이노니아</b><span class="greek">κοινωνία</span><span class="soft">교제</span></div></div>
       <p>디다코는 '가르침'을 뜻하는 디다케(διδαχή, didachē)와 '교제'를 뜻하는 코이노니아(κοινωνία, koinōnia)에서 영감을 얻은 이름이에요.</p><p class="hint" style="margin-top:10px">사도행전 2:42</p></section>
     <section class="card about-card"><h2>세 겹 책갈피 이야기</h2><p>전도서 4장의 세 겹으로 꼰 줄은 쉽게 끊어지지 않는다는 말씀을 떠올려요. 디다코의 로고는 그렇게 꼰 세 가닥이 책갈피가 된 모양이에요. 세 가닥은 성부·성자·성령이에요.</p></section>
-    <section class="card about-card"><h2>보상 대신 흔적</h2><p>디다코에는 점수나 상이 없어요. 대신 흔적이 남아요. 남긴 과마다 책장의 책갈피 끈이 조금씩 자라고, 다 읽은 교재는 교재 목록에 남고, 교재가 끝나면 그동안 남긴 한 문장이 한 장에 모여요. 이번 주의 질문을 끝까지 펴 본 주의 그림은 내 기록의 올해의 그림에 한 장씩 담겨요. 몇 개인지는 세지 않아요.</p></section>
+    <section class="card about-card"><h2>보상 대신 흔적</h2><p>디다코에는 점수나 상이 없어요. 대신 흔적이 남아요. 다 읽은 교재는 교재 목록에 남고, 교재가 끝나면 그동안 남긴 한 문장이 한 장에 모여요. 이번 주의 질문을 끝까지 펴 본 주의 그림은 내 기록의 올해의 그림에 한 장씩 담겨요. 몇 개인지는 세지 않아요.</p></section>
     <section class="card about-card"><h2>디다코는 말씀을 이렇게 이해해요</h2>
       ${steps.map(([title,desc,label,target],i)=>`<div class="about-step"><span class="step-no">${i+1}.</span><div><b>${title}</b><p>${desc}</p><a href="${target}">${label}</a></div></div>`).join('')}
     </section></div>`;
@@ -2289,11 +2289,11 @@ function readInit() {
   if (BM && !allQs().concat(G.triple).some(q => q.id === BM.id)) BM = null;
   editing.clear(); expanded.clear();
   renderAll();
-  // 이번 주의 '이어서 펼치기'로 오면 말씀을 열며 없이 책갈피가 꽂힌 질문으로 간다. 설정을 바꿔 다시 그릴 때는 말씀을 열며를 다시 띄우지 않는다
+  // 이번 주의 '이어서 펼치기'로 오면 말씀을 열며 없이 책갈피가 꽂힌 질문으로 간다. 설정을 바꿔 다시 그릴 때는 말씀을 열며를 다시 띄우지 않는다. 책장에서 들어오면(readFrom) 말씀을 열며를 띄우지 않는다(2026-11-10).
   const target = readResume && BM ? document.getElementById('q-' + BM.id) : null;
   readResume = false;
   if (target) { jumpedAt = Date.now(); target.scrollIntoView({ block: 'start' }); }
-  else if (D.readOpen && !reflow) showOpening();
+  else if (D.readOpen && !reflow && !readFrom) showOpening();
 }
 
 // ══ 나눔하기(#share) ══
@@ -2534,9 +2534,6 @@ function bookCover(b, size) {
   const hex = (color || COVERS.colors.find(row => row[0] === 'paper') || COVER_FALLBACK.colors[0])[1];
   return `<span class="book-cover${size === 'current' ? ' book-cover-current' : ''}" style="--cover-color:${hex}" aria-hidden="true">${coverSvg(cover, 'book-symbol')}</span>`;
 }
-// 책갈피의 길이(카드 안쪽 너비의 %): 남긴 과가 쌓인 만큼 길어진다
-const keptCount = b => b.lessons.filter(l => l.keep).length + (b.id === weekSel().book && (readJson(K.keep).sentence || readJson(K.keep).action) ? 1 : 0);
-const lenOf = b => 20 + Math.min(keptCount(b), 8) * 10;
 // 고른 책이 없거나 교재 목록에 없으면 사랑방 기본 교재를 사용한다
 const myBookId = () => shelfBooks().some(b => b.id === ls.get(K.myBook)) ? ls.get(K.myBook) : DATA.roomBook;
 const nowBooks = () => shelfBooks().filter(b => b.id === myBookId());
@@ -2548,6 +2545,12 @@ function capOf(b) {
 }
 // 아직 회원에게 열리지 않은 과(준비 중)는 목차에 넣지 않는다
 const tocLessons = b => b.lessons.filter(l => l.state !== 'prep');
+// 과 점: 회원 목차에 보이는 과(준비 중 제외)마다 점 하나. 지난 과는 채운 점, 이번 주 과는 긴 점, 다가오는 과는 빈 점이다.
+//  이번 주 과를 아직 공개하지 않았으면(weekHidden) 카드 글("이번 주 과를 준비하고 있어요")과 맞게 그 과도 빈 점으로 둔다
+const dotsHtml = b => `<span class="sh-dots" aria-hidden="true">${tocLessons(b).map(l => {
+  const hidden = weekHidden() && b.id === DATA.thisWeek.main.book && l.no === DATA.thisWeek.main.no;
+  return `<i class="${l.state === 'past' ? 'past' : l.state === 'now' && !hidden ? 'now' : ''}"></i>`;
+}).join('')}</span>`;
 // 지금 읽는 책 카드: 책 모양 표지와 글, 따로 누르는 책 열기·펼치기 단추
 function coverHtml(b) {
   const c = capOf(b);
@@ -2557,7 +2560,7 @@ function coverHtml(b) {
       <div class="sh-sm sh-kind"><span class="walk-tag">${esc(b.kind)}</span><span>${esc(b.period)}</span></div>
       <div class="sf xct" style="margin-top:4px">${esc(bTitle(b))}</div>
       ${weekHidden() ? '<div class="sh-sm sh-lesson">이번 주 과를 준비하고 있어요</div>' : c ? `<div class="sh-sm sh-lesson">${esc(c.lead)} ${esc(c.text)}</div><div class="sh-sm sh-date">${esc(c.date)}</div>` : ''}
-      <span class="sh-ribbon" style="--len:${lenOf(b)}" aria-hidden="true"></span>
+      ${dotsHtml(b)}
     </div>
     <div class="sh-actions">
       <button class="btn ghost" type="button" data-act="open-book" data-book="${b.id}">책 열기</button>

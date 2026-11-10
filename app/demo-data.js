@@ -7,7 +7,7 @@ window.DIDAKO_DEMO = {
   church: { dept: '청장년부', room: '2-20 사랑방' },
   // state: past 지났음 / now 이번 주 / prep 준비 중(회원 목차에는 아직 안 보임) / upcoming 다가오는 과
   // 책장(shelf)이 쓰는 것: kind 종류(GBS·새가족반), cover 표지(상징 motif × 색 color, app/covers.js), range 본문 범위,
-  //  과의 body(검색에 쓰는 쉬운 풀이. 성경 본문이 아니다), keep(그 과에서 오늘 남길 것을 남겼는가. 책갈피 끈이 길어지지만 숫자로는 보이지 않는다), mine(남긴 한 문장. 지난 책의 마지막 장에만 모인다)
+  //  과의 body(검색에 쓰는 쉬운 풀이. 성경 본문이 아니다), keep(그 과에서 오늘 남길 것을 남겼는가. 지금은 화면에 쓰지 않는다), mine(남긴 한 문장. 지난 책의 마지막 장에만 모인다)
   // 사랑방이 함께 읽는 교재. 처음에는 이것이 지금 읽는 책으로 놓인다
   roomBook: 'john',
   books: [
