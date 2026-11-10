@@ -653,14 +653,8 @@ body.sharing { overflow: hidden; }
 /* 배치: 휴대폰은 한 줄. 640px 이상은 가운데 읽는 폭에 넓게, 1000px 이상은 책 목차를 조금 더 넓게 둔다 */
 .shelf-wrap { max-width: 760px; margin: 0 auto; }
 @media (min-width: 1000px) { .shelf-wrap { max-width: 880px; } }
-/* 책장 첫 화면 PC(1000px 이상): 왼쪽 지금 읽는 책, 오른쪽 교재 목록. 이번 주 화면과 같은 넓이를 쓴다 */
-@media (min-width: 1000px) {
-  .shelf-wrap.shelf-home { max-width: none; }
-  .sh-grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 14px; align-items: start; }
-  .sh-left > .card:first-child, .sh-left > .week-top:empty + .card { margin-top: 12px; }
-  .sh-right > .xlb:first-of-type, .sh-right #shelfBrowse > .xlb:first-child { margin-top: 12px !important; }
-  .sh-grid .sh-stack.two { grid-template-columns: minmax(0, 1fr); }
-}
+/* 책장 첫 화면: 넓은 화면에서도 지금 읽는 책 아래에 교재 목록을 놓는다 */
+@media (min-width: 1000px) { .shelf-wrap.shelf-home { max-width: none; } }
 .shelf-wrap h1, .record-wrap h1 { word-break: keep-all; overflow-wrap: anywhere; }
 
 /* 검색 */
@@ -675,29 +669,48 @@ body.sharing { overflow: hidden; }
 .hit .hit-ref { font-size: .84em; color: var(--accent); font-family: var(--f-display); font-weight: 700; }
 .hit .hit-body { display: block; font-size: .86em; color: var(--ink-2); margin-top: .15em; line-height: 1.55; }
 
-/* 책장 첫 화면: 디다코 노트 탐구하기(note/index.html)의 작은 제목(.xlb)·카드(.xcard, .xct)·한 줄 목록(.xrow)·표지 크기(.wk-cover)를 참고했다.
-   노트는 html 글씨 크기가 --base라 rem으로 쓰고, 이 앱은 body가 --base라 같은 값을 calc(var(--base) * 배수)로 적었다(큰 글씨 설정도 똑같이 따라간다).
-   .sm은 design-styles.css의 .icon-btn.sm과 이름이 겹칠 수 있어 .sh-sm으로 적었다. 이 앱의 .card는 위아래 바깥 여백(12px)이 있어 .xcard·.xrow에서는 0으로 두고 간격은 자리마다 따로 적었다 */
+/* 책 표지: 크기와 관계없이 책등을 뺀 자리의 가운데에 같은 비율로 상징을 둔다 */
+.book-cover { display: block; position: relative; width: 100%; aspect-ratio: 3 / 4; overflow: hidden; border-radius: 3px 7px 7px 3px; background: color-mix(in srgb, var(--cover-color) 16%, var(--surface)); box-shadow: 0 1px 2px rgba(0,0,0,.08), 0 6px 14px -6px rgba(0,0,0,.22); }
+.book-cover::before { content: ''; position: absolute; inset: 0 auto 0 0; width: 7%; background: var(--cover-color); opacity: .55; }
+.book-cover::after { content: ''; position: absolute; top: 0; bottom: 0; left: 7%; width: 2px; background: rgba(255,255,255,.35); }
+.book-symbol { display: block; position: absolute; width: 70%; height: auto; aspect-ratio: 1; left: 18.5%; top: 50%; transform: translateY(-50%); }
+.cover-art > svg { display: none; width: 100%; height: 100%; }
+.cover-art > img { display: block; width: 100%; height: 100%; object-fit: contain; }
+.cover-art.cover-missing > svg { display: block; }
+.cover-art.cover-missing > img { display: none; }
+/* 책장 첫 화면의 작은 제목과 카드 제목은 기존 크기를 따른다 */
 .sf { font-family: var(--f-display); }
 .sh-sm { font-size: calc(var(--base) * .875); color: var(--ink-2); }
 .xlb { font-size: calc(var(--base) * .8125); font-weight: 700; color: var(--ink-2); margin: 20px 0 8px; }
 .xcard { padding: 14px 16px; margin: 0; }
 .xcard .xct { font-size: calc(var(--base) * 1.1875); font-weight: 700; line-height: 1.35; }
-.xrow { display: flex; align-items: center; justify-content: space-between; gap: 8px; width: 100%; min-height: 60px; margin: 8px 0 0; padding: 8px 16px; font-family: var(--f-body); font-weight: 400; font-size: calc(var(--base) * .9375); line-height: 1.4; color: var(--ink); text-align: left; cursor: pointer; }
-.xrow > .xrow-copy { flex: 1; min-width: 0; }
-.xrow > .cover-small { flex: 0 0 40px; width: 40px; height: 52px; border-radius: 6px; border: 1px solid var(--line); margin-right: 4px; }
-.xrow .sh-sm { display: block; font-size: calc(var(--base) * .8125); }
-.xch { color: var(--ink-2); font-size: calc(var(--base) * 1.25); }
-.wk-cover { display: block; width: 100%; height: auto; aspect-ratio: 16 / 9; object-fit: cover; border-radius: 12px; margin: 0 0 12px; background: var(--surface-2); }
-/* 책장 머리: 제목 오른쪽에 검색 단추(노트 .page-top과 같은 자리). 검색 칸은 단추를 누르면 열린다 */
+/* 책장 머리: 제목 오른쪽에 검색 단추. 검색 칸과 결과는 제목 아래에 열린다 */
 .sh-top { display: flex; justify-content: space-between; align-items: center; gap: 12px; min-height: 44px; }
 .sh-top .icon-btn { margin-right: -10px; }
-/* 지금 읽는 책 카드: 카드 전체가 누르는 자리. 1000px 이상에서 카드가 둘이면 나란히 */
-.sh-stack { display: grid; gap: 10px; }
-@media (min-width: 1000px) { .sh-stack.two { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
-.sh-card { display: flex; flex-direction: column; cursor: pointer; }
-.sh-card .sh-body { flex: 1; min-width: 0; }
-.sh-kind { display: flex; align-items: center; gap: 6px; }
+/* 지금 읽는 책: 왼쪽 표지, 오른쪽 글. 단추로만 책과 펼치기를 연다 */
+.sh-card { display: grid; grid-template-columns: 96px minmax(0, 1fr); gap: 14px; align-items: start; }
+.book-cover-current { width: 96px; }
+.sh-body { min-width: 0; }
+.sh-kind { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; }
+.sh-lesson { margin-top: 4px; line-height: 1.5; }
+.sh-date { margin-top: 2px; }
+.sh-actions { grid-column: 2; display: flex; flex-wrap: wrap; gap: 6px; }
+.sh-actions .btn { min-height: 36px; padding: 0 .8em; font-size: .88em; border-radius: 10px; }
+/* 교재 목록: 한 칸에 책 표지와 두 줄까지의 제목 */
+.sh-books { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); column-gap: 14px; row-gap: 18px; }
+.sh-book { display: flex; flex-direction: column; align-items: flex-start; gap: 5px; min-width: 0; padding: 0; border: 0; background: none; color: var(--ink); font-family: var(--f-body); text-align: left; cursor: pointer; }
+.sh-book-title { display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; overflow: hidden; font-size: calc(var(--base) * .875); font-weight: 700; line-height: 1.4; overflow-wrap: anywhere; margin-top: 3px; }
+.sh-book-period { font-size: calc(var(--base) * .75); color: var(--ink-2); line-height: 1.4; }
+.sh-book .walk-tag { max-width: 100%; min-height: 22px; padding: 2px 6px; font-size: calc(var(--base) * .625); white-space: normal; }
+@media (min-width: 640px) { .sh-books { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
+@media (min-width: 1000px) {
+  .sh-card { grid-template-columns: 140px minmax(0, 1fr) auto; align-items: center; gap: 22px; }
+  .book-cover-current { width: 140px; }
+  .sh-actions { grid-column: 3; flex-direction: column; }
+  .sh-actions .sh-read { order: -1; }
+  .sh-actions .btn { min-height: 44px; padding: 0 1.15em; font-size: 1em; border-radius: 12px; }
+  .sh-books { grid-template-columns: repeat(6, minmax(0, 1fr)); column-gap: 22px; row-gap: 26px; }
+}
 /* 세 겹 책갈피(가로): 카드 맨 아래, 지금 끈과 같은 세 색을 위에서 아래로 쌓은 가는 세 줄. 왼쪽에서 오른쪽으로 길어진다(--len, 카드 안쪽 너비의 %). 몇 개인지는 어디에도 적지 않는다. 오른쪽 끝은 V 홈 */
 .sh-ribbon { display: block; height: 20px; margin-top: 12px; width: calc(var(--len, 20) * 1%); pointer-events: none; transition: width .3s ease;
   background: linear-gradient(180deg, var(--accent) 0 calc(33.33% - .5px), transparent 0 calc(33.33% + .5px), var(--accent-mid) 0 calc(66.66% - .5px), transparent 0 calc(66.66% + .5px), var(--ink-2) 0);
@@ -1875,7 +1888,7 @@ const weekSel = () => {
 const shelfBooks = () => DATA.books;
 const bookById = id => shelfBooks().find(b => b.id === id);
 const bTitle = b => (b.id === 'john' && D.longTitle ? LONG_JOHN : b.title);
-// 같은 상징·색 조합으로 큰 표지와 작은 표지를 그린다. 없거나 알 수 없는 값은 세 겹 끈·종이색으로 대신한다
+// 같은 상징·색 조합으로 지금 읽는 책과 교재 목록의 표지를 그린다. 없거나 알 수 없는 값은 세 겹 끈·종이색으로 대신한다
 const bCover = b => b.id === 'john' ? { motif: D.jcoverMotif, color: D.jcoverColor } : b.cover;
 function coverSvg(cover, cls) {
   const selectedMotif = COVER_ITEMS.find(item => item.id === (cover || {}).motif);
@@ -1883,9 +1896,17 @@ function coverSvg(cover, cls) {
   const fallback = !selectedMotif || !selectedColor;
   const motif = fallback ? COVER_FALLBACK.groups[0].items[0] : selectedMotif;
   const color = fallback ? (COVERS.colors.find(row => row[0] === 'paper') || COVER_FALLBACK.colors[0]) : selectedColor;
-  const hex = color[1], shade = `color-mix(in srgb, ${hex} 16%, var(--surface))`;
-  const scale = cls === 'wk-cover' ? ' transform="translate(8 8) scale(.6667)"' : '';
-  return `<svg class="${cls}" viewBox="0 0 48 48" aria-hidden="true" style="color:color-mix(in srgb, ${hex} 72%, var(--ink));background:${shade}"><rect x="0" y="0" width="48" height="48" fill="${shade}"/><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"${scale}>${motif.svg}</g></svg>`;
+  const hex = color[1];
+  const svg = `<svg class="${motif.img ? '' : cls}" viewBox="0 0 48 48" aria-hidden="true" style="color:color-mix(in srgb, ${hex} 72%, var(--ink))"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">${motif.svg}</g></svg>`;
+  if (!motif.img) return svg;
+  return `<span class="${cls} cover-art" aria-hidden="true">${svg}<img src="${esc(motif.img)}" alt="" loading="lazy" decoding="async"></span>`;
+}
+function bookCover(b, size) {
+  const cover = bCover(b);
+  const valid = COVER_ITEMS.some(item => item.id === (cover || {}).motif);
+  const color = valid && COVERS.colors.find(row => row[0] === (cover || {}).color);
+  const hex = (color || COVERS.colors.find(row => row[0] === 'paper') || COVER_FALLBACK.colors[0])[1];
+  return `<span class="book-cover${size === 'current' ? ' book-cover-current' : ''}" style="--cover-color:${hex}" aria-hidden="true">${coverSvg(cover, 'book-symbol')}</span>`;
 }
 // 책갈피의 길이(카드 안쪽 너비의 %): 남긴 과가 쌓인 만큼 길어진다
 const keptCount = b => b.lessons.filter(l => l.keep).length + (b.id === weekSel().book && (readJson(K.keep).sentence || readJson(K.keep).action) ? 1 : 0);
@@ -1897,31 +1918,35 @@ const pastBooks = () => shelfBooks().filter(b => b.id !== myBookId()).sort((a, b
 function capOf(b) {
   const w = weekSel();
   const c = b.id === w.book ? b.lessons.find(l => l.no === w.no) : null;
-  return c ? { lead: '이번 주', text: `제${c.no}과 · ${c.name}`, date: c.date || DATA.thisWeek.date } : null;
+  return c ? { lead: '이번 주', text: `제${c.no}과 ${c.name}`, date: c.date || DATA.thisWeek.date } : null;
 }
 // 아직 회원에게 열리지 않은 과(준비 중)는 목차에 넣지 않는다
 const tocLessons = b => b.lessons.filter(l => l.state !== 'prep');
-// 지금 읽는 책 카드: 카드 전체를 누르면 책이 열린다. 위에서부터 표지, 종류 · 기간, 책 이름, 이번 주 과, 맨 아래 가로 세 겹 책갈피
+// 지금 읽는 책 카드: 책 모양 표지와 글, 따로 누르는 책 열기·펼치기 단추
 function coverHtml(b) {
   const c = capOf(b);
-  return `<div class="card xcard sh-card" role="button" tabindex="0" data-act="open-book" data-book="${b.id}" title="${esc(bTitle(b))}" aria-label="${esc(bTitle(b))} ${esc(b.period)} 책 열기">
+  return `<div class="card xcard sh-card">
+    ${bookCover(b, 'current')}
     <div class="sh-body">
-      ${coverSvg(bCover(b), 'wk-cover')}
-      <div class="sh-sm sh-kind">${kindIcon(b.kind)}<span>${esc(b.kind)} · ${esc(b.period)}</span></div>
+      <div class="sh-sm sh-kind"><span class="walk-tag">${esc(b.kind)}</span><span>${esc(b.period)}</span></div>
       <div class="sf xct" style="margin-top:4px">${esc(bTitle(b))}</div>
-      ${D.before ? '<div class="sh-sm" style="margin-top:4px;line-height:1.5">이번 주 과를 준비하고 있어요</div>' : c ? `<div class="sh-sm" style="margin-top:4px;line-height:1.5">${esc(c.lead)} ${esc(c.text)} · ${esc(c.date)}</div>` : ''}
+      ${D.before ? '<div class="sh-sm sh-lesson">이번 주 과를 준비하고 있어요</div>' : c ? `<div class="sh-sm sh-lesson">${esc(c.lead)} ${esc(c.text)}</div><div class="sh-sm sh-date">${esc(c.date)}</div>` : ''}
+      <span class="sh-ribbon" style="--len:${lenOf(b)}" aria-hidden="true"></span>
     </div>
-    <span class="sh-ribbon" style="--len:${lenOf(b)}" aria-hidden="true"></span>
+    <div class="sh-actions">
+      <button class="btn ghost" type="button" data-act="open-book" data-book="${b.id}">책 열기</button>
+      <button class="btn sh-read" type="button" data-act="read-go" data-resume="1" data-from="${b.id}">${hasBm() ? '이어서 펼치기' : '펼치기'}</button>
+    </div>
   </div>`;
 }
-// 교재 목록: 한 줄에 한 권(작은 표지, 책 이름, 종류 · 기간)
-const pastRowHtml = b => `<button class="card xrow" type="button" data-act="open-book" data-book="${b.id}" title="${esc(bTitle(b))}" aria-label="${esc(bTitle(b))} ${esc(b.period)} 책 열기">${coverSvg(bCover(b), 'cover-small')}<span class="xrow-copy"><span style="display:block">${esc(bTitle(b))}</span><span class="sh-sm">${esc(b.kind)} · ${esc(b.period)}</span></span>${b.closed ? '' : '<span class="walk-tag">교회에서 읽는 중</span>'}<span class="xch" aria-hidden="true">›</span></button>`;
+// 교재 목록: 책 표지 아래에 이름과 기간, 열린 교재 알약을 둔다
+const shelfBookHtml = b => `<button class="sh-book" type="button" data-act="open-book" data-book="${b.id}" title="${esc(bTitle(b))}" aria-label="${esc(bTitle(b))} ${esc(b.period)} 책 열기">${bookCover(b, 'list')}<span class="sh-book-title">${esc(bTitle(b))}</span><span class="sh-book-period">${esc(b.period)}</span>${b.closed ? '' : '<span class="walk-tag">교회에서 읽는 중</span>'}</button>`;
 function browseHtml() {
   if (D.noBooks) {
     return `<section class="card empty" aria-labelledby="emT">${ic('shelf')}<h2 id="emT">아직 책장에 꽂힌 책이 없어요</h2>
       <p class="soft" style="margin:0">이번 주 과가 배포되면 이곳에 책이 놓여요.</p></section>`;
   }
-  return `<h2 class="xlb" style="margin-top:14px">교재 목록</h2>${pastBooks().map(pastRowHtml).join('')}`;
+  return `<h2 class="xlb" style="margin-top:14px">교재 목록</h2><div class="sh-books">${pastBooks().map(shelfBookHtml).join('')}</div>`;
 }
 // 검색(제목·본문): 책 제목과 과 제목·장절·풀이를 훑는다. 내 기록은 훑지 않는다
 function searchHtml(q) {
@@ -1981,13 +2006,11 @@ function shelfView(arg) {
   return `<div class="shelf-wrap shelf-home">
     <p class="eyebrow top-eyebrow">${esc(groupName())}</p>
     <div class="sh-top"><h1>책장</h1>${D.noBooks ? '' : `<button class="icon-btn" type="button" aria-label="검색" aria-expanded="false" aria-controls="shelfSearch" data-act="shelf-search">${SEARCH_IC}</button>`}</div>
-    ${D.noBooks ? browseHtml() : `<div class="sh-grid"><div class="sh-left">
-      <h2 class="xlb" style="margin-top:14px">지금 읽는 책</h2>
-      <div class="sh-stack">${nowBooks().map(coverHtml).join('')}</div>
-    </div><div class="sh-right">
+    ${D.noBooks ? browseHtml() : `
       <div class="search" id="shelfSearch" hidden>${ic('search')}<input class="field" id="shelfQ" type="search" placeholder="제목이나 본문으로 찾기" aria-label="책장 검색" autocomplete="off"></div><div id="shelfResults" hidden></div>
-      <div id="shelfBrowse">${browseHtml()}</div>
-    </div></div>`}
+      <h2 class="xlb" style="margin-top:14px">지금 읽는 책</h2>
+      ${nowBooks().map(coverHtml).join('')}
+      <div id="shelfBrowse">${browseHtml()}</div>`}
   </div>`;
 }
 let shelfLesson = '';
@@ -2436,7 +2459,10 @@ document.addEventListener('keydown', e => {
   if (!$('#pop').hidden) closeSheet(); else if (!$('#opening').hidden) hideOpening(); else closeMenu();
 });
 // 책장 카드의 표지 그림을 못 불러오면 그 자리를 숨긴다(카드는 그대로)
-document.addEventListener('error', e => { if (e.target && e.target.classList && e.target.classList.contains('wk-cover')) e.target.hidden = true; }, true);
+// 그림을 못 불러오면 같은 자리의 선 그림을 보여 준다.
+document.addEventListener('error', e => {
+  if (e.target instanceof HTMLImageElement && e.target.parentElement.classList.contains('cover-art')) e.target.parentElement.classList.add('cover-missing');
+}, true);
 // 한 줄 돌아보기: 쓰는 대로 기기에 남기고, 칸을 벗어날 때 "저장했어요"를 잠깐 보인다(실패하면 그때만 알린다)
 document.addEventListener('input', e => {
   const t = e.target;
