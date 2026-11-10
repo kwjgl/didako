@@ -446,6 +446,8 @@ button.badge-btn { appearance: none; font-family: inherit; line-height: inherit;
 .help-btn.on { color: var(--ink); }
 .more .verse { background: none; color: var(--ink-2); font-family: inherit; font-weight: 400; padding: 0; }
 .more .verse + .verse::before { content: '·'; margin-right: .45em; }
+.more a.verse { text-decoration: underline; text-underline-offset: 3px; }
+.more a.verse::before { display: inline-block; text-decoration: none; }
 .pn.lead { background: var(--leader-soft); border-left: 5px solid var(--leader); }
 .pn.lead .lab { color: var(--leader); margin: 0; }
 .pn.lead .pn-h { display: flex; justify-content: space-between; align-items: center; gap: 8px; }
@@ -522,7 +524,7 @@ button.badge-btn { appearance: none; font-family: inherit; line-height: inherit;
 .q-eyebrow { font-size: .8em; color: var(--ink-2); }
 .bm { display: inline-flex; align-items: center; gap: .35em; font-size: .78em; font-weight: 600; color: var(--accent); }
 .bm[hidden] { display: none !important; }
-.q-t { font-family: var(--f-display); font-weight: 700; font-size: 1.15em; line-height: 1.55; margin: .15em 0 .2em; word-break: keep-all; }
+.q-t { font-family: var(--f-display); font-weight: 700; font-size: 1.15em; line-height: 1.55; margin: .15em 0 .2em; word-break: keep-all; white-space: pre-line; }
 .qcard .help-btn { align-self: flex-start; margin-left: -.8em; }
 .qcard .more { margin-top: .2em; margin-bottom: .4em; }
 .qcard .pn.lead { font-size: .88em; margin-top: .5em; }
@@ -601,7 +603,7 @@ body.sharing { overflow: hidden; }
 .q-core { width: 100%; max-width: 680px; min-width: 0; }
 .q-aux { flex: 1 1 0; min-height: 0; overflow-y: auto; width: 100%; max-width: 680px; margin: 0 auto; padding: 2px 0 16px; display: flex; flex-direction: column; gap: 10px; font-size: .88em; }
 .q-aux .more { margin: 0; align-items: center; text-align: center; color: var(--ink-2); }
-.q-text { text-align: center; position: relative; z-index: 9; transition: color .15s ease-out; font-family: var(--f-display); font-weight: 700; font-size: clamp(1.55em, 6vmin, 2.5em); line-height: 1.5; margin: 0; word-break: keep-all; text-wrap: balance; }
+.q-text { white-space: pre-line; text-align: center; position: relative; z-index: 9; transition: color .15s ease-out; font-family: var(--f-display); font-weight: 700; font-size: clamp(1.55em, 6vmin, 2.5em); line-height: 1.5; margin: 0; word-break: keep-all; text-wrap: balance; }
 .passage-big { font-family: var(--f-display); font-weight: 700; font-size: clamp(2.2em, 10vmin, 4em); line-height: 1.3; margin: .1em 0 .5em; text-align: center; word-break: keep-all; }
 .center { text-align: center; }
 .cover-name { font-family: var(--f-display); font-weight: 700; font-size: clamp(2em, 8.5vmin, 3.2em); line-height: 1.35; text-align: center; margin: 0; }
@@ -942,6 +944,7 @@ button.gallery-cell { display: block; width: 100%; padding: 0; cursor: pointer; 
 
 <script src="covers.js"></script>
 <script src="demo-data.js"></script>
+<script src="book-gospel.js"></script>
 <script>
 (() => {
 'use strict';
@@ -1090,8 +1093,8 @@ function closeMenu() { const m = $('#settings'); m.hidden = true; $('#gearBtn').
 // ── 화면 이름표 ──
 // 이름표와 어느 탭이 켜지는지는 여기에 모아 둔다. 아직 만들지 않은 화면은 차분한 안내 한 장으로 연다(막다른 길이 없게 이번 주로 가는 링크를 둔다)
 const PLACE = {
-  wq: ['이번 주의 질문', 'week'], read: ['펼치기', 'week'], share: ['나눔하기', 'share'], shelf: ['책장', 'shelf'], record: ['내 기록', 'record'], records: ['모든 기록', 'record'], gallery: ['올해의 그림', 'record'], more: ['더보기', 'more'],
-  church: ['우리 사랑방', 'more'], prep: ['진행 준비', 'week'], manage: ['교재 관리', 'more'], admin: ['관리', 'more'], about: ['디다코 소개', 'more'], feedback: ['의견 보내기', 'more']
+  wq: ['이번 주의 질문', 'week'], read: ['펼치기', 'week'], share: ['나눔하기', 'share'], shelf: ['책장', 'shelf'], record: ['내 기록', 'record'], records: ['모든 기록', 'record'], gallery: ['올해의 그림', 'record'], rooms: ['사랑방 전체 보기', 'more'], more: ['더보기', 'more'],
+  church: ['우리 사랑방', 'more'], prep: ['진행 준비', 'share'], manage: ['교재 관리', 'more'], admin: ['관리', 'more'], about: ['디다코 소개', 'more'], feedback: ['의견 보내기', 'more']
 };
 const VIEWS = ['start', 'week'].concat(Object.keys(PLACE));
 // 책 안(#book-교재)과 기록 상세(#rec-기록)는 책장·내 기록 안의 화면이다
@@ -1250,13 +1253,15 @@ function startView() {
 
 // ── 더보기(C-03) ──
 let dispOpen = false;
+let roomState = null;
+const myRoom = () => roomState || (roomState = { members: DATA.rooms.mine.members.slice(), pending: DATA.rooms.mine.pending.map(p => ({ ...p })) });
 function moreView() {
   const room = DATA.rooms.mine;
   const chevron = '<span class="ch" aria-hidden="true">›</span>';
   const jobRow = (title, desc, target) => `<a class="gr" href="${target}"><span class="gt"><b>${title}</b><span class="gd">${desc}</span></span><span class="role-tag ${D.role === 'leader' ? 'leader' : 'admin'}">${roleName()}</span>${chevron}</a>`;
   let jobs = '';
   if (D.role === 'leader') jobs = jobRow('우리 사랑방', '함께하는 사람 · 연결 승인', '#church');
-  else if (D.role === 'pastor') jobs = jobRow('교재 관리', '교재와 과를 꾸리고 배포해요', '#manage') + `<button class="gr" type="button" data-act="more-soon"><span class="gt"><b>사랑방 전체 보기</b><span class="gd">모든 사랑방의 명단과 연결 상태</span></span><span class="role-tag admin">목사님</span>${chevron}</button>`;
+  else if (D.role === 'pastor') jobs = jobRow('교재 관리', '교재와 과를 꾸리고 배포해요', '#manage') + jobRow('사랑방 전체 보기', '모든 사랑방의 명단과 연결 상태', '#rooms');
   else if (D.role === 'admin') jobs = jobRow('관리', '교회 · 부서 · 사랑방 · 명단을 꾸려요', '#admin');
   return `<div class="page-top"><h1>더보기</h1></div>
     <div class="more-grid"><div>
@@ -1266,7 +1271,7 @@ function moreView() {
       <div class="gc" style="margin:14px 0;padding-top:14px;padding-bottom:14px">
         <b>우리 사랑방</b><p>${esc(room.name)}</p>
         <p class="mlabel">리더</p><div class="kids"><span class="kid lead">${esc(room.leader)}</span><span class="kid lead">${esc(room.coLeader)} · 코리더</span></div>
-        <p class="mlabel">함께하는 사람</p><div class="kids">${room.members.map(n => `<span class="kid">${esc(n)}</span>`).join('')}</div>
+        <p class="mlabel">함께하는 사람</p><div class="kids">${myRoom().members.map(n => `<span class="kid">${esc(n)}</span>`).join('')}</div>
         <p class="hint">이름만 보여요. 서로 얼마나 썼는지는 보이지 않아요.</p>
         <p class="hint">사랑방이 바뀌면 리더나 관리자에게 알려 주세요.</p>
       </div>
@@ -1336,6 +1341,48 @@ function feedbackView() {
         <button class="switch${s.named?' on':''}" type="button" role="switch" aria-label="이름 밝히기" aria-checked="${s.named}" data-act="fb-named"><span></span></button></div>
       <button class="btn wide" id="feedbackSend" type="button" data-act="fb-send" ${s.text.trim()?'':'disabled'}>보내기</button>
       <p class="hint">디다코를 만드는 사람이 읽어요. 답장은 따로 오지 않아요.</p></section></div>`;
+}
+
+// ── 우리 사랑방(L-02): 바뀐 명단은 화면에서만 기억한다 ──
+function churchView() {
+  if (D.role !== 'leader') return `<div class="page-top"><h1>우리 사랑방</h1></div>
+    <section class="card calm"><p class="calm-t">리더가 여는 화면이에요</p>
+      <p class="soft" style="margin:0">데모 설정에서 역할을 리더로 바꿔 보세요.</p>
+      <a class="btn ghost" href="#more">더보기로 돌아가기</a></section>`;
+  const room = DATA.rooms.mine, { members, pending } = myRoom();
+  return `<a class="back-link" href="#more">${ic('back')}<span>더보기</span></a>
+    <p class="eyebrow top-eyebrow">${esc(room.name)} · 리더</p><div class="page-top"><h1>우리 사랑방</h1></div>
+    <div class="more-grid"><div>
+      <div class="gl">연결 승인${pending.length ? ` · 기다리는 요청 ${pending.length}명` : ''}</div><div class="gc">
+        ${pending.length ? pending.map((p, i) => `<div class="gr"><span class="gt"><b>${esc(p.name)}</b><span class="gd">카카오 닉네임 · ${esc(p.nick)}</span></span>
+          <div class="set-btns"><button class="btn ghost small" type="button" data-act="room-reject" data-i="${i}" aria-label="${esc(p.name)} 거절">거절</button><button class="btn small" type="button" data-act="room-approve" data-i="${i}" aria-label="${esc(p.name)} 승인">승인</button></div></div>`).join('')
+          : '<div class="gr"><span class="gt"><span class="gd">기다리는 요청이 없어요. 새로 들어온 사람이 연결을 요청하면 여기에 보여요.</span></span></div>'}
+      </div>
+    </div><div>
+      <div class="gl">명단 · 연결된 사람 ${2 + members.length}명</div><div class="gc">
+        <div class="gr"><span class="gt"><b>${esc(room.leader)}</b></span><span class="kid lead">리더</span></div>
+        <div class="gr"><span class="gt"><b>${esc(room.coLeader)}</b></span><span class="kid lead">코리더</span></div>
+        ${members.map((name, i) => `<div class="gr"><span class="gt"><b>${esc(name)}</b><span class="gd">연결됨</span></span>${name.endsWith('(나)') ? '' : `<button class="btn ghost small" type="button" data-act="room-dc" data-i="${i}" aria-label="${esc(name)} 연결 해제">연결 해제</button>`}</div>`).join('')}
+      </div>
+    </div></div>
+    <p class="soft">${ic('lock')} 이름과 연결 상태만 보여요. 묵상 기록은 잠겨 있어서 리더도 볼 수 없어요.</p>`;
+}
+function roomRedraw() { const y = window.scrollY; route(false); window.scrollTo(0, y); }
+
+// ── 사랑방 전체 보기(P-04): 목사님은 이름과 연결 상태만 본다 ──
+function roomsView() {
+  if (D.role !== 'pastor') return `<div class="page-top"><h1>사랑방 전체 보기</h1></div>
+    <section class="card calm"><p class="calm-t">목사님이 여는 화면이에요</p>
+      <p class="soft" style="margin:0">데모 설정에서 역할을 목사님으로 바꿔 보세요.</p>
+      <a class="btn ghost" href="#more">더보기로 돌아가기</a></section>`;
+  const rooms = DATA.admin.depts.find(d => d.name === DATA.church.dept).rooms;
+  return `<a class="back-link" href="#more">${ic('back')}<span>더보기</span></a>
+    <p class="eyebrow top-eyebrow">${esc(DATA.church.dept)} 전체 · 목사님</p><div class="page-top"><h1>사랑방 전체 보기</h1></div>
+    ${statusCard()}
+    <div class="gl">사랑방</div><div class="gc">
+      ${rooms.map((r, i) => `<button class="gr" type="button" data-act="rooms-open" data-i="${i}" aria-label="${esc(r.name)} 명단 보기"><span class="gt"><b>${esc(r.name)}</b><span class="gd">${esc(r.leader)}${r.co ? ' · ' + esc(r.co) : ''}</span></span><span class="hint">연결된 사람 ${r.name === DATA.rooms.mine.name ? 2 + myRoom().members.length : r.n}명</span><span class="ch" aria-hidden="true">›</span></button>`).join('')}
+    </div>
+    <p class="soft">${ic('lock')} 묵상 기록은 잠겨 있어서 목사님도 볼 수 없어요. 이름과 연결 상태만 보여요.</p>`;
 }
 
 // ── 관리(A-01): 데모는 보기와 시트까지만, 바뀐 것은 저장하지 않는다 ──
@@ -1440,8 +1487,17 @@ const isLead = () => D.role === 'leader' || D.role === 'pastor';
 const NOLEAD = '등록된 해설이 없어요';
 // 해설 접기/펼치기: 고른 것은 이 기기에 기억하고 모든 질문에 적용한다(기본은 펼침)
 const leadOpen = () => ls.get(K.leadopen) !== '0';
+// 관련 구절: 장절을 누르면 대한성서공회 성경 읽기(표준새번역)가 새 창으로 열린다. 본문은 가져오지 않고 길만 연다(철학 ⑥).
+//  "요한복음 4:24", "시편 139:1~6"처럼 "책 장:절"로 쓴 것만 잇고, 알아듣지 못하면 글자만 보인다
+const BIBLE_BOOKS = '창세기 gen 출애굽기 exo 레위기 lev 민수기 num 신명기 deu 여호수아 jos 사사기 jdg 룻기 rut 사무엘상 1sa 사무엘하 2sa 열왕기상 1ki 열왕기하 2ki 역대상 1ch 역대하 2ch 에스라 ezr 느헤미야 neh 에스더 est 욥기 job 시편 psa 잠언 pro 전도서 ecc 아가 sng 이사야 isa 예레미야 jer 예레미야애가 lam 에스겔 ezk 다니엘 dan 호세아 hos 요엘 jol 아모스 amo 오바댜 oba 요나 jnh 미가 mic 나훔 nam 하박국 hab 스바냐 zep 학개 hag 스가랴 zec 말라기 mal 마태복음 mat 마가복음 mrk 누가복음 luk 요한복음 jhn 사도행전 act 로마서 rom 고린도전서 1co 고린도후서 2co 갈라디아서 gal 에베소서 eph 빌립보서 php 골로새서 col 데살로니가전서 1th 데살로니가후서 2th 디모데전서 1ti 디모데후서 2ti 디도서 tit 빌레몬서 phm 히브리서 heb 야고보서 jas 베드로전서 1pe 베드로후서 2pe 요한일서 1jn 요한이서 2jn 요한삼서 3jn 유다서 jud 요한계시록 rev'
+  .split(' ').reduce((o, w, i, a) => { if (i % 2 === 0) o[w] = a[i + 1]; return o; }, {});
+function bibleUrl(ref) {
+  const m = /^(\S+)\s+(\d+):(\d+)/.exec(String(ref || '').trim()), code = m && BIBLE_BOOKS[m[1]];
+  return code ? `https://www.bskorea.or.kr/bible/korbibReadpage.php?version=SAE&book=${code}&chap=${+m[2]}&sec=${+m[3]}` : '';
+}
+const verseChip = v => { const u = bibleUrl(v); return u ? `<a class="verse" href="${esc(u)}" target="_blank" rel="noopener" aria-label="${esc(v)} 성경 펴기 (새 창)">${esc(v)}</a>` : `<span class="verse">${esc(v)}</span>`; };
 const helpHtml = q => (q.sub || q.vs) ? `<button class="help-btn" type="button" data-act="more" aria-expanded="false">${ic('info')}도움말</button>
-  <div class="more" hidden>${q.sub ? `<p class="soft">${esc(q.sub)}</p>` : ''}${q.vs ? `<div class="verse-row"><span class="lab">관련 구절</span>${q.vs.map(v => `<span class="verse">${esc(v)}</span>`).join('')}</div>` : ''}</div>` : '';
+  <div class="more" hidden>${q.sub ? `<p class="soft">${esc(q.sub)}</p>` : ''}${q.vs ? `<div class="verse-row"><span class="lab">관련 구절</span>${q.vs.map(verseChip).join('')}</div>` : ''}</div>` : '';
 const leadHtml = q => `<div class="pn lead${leadOpen() ? '' : ' closed'}"><div class="pn-h"><p class="lab">리더·목사님</p><button class="fold" type="button" data-act="fold" aria-expanded="${leadOpen()}">${leadOpen() ? '접기' : '펼치기'}</button></div>${q.lead ? `<p class="t">${esc(q.lead)}</p>` : `<p class="t empty">${NOLEAD}</p>`}</div>`;
 
 // ── 세 가닥을 엮은 줄(시안과 같은 그림) ──
@@ -1507,8 +1563,9 @@ function saveKeepRead(fromBlur) {
 // 이 기기에 두는 것(데모는 기기에만 둔다. 실제 앱에서는 잠근 덩어리로 서버에 맡긴다): 내 생각 {질문 ID: 글}, 책갈피 {id, at}
 let answers = {}, BM = null, readResume = false, reflow = false;
 // 책장에서 펼치면 어느 책에서 왔는지(교재 id). 위쪽 돌아가기와 맨 끝의 돌아가기가 그 책의 과 목차로 이어진다(설계서 M-04). 이번 주에서 오면 비어 있고 이번 주로 돌아간다
-let readFrom = '';
-const readBack = () => { const b = readFrom && DATA.books.find(x => x.id === readFrom); return b ? { href: '#book-' + b.id, name: bTitle(b) } : { href: '#shelf', name: '책장' }; };
+let readFrom = '', readAsMember = false;
+let shareAuto = false;
+const readBack = () => { if (readAsMember) return { href: '#prep', name: '진행 준비' }; const b = readFrom && DATA.books.find(x => x.id === readFrom); return b ? { href: '#book-' + b.id, name: bTitle(b) } : { href: '#shelf', name: '책장' }; };
 const editing = new Set(), status = {}, timers = {}, expanded = new Set();
 let cordDone = false, jumpedAt = 0, lastInput = 0, scrollT = 0;
 const allQs = () => G.stages.flatMap(s => s.qs).concat(D.readTriple ? G.triple : []);
@@ -1526,7 +1583,7 @@ function qHtml(st, qi, q) {
   return `<article class="card qcard" id="q-${q.id}" data-qid="${q.id}" aria-labelledby="qt-${q.id}">
     <div class="q-meta"><span class="q-eyebrow">${esc(st.name)} · ${qi + 1}</span><span class="bm" hidden>${mkIc()}책갈피</span></div>
     <h3 class="q-t" id="qt-${q.id}">${esc(q.t)}</h3>
-    ${helpHtml(q)}${isLead() ? leadHtml(q) : ''}
+    ${helpHtml(q)}${isLead() && !readAsMember ? leadHtml(q) : ''}
     <div class="ans" data-ans="${q.id}"></div></article>`;
 }
 function deepHtml() {
@@ -1560,6 +1617,45 @@ function tocHtml() {
   h += `<p class="toc-grp">마무리</p><button type="button" class="toc-q" data-act="goto" data-to="wrapup"><span class="tn"></span><span class="tt">모임에 가지 못했다면</span><span></span></button>`;
   return h;
 }
+// ══ 진행 준비(#prep): 나눔하기의 내 메모와 같은 자리를 쓴다 ══
+function prepView() {
+  if (!isLead()) return `<div class="page-top"><h1>진행 준비</h1></div>
+    <section class="card calm"><p class="calm-t">리더와 목사님이 여는 화면이에요</p>
+      <p class="soft" style="margin:0">데모 설정에서 역할을 리더나 목사님으로 바꿔 보세요.</p>
+      <a class="btn ghost" href="#share">나눔하기로 돌아가기</a></section>`;
+  G = readyGuide(); if (!G) return noGuideView('진행 준비');
+  const L = thisLesson(), memos = readMemo();
+  const memo = key => `<div class="pn memo"><label class="lab" for="pm-${key}">${ic('lock')}내 진행 메모</label><textarea class="field" id="pm-${key}" data-memo-key="${key}" rows="2" maxlength="1000" placeholder="진행하며 기억할 것">${esc(memos[key] || '')}</textarea></div>`;
+  const toc = G.stages.map(st => `<p class="toc-grp">${esc(st.name)}</p>${st.qs.map((q, i) => `<button type="button" class="toc-q" data-act="goto" data-to="p-${q.id}"><span class="tn">${i + 1}</span><span class="tt">${esc(q.t)}</span><span></span></button>`).join('')}`).join('')
+    + (G.triple.length ? `<p class="toc-grp">깊이 묵상하기</p><button type="button" class="toc-q" data-act="goto" data-to="p-deep"><span class="tn"></span><span class="tt">아버지 · 아들 · 성령</span><span></span></button>` : '');
+  return `<div class="read-wrap">
+    <a class="back-link" href="#share">${ic('back')}<span>나눔하기</span></a>
+    <p class="eyebrow top-eyebrow">${esc(groupName())} · 이번 주</p>
+    <div class="page-top"><h1>진행 준비</h1></div>
+    <div class="read-grid">
+      <div class="rg-head">
+        <section class="card today read-head" aria-labelledby="lessonTitle">
+          <p class="lesson-book">${bookHtml()}</p><h2 class="lesson-title" id="lessonTitle">${esc(L.title)}</h2>
+          <span class="passage-chip">${esc(L.ref)}</span>${L.intro ? `<p class="fine">${esc(L.intro)}</p>` : ''}
+        </section>
+        ${G.guide ? `<section class="card"><p class="opt-name">전체 진행 안내</p><div class="pn lead"><p class="lab">리더·목사님</p><p class="t">${esc(G.guide)}</p></div></section>` : ''}
+      </div>
+      <section class="card toc rg-toc" aria-label="단계 목록">
+        <button class="toc-btn" type="button" id="tocBtn" data-act="toc" aria-expanded="false" aria-controls="tocList"><span class="l">${ic('list')}단계 목록</span>${ic('chev', 'ch')}</button>
+        <div class="toc-list" id="tocList" hidden>${toc}</div>
+      </section>
+      <div class="rg-body">
+        ${G.stages.map((st, si) => `<section class="stage-sec"><h2 class="stage-h">${esc(st.name)}</h2>${st.qs.map((q, qi) => `<article class="card qcard" id="p-${q.id}" aria-labelledby="pt-${q.id}">
+          <div class="q-meta"><span class="q-eyebrow">${esc(st.name)} · ${qi + 1}</span></div>
+          <h3 class="q-t" id="pt-${q.id}">${esc(q.t)}</h3>${helpHtml(q)}${leadHtml(q)}${memo(si + '-' + qi)}</article>`).join('')}</section>`).join('')}
+        ${G.triple.length ? `<section class="card deep" id="p-deep" aria-labelledby="prepDeepT"><p class="eyebrow" style="margin:0">깊이 묵상하기</p><h2 class="d-lead" id="prepDeepT">오늘 말씀에서 삼위일체 하나님을 묵상해요.</h2>
+          ${G.triple.map(t => `<div class="tri-item"><div class="q-meta"><span class="who">${esc(t.who)}</span></div><h3 class="q-t">${esc(t.t)}</h3>${memo(t.id)}</div>`).join('')}</section>` : ''}
+        <div class="end-btns"><button type="button" class="btn" data-act="prep-start">나눔 시작</button><button type="button" class="btn ghost" data-act="later">리더용 인쇄</button><button type="button" class="btn ghost" data-act="prep-member">회원 화면으로 보기</button></div>
+      </div>
+    </div>
+  </div>`;
+}
+
 function readView() {
   G = readyGuide(); if (!G) return noGuideView('펼치기');
   const L = thisLesson();
@@ -1572,6 +1668,7 @@ function readView() {
         <p class="lesson-book">${bookHtml()}</p>
         <h2 class="lesson-title" id="lessonTitle">${esc(L.title)}</h2>
         <span class="passage-chip">${esc(L.ref)}</span>
+        ${readAsMember ? '<p class="fine">회원에게 보이는 모습이에요. 해설은 보이지 않아요.</p>' : ''}
         <p class="fine">쓰지 않아도 괜찮아요. 미리 생각을 남기고 싶은 질문에만 남겨요.</p>
       </section>
       <section class="card toc rg-toc" aria-label="단계 목록">
@@ -1824,7 +1921,7 @@ function renderStep() {
     html = `<div class="q-top"><div class="q-core"><p class="st-eyebrow">${esc(G.stages[s.si].name)}</p><h2 class="q-text">${esc(q.t)}</h2></div></div>
       <div class="q-aux">
       ${hasMore ? `<button class="help-btn" type="button" data-act="more" aria-expanded="false">${ic('info')}도움말</button>
-      <div class="more" hidden>${q.sub ? `<p class="soft">${esc(q.sub)}</p>` : ''}${q.vs ? `<div class="verse-row"><span class="lab">관련 구절</span>${q.vs.map(v => `<span class="verse">${esc(v)}</span>`).join('')}</div>` : ''}</div>` : ''}
+      <div class="more" hidden>${q.sub ? `<p class="soft">${esc(q.sub)}</p>` : ''}${q.vs ? `<div class="verse-row"><span class="lab">관련 구절</span>${q.vs.map(verseChip).join('')}</div>` : ''}</div>` : ''}
       ${panels && mine ? `<div class="pn mine"><p class="lab">${ic('lock')}내 생각</p><p class="t">${esc(mine)}</p></div>` : ''}
       ${leader ? `${leadHtml(q)}
       <div class="pn memo"><label class="lab" for="memoText">${ic('lock')}내 메모</label><textarea class="field" id="memoText" rows="2" data-key="${key}" placeholder="진행하며 기억할 것">${esc(readMemo()[key] || '')}</textarea></div>` : ''}
@@ -2208,7 +2305,8 @@ function route(moved) {
   // 모르는 주소이거나 데모로 들어오기 전이면 첫 화면(들어온 뒤의 빈 주소는 이번 주)
   if (!v) v = D.entered ? 'week' : 'start';
   else if (v !== 'start' && !D.entered) v = 'start';
-  if (v !== 'read') readFrom = '';
+  if (v !== 'read') { readFrom = ''; readAsMember = false; }
+  if (v !== 'share') shareAuto = false;
   // 없는 책, 없는 기록이면 목록으로(책이 하나도 없게 한 상태에서도)
   if (v === 'shelf' && arg && (D.noBooks || !bookById(arg))) arg = '';
   if (v === 'record' && arg && !recById(arg)) arg = '';
@@ -2219,7 +2317,7 @@ function route(moved) {
   $('#topbar').classList.toggle('bare', start);
   $('#topnav').hidden = start; $('#tabs').hidden = start;
   document.body.dataset.view = v;
-  $('#view').innerHTML = start ? startView() : v === 'week' ? weekView() : v === 'wq' ? wqView() : v === 'read' ? readView() : v === 'share' ? shareView() : v === 'shelf' ? shelfView(arg) : v === 'record' ? recordView(arg) : v === 'records' ? recordsView() : v === 'gallery' ? galleryView() : v === 'more' ? moreView() : v === 'admin' ? adminView() : v === 'about' ? aboutView() : v === 'feedback' ? feedbackView() : placeView(v);
+  $('#view').innerHTML = start ? startView() : v === 'week' ? weekView() : v === 'wq' ? wqView() : v === 'read' ? readView() : v === 'share' ? shareView() : v === 'shelf' ? shelfView(arg) : v === 'record' ? recordView(arg) : v === 'records' ? recordsView() : v === 'gallery' ? galleryView() : v === 'more' ? moreView() : v === 'admin' ? adminView() : v === 'about' ? aboutView() : v === 'feedback' ? feedbackView() : v === 'prep' ? prepView() : v === 'church' ? churchView() : v === 'rooms' ? roomsView() : placeView(v);
   const tab = start ? '' : v === 'week' ? 'week' : PLACE[v][1];
   $$('[data-tab]').forEach(a => { const on = a.dataset.tab === tab; a.classList.toggle('on', on); on ? a.setAttribute('aria-current', 'page') : a.removeAttribute('aria-current'); });
   document.title = start ? '디다코' : (v === 'shelf' && arg ? bTitle(bookById(arg)) : v === 'record' && arg ? '기록 상세' : v === 'week' ? '이번 주' : PLACE[v][0]) + ' · 디다코';
@@ -2229,6 +2327,7 @@ function route(moved) {
     const h = $('h1', $('#view')); if (h) { h.setAttribute('tabindex', '-1'); h.focus({ preventScroll: true }); }
   }
   if (v === 'wq') wqInit(); else if (v === 'read') readInit(); else if (v === 'share') shareInit(); else if (v === 'shelf') shelfInit(arg);
+  if (v === 'share' && shareAuto) { shareAuto = false; if (G) startShare(); }
 }
 // 설정을 바꿔 다시 그릴 때는 보던 자리를 지키고, 말씀을 열며를 다시 띄우지 않는다
 function rerender() {
@@ -2274,7 +2373,6 @@ const acts = {
   'fb-kind'(e,el) { feedbackState.kind = el.dataset.kind; route(false); },
   'fb-named'() { feedbackState.named = !feedbackState.named; route(false); },
   'fb-send'() { if (!feedbackState.text.trim()) return; feedbackState.text = ''; const t = $('#feedbackText'); if (t) t.value = ''; const n = $('#feedbackCount'); if (n) n.textContent='0'; const b = $('#feedbackSend'); if (b) b.disabled = true; toast('데모라 보내지 않았어요. 고마워요'); },
-  'more-soon'() { toast('곧 만들어요'); },
   'more-logout'() { toast('데모에서는 로그아웃하지 않아요'); },
   home() { location.hash = '#week'; },
   gear(e, el) { closePlaceMenu(); const m = $('#settings'); m.hidden = !m.hidden; el.setAttribute('aria-expanded', String(!m.hidden)); if (!m.hidden) renderSettings(); },
@@ -2296,7 +2394,7 @@ const acts = {
       <div class="set-btns" style="margin:0"><button class="btn ghost" type="button" data-act="pop-close" data-focus>그대로 둘게요</button><button class="btn" type="button" data-act="demo-reset">처음으로</button></div>`);
   },
   'demo-reset'() {
-    closeSheet();
+    closeSheet(); roomState = null;
     ls.del(K.demo); ls.del(K.keep); ls.del(K.answers); ls.del(K.walkRead); ls.del(K.walkThought); ls.del(K.walkDone); ls.del(K.walkMeditate); ls.del(K.bookmark); ls.del(K.memo); ls.del(K.leadopen);
     [K.shareDone, K.recRefl, K.recAns, K.recEdit, K.recDel, K.recHide].forEach(ls.del); loadState();
     if (location.hash === '#start') route(true); else location.hash = '#start';
@@ -2352,7 +2450,41 @@ const acts = {
   },
   'rec-restore'() { ls.del(K.recDel); ls.del(K.recHide); rerender(); toast('예시 기록을 되살렸어요'); },
   'rec-hide'() { ls.set(K.recHide, '1'); rerender(); toast('기록을 비웠어요'); },
-  prep() { toast('다음 단계에서 열려요'); },
+  // 사랑방 전체 명단은 보기만 한다
+  'rooms-open'(e, el) {
+    if (D.role !== 'pastor') return;
+    const r = DATA.admin.depts.find(d => d.name === DATA.church.dept).rooms[Number(el.dataset.i)]; if (!r) return;
+    const mine = r.name === DATA.rooms.mine.name, members = mine ? myRoom().members : r.members;
+    openSheet(sheetHead(esc(r.name)) + `<div class="gr"><span class="gt"><b>${esc(r.leader)}</b></span><span class="kid lead">리더</span></div>
+      ${r.co ? `<div class="gr"><span class="gt"><b>${esc(r.co)}</b></span><span class="kid lead">코리더</span></div>` : ''}
+      ${members.map(name => `<div class="gr"><span class="gt"><b>${esc(name)}</b><span class="gd">연결됨</span></span></div>`).join('')}
+      ${mine ? myRoom().pending.map(p => `<div class="gr"><span class="gt"><b>${esc(p.name)}</b><span class="gd">승인 기다림</span></span></div>`).join('') : ''}
+      <p class="hint">이름과 연결 상태만 보여요. 묵상 기록은 잠겨 있어서 아무도 볼 수 없어요.</p>`);
+  },
+  // 우리 사랑방
+  'room-approve'(e, el) {
+    if (D.role !== 'leader') return;
+    const room = myRoom(), i = Number(el.dataset.i), p = room.pending[i]; if (!p) return;
+    room.pending.splice(i, 1); room.members.push(p.name); roomRedraw(); toast(`${p.name} 님의 연결을 승인했어요`);
+  },
+  'room-reject'(e, el) {
+    if (D.role !== 'leader') return;
+    const room = myRoom(), i = Number(el.dataset.i), p = room.pending[i]; if (!p) return;
+    room.pending.splice(i, 1); roomRedraw(); toast(`${p.name} 님의 요청을 거절했어요`);
+  },
+  'room-dc'(e, el) {
+    if (D.role !== 'leader') return;
+    const i = Number(el.dataset.i), name = myRoom().members[i]; if (!name || name.endsWith('(나)')) return;
+    openSheet(sheetHead('연결 해제') + `<p>${esc(name)} 님의 연결을 해제할까요?</p><p class="hint">기기를 잃었거나 잘못 연결된 경우에 써요. 해제해도 그 사람의 기록은 지워지지 않아요.</p><div class="set-btns"><button class="btn ghost" type="button" data-act="pop-close">그만두기</button><button class="btn" type="button" data-act="room-dc-do" data-i="${i}">연결 해제</button></div>`);
+  },
+  'room-dc-do'(e, el) {
+    if (D.role !== 'leader') return;
+    const room = myRoom(), i = Number(el.dataset.i), name = room.members[i]; if (!name || name.endsWith('(나)')) return;
+    room.members.splice(i, 1); closeSheet(); roomRedraw(); toast('연결을 해제했어요');
+  },
+  prep() { location.hash = '#prep'; },
+  'prep-start'() { shareAuto = true; location.hash = '#share'; },
+  'prep-member'() { readAsMember = true; readFrom = ''; if (location.hash === '#read') route(true); else location.hash = '#read'; },
   later() { toast('다음 단계에서 열려요'); },
   'keep-fill'() { ls.set(K.keep, JSON.stringify(Object.assign({ at: Date.now() }, DATA.sampleKeep))); rerender(); toast('예시를 채웠어요'); },
   'keep-clear'() { ls.del(K.keep); rerender(); toast('비웠어요'); },
@@ -2369,7 +2501,7 @@ const acts = {
   },
   fold() {
     const open = !leadOpen(); ls.set(K.leadopen, open ? '1' : '0');
-    $$('.pn.lead').forEach(p => { p.classList.toggle('closed', !open); const b = $('.fold', p); b.textContent = open ? '접기' : '펼치기'; b.setAttribute('aria-expanded', String(open)); });
+    $$('.pn.lead').forEach(p => { if (!$('.fold', p)) return; p.classList.toggle('closed', !open); const b = $('.fold', p); b.textContent = open ? '접기' : '펼치기'; b.setAttribute('aria-expanded', String(open)); });
   },
   'ans-more'(e, el) { const id = el.dataset.id; if (expanded.has(id)) expanded.delete(id); else expanded.add(id); renderAns(id); },
   think(e, el) { const id = el.dataset.id; editing.add(id); renderAns(id); const t = $(`#ta-${id}`); if (t) { t.focus(); t.setSelectionRange(t.value.length, t.value.length); } setBookmark(id); },
@@ -2469,6 +2601,7 @@ document.addEventListener('input', e => {
   if (t.id === 'feedbackText') { feedbackState.text = t.value; const count = $('#feedbackCount'); if (count) count.textContent = String(t.value.length); const send = $('#feedbackSend'); if (send) send.disabled = !t.value.trim(); }
   else if (t.id === 'wqMed') { const meds = readJson(K.walkMeditate); meds[walkWeek().n] = t.value; ls.set(K.walkMeditate, JSON.stringify(meds)); }
   else if (t.id === 'wqTa') { const thought = readJson(K.walkThought); thought[walkWeek().n] = t.value; ls.set(K.walkThought, JSON.stringify(thought)); }
+  else if (t.dataset && t.dataset.memoKey) { const m = readMemo(); if (t.value.trim()) m[t.dataset.memoKey] = t.value; else delete m[t.dataset.memoKey]; ls.set(K.memo, JSON.stringify(m)); }
   else if (t.matches && t.matches('textarea[data-id]')) { const id = t.dataset.id; sizeTa(t); setBookmark(id); clearTimeout(timers[id]); timers[id] = setTimeout(() => saveAns(id, t), 450); }
   else if ((t.id === 'kSentence' || t.id === 'kAction') && currentView() === 'read') { clearTimeout(keepT); keepT = setTimeout(saveKeepRead, 450); }
   else if (t.id === 'shelfQ') runShelfSearch();
