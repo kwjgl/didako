@@ -820,6 +820,11 @@ button.gallery-cell { display: block; width: 100%; padding: 0; cursor: pointer; 
 .mg-tools { display: flex; gap: 8px; margin-top: 10px; }
 .mg-tools .btn { min-width: 44px; padding: 0; display: inline-flex; align-items: center; justify-content: center; }
 .mg-tools .btn .ic { width: 1.15em; height: 1.15em; }
+/* 단계 이름 줄: 이름 칸 오른쪽에 단계 삭제 단추(D-18) */
+.mg-stage-row { display: flex; flex-direction: row; align-items: flex-end; gap: 8px; }
+.mg-stage-row > div { flex: 1; min-width: 0; }
+.mg-stage-row .mg-stage-del { flex: none; min-width: 44px; min-height: 44px; padding: 0; display: inline-flex; align-items: center; justify-content: center; }
+.mg-stage-row .mg-stage-del .ic { width: 1.15em; height: 1.15em; }
 /* 배포: 경고 상자, 한 줄 단추(D-16) */
 .mg-warn { display: flex; gap: 8px; align-items: flex-start; margin-top: 10px; padding: 10px 12px; border-radius: 10px; background: var(--warn-soft); color: var(--warn); font-size: .84em; line-height: 1.5; word-break: keep-all; }
 .mg-warn .ic { margin-top: .2em; }
@@ -1837,7 +1842,7 @@ function mgBookView(b) {
   return `<a class="back-link" href="#manage">${ic('back')}<span>교재 관리</span></a><p class="eyebrow top-eyebrow">${esc(b.kind)} · ${esc(b.period)}</p><div class="page-top"><h1>${esc(b.title)}</h1></div>${b.edited ? '<p class="fine">오늘 고침</p>' : ''}
     <div class="more-grid"><div>${!b.closed ? '<button class="btn wide" type="button" data-act="mg-lesson-add">과 추가</button>' : ''}<div class="gl">과</div><div class="gc">
       ${b.lessons.map(L => `<a class="gr" href="#me-${b.id}.${L.no}"><span class="gt"><b>제${L.no}과 ${esc(L.name || '(제목을 적어 주세요)')}</b><span class="gd">${esc(L.date)}${L.ref ? ' · ' + esc(L.ref) : ''}</span></span>${mgPill(b, L)}</a>`).join('') || '<div class="gr"><span class="gt"><span class="gd">아직 과가 없어요. 과를 더해 시작해요.</span></span></div>'}
-    </div></div><div><div class="gc"><div class="gr"><span class="mg-cover big">${bookCover({ ...b, id: '' }, 'list')}</span><span class="gt"><b>${esc(b.title)}</b><span class="gd">${esc(b.kind)}</span></span></div><dl class="mg-info"><div><dt>대상 모임</dt><dd>${esc(b.target || DATA.church.dept)}</dd></div>${b.start ? `<div><dt>시작 날짜</dt><dd>${esc(mgLongDate(b.start))}</dd></div>` : ''}${b.closed ? `<div><dt>끝난 날짜</dt><dd>${esc(b.end || '')}</dd></div>` : ''}</dl></div>
+    </div></div><div><div class="gc"><div class="gr"><span class="mg-cover big">${bookCover({ ...b, id: '' }, 'list')}</span><span class="gt"><b>${esc(b.title)}</b><span class="gd">${esc(b.kind)}</span></span></div><dl class="mg-info"><div><dt>대상 모임</dt><dd>${esc(b.target || DATA.church.dept)}</dd></div>${b.start ? `<div><dt>시작 날짜</dt><dd>${esc(mgLongDate(b.start))}</dd></div>` : ''}${b.closed && b.end ? `<div><dt>끝난 날짜</dt><dd>${esc(mgLongDate(b.end))}</dd></div>` : ''}</dl></div>
     <div class="gc">${row('교재 정보 편집', '제목, 표지 이름, 표지, 대상 모임, 시작 날짜', 'mg-edit')}${row('교재 통째로 복제', '내용만 가져오고 배포 이력은 가져오지 않아요', 'mg-dup')}${`<a class="gr" href="#mxb-${b.id}"><span class="gt"><b>인쇄용 보기</b><span class="gd">PDF나 Word로 내려받아요</span></span><span class="ch" aria-hidden="true">›</span></a>`}${b.closed ? '' : row('교재 닫기', '오늘 날짜로 끝내고 지난 교재로 옮겨요', 'mg-close')}</div>${b.closed ? '<button class="quiet-link" type="button" data-act="mg-reopen">다시 열기</button>' : ''}</div></div>`;
 }
 function mgForm(b) {
@@ -1909,8 +1914,7 @@ function mgWriteHtml(b, L, g) {
     </div></section>
     <section class="card"><div class="keep-form">${field('guide', '전체 진행 안내 <span class="hint">리더에게만 보여요</span>', g.guide, { ta: true })}</div></section>
     <p class="hint" id="mgEmptyHint"${g.stages.some(s => s.qs.length) ? ' hidden' : ''}>배포하려면 질문이나 읽을 글이 하나 이상 있어야 해요.</p>
-    ${g.stages.map((st, si) => `<section class="card" data-mg-stage="${si}"><div class="keep-form">${field('stage-name', '단계 이름', st.name, { id: 'mge-stage-' + si, si })}</div>
-      ${g.stages.length > 1 ? `<div class="mg-tools" style="justify-content:flex-end"><button class="btn ghost small" type="button" data-act="mg-stage-del" data-si="${si}" aria-label="${esc(st.name)} 단계 삭제" title="단계 삭제">${ic('trash')}</button></div>` : ''}
+    ${g.stages.map((st, si) => `<section class="card" data-mg-stage="${si}"><div class="keep-form mg-stage-row">${field('stage-name', '단계 이름', st.name, { id: 'mge-stage-' + si, si })}${g.stages.length > 1 ? `<button class="btn ghost small mg-stage-del" type="button" data-act="mg-stage-del" data-si="${si}" aria-label="${esc(st.name)} 단계 삭제" title="단계 삭제">${ic('trash')}</button>` : ''}</div>
       ${st.qs.map((q, qi) => `<div class="gr" data-mg-question="${q.id}"><div class="gt"><p class="q-eyebrow" data-mg-stage-label="${si}">${esc(st.name)} · ${isRead(q) ? '읽을 글' : qNo(st, qi)}</p><div class="keep-form">
         ${isRead(q) ? `${field('q-h', '제목 (선택)', q.h, { id: 'mge-' + q.id + '-h', si, qi })}
           ${field('q-t', '글', q.t, { id: 'mge-' + q.id + '-t', ta: true, rows: 6, si, qi })}
@@ -1919,7 +1923,7 @@ function mgWriteHtml(b, L, g) {
           `${field('q-t', '질문', q.t, { id: 'mge-' + q.id + '-t', ta: true, si, qi, hint: key + ':' + q.id })}
           ${field('q-sub', '보조 설명', q.sub, { id: 'mge-' + q.id + '-sub', si, qi })}
           ${field('q-vs', '관련 구절', (q.vs || []).join(', '), { id: 'mge-' + q.id + '-vs', si, qi, placeholder: '예: 요한복음 10:11, 이사야 5:1~2' })}
-          ${field('q-lead', '리더 해설 · 리더에게만 보여요', q.lead, { id: 'mge-' + q.id + '-lead', ta: true, si, qi })}`}
+          ${field('q-lead', '리더 해설 <span class="hint">리더에게만 보여요</span>', q.lead, { id: 'mge-' + q.id + '-lead', ta: true, si, qi })}`}
         <div class="mg-tools">${[['up', '위로', 'up'], ['down', '아래로', 'down'], ['dup', '복제', 'copy'], ['del', '삭제', 'trash']].map(([act, label, symbol]) => `<button class="btn ghost small" type="button" data-act="mg-q-${act}" data-si="${si}" data-qi="${qi}" aria-label="${esc(st.name)} ${isRead(q) ? '읽을 글' : qNo(st, qi) + '번 질문'} ${label}" title="${label}"${act === 'up' && qi === 0 || act === 'down' && qi === st.qs.length - 1 ? ' disabled' : ''}>${ic(symbol)}</button>`).join('')}</div>
       </div></div></div>`).join('')}
       ${!st.qs.length ? '<p class="hint">질문과 읽을 글이 없는 단계는 회원 화면과 인쇄물에서 빠져요.</p>' : ''}

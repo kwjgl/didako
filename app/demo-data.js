@@ -36,7 +36,7 @@ window.DIDAKO_DEMO = {
       ]
     },
     {
-      id: 'mark', title: '마가복음', period: '2026.3~4', closed: true, kind: 'GBS', cover: { motif: 'lattice', color: 'ink' }, coverName: '마가복음', range: '마가복음 1~9장',
+      id: 'mark', title: '마가복음', period: '2026.3~4', closed: true, end: '2026-04-12', kind: 'GBS', cover: { motif: 'lattice', color: 'ink' }, coverName: '마가복음', range: '마가복음 1~9장',
       lessons: [
         { no: 1, name: '광야의 소리', ref: '마가복음 1:1~13', date: '3월 8일 주일', state: 'past', body: '길을 예비하는 사람과 광야에서 시작되는 예수님의 일을 살펴봐요.', mine: '시작은 조용한 광야에서였다는 것이 마음에 남는다.' },
         { no: 2, name: '그물을 버려두고', ref: '마가복음 1:14~20', date: '3월 15일 주일', state: 'past', body: '고기 잡던 이들이 부르심을 듣고 따라나선 이야기예요.', mine: '내가 붙들고 있는 그물이 무엇인지 생각해 본다.' },
@@ -46,7 +46,7 @@ window.DIDAKO_DEMO = {
       ]
     },
     {
-      id: 'psalms', title: '시편 묵상', period: '2025.11~2026.1', closed: true, kind: 'GBS', cover: { motif: 'star', color: 'rose' }, coverName: '시편', range: '시편 1·23·103·130편',
+      id: 'psalms', title: '시편 묵상', period: '2025.11~2026.1', closed: true, end: '2026-01-04', kind: 'GBS', cover: { motif: 'star', color: 'rose' }, coverName: '시편', range: '시편 1·23·103·130편',
       lessons: [
         { no: 1, name: '복 있는 사람', ref: '시편 1:1~6', date: '12월 7일 주일', state: 'past', body: '말씀을 즐거워하는 사람이 어떤 나무와 같은지 살펴봐요.', mine: '가까이 두는 것이 나를 만든다.' },
         { no: 2, name: '주는 나의 목자', ref: '시편 23:1~6', date: '12월 14일 주일', state: 'past', body: '목자이신 하나님과 함께 걷는 길을 그려 봐요.', mine: '부족함이 없다는 말을 천천히 읽어 본다.' },
