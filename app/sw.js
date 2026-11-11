@@ -4,15 +4,16 @@
  * 아래 CACHE 번호는 남겨 둔 사본의 이름표다. 번호를 올리면 예전 사본을 지운다(AGENTS.md 서비스워커 캐시).
  * 데모에는 서버가 없다. 같은 주소의 파일만 다루고, 글꼴 같은 다른 주소의 요청은 건드리지 않는다.
  */
-const CACHE = 'didako-v79';
-const SHELL = ['./', 'index.html', 'design-styles.css', 'covers.js', 'demo-data.js', 'book-gospel.js', 'book-prophets.js', 'manifest.webmanifest', 'icons/icon-192.png', 'icons/icon-512.png', 'icons/icon-maskable-512.png', 'icons/apple-touch-icon.png', 'icons/favicon-32.png'];
+const CACHE = 'didako-v83';
+const SHELL = ['./', 'index.html', 'config.js', 'design-styles.css', 'covers.js', 'demo-data.js', 'book-gospel.js', 'book-prophets.js', 'manifest.webmanifest', 'icons/icon-192.png', 'icons/icon-512.png', 'icons/icon-maskable-512.png', 'icons/apple-touch-icon.png', 'icons/favicon-32.png'];
 
 self.addEventListener('install', e => {
   // GitHub Pages가 파일을 잠시 그대로 쓰라고 해도 새로 받도록 사본을 쓰지 않고 요청한다
   e.waitUntil(caches.open(CACHE).then(c => Promise.all(SHELL.map(u => c.add(new Request(u, { cache: 'reload' }))))).then(() => self.skipWaiting()));
 });
 self.addEventListener('activate', e => {
-  e.waitUntil(caches.keys().then(ks => Promise.all(ks.filter(k => k !== CACHE).map(k => caches.delete(k)))).then(() => self.clients.claim()));
+  // 노트(/note/)와 같은 주소라 노트의 사본(didako-note-…)은 남기고, 이 앱의 예전 사본(didako-v…)만 지운다
+  e.waitUntil(caches.keys().then(ks => Promise.all(ks.filter(k => k.startsWith('didako-v') && k !== CACHE).map(k => caches.delete(k)))).then(() => self.clients.claim()));
 });
 self.addEventListener('fetch', e => {
   const req = e.request, url = new URL(req.url);

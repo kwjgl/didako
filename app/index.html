@@ -415,6 +415,25 @@ button.badge-btn { appearance: none; font-family: inherit; line-height: inherit;
 .pop-sheet .set-btns .btn { flex: 1; }
 .kakao:disabled, .wl-alt-btn:disabled { opacity: .5; cursor: default; }
 .wl-alt-btn:disabled:hover { border-color: var(--line); }
+/* ── 실제 앱의 첫 접속(2026-11-11): 시안 start.html의 걸음 화면(.col-n, .steps, .choice 등)을 그대로 옮겼다. 새 색은 없고 있는 변수만 쓴다 ── */
+.link { background: none; border: 0; padding: .35em 0; min-height: 36px; align-self: flex-start; color: var(--accent); font: inherit; font-weight: 600; font-size: .8em; cursor: pointer; }
+.choices { display: flex; flex-direction: column; gap: 8px; margin: 12px 0; }
+.choice { text-align: left; min-height: 52px; padding: 0 16px; border-radius: 14px; border: 1px solid var(--line); background: var(--surface); color: var(--ink); font: inherit; cursor: pointer; }
+.choice.new { border-style: dashed; color: var(--ink-2); }
+.steps { display: flex; gap: 6px; margin-top: 16px; }
+.steps span { flex: 1; height: 4px; border-radius: 4px; background: var(--line); }
+.steps span.on { background: var(--accent); }
+.consent { list-style: none; padding: 0; margin: 12px 0; display: flex; flex-direction: column; gap: 8px; }
+.consent li { display: grid; grid-template-columns: 4.6em 1fr; gap: .6em; background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: .7em .85em; font-size: .92em; }
+.consent b { color: var(--accent); font-size: .9em; }
+label.f { display: block; font-size: .85em; font-weight: 600; margin: 12px 0 4px; }
+.wait { display: flex; align-items: center; gap: .6em; background: var(--accent-soft); border-radius: 12px; padding: .9em 1em; font-weight: 600; margin: 12px 0; }
+.col-n { max-width: 30rem; margin: 0 auto; padding: 44px 0 2em; }   /* 위 44px: 첫 접속에는 상단 바가 없어(톱니만 떠 있어) 걸음 표시와 겹치지 않게 */
+.col-n .link { display: block; }
+.col-n .btn.wide { margin-top: 12px; }
+.col-n .field { margin-top: 12px; }
+.col-n .msg { margin: 8px 0 0; }
+.msg { color: var(--warn); font-size: .875em; min-height: 1.4em; }
 .calm { display: flex; flex-direction: column; gap: .7em; align-items: flex-start; }
 .calm-t { font-family: var(--f-display); font-size: 1.3em; margin: 0; }
 
@@ -736,6 +755,21 @@ button.badge-btn { appearance: none; font-family: inherit; line-height: inherit;
 .stage-h { font-family: var(--f-display); font-size: 1.1em; margin: 12px 2px 0; }
 .stage-sec:first-child .stage-h { margin-top: 2px; }
 .r-t { white-space: pre-line; line-height: 1.75; word-break: keep-all; margin: .3em 0 0; }
+
+.md > :first-child { margin-top: 0; }
+.md p { margin: .6em 0 0; }
+.md .md-h { font-family: var(--f-display); font-size: 1em; font-weight: 700; margin: 1em 0 0; }
+.md .md-list { margin: .5em 0 0; padding-left: 1.3em; }
+.md .md-list li { margin-top: .2em; }
+.md .md-q { margin: .6em 0 0; padding-left: .8em; border-left: 3px solid var(--line, #DDE4E0); color: var(--ink-2); }
+.md .md-tw { overflow-x: auto; max-width: 100%; }
+.md .md-t { width: 100%; border-collapse: collapse; margin-top: .6em; font-size: .92em; }
+.md .md-t th, .md .md-t td { border: 1px solid var(--line, #DDE4E0); padding: .35em .5em; text-align: left; vertical-align: top; word-break: keep-all; }
+.md .md-t th { background: var(--accent-soft); }
+.paper .md-tw { overflow: visible; }
+.paper .md .md-h { border-bottom: 0; padding-bottom: 0; }
+.paper .pp-read p { text-align: justify; word-break: keep-all; }
+
 .qcard { margin: 0; scroll-margin-top: 84px; }
 .q-meta { display: flex; justify-content: space-between; align-items: center; gap: .6em; min-height: 1.6em; }
 .q-eyebrow { font-size: .8em; color: var(--ink-2); }
@@ -1164,6 +1198,8 @@ button.gallery-cell { display: block; width: 100%; padding: 0; cursor: pointer; 
 .pp-text.fs-s { font-size: calc(var(--mm) * 3.35); }
 .pp-text.fs-l { font-size: calc(var(--mm) * 4.41); }
 .pp-blk.pp-more { margin-top: .7em; }
+.pp-blk.pp-cont { margin-top: .5em; }
+.paper .pp-read { text-align: justify; word-break: keep-all; }
 .pp-measure { position: fixed; left: -9999px; top: 0; width: 210mm; max-width: none; margin: 0; container-type: normal; visibility: hidden; pointer-events: none; }
 .pp-measure .paper { --mm: 1mm; width: 210mm; height: auto; aspect-ratio: auto; overflow: visible; }
 .paper h4 { font-family: var(--f-display); font-size: 1.1em; margin: 1em 0 .3em; padding-bottom: .15em; border-bottom: calc(var(--mm) * .25) solid var(--accent); }
@@ -1297,6 +1333,7 @@ button.gallery-cell { display: block; width: 100%; padding: 0; cursor: pointer; 
   <div class="pop-sheet card" id="popSheet" role="dialog" aria-modal="true" aria-labelledby="popT"></div>
 </div>
 
+<script src="config.js"></script>
 <script src="covers.js"></script>
 <script src="demo-data.js"></script>
 <script src="book-gospel.js"></script>
@@ -1304,10 +1341,16 @@ button.gallery-cell { display: block; width: 100%; padding: 0; cursor: pointer; 
 <script>
 (() => {
 'use strict';
-// 지금은 데모만 있다. 서버를 잇는 2단계에서 설정 파일(config.js)의 주소가 비었는지로 바꾼다.
+// 설정 파일(config.js)에 서버 주소(HUB_URL)가 있으면 실제 모드, 비어 있으면(또는 주소 끝에 ?demo) 데모다 (디다코 노트와 같다).
 // 데모에서는 아무것도 밖으로 보내지 않고, 쓴 것은 이 기기(localStorage)에만 남는다
-const DEMO = true;
+const CFG = window.DIDAKO_CONFIG || {};
+const LIVE = !!CFG.HUB_URL && !new URLSearchParams(location.search).has('demo');
+const DEMO = !LIVE;
 const DATA = window.DIDAKO_DEMO;
+const clone = x => JSON.parse(JSON.stringify(x));
+// 디다코 기본 교재(앱에 들어 있는 GOSPEL 새가족반과 12소예언서). 실제 모드에서는 DATA.books를 서버 교재로 바꾸니, 그 전에 복사해 둔다.
+//  교재 관리의 "디다코 기본 교재"에서 [가져오기]를 누르면 우리 교회 교재로 복제된다(서버 basicImport)
+const BASIC = LIVE ? { books: ['gospel', 'prophets'].map(id => DATA.books.find(b => b.id === id)).filter(Boolean).map(clone), guides: clone(DATA.guides) } : { books: [], guides: {} };
 
 // ── 도구 ──
 const $ = (s, r) => (r || document).querySelector(s);
@@ -1350,7 +1393,7 @@ const JOHN_COVER = DATA.books.find(book => book.id === 'john').cover;
 const S = { mode: 'auto', accent: 'paper', style: 'basic', big: false };
 const D = { entered: false, role: 'member', status: 'all', walk: 1, galleryDemo: false, before: false, readOpen: true, readTriple: true, dimSec: 15, noBooks: false, longTitle: false, jcoverMotif: JOHN_COVER.motif, jcoverColor: JOHN_COVER.color, newcomer: false };
 function loadState() {
-  const a = readJson(K.display), b = readJson(K.demo);
+  const a = readJson(K.display), b = LIVE ? {} : readJson(K.demo);   // 실제 모드는 데모 설정(역할 등)을 읽지 않는다: 역할은 서버가 알려 준 나의 정보로 정한다
   S.mode = pick(a.mode, MODES, 'auto'); S.accent = pick(a.accent, ACCENTS, 'paper'); S.style = pick(a.style, STYLES, 'basic'); S.big = a.big === true;
   D.entered = b.entered === true; D.role = pick(b.role, ROLES.map(r => r[0]), 'member'); D.status = pick(b.status, STATUS.map(r => r[0]), 'all'); D.walk = Number.isInteger(Number(b.walk)) && Number(b.walk) >= 1 && Number(b.walk) <= 52 && DATA.weekWalk.some(w => w.n === Number(b.walk)) ? Number(b.walk) : 1; D.galleryDemo = b.galleryDemo === true;
   D.before = b.before === true;
@@ -1358,7 +1401,7 @@ function loadState() {
   D.noBooks = b.noBooks === true; D.longTitle = b.longTitle === true; D.jcoverMotif = pick(b.jcoverMotif, COVER_MOTIFS, JOHN_COVER.motif); D.jcoverColor = pick(b.jcoverColor, COVER_COLORS, JOHN_COVER.color); D.newcomer = b.newcomer === true;
 }
 const saveDisplay = () => ls.set(K.display, JSON.stringify({ ...readJson(K.display), mode: S.mode, accent: S.accent, style: S.style, big: S.big }));
-const saveDemo = () => ls.set(K.demo, JSON.stringify(D));
+const saveDemo = () => { if (!LIVE) ls.set(K.demo, JSON.stringify(D)); };
 loadState();
 
 const STYLE_ATTR = { basic: null, neu: 'neu', skeu: 'skeu', glass: 'glass' };
@@ -1372,10 +1415,11 @@ function applySettings() {
 // ── 역할과 위쪽 배지 ──
 // 배지 규칙: 회원·리더는 "2-20 사랑방", 목사님·관리자는 "청장년부" + 역할 이름표
 const isTop = () => D.role === 'pastor' || D.role === 'admin';
-const groupName = () => (isTop() ? DATA.church.dept : DATA.church.room);
-const roleName = () => ROLES.find(x => x[0] === D.role)[1];
+const groupName = () => LIVE ? liveGroupName() : (isTop() ? DATA.church.dept : DATA.church.room);
+// 실제 모드에서는 서버가 알려 준 직분(목사님·전도사님, 리더·코리더)을 그대로 보인다
+const roleName = () => LIVE && LV.me && LV.me.role && (D.role === 'pastor' || D.role === 'leader') ? LV.me.role : ROLES.find(x => x[0] === D.role)[1];
 function paintBadge() {
-  $('#placeRoom').innerHTML = `${esc(groupName())} <span class="role-tag${D.role === 'leader' ? ' leader' : isTop() ? ' admin' : ''}">${roleName()}</span>`;
+  $('#placeRoom').innerHTML = `${esc(groupName())} <span class="role-tag${D.role === 'leader' ? ' leader' : isTop() ? ' admin' : ''}">${esc(roleName())}</span>`;
   $('#badge').innerHTML = $('#placeRoom').innerHTML;
   const row = $('#placeMenu [data-act="place-room"]');
   row.setAttribute('aria-current', 'true');
@@ -1412,6 +1456,8 @@ function displayControls() {
 `;
 }
 function renderSettings() {
+  // 실제 모드에는 데모용 설정(역할 바꾸기 등)이 없다. 화면 설정만 연다
+  if (LIVE) { $('#settings').innerHTML = displayControls(); return; }
   const inApp = currentView() !== 'start';
   $('#settings').innerHTML = `${displayControls()}    <div class="mdiv"></div>
     <p class="mlabel">데모용 <span class="demo-tag static">데모</span></p>
@@ -1458,9 +1504,12 @@ function parseHash() {
   const h = location.hash.replace(/^#/, ''), m = /^(book|rec)-([\w-]+)$/.exec(h);
   if (m) return { v: m[1] === 'book' ? 'shelf' : 'record', arg: m[2] };
   if (/^(mb|me|mp|mx|mxb)-([\w.-]+)$/.test(h)) return { v: 'manage', arg: h };
+  // 실제 모드의 첫 접속 걸음(#start/dept …). 데모에서는 쓰지 않아 route가 첫 화면으로 돌린다
+  const sm = /^start\/(dept|room|family|who|name|new|consent|wait|done|church|setup)$/.exec(h);
+  if (sm) return { v: 'start', arg: sm[1] };
   return { v: VIEWS.includes(h) ? h : null, arg: '' };
 }
-const hashFor = (v, arg) => v === 'manage' && arg ? '#' + arg : '#' + (arg ? (v === 'shelf' ? 'book-' : 'rec-') + arg : v);
+const hashFor = (v, arg) => v === 'manage' && arg ? '#' + arg : v === 'start' && arg ? '#start/' + arg : '#' + (arg ? (v === 'shelf' ? 'book-' : 'rec-') + arg : v);
 const currentView = () => parseHash().v;
 
 // ── 이번 주 ──
@@ -1507,7 +1556,7 @@ function weekView() {
     return `<button class="walk-day${chosen ? ' chosen' : ''}${isToday ? ' today' : ''}${future ? ' future' : ''}${newlyLit && checked ? ' lamp-now' : ''}" type="button" data-act="walk-day" data-d="${x.d}" aria-pressed="${chosen}" aria-label="${walkNames[x.d]}${checked ? ', 찾았어요' : ''}"${future ? ' aria-disabled="true"' : ''}><span>${x.d}</span>${checked && !future ? ic('lamp-lit', 'lamp on') : ''}</button>`;
   }).join('');
   lampNow = '';
-  return `<p class="eyebrow top-eyebrow">${esc(DATA.admin.church)}</p>
+  return `<p class="eyebrow top-eyebrow">${esc(LIVE ? (ls.get(LK.name) || '') : DATA.admin.church)}</p>
     <div class="page-top"><h1>이번 주</h1></div>
     <div class="week-grid"><div class="col">
     <section class="card walk-hero">
@@ -1578,8 +1627,596 @@ function wqInit() {
   showOpening();
 }
 
-// ── 첫 화면(C-01): 데모에서는 카카오 대신 "데모로 둘러보기" ──
-function startView() {
+// ── 실제 서버(2-2) ──
+// 설정 파일이 차 있을 때(LIVE)만 쓴다. 카카오 로그인과 교회 코드는 코이데 기본 서버(hub)가, 명단과 연결은 교회마다 하나인 디다코 서버가 맡는다.
+// 열쇠 이름은 디다코 노트와 같다: 노트(/note/)와 공동체 앱(/app/)은 같은 주소의 저장 자리를 써서, 한쪽에서 로그인하면 다른 쪽도 로그인되어 있고 로그아웃하면 둘 다 된다(결정 기록 2026-11-11).
+// 이번 단계에서 서버와 이어진 것은 로그인, 첫 접속, 승인 기다림, 우리 사랑방(승인·거절·연결 해제), 로그아웃, 설치 코드다. 교재·기록·관리 화면은 아직 데모 자료로 보인다.
+const LK = { hub: 'didako-hub-token', tok: 'didako-token', uid: 'didako-uid', url: 'didako-church-url', name: 'didako-church-name', kind: 'didako-church-kind', depts: 'didako-start-depts', join: 'didako-join', setup: 'didako-setup' };
+// me: 서버가 알려 준 나의 정보, depts: 첫 접속에서 고르는 부서·사랑방 목록, booting: 켜지는 중
+// writer: 교재를 쓸 수 있는 사람인지, writeDepts: 새 교재의 대상으로 고를 수 있는 부서, hold: 못 받은 이번 주 즈음의 과(교재ID와 날짜), booksOk: 교재를 받았는지(2-3)
+const LV = { me: null, depts: null, join: null, epoch: 0, booting: false, authBusy: false, needChurch: false, repick: false, notice: '', err: '', busy: false, work: null, want: '', writer: false, writeDepts: [], hold: [], booksOk: false, booksWork: null };
+// 첫 접속에서 고르는 중인 것. byName은 이름을 써서 찾는 길, newFamily는 새로 왔어요
+const lvFresh = () => ({ deptId: '', roomId: '', staff: false, familyId: '', person: '', byName: false, newFamily: null });
+const ST = lvFresh();
+let PEND = { data: null, err: '' };   // 우리 사랑방(pending)에서 받은 요청과 명단
+const sget = k => { try { return sessionStorage.getItem(k); } catch (e) { return null; } };
+const sset = (k, v) => { try { v == null ? sessionStorage.removeItem(k) : sessionStorage.setItem(k, v); } catch (e) { /* 없어도 된다 */ } };
+if (LIVE) {
+  const q = new URLSearchParams(location.search);
+  LV.authBusy = q.has('code') || (!!ls.get(LK.hub) && !ls.get(LK.tok));   // 카카오에서 돌아왔거나 교회를 찾는 중
+  LV.booting = q.has('code') || !!ls.get(LK.hub) || !!ls.get(LK.tok);
+  LV.want = location.hash;   // 켜지는 동안 첫 화면으로 돌려져도, 들어온 뒤에는 열려던 화면(예: #more)으로 간다
+  // 초대 링크 값(?join=)과 설치 코드 화면(?setup)은 카카오 로그인으로 오가는 사이에도 남게 기억해 두고 주소에서는 지운다
+  let strip = false;
+  if (q.has('join')) { ls.set(LK.join, q.get('join')); q.delete('join'); strip = true; }
+  if (q.has('setup')) { sset(LK.setup, '1'); q.delete('setup'); strip = true; }
+  if (strip) { const u = new URL(location.href); u.search = q.toString(); history.replaceState(null, '', u); }
+}
+const canSetup = () => LIVE && sget(LK.setup) === '1';
+
+// 서버가 알려 준 나로 역할을 정한다: 교회 관리자·부서 관리자 → admin, 교역자 → pastor, 리더·코리더 → leader, 나머지 → member
+function liveRole(me) {
+  if (me.ops || me.admin) return 'admin';
+  if (me.staff) return 'pastor';
+  if (me.role === '리더' || me.role === '코리더') return 'leader';
+  return 'member';
+}
+// 앱에 들어올 수 있는 사람: 연결이 승인된 사람, 또는 교회 관리자(가정 없이도 들어온다). 연결은 됐는데 올해 편성에 없는 사람(notLinked)은 기다림 화면에서 까닭을 본다
+function applyMe() {
+  const me = LV.me;
+  const linked = !!me && !!me.link && me.link.status === '연결' && !me.notLinked;
+  D.entered = !!me && (linked || !!me.ops);
+  D.role = D.entered ? liveRole(me) : 'member';
+}
+// 우리 사랑방(승인·거절·연결 해제)을 여는 사람: 리더·코리더. 부서 관리자 가정이면서 사랑방 리더·코리더인 사람은 역할이 admin이어도 연다
+const liveLeads = () => D.role === 'leader' || (LIVE && D.role === 'admin' && !!LV.me && !!LV.me.admin && (LV.me.role === '리더' || LV.me.role === '코리더'));
+function liveGroupName() {
+  const me = LV.me || {};
+  if (isTop()) return (me.dept && me.dept.name) || (me.ops && !me.ops.all && me.ops.depts[0] && me.ops.depts[0].name) || ls.get(LK.name) || '';
+  return me.roomName || (me.dept && me.dept.name) || '';
+}
+
+// 서버 부르기. hub는 코이데 기본 서버(로그인·교회 코드), 아니면 이 교회의 디다코 서버. 응답은 { ok, data }
+async function postLive(hub, action, data = {}) {
+  const tokenKey = hub ? LK.hub : LK.tok, token = ls.get(tokenKey), e = LV.epoch;
+  const ctl = new AbortController(), stop = setTimeout(() => ctl.abort(), 60000);
+  let res;
+  try {
+    res = await (await fetch(hub ? CFG.HUB_URL : ls.get(LK.url), {
+      method: 'POST', body: JSON.stringify({ ...data, action, token, ...(hub ? { app: 'didako' } : {}) }), signal: ctl.signal
+    })).json();
+  } catch (_) { throw { code: 'net', message: '서버가 답하지 않아요. 잠시 뒤 다시 해 주세요.' }; }
+  finally { clearTimeout(stop); }
+  if (e !== LV.epoch) throw { cancelled: true };
+  if (res.ok === false) {
+    // 로그인이 끝났다는 답이면 그 표시를 지운다. 기본 서버의 것이면 첫 화면으로, 교회 서버의 것이면 조용히 다시 찾아 들어간다
+    if (res.code === 'login' && action !== 'logout' && action !== 'ticketLogin') {
+      ls.del(tokenKey); liveReset();
+      if (hub) route(true); else recoverLogin();
+    }
+    throw res;
+  }
+  return res.ok === true && res.data && typeof res.data === 'object' ? res.data : res;
+}
+const hubApi = (action, data) => postLive(true, action, data);
+const api = (action, data) => postLive(false, action, data);
+function liveError(err) {
+  if (!err || err.cancelled) return;
+  if (!err.code) console.error(err);
+  const msg = err.code && err.message ? err.message : '서버가 답하지 않아요. 잠시 뒤 다시 해 주세요.';
+  const m = $('#liveMsg');
+  if (m) m.textContent = msg; else toast(msg);
+}
+// 사람이 바뀌거나 로그아웃할 때 서버에서 받아 둔 것과 고르던 것을 모두 비운다
+function liveReset() {
+  LV.epoch++; LV.me = null; LV.depts = null; LV.join = null; LV.needChurch = false; LV.repick = false; LV.err = ''; LV.notice = '';
+  Object.assign(ST, lvFresh()); PEND = { data: null, err: '' };
+  D.entered = false; D.role = 'member';
+  // 앞사람이 받은 교재와 과가 남지 않게 비운다
+  Object.keys(LS.timers).forEach(k => clearTimeout(LS.timers[k])); LS.timers = {}; LS.busy = {}; LS.again = {};
+  LV.writer = false; LV.writeDepts = []; LV.hold = []; LV.booksOk = false; LV.booksWork = null;
+  MG = null; DATA.books = []; DATA.guides = {}; DATA.roomBook = '';
+}
+
+// 부서·사랑방 목록은 연결을 요청하는 중에는 서버가 다시 주지 않는다. "다른 사랑방으로 다시 고르기"를 위해 이 기기에 이름만 남겨 둔다(가정 이름은 뺀다)
+const lvKeepDepts = depts => ls.set(LK.depts, JSON.stringify(depts.map(d => ({ ...d, rooms: d.rooms.map(r => ({ id: r.id, name: r.name, deptId: r.deptId })) }))));
+const lvCachedDepts = () => { try { const v = JSON.parse(ls.get(LK.depts) || 'null'); return Array.isArray(v) ? v : null; } catch (e) { return null; } };
+
+// 앱을 열 때 한 번: 나 + (연결 전이면) 부서·사랑방 목록. 연결은 됐는데 올해 편성에 없는 사람은 start가 notLinked로 거절하니 me로 까닭을 받는다
+async function loadStart() {
+  const join = ls.get(LK.join);
+  let r;
+  try { r = await api('start', join ? { join } : {}); }
+  catch (err) { if (err.code === 'notLinked') r = { me: await api('me') }; else throw err; }
+  LV.me = r.me; LV.err = '';
+  const waiting = !!r.me.link && r.me.link.status === '요청';
+  if (r.depts) { LV.depts = r.depts; lvKeepDepts(r.depts); }
+  else if (waiting) LV.depts = LV.depts || lvCachedDepts();
+  else { LV.depts = null; ls.del(LK.depts); }
+  LV.join = r.join || null;
+  if (r.me.link && join) ls.del(LK.join);   // 이미 연결(또는 요청)된 사람의 기기에 남은 초대 값은 쓰지 않는다
+  if (!r.me.link) {
+    // 초대 링크로 왔으면 그 부서(와 사랑방)를 미리 고른다. 막힌 링크면 알리고 직접 고르게 한다
+    Object.assign(ST, lvFresh());
+    const J = LV.join, depts = LV.depts || [];
+    if (J && J.bad) { toast('이 초대 링크는 더 이상 쓰지 않아요. 직접 골라 주세요.'); ls.del(LK.join); }
+    else if (J && depts.some(d => d.id === J.deptId)) { ST.deptId = J.deptId; if (J.roomId && lvDept().rooms.some(x => x.id === J.roomId)) ST.roomId = J.roomId; }
+  }
+  applyMe();
+  // 들어올 수 있는 사람은 이번 주로 들어가기 전에 교재와 과를 받는다(못 받으면 안내와 다시 불러오기)
+  if (D.entered) await loadBooks(); else LV.booksOk = false;
+}
+// 교회 서버에 확인증으로 들어간다(교회를 찾았거나 교회 코드를 넣은 뒤)
+async function enterChurch(result) {
+  const c = result.church;
+  ls.set(LK.url, c.url); ls.set(LK.name, c.name); ls.set(LK.kind, c.kind);
+  const login = await api('ticketLogin', { ticket: result.ticket });
+  ls.set(LK.tok, login.token); ls.set(LK.uid, String(login.uid));
+  LV.needChurch = false;
+  await loadStart();
+}
+async function findChurch() {
+  const r = await hubApi('where');
+  if (r.church) await enterChurch(r);
+  else {
+    LV.notice = r.notYet ? `${r.notYet.name}은 아직 디다코 노트를 쓰지 않아요. 교회 관리자에게 알려 주세요.` : '';
+    LV.me = null; LV.needChurch = true;
+  }
+}
+// 교회 서버 로그인이 끝났을 때 조용히 다시 들어간다
+function recoverLogin() {
+  if (LV.work) return LV.work;
+  LV.authBusy = true; route(false);
+  LV.work = findChurch().catch(liveError).finally(() => { LV.work = null; LV.authBusy = false; route(true); });
+  return LV.work;
+}
+// 켜질 때: 카카오에서 돌아왔으면 로그인 → 교회 찾기, 이미 들어와 있으면 바로 나의 정보
+async function bootLive() {
+  const url = new URL(location.href), code = url.searchParams.get('code');
+  if (code) { url.searchParams.delete('code'); url.searchParams.delete('state'); history.replaceState(null, '', url); }
+  try {
+    if (code || (ls.get(LK.hub) && !ls.get(LK.tok))) {
+      LV.authBusy = true; route(false);
+      try {
+        if (code) {
+          const r = await hubApi('login', { code, redirectUri: CFG.REDIRECT_URI });
+          ls.set(LK.hub, r.token);
+          // 새 카카오 계정으로 들어온 경우 옛 교회 로그인으로 돌아가지 않게 한다
+          ls.del(LK.tok); ls.del(LK.uid); ls.del(LK.join); ls.del(LK.depts);   // 앞사람의 초대 값과 부서 목록이 남지 않게
+        }
+        await findChurch();
+      } finally { LV.authBusy = false; }
+    } else if (ls.get(LK.tok)) {
+      // 교회 서버 주소나 기기 표시가 빠진 불완전한 로그인은 지우고 첫 화면으로
+      if (ls.get(LK.uid) && ls.get(LK.url)) await loadStart(); else ls.del(LK.tok);
+    }
+  } catch (err) {
+    if (!err.cancelled) {
+      // 나의 정보를 못 받았으면 안내와 [다시 불러오기]를 보인다
+      LV.err = err.code && err.message ? err.message : '서버가 답하지 않아요. 잠시 뒤 다시 해 주세요.';
+      if (!ls.get(LK.tok)) liveError(err);
+    }
+  } finally { LV.booting = false; }
+  if (D.entered && LV.want && !/^#start/.test(LV.want)) history.replaceState(null, '', LV.want);
+  LV.want = '';
+  route(true);
+}
+
+// ── 실제 모드 첫 접속의 어느 걸음을 보일지 ──
+const lvDept = () => (LV.depts || []).find(d => d.id === ST.deptId) || { name: '', group: '사랑방', unit: '가정', rooms: [] };
+const lvRoom = () => lvDept().rooms.find(r => r.id === ST.roomId) || {};
+const lvGrp = () => lvDept().group || '사랑방';
+const lvSolo = () => lvDept().unit === '개인';
+const lvFam = () => (Array.isArray(lvRoom().families) ? lvRoom().families : []).find(f => f.id === ST.familyId);
+function liveStep(arg) {
+  const me = LV.me;
+  if (!ls.get(LK.tok)) return LV.needChurch && ls.get(LK.hub) && !LV.authBusy ? 'church' : '';
+  if (!me) return 'loading';   // 서버에서 나의 정보를 받는 중(못 받았으면 안내와 다시 불러오기)
+  if (canSetup() && !me.ops) return 'setup';   // 주소에 ?setup을 붙여 연 운영자: 로그인 뒤 설치 코드 화면부터(나중에 하기로 건너뛴다)
+  if (D.entered) {
+    if (!LV.booksOk) { if (arg === 'done') LV.want = '#start/done'; liveEnsureBooks(); return 'loading'; }   // 교재와 과를 받는 중(못 받았으면 안내와 다시 불러오기)
+    return arg === 'done' ? 'done' : 'enter';
+  }
+  if (!LV.repick && ((me.link && me.link.status === '요청') || me.notLinked)) return 'wait';
+  // 연결 전: 부서 → 사랑방 → (가정 고르기 | 이름 쓰기 | 새로 왔어요) → 동의. 새로 고쳐서 고른 것이 없어졌으면 가능한 첫 걸음으로
+  const depts = LV.depts || [], hasDept = depts.some(d => d.id === ST.deptId), room = lvRoom(), fam = lvFam();
+  const ok = {
+    dept: true,
+    room: hasDept,
+    family: hasDept && !ST.staff && Array.isArray(room.families),
+    who: hasDept && !!fam && String(fam.name).split(' · ').length > 1,
+    name: hasDept && (ST.staff || !!room.id),
+    new: hasDept && !ST.staff && !!room.id,
+    consent: hasDept && (!!ST.person || !!ST.newFamily)
+  };
+  if (ok[arg]) return arg;
+  if (!hasDept) { if (depts.length === 1) { ST.deptId = depts[0].id; return 'room'; } return 'dept'; }
+  if (!ST.roomId && !ST.staff) return 'room';
+  if (!ST.person && !ST.newFamily) return Array.isArray(room.families) && !ST.staff ? 'family' : 'name';
+  return 'consent';
+}
+const lvGo = step => goHash(step ? '#start/' + step : '#start');
+function goHash(h) { if (location.hash === h) route(true); else location.hash = h; }
+// 화면을 옮길 때 서버에서 새로 받을 것: 리더의 우리 사랑방(승인을 기다리는 요청과 명단)
+function liveEnter(v) { if ((v === 'church' || v === 'more') && liveLeads()) livePendLoad(); }
+function livePendLoad() {
+  PEND.err = '';
+  return api('pending').then(d => { PEND.data = d; }).catch(err => { if (!err.cancelled) PEND.err = err.code && err.message ? err.message : '서버가 답하지 않아요. 잠시 뒤 다시 해 주세요.'; })
+    .finally(() => { if (['church', 'more'].includes(currentView())) roomRedraw(); });
+}
+
+// ── 서버 교재를 화면 자료로 (2-3) ──
+// 화면은 교재를 DATA.books(책장), DATA.guides(과의 진행 안내·단계·질문·깊이 묵상하기), DATA.thisWeek, DATA.roomBook에서 읽고, 교재 관리는 mg()(MG)에서 고친다.
+// 실제 모드에서는 이 자리를 서버(books)가 준 자료로 채운다. 화면 코드는 그대로 두고 자료를 받는 층과 교재 관리의 저장 지점만 서버로 잇는다.
+// 서버가 거른다: 회원은 '모두'로 배포한 과만, 리더 해설과 전체 진행 안내 없이 받는다(화면에서 숨기는 것이 아니라 받지 않는다).
+// 쓰는 사람은 MG가 준비 중인 과까지 모두 갖고, 책장 자료(DATA)는 MG에서 다시 만든다.
+const pad2 = n => String(n).padStart(2, '0');
+const isoOf = d => d.getFullYear() + '-' + pad2(d.getMonth() + 1) + '-' + pad2(d.getDate());
+const isoAdd = (iso, n) => { const [y, m, d] = iso.split('-').map(Number); return isoOf(new Date(y, m - 1, d + n)); };
+const isoDow = iso => { const [y, m, d] = iso.split('-').map(Number); return new Date(y, m - 1, d).getDay(); };
+// 이번 주: 오늘 또는 오늘 뒤 첫 일요일(sun)과 그 앞 월요일(from)부터 일요일(to)까지
+function liveWeek() {
+  const today = isoOf(new Date()), sun = isoAdd(today, (7 - isoDow(today)) % 7);
+  return { today, sun, from: isoAdd(sun, -6), to: sun };
+}
+// 날짜 글: "10월 25일 주일"(일요일이면 주일을 붙인다. 교재 관리가 날짜를 고를 때와 같다)
+function liveDateText(iso) {
+  const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(iso || '');
+  return m ? `${Number(m[2])}월 ${Number(m[3])}일${isoDow(iso) === 0 ? ' 주일' : ''}` : '';
+}
+const liveClock = d => pad2(d.getHours()) + ':' + pad2(d.getMinutes());
+function liveTimeText(ts) {
+  const d = new Date(ts);
+  return isNaN(d) ? '' : `${d.getMonth() + 1}월 ${d.getDate()}일 ${liveClock(d)}`;
+}
+const liveDeptName = () => { const me = LV.me || {}; return (me.dept && me.dept.name) || (me.ops && !me.ops.all && me.ops.depts[0] && me.ops.depts[0].name) || ls.get(LK.name) || ''; };
+// 새 교재의 기본 대상 모임: 내 부서(쓸 수 있으면), 아니면 쓸 수 있는 첫 부서
+function liveDefaultDept() {
+  const own = (LV.me && LV.me.deptId) || '', list = LV.writeDepts || [];
+  return own && list.some(d => d.id === own) ? own : (list.find(d => d.id) || list[0] || { id: '' }).id;
+}
+// 서버가 준 교재 하나를 화면이 쓰는 모양으로. 과의 날짜는 iso(yyyy-MM-dd)와 화면 글(date)을 함께 둔다
+function liveMapBook(sb) {
+  const b = { id: sb.id, deptId: sb.deptId || '', target: sb.target || '', title: sb.title, kind: sb.kind, period: sb.period || '', closed: !!sb.closed, canWrite: !!sb.canWrite, cover: sb.cover, coverName: sb.coverName || '', range: sb.range || '', start: sb.start || '', source: sb.source || '', lessons: (sb.lessons || []).filter(l => l.status !== 'archived').map(liveMapLesson) };
+  if (sb.end) b.end = sb.end;
+  return b;
+}
+function liveMapLesson(l) {
+  const o = { no: l.no, name: l.name || '', ref: l.ref || '', iso: l.date || '', date: liveDateText(l.date), intro: l.intro || '', body: l.body || '', wrap: l.wrap || '', status: l.status || 'all', state: 'upcoming' };
+  if (l.useText !== undefined) { o.useText = !!l.useText; o.text = l.text || ''; o.fs = l.fs || 'm'; }
+  if (l.pubAt) o.pubAt = liveTimeText(l.pubAt);
+  if (l.editedAt) o.editedAt = l.editedAt;
+  return o;
+}
+// 과의 상태(past 지났음 / now 이번 주 / prep 준비 중 / upcoming 다가오는 과): 날짜와 공개 범위로 정한다.
+//  모두에게 배포하지 않은 과는 이번 주 즈음이면 now(회원 화면은 "준비하고 있어요"), 그 밖에는 prep(책장 목차에 안 나온다)
+function liveStates(books, wk) {
+  books.forEach(b => {
+    b.lessons.forEach(L => {
+      const inWeek = !!L.iso && L.iso >= wk.from && L.iso <= wk.to;
+      L.state = L.status !== 'all' ? (inWeek ? 'now' : 'prep') : !L.iso ? 'upcoming' : L.iso < wk.from ? 'past' : inWeek ? 'now' : 'upcoming';
+    });
+    // 한 주에 둘 이상이면 날짜가 가장 늦은 과만 이번 주
+    const nows = b.lessons.filter(L => L.state === 'now').sort((x, y) => (x.iso < y.iso ? -1 : x.iso > y.iso ? 1 : x.no - y.no));
+    nows.slice(0, -1).forEach(L => { L.state = L.status === 'all' ? 'past' : 'prep'; });
+  });
+}
+// MG(서버에서 받은 모든 과)에서 책장 자료를 다시 만든다. 못 받은 이번 주 과(hold)는 "준비하고 있어요" 자리만 만든다
+function liveSyncData() {
+  const wk = liveWeek();
+  liveStates(MG.books, wk);
+  const shelf = clone(MG.books.filter(b => b.lessons.length));
+  (LV.hold || []).forEach(h => {
+    const b = shelf.find(x => x.id === h.book);
+    if (!b || h.date < wk.from || h.date > wk.to || b.lessons.some(L => L.state === 'now')) return;
+    b.lessons.push({ no: Math.max(0, ...b.lessons.map(L => L.no)) + 1, name: '', ref: '', iso: h.date, date: liveDateText(h.date), intro: '', body: '', status: 'draft', state: 'now', hold: true });
+  });
+  DATA.books = shelf;
+  DATA.guides = clone(MG.guides);
+  // 사랑방이 함께 읽는 교재: 내 부서의 열린 교재 중 이번 주 과가 있는 교재, 없으면 첫 교재
+  const open = shelf.filter(b => !b.closed), mine = (LV.me && LV.me.deptId) || '';
+  const pool = open.filter(b => b.deptId === mine).concat(open.filter(b => b.deptId !== mine), shelf.filter(b => b.closed));
+  DATA.roomBook = (pool.find(b => b.lessons.some(L => L.state === 'now')) || pool[0] || { id: '' }).id;
+  const wl = liveWeekLesson();
+  D.status = wl ? wl.status : 'all';
+}
+const liveWeekLesson = () => { const b = DATA.books.find(x => x.id === myBookId()); return b ? b.lessons.find(L => L.state === 'now') : null; };
+// 이번 주(DATA.thisWeek): 지금 읽는 책의 이번 주 과. 책이 없으면 비어 있다
+if (LIVE) Object.defineProperty(DATA, 'thisWeek', { configurable: true, get() { const L = liveWeekLesson(), b = L && DATA.books.find(x => x.id === myBookId()); return { date: L ? L.date : '', main: { book: b ? b.id : '', no: L ? L.no : 0 } }; } });
+// 이번 주 과를 못 열 때: 책이 없거나, 이번 주 과가 아직 준비 중(못 받은 과 포함)이거나, 리더까지만 배포되었는데 리더가 아닐 때
+function liveWeekHidden() {
+  const b = DATA.books.find(x => x.id === myBookId());
+  if (!b) return true;
+  const sel = weekSel(), L = b.lessons.find(l => l.no === sel.no);
+  return !L || !!L.hold || L.status === 'draft' || (L.status === 'leader' && !isLead());
+}
+// 이번 주 과가 없는 책에서 보일 과: 가장 가까운 지난 과, 없으면 열린 첫 과
+const liveFallbackLesson = book => [...book.lessons].reverse().find(l => l.state === 'past') || book.lessons.find(l => l.state !== 'prep' && !l.hold) || book.lessons[0];
+function liveApplyBooks(r) {
+  LV.writer = !!r.writer; LV.writeDepts = Array.isArray(r.depts) ? r.depts : []; LV.hold = Array.isArray(r.hold) ? r.hold : [];
+  MG = { books: (r.books || []).filter(b => !b.deleted).map(liveMapBook), guides: clone(r.guides || {}) };
+  liveRestoreUnsaved();
+  LV.booksOk = true;
+  liveSyncData();
+}
+// 서버에서 교재와 과를 받는다. 받은 것은 보는 사람에 맞게 서버가 이미 걸러 두었다
+async function loadBooks() { liveApplyBooks(await api('books')); }
+// 안 불러온 채 들어와 있으면(승인 직후 등) 한 번 불러온다. 실패하면 안내와 [다시 불러오기]를 보인다
+function liveEnsureBooks() {
+  if (LV.booksWork || LV.booksOk || LV.err) return;
+  LV.booksWork = loadBooks().catch(err => { if (!err.cancelled) LV.err = err.code && err.message ? err.message : '서버가 답하지 않아요. 잠시 뒤 다시 해 주세요.'; })
+    .finally(() => { LV.booksWork = null; route(false); });
+}
+
+// ── 쓰는 대로 저장 (교재 관리) ──
+// 과를 고치면 입력이 멈춘 1.5초 뒤 서버에 저장한다. 저장하지 못해도 쓴 글은 지우지 않고 그대로 두며, 안내와 [다시 저장]을 보인다(P-02)
+const LS = { timers: {}, busy: {}, again: {} };
+// 저장하지 못한 과의 글은 이 기기에 임시로 둔다(열쇠: didako-mg-unsaved.교재ID.과 번호). 다시 저장하면 지우고, 교재 관리에 다시 들어오면 되살린다
+const UNSAVED = 'didako-mg-unsaved.';
+const unsavedKey = (b, L) => UNSAVED + b.id + '.' + L.no;
+const unsavedKeys = () => { const out = []; try { for (let i = 0; i < localStorage.length; i++) { const k = localStorage.key(i); if (k && k.startsWith(UNSAVED)) out.push(k); } } catch (e) { /* 저장소를 못 쓰면 임시 글도 없다 */ } return out; };
+const liveClearUnsaved = () => unsavedKeys().forEach(k => ls.del(k));
+const liveHasUnsaved = () => !!MG && MG.books.some(b => b.lessons.some(L => L.saveState && L.saveState.err));
+function liveRestoreUnsaved() {
+  unsavedKeys().forEach(k => {
+    const m = /^didako-mg-unsaved\.([^.]+)\.(\d+)$/.exec(k), b = m && mgBook(m[1]), L = b && b.lessons.find(l => l.no === Number(m[2]));
+    let v = null; try { v = JSON.parse(ls.get(k) || 'null'); } catch (e) { /* 깨진 임시 글은 버린다 */ }
+    if (!L || !v || !v.lesson || (L.editedAt && Date.parse(L.editedAt) > v.at)) { ls.del(k); return; }   // 서버에 더 새 글이 있으면 임시 글을 쓰지 않는다
+    const x = v.lesson, g = mgGuide(b, L);
+    Object.assign(L, { name: x.name, ref: x.ref, iso: x.date, date: liveDateText(x.date), intro: x.intro, body: x.body, wrap: x.wrap, useText: !!x.useText, text: x.text, fs: x.fs, saveState: { err: true, restored: true } });
+    g.guide = x.guide; g.stages = x.stages; g.triple = x.triple; b.edited = true;
+  });
+}
+// 저장하지 못한 글이 있는 채로 페이지를 떠나려 하면 묻는다
+window.addEventListener('beforeunload', e => { if (LIVE && liveHasUnsaved()) { e.preventDefault(); e.returnValue = ''; } });
+const lkey = (b, L) => b.id + ':' + L.no;
+const mgSaveNoteText = L => {
+  const s = L.saveState || {};
+  return s.err ? (s.restored ? '저장하지 못한 글이 있어요 · ' : '저장하지 못했어요. 다시 해 주세요. 쓴 글은 그대로 있어요. ') + '<button class="quiet-link" type="button" data-act="mg-resave">다시 저장</button>'
+    : s.busy ? '저장하고 있어요…' : s.at ? '저장했어요 · ' + esc(s.at) : '쓰는 대로 저장돼요. 배포하기 전까지 회원에게는 보이지 않아요.';
+};
+function mgSaveNoteShow(b, L) {
+  const c = mgEditCurrent(), el = $('#mgSaveNote');
+  if (c && c.b === b && c.L === L && el) el.innerHTML = mgSaveNoteText(L);
+}
+function liveLessonOut(L, g) {
+  return { name: L.name || '', ref: L.ref || '', date: L.iso || '', intro: L.intro || '', body: L.body || '', wrap: L.wrap || '', useText: !!L.useText, text: L.text || '', fs: L.fs || 'm', guide: g.guide || '', stages: g.stages, triple: g.triple };
+}
+function liveDirty(b, L) {
+  const k = lkey(b, L);
+  L.saveState = { busy: true }; mgSaveNoteShow(b, L);
+  clearTimeout(LS.timers[k]); LS.timers[k] = setTimeout(() => liveSaveLesson(b, L), 1500);
+}
+function liveSaveLesson(b, L) {
+  const k = lkey(b, L);
+  clearTimeout(LS.timers[k]); delete LS.timers[k];
+  if (LS.busy[k]) { LS.again[k] = true; return LS.busy[k]; }
+  const run = (async () => {
+    do {
+      LS.again[k] = false;
+      try {
+        await api('lessonSave', { bookId: b.id, no: L.no, lesson: liveLessonOut(L, mgGuide(b, L)) });
+        ls.del(unsavedKey(b, L));
+        L.saveState = LS.again[k] ? { busy: true } : { at: liveClock(new Date()) };
+        b.savedAt = liveClock(new Date()); b.edited = true;
+        liveSyncData();
+      } catch (err) {
+        if (err && err.cancelled) return;
+        L.saveState = { err: true };   // 쓴 글은 그대로 두고 안내만 바꾼다. 페이지를 닫아도 잃지 않게 이 기기에 임시로 둔다
+        ls.set(unsavedKey(b, L), JSON.stringify({ at: Date.now(), lesson: liveLessonOut(L, mgGuide(b, L)) }));
+        LS.again[k] = false;
+      }
+      mgSaveNoteShow(b, L);
+    } while (LS.again[k]);
+  })();
+  LS.busy[k] = run;
+  run.finally(() => { delete LS.busy[k]; });
+  return run;
+}
+// 화면을 떠나거나 배포하기 전에, 기다리던 저장을 바로 한다
+function liveFlush() { Object.keys(LS.timers).forEach(k => { const [bid, no] = k.split(':'), b = MG && MG.books.find(x => x.id === bid), L = b && b.lessons.find(x => x.no === Number(no)); if (L) liveSaveLesson(b, L); else { clearTimeout(LS.timers[k]); delete LS.timers[k]; } }); }
+// 서버에 있는 과를 쓰는 일(배포·복제·삭제) 앞에서, 이 과의 저장이 끝나 있게 한다. 저장하지 못했으면 멈춘다
+async function liveSettle(b, L) {
+  const k = lkey(b, L);
+  if (LS.timers[k] || LS.busy[k] || (L.saveState && L.saveState.err)) await liveSaveLesson(b, L);
+  if (L.saveState && L.saveState.err) throw { code: 'net', message: '저장하지 못했어요. 다시 해 주세요.' };
+}
+const mgFail = err => toast(err && err.code && err.code !== 'net' && err.message ? err.message : '저장하지 못했어요. 다시 해 주세요.');
+
+// ── 실제 모드 화면 ──
+const lvSteps = n => `<div class="steps" aria-hidden="true">${[1, 2, 3, 4].map(i => `<span class="${i <= n ? 'on' : ''}"></span>`).join('')}</div>`;
+const lvBackBtn = (to, label) => `<button class="link" type="button" data-act="lv-back" data-v="${to}">${label || '뒤로'}</button>`;
+function lvFirstBack() {
+  if (LV.repick) return '<button class="link" type="button" data-act="lv-unpick">승인 기다리는 화면으로 돌아가기</button>';
+  return '<button class="link" type="button" data-act="lv-logout">로그아웃</button>';
+}
+function liveStartView(arg) {
+  const me = LV.me || {};
+  if (arg === 'church') return `<form class="col-n" data-lform="church" novalidate>
+      <p class="eyebrow" style="display:flex;align-items:center;gap:.4em;color:var(--accent)">${ic('check')}카카오로 로그인했어요</p>${lvSteps(1)}
+      <h1>교회 코드를 넣어 주세요</h1>
+      <p class="hint">교회 관리자에게 받은 코드예요</p>
+      <input class="field" id="lvCode" placeholder="교회 코드" aria-label="교회 코드" autocapitalize="characters" autocomplete="off" spellcheck="false">
+      <button class="btn wide" id="lvGo" type="submit" disabled>들어가기</button>
+      <p class="msg" id="liveMsg" role="alert">${esc(LV.notice)}</p>
+      <button class="link" type="button" data-act="lv-logout">로그아웃</button>
+    </form>`;
+  if (arg === 'loading') return `<div class="col-n"><section class="card calm">${LV.err
+      ? `<p class="calm-t">불러오지 못했어요</p><p class="soft" style="margin:0">${esc(LV.err)}</p><button class="btn" type="button" data-act="lv-reload">다시 불러오기</button>`
+      : '<p class="calm-t">불러오고 있어요</p><p class="soft" style="margin:0">잠시만 기다려 주세요.</p>'}</section>
+      ${LV.err ? '<button class="link" type="button" data-act="lv-logout">로그아웃</button>' : ''}</div>`;
+  if (arg === 'dept') {
+    const depts = LV.depts || [];
+    if (!depts.length) return `<div class="col-n">${lvSteps(1)}<p class="eyebrow">처음 한 번만 확인할게요</p><h1>아직 들어갈 곳이 없어요</h1>
+      <p class="hint">교회 관리자가 부서와 사랑방을 만들면 열려요. 교회 관리자에게 알려 주세요.</p>
+      <button class="btn wide" type="button" data-act="lv-reload">다시 불러오기</button>${lvFirstBack()}</div>`;
+    return `<div class="col-n">${lvSteps(1)}<p class="eyebrow">처음 한 번만 확인할게요</p><h1>어느 부서인가요?</h1>
+      <div class="choices">${depts.map(d => `<button class="choice" type="button" data-act="lv-pick-dept" data-v="${esc(d.id)}">${esc(d.name)}</button>`).join('')}</div>
+      ${lvFirstBack()}</div>`;
+  }
+  if (arg === 'room') {
+    const d = lvDept(), many = (LV.depts || []).length > 1;
+    return `<div class="col-n">${lvSteps(1)}<p class="eyebrow">${d.name ? esc(d.name) : '처음 한 번만 확인할게요'}</p><h1>어느 ${esc(lvGrp())}인가요?</h1>
+      <div class="choices">${d.rooms.map(r => `<button class="choice" type="button" data-act="lv-pick-room" data-v="${esc(r.id)}">${esc(r.name)}</button>`).join('')}${d.hasStaff ? '<button class="choice new" type="button" data-act="lv-staff">목사님·전도사님으로 들어가기</button>' : ''}</div>
+      ${many ? lvBackBtn('dept') : lvFirstBack()}</div>`;
+  }
+  if (arg === 'family') {
+    const r = lvRoom(), solo = lvSolo();
+    return `<div class="col-n">${lvSteps(2)}<p class="eyebrow">${esc(r.name)}</p><h1>${solo ? '내 이름을 골라 주세요' : '우리 가정을 골라 주세요'}</h1>
+      <div class="choices">${r.families.map(f => `<button class="choice" type="button" data-act="lv-pick-fam" data-v="${esc(f.id)}">${esc(f.name)}</button>`).join('')}
+        <button class="choice new" type="button" data-act="lv-new">${solo ? '목록에 내 이름이 없어요 · 새로 왔어요' : '목록에 우리 가정이 없어요 · 새로 왔어요'}</button></div>
+      ${lvBackBtn('room')}</div>`;
+  }
+  if (arg === 'who') {
+    const f = lvFam();
+    return `<div class="col-n">${lvSteps(2)}<p class="eyebrow">${esc(f.name)} 가정</p><h1>누구세요?</h1>
+      <div class="choices">${String(f.name).split(' · ').map(n => `<button class="choice" type="button" data-act="lv-pick-who" data-v="${esc(n)}">${esc(n)}</button>`).join('')}</div>
+      <p class="hint">리더가 승인할 때 누구인지 알아보는 데 써요.</p>
+      ${lvBackBtn('family')}</div>`;
+  }
+  // 이름: 카카오 닉네임이 아니라 실제 이름. 소그룹 초대 링크 없이 들어오면 가정 목록 대신 내 이름을 써서 찾는다(교인 명단을 보여 주지 않는다)
+  if (arg === 'name') return `<div class="col-n">${lvSteps(2)}<p class="eyebrow">${ST.staff ? esc(lvDept().name) + ' · 목사님·전도사님' : esc(lvRoom().name)}</p><h1>내 이름을 써 주세요</h1>
+      <form data-lform="name" novalidate><input id="lvName" class="field" required maxlength="10" autocomplete="name" aria-label="내 이름" placeholder="예) 김하늘" value="${esc(ST.byName ? ST.person : '')}">
+        <p class="hint">${ST.staff ? '교역자 목록에 있는 이름과 같게 써요.' : `${esc(lvGrp())} 명단에 있는 이름과 같게 써요.${lvSolo() ? '' : ' 가정이면 남편이나 아내 중 내 이름이에요.'}`} 카카오 닉네임이 아니라 실제 이름이에요. 다른 분들의 이름은 보이지 않아요.</p>
+        <p class="msg" id="liveMsg" role="alert"></p>
+        <button class="btn wide" type="submit">다음</button></form>
+      ${ST.staff ? '' : `<div class="choices"><button class="choice new" type="button" data-act="lv-new">${lvSolo() ? '처음 왔어요(새로 신청)' : '새로 온 가정이에요(새 가정 신청)'}</button></div>`}
+      ${lvBackBtn('room')}</div>`;
+  if (arg === 'new') {
+    const N = ST.newFamily || {}, back = Array.isArray(lvRoom().families) ? 'family' : 'name';
+    return lvSolo() ? `<div class="col-n">${lvSteps(2)}<p class="eyebrow">새로 왔어요</p><h1>이름을 알려 주세요</h1>
+      <form data-lform="new" novalidate>
+        <label class="f" for="lvNa">이름</label><input id="lvNa" class="field" required maxlength="10" autocomplete="name" value="${esc(N.a || (ST.byName ? ST.person : ''))}">
+        <p class="hint">신청하면 리더가 확인한 뒤 승인해요.</p>
+        <button class="btn wide" type="submit">다음</button></form>
+      ${lvBackBtn(back)}</div>`
+    : `<div class="col-n">${lvSteps(2)}<p class="eyebrow">새 가정 신청</p><h1>우리 가정을 알려 주세요</h1>
+      <form data-lform="new" novalidate>
+        <label class="f" for="lvNa">남편 또는 본인 이름</label><input id="lvNa" class="field" required maxlength="10" autocomplete="name" value="${esc(N.a || (ST.byName ? ST.person : ''))}">
+        <label class="f" for="lvNb">아내 이름 · 1인 가정이면 비워 두세요</label><input id="lvNb" class="field" maxlength="10" value="${esc(N.b || '')}">
+        <label class="f" for="lvNk">자녀 이름 · 선택, 쉼표로 구분</label><input id="lvNk" class="field" maxlength="40" value="${esc(N.kids || '')}">
+        <p class="hint">신청하면 리더가 확인한 뒤 승인해요. 배우자는 나중에 각자 카카오로 연결하면 돼요.</p>
+        <button class="btn wide" type="submit">다음</button></form>
+      ${lvBackBtn(back)}</div>`;
+  }
+  // 동의 한 장(설계서 C-01 4번): 명단은 서버에, 내 기록은 휴대폰에서 잠가서 맡기며 누구도 열 수 없다는 것, 사이트 데이터를 지우면 이 기기의 사본이 지워질 수 있다는 것, 홈 화면 추가 안내
+  if (arg === 'consent') {
+    const back = ST.newFamily ? 'new' : ST.byName ? 'name' : (lvFam() && String(lvFam().name).split(' · ').length > 1 ? 'who' : 'family');
+    return `<div class="col-n">${lvSteps(3)}<p class="eyebrow">${esc(ST.person)}</p><h1>내 기록은 이렇게 지켜요</h1>
+      <ul class="consent">
+        <li><b>명단</b><span>이름과 ${esc(lvGrp())}, 카카오 회원번호와 닉네임은 교회가 관리하는 서버에 있어요</span></li>
+        <li><b>내 기록</b><span>답변, 한 문장, 작은 실천, 돌아보기, 메모는 이 휴대폰에서 잠가서 맡겨요. 운영자도, 목사님도, 리더도 열 수 없어요</span></li>
+        <li><b>이 기기</b><span>브라우저에서 사이트 데이터를 지우면 이 기기의 사본이 지워질 수 있어요</span></li>
+        <li><b>홈 화면</b><span>홈 화면에 추가해 두면 좋아요. 아이폰은 공유 버튼에서, 안드로이드는 메뉴에서 "홈 화면에 추가"를 눌러요</span></li></ul>
+      <button class="btn wide" type="button" data-act="lv-request">동의하고 연결 요청</button>
+      <p class="msg" id="liveMsg" role="alert"></p>
+      <p class="hint">동의하지 않으면 앱을 쓸 수 없어요. 궁금한 점은 리더나 목사님께 물어봐 주세요.</p>
+      ${lvBackBtn(back)}</div>`;
+  }
+  if (arg === 'wait') {
+    const who = esc(me.link ? me.link.person : ''), asked = !me.notLinked;
+    if (!asked) return `<div class="col-n">${lvSteps(4)}<p class="eyebrow">${esc(me.familyName || '')}</p><h1>아직 열리지 않았어요</h1>
+      <p>${esc(me.notLinked)}</p>
+      <button class="btn wide" type="button" data-act="lv-recheck">승인됐는지 다시 확인</button>
+      <button class="link" type="button" data-act="lv-logout">로그아웃</button></div>`;
+    return `<div class="col-n">${lvSteps(4)}<p class="eyebrow">${esc(me.familyName || '')}</p><h1>연결을 요청했어요</h1>
+      <p>${who} 님의 연결 요청을 ${me.staff ? '부서 관리자' : '리더'}에게 보냈어요. 승인되면 바로 열려요.</p>
+      <div class="wait">${me.staff ? '부서 관리자' : '리더'}가 확인하고 있어요</div>
+      <button class="btn wide" type="button" data-act="lv-recheck">승인됐는지 다시 확인</button>
+      <p class="hint">보통 하루 안에 끝나요. 승인된 뒤에는 링크만 누르면 바로 열려요.</p>
+      <button class="link" type="button" data-act="lv-repick">다른 ${esc(lvGrpOfCache())}${lvRo(lvGrpOfCache())} 다시 고르기</button>
+      <button class="link" type="button" data-act="lv-logout">로그아웃</button></div>`;
+  }
+  if (arg === 'done') {
+    const place = me.roomName || (me.dept && me.dept.name) || '디다코';
+    return `<div class="col-n">${lvSteps(4)}<p class="eyebrow">${esc(place)}</p><h1>함께하게 되었어요</h1>
+      <p>${esc(me.person || '')} 님, ${esc(place)}에 오신 것을 환영해요.</p>
+      <a class="btn wide" href="#week">이번 주로</a></div>`;
+  }
+  if (arg === 'setup') return `<form class="col-n" data-lform="setup" novalidate>
+      <p class="eyebrow">처음 한 번만</p><h1>설치 코드를 넣어 주세요</h1>
+      <p class="hint">처음 한 번만 써요. 서버를 만든 사람에게 받은 설치 코드를 넣어 주세요.</p>
+      <label class="f" for="lvSetupCode">설치 코드</label><input class="field" id="lvSetupCode" autocomplete="off" spellcheck="false" aria-label="설치 코드">
+      <label class="f" for="lvSetupName">내 이름</label><input class="field" id="lvSetupName" maxlength="20" autocomplete="name" aria-label="내 이름" placeholder="예) 김하늘">
+      <p class="hint">교회 관리자로 보일 이름이에요.</p>
+      <button class="btn wide" type="submit">교회 관리자로 시작하기</button>
+      <p class="msg" id="liveMsg" role="alert"></p>
+      <button class="link" type="button" data-act="lv-setup-skip">나중에 하기</button>
+    </form>`;
+  return liveWelcome();
+}
+// 다시 고르기 단추에 쓰는 소그룹 이름(저장해 둔 목록의 첫 부서 기준. 없으면 사랑방)과 '로/으로'
+const lvRo = w => { const c = String(w).charCodeAt(String(w).length - 1) - 0xAC00; return c >= 0 && c < 11172 && (c % 28 === 0 || c % 28 === 8) ? '로' : '으로'; };
+function lvGrpOfCache() { const d = (LV.depts || lvCachedDepts() || [])[0]; return (d && d.group) || '사랑방'; }
+// 실제 모드 첫 화면: 시안 start.html의 첫 화면에서 코드로 들어오기를 뺐다(교회 서버 주소를 기본 서버에서 받으므로 카카오 없이는 교회를 찾을 길이 없다)
+function liveWelcome() {
+  const busy = LV.authBusy;
+  return `<div class="welcome">
+      <section class="wl-hero">
+        <span class="ab-mark wl-mark" aria-hidden="true"><svg class="mk"><use href="#i-didako"/></svg></span>
+        <h1 class="wl-name">디다코</h1>
+        <p class="wl-tag">말씀을 함께 읽고<br>나누고 간직해요</p>
+      </section>
+      <section class="wl-act card">
+        <button class="kakao" type="button" data-act="lv-kakao"${busy ? ' disabled aria-busy="true"' : ''}>${BUBBLE}${busy ? '카카오 로그인을 확인하고 있어요…' : '카카오로 시작하기'}</button>
+        <p class="hint wl-once">${busy ? '잠시만 기다려 주세요. 몇 초 걸려요.' : '처음 한 번만 로그인하면 돼요.<br>초대 링크를 받았다면 그 링크로 열어 주세요.'}</p>
+        <p class="hint wl-once"><a class="quiet-link" href="?demo">데모로 둘러보기</a></p>
+      </section>
+      <ul class="wl-feat">
+        <li><span class="wl-ico">${ic('book')}</span><div><b>말씀을 함께 읽어요</b><span>교회가 낸 교재로 이번 주 말씀을 펼쳐요.</span></div></li>
+        <li><span class="wl-ico">${ic('people')}</span><div><b>함께 나눠요</b><span>모임에서는 화면을 내려놓고 서로를 바라봐요.</span></div></li>
+        <li><span class="wl-ico">${ic('lock')}</span><div><b>기록은 지켜져요</b><span>내 기록은 암호화하여 보관해요. 운영자·목사님·리더도 볼 수 없어요.</span></div></li>
+      </ul>
+      <footer class="wl-name-note">
+        <div class="ab-words" aria-hidden="true"><span><b>디다케</b><i>διδαχή</i><small>가르침</small></span><em>+</em><span><b>코이노니아</b><i>κοινωνία</i><small>교제</small></span></div>
+        <p class="hint">말씀을 배우고 함께 나누는 자리예요.</p>
+      </footer>
+    </div>`;
+}
+
+// 더보기의 우리 사랑방 카드: 사랑방 이름은 서버가 알려 주고, 함께하는 사람은 리더에게만 보인다(리더가 우리 사랑방에서 받아 온 명단)
+function liveRoomCard() {
+  const me = LV.me || {};
+  if (!me.roomName) return '';
+  const names = liveLeads() && PEND.data ? PEND.data.families.flatMap(f => f.linked.map(l => l.person)) : null;
+  return `<div class="gc" style="margin:14px 0;padding-top:14px;padding-bottom:14px">
+        <b>우리 사랑방</b><p>${esc(me.roomName)}</p>
+        ${names ? `<p class="mlabel">함께하는 사람</p><div class="kids">${names.map(n => `<span class="kid">${esc(n)}</span>`).join('')}</div>` : ''}
+        <p class="hint">이름만 보여요. 서로 얼마나 썼는지는 보이지 않아요.</p>
+        <p class="hint">사랑방이 바뀌면 리더나 관리자에게 알려 주세요.</p>
+      </div>`;
+}
+
+// 우리 사랑방(L-02) 실제 모드: 화면 모양과 글은 데모와 같고 자료만 서버(pending)에서 받는다
+function liveChurchView() {
+  const me = LV.me || {}, d = PEND.data;
+  const head = `<a class="back-link" href="#more">${ic('back')}<span>더보기</span></a>
+    <p class="eyebrow top-eyebrow">${esc(me.roomName)} · ${esc(roleName())}</p><div class="page-top"><h1>우리 사랑방</h1></div>`;
+  if (!d) return head + `<section class="card calm"><p class="calm-t">${PEND.err ? '불러오지 못했어요' : '불러오고 있어요'}</p>${PEND.err ? `<p class="soft" style="margin:0">${esc(PEND.err)}</p><button class="btn ghost" type="button" data-act="lv-pend">다시 불러오기</button>` : ''}</section>`;
+  const reqs = d.requests, solo = !!(me.dept && me.dept.unit === '개인');
+  const linked = d.families.reduce((n, f) => n + f.linked.length, 0);
+  const people = d.families.flatMap(f => f.linked.length
+    ? f.linked.map(l => `<div class="gr"><span class="gt"><b>${esc(l.person)}</b><span class="gd">${String(l.kakaoId) === String(me.kakaoId) ? '연결됨 · 나' : '연결됨'}</span></span>${String(l.kakaoId) === String(me.kakaoId) ? '' : `<button class="btn ghost small" type="button" data-act="room-dc" data-k="${esc(l.kakaoId)}" data-n="${esc(l.person)}" aria-label="${esc(l.person)} 연결 해제">연결 해제</button>`}</div>`)
+    : [`<div class="gr"><span class="gt"><b>${esc(f.name)}</b><span class="gd">아직 연결 전</span></span></div>`]);
+  return `${head}
+    <div class="more-grid"><div>
+      <div class="gl">연결 승인${reqs.length ? ` · 기다리는 요청 ${reqs.length}명` : ''}</div><div class="gc">
+        ${reqs.length > 1 ? `<div class="gr"><span class="gt"><span class="gd">기다리는 요청을 한 번에 승인해요</span></span><button class="btn small" type="button" data-act="room-apall">모두 승인 (${reqs.length})</button></div>` : ''}
+        ${reqs.length ? reqs.map(p => `<div class="gr"><span class="gt"><b>${esc(p.person)}</b><span class="gd">카카오 닉네임 · ${esc(p.nick)}${p.newFamily ? ' · ' + (solo ? '새로 왔어요' : '새 가정 신청' + (p.familyName && p.familyName !== p.person ? ' ' + esc(p.familyName) : '')) : ''}</span></span>
+          <div class="set-btns"><button class="btn ghost small" type="button" data-act="room-reject" data-k="${esc(p.kakaoId)}" data-n="${esc(p.person)}" aria-label="${esc(p.person)} 거절">거절</button><button class="btn small" type="button" data-act="room-approve" data-k="${esc(p.kakaoId)}" data-n="${esc(p.person)}" aria-label="${esc(p.person)} 승인">승인</button></div></div>`).join('')
+          : '<div class="gr"><span class="gt"><span class="gd">기다리는 요청이 없어요. 새로 들어온 사람이 연결을 요청하면 여기에 보여요.</span></span></div>'}
+      </div>
+    </div><div>
+      <div class="gl">명단 · 연결된 사람 ${linked}명</div><div class="gc">
+        ${people.join('')}
+      </div>
+    </div></div>
+    <p class="soft">${ic('lock')} 이름과 연결 상태만 보여요. 묵상 기록은 잠겨 있어서 리더도 볼 수 없어요.</p>`;
+}
+
+// ── 첫 화면(C-01): 데모에서는 카카오 대신 "데모로 둘러보기". 실제 모드의 첫 화면과 걸음은 아래 "실제 서버"에 있다 ──
+function startView(arg) { return LIVE ? liveStartView(arg) : demoStartView(); }
+function demoStartView() {
   return `<div class="welcome">
       <section class="wl-hero">
         <span class="ab-mark wl-mark" aria-hidden="true"><svg class="mk"><use href="#i-didako"/></svg></span>
@@ -1613,25 +2250,28 @@ let dispOpen = false;
 let roomState = null;
 const myRoom = () => roomState || (roomState = { members: DATA.rooms.mine.members.slice(), pending: DATA.rooms.mine.pending.map(p => ({ ...p })) });
 function moreView() {
-  const room = DATA.rooms.mine;
+  const room = LIVE ? null : DATA.rooms.mine;
   const chevron = '<span class="ch" aria-hidden="true">›</span>';
-  const jobRow = (title, desc, target) => `<a class="gr" href="${target}"><span class="gt"><b>${title}</b><span class="gd">${desc}</span></span><span class="role-tag ${D.role === 'leader' ? 'leader' : 'admin'}">${roleName()}</span>${chevron}</a>`;
+  const jobRow = (title, desc, target, tag) => `<a class="gr" href="${target}"><span class="gt"><b>${title}</b><span class="gd">${desc}</span></span><span class="role-tag ${!tag && D.role === 'leader' ? 'leader' : 'admin'}">${esc(tag || roleName())}</span>${chevron}</a>`;
   let jobs = '';
   if (D.role === 'leader') jobs = jobRow('우리 사랑방', '함께하는 사람 · 연결 승인', '#church');
   else if (D.role === 'pastor') jobs = jobRow('교재 관리', '교재와 과를 꾸리고 배포해요', '#manage') + jobRow('사랑방 전체 보기', '모든 사랑방의 명단과 연결 상태', '#rooms');
   else if (D.role === 'admin') jobs = jobRow('교재 관리', '교재와 과를 꾸리고 배포해요', '#manage') + jobRow('관리', '부서와 사랑방, 명단을 꾸려요', '#admin') + jobRow('교회 전체 관리', '부서와 교회 설정을 꾸려요', '#church-admin');
+  if (LIVE && D.role === 'admin' && liveLeads()) jobs = jobRow('우리 사랑방', '함께하는 사람 · 연결 승인', '#church') + jobs;
+  // 맡은 일이 '교재 담당'인 회원·리더에게도 교재 관리가 열린다(서버가 알려 준 writer)
+  if (LIVE && LV.writer && (D.role === 'member' || D.role === 'leader')) jobs += jobRow('교재 관리', '교재와 과를 꾸리고 배포해요', '#manage', '교재 담당');
   return `<div class="page-top"><h1>더보기</h1></div>
     <div class="more-grid"><div>
       <div class="gl">나</div><div class="gc">
         <a class="gr" href="../note/"><span class="gt"><b>디다코 노트</b><span class="gd">혼자 묵상하는 노트</span></span>${chevron}</a>
       </div>
-      <div class="gc" style="margin:14px 0;padding-top:14px;padding-bottom:14px">
+      ${LIVE ? liveRoomCard() : `<div class="gc" style="margin:14px 0;padding-top:14px;padding-bottom:14px">
         <b>우리 사랑방</b><p>${esc(room.name)}</p>
         <p class="mlabel">리더</p><div class="kids"><span class="kid lead">${esc(room.leader)}</span><span class="kid lead">${esc(room.coLeader)} · 코리더</span></div>
         <p class="mlabel">함께하는 사람</p><div class="kids">${myRoom().members.map(n => `<span class="kid">${esc(n)}</span>`).join('')}</div>
         <p class="hint">이름만 보여요. 서로 얼마나 썼는지는 보이지 않아요.</p>
         <p class="hint">사랑방이 바뀌면 리더나 관리자에게 알려 주세요.</p>
-      </div>
+      </div>`}
     </div><div>
       ${jobs ? `<div class="gl">맡은 일</div><div class="gc">${jobs}</div>` : ''}
       <div class="gl">앱 설정</div><div class="gc">
@@ -1701,9 +2341,13 @@ function feedbackView() {
 }
 
 // ── 교재 관리(P-01): 원본과 회원 화면은 건드리지 않고 복사본만 고친다 ──
-const canManage = () => D.role === 'pastor' || D.role === 'admin';
+// 실제 모드: 교재를 쓸 수 있는지는 서버가 정해서 알려 준다(교역자·부서 관리자·교회 관리자, 그리고 맡은 일이 '교재 담당'인 회원·리더)
+const canManage = () => LIVE ? !!LV.writer : D.role === 'pastor' || D.role === 'admin';
 let MG = null, mgTab = 'now', mgEditing = '', mgSerial = 0;
-const mg = () => MG || (MG = { books: JSON.parse(JSON.stringify(DATA.books)), guides: JSON.parse(JSON.stringify(DATA.guides)) });
+// 실제 모드의 MG는 서버에서 받을 때 채워진다(liveApplyBooks). 쓰는 사람은 준비 중인 과까지 모두 갖고, 책장 자료(DATA)는 여기서 다시 만든다
+const mg = () => MG || (MG = { books: clone(DATA.books), guides: clone(DATA.guides) });
+// 교재 관리 화면의 부서 이름(실제 모드는 내 부서, 교회 관리자는 첫 부서나 교회 이름)
+const deptLabel = () => LIVE ? liveDeptName() : DATA.church.dept;
 const isWeekMain = (b, L) => b.id === DATA.thisWeek.main.book && L.no === DATA.thisWeek.main.no;
 function setMgStatus(b, L, st) {
   if (isWeekMain(b, L)) { D.status = st; saveDemo(); }
@@ -1715,14 +2359,18 @@ function setMgStatus(b, L, st) {
   }
   b.edited = true;
 }
+// 고친 표시: 데모는 '오늘 고침', 실제 모드는 서버에 저장한 시각("저장했어요 · 14:05")
+const mgSavedText = b => LIVE ? (b.lessons.some(L => L.saveState && L.saveState.err) ? '저장하지 못한 과가 있어요' : b.savedAt ? '저장했어요 · ' + b.savedAt : '') : (b.edited ? '오늘 고침' : '');
 const mgStatus = (b, L) => L.status || (b.id === DATA.thisWeek.main.book && L.no === DATA.thisWeek.main.no ? D.status : (L.state === 'past' || L.state === 'now') ? 'all' : 'draft');
 const mgPill = (b, L) => { const s = mgStatus(b, L); return `<span class="walk-tag${s === 'all' ? ' on' : ''}">${esc((STATUS.find(x => x[0] === s) || STATUS[0])[1])}</span>`; };
-const mgBook = id => mg().books.find(b => b.id === id);
+// 실제 모드의 교재 관리는 내가 쓸 수 있는 교재(서버가 교재마다 알려 주는 canWrite)만 다룬다. 쓸 수 없는 교재(예: 교재 담당에게 교회 전체 교재)는 책장에만 있다
+const mgBooks = () => LIVE ? mg().books.filter(b => b.canWrite) : mg().books;
+const mgBook = id => mgBooks().find(b => b.id === id);
 const mgId = () => { let id; do { id = 'nb' + (++mgSerial); } while (mgBook(id)); return id; };
 function mgGo(arg, message) { window.addEventListener('hashchange', () => toast(message), { once: true }); location.hash = '#' + arg; }
 const mgCurrent = () => { const a = parseHash().arg; return a && a.startsWith('mb-') ? mgBook(a.slice(3)) : null; };
 function manageView(arg) {
-  if (!canManage()) return `<div class="page-top"><h1>교재 관리</h1></div><section class="card calm"><p class="calm-t">목사님과 관리자가 여는 화면이에요</p><p class="soft" style="margin:0">데모 설정에서 역할을 목사님이나 관리자로 바꿔 보세요.</p><a class="btn ghost" href="#more">더보기로 돌아가기</a></section>`;
+  if (!canManage()) return `<div class="page-top"><h1>교재 관리</h1></div><section class="card calm"><p class="calm-t">${LIVE ? '교재를 꾸리는 분이 여는 화면이에요' : '목사님과 관리자가 여는 화면이에요'}</p>${LIVE ? '' : '<p class="soft" style="margin:0">데모 설정에서 역할을 목사님이나 관리자로 바꿔 보세요.</p>'}<a class="btn ghost" href="#more">더보기로 돌아가기</a></section>`;
   if (arg && arg.startsWith('mb-')) { const b = mgBook(arg.slice(3)); if (b) return mgBookView(b); }
   if (arg && arg.startsWith('mxb-')) { const b = mgBook(arg.slice(4)); if (b) return mgBookPrintView(b); }
   const m = /^(me|mp|mx)-([\w-]+)\.(\d+)$/.exec(arg || '');
@@ -1746,11 +2394,13 @@ function mgPublishMissing(b, L) {
   return [...(!String(L.name || '').trim() ? ['과 제목'] : []), ...(!qs.length ? ['질문이나 읽을 글(하나 이상)'] : []), ...(qs.some(q => !isRead(q) && !String(q.t || '').trim()) ? ['비어 있는 질문'] : []), ...(qs.some(q => isRead(q) && !String(q.t || '').trim()) ? ['비어 있는 읽을 글'] : [])];
 }
 function mgPublishTarget(b) {
-  const target = b.target || DATA.church.dept;
+  const target = b.target || deptLabel();
+  if (LIVE) return { target, count: null };   // 실제 모드는 리더 수를 알려 주지 않아서 숫자 없이 보인다
   const dept = DATA.admin.depts.find(d => d.name === target);
   const count = dept ? dept.rooms.reduce((n, r) => n + (r.leader && r.leader.trim() ? 1 : 0) + (r.co && r.co.trim() ? 1 : 0), 0) : 0;
   return { target, count };
 }
+const mgLeadWho = count => count == null ? '리더' : '리더 ' + count + '명';
 function mgPublishView(b, L) {
   const st = mgStatus(b, L), label = (STATUS.find(x => x[0] === st) || STATUS[0])[1];
   const missing = mgPublishMissing(b, L), { target, count } = mgPublishTarget(b);
@@ -1768,7 +2418,7 @@ function mgPublishView(b, L) {
       <p class="fine" style="margin-top:.2em">해설과 진행 안내는 리더에게만 보여요.</p>
       ${!missing.length && !String(L.ref || '').trim() ? `<p class="mg-warn">${ic('info')}<span>본문 장절이 비어 있어요. 본문이 없는 과라면 그대로 배포해도 돼요.</span></p>` : ''}
       <p class="mg-pub-lbl">배포</p>
-      <div class="mg-pub-row">${button('리더 ' + count + '명에게', 'leader', false, st !== 'draft', '리더 ' + count + '명에게 배포')}<span class="st-sep" aria-hidden="true">›</span>${button(esc(target) + ' 회원에게', 'all', st === 'draft', st !== 'leader', esc(target) + ' 회원에게 배포')}</div>
+      <div class="mg-pub-row">${button(mgLeadWho(count) + '에게', 'leader', false, st !== 'draft', mgLeadWho(count) + '에게 배포')}<span class="st-sep" aria-hidden="true">›</span>${button(esc(target) + ' 회원에게', 'all', st === 'draft', st !== 'leader', esc(target) + ' 회원에게 배포')}</div>
       <div class="mg-pub-more">${st === 'draft' ? `<button class="quiet-link" type="button" data-act="mg-pub" data-v="both"${disabled ? ' disabled' : ''}>한 번에 둘 다</button>` : '<button class="quiet-link" type="button" data-act="mg-unpub">배포 중단</button>'}</div>
     </section>
     <div class="gc"><a class="gr" href="#mx-${b.id}.${L.no}"><span class="gt"><b>인쇄용 보기</b><span class="gd">PDF나 Word로 내려받아요</span></span><span class="ch" aria-hidden="true">›</span></a></div>`;
@@ -1803,7 +2453,14 @@ function ppBlocksHtml(src, o) {
     qs.forEach(({ q, key, no }, i) => {
       const vs = Array.isArray(q.vs) ? q.vs.filter(ppHas) : [];
       const help = vs.length ? `<p class="pp-help">관련 구절 ${vs.map(esc).join(' · ')}</p>` : '';
-      const content = isRead(q) ? `<div>${ppHas(q.h) ? `<p class="pp-q">${esc(q.h)}</p>` : ''}<p class="pp-intro">${esc(q.t)}</p>${help}</div>` : `<ul class="pp-qs"><li><span class="pp-n">${no}.</span><div><p class="pp-q">${esc(q.t)}</p>${ppHas(q.sub) ? `<p class="pp-help">${esc(q.sub)}</p>` : ''}${help}${o.leader && ppHas(q.lead) ? `<p class="pp-lead"><b>해설</b>${esc(q.lead)}</p>` : ''}</div>${ppUnder(o, key)}</li></ul>`;
+      if (isRead(q)) {
+        const parts = mdBlocks(q.t);
+        parts.forEach((part, pi) => {
+          blocks.push(`<div class="pp-blk${pi ? ' pp-more pp-cont' : i ? ' pp-more' : ''}">${pi || i ? '' : `<h4>${esc(st.name || '단계')}</h4>`}${pi ? '' : ppHas(q.h) ? `<p class="pp-q">${esc(q.h)}</p>` : ''}<div class="pp-intro pp-read md">${mdHtml(part)}</div>${pi === parts.length - 1 ? help : ''}</div>`);
+        });
+        return;
+      }
+      const content = `<ul class="pp-qs"><li><span class="pp-n">${no}.</span><div><p class="pp-q">${esc(q.t)}</p>${ppHas(q.sub) ? `<p class="pp-help">${esc(q.sub)}</p>` : ''}${help}${o.leader && ppHas(q.lead) ? `<p class="pp-lead"><b>해설</b>${esc(q.lead)}</p>` : ''}</div>${ppUnder(o, key)}</li></ul>`;
       blocks.push(`<div class="pp-blk${i ? ' pp-more' : ''}">${i ? '' : `<h4>${esc(st.name || '단계')}</h4>`}${content}</div>`);
     });
   });
@@ -1867,7 +2524,7 @@ function mgBookPrintView(b) {
     <div class="pp-main"><div class="print-area" id="ppArea"></div></div></div>`;
 }
 function ppTocHtml(b) {
-  return `<div class="paper-wrap"><article class="paper" aria-label="${esc(b.title)} 차례"><h3 style="display:flex;align-items:center;gap:.4em"><span class="pp-logo">${mkIc()}</span>${esc(b.title)}</h3><p class="pp-ref">${esc(b.target || DATA.church.dept)}</p>
+  return `<div class="paper-wrap"><article class="paper" aria-label="${esc(b.title)} 차례"><h3 style="display:flex;align-items:center;gap:.4em"><span class="pp-logo">${mkIc()}</span>${esc(b.title)}</h3><p class="pp-ref">${esc(b.target || deptLabel())}</p>
     <h4>차례</h4><ul class="pp-toc">${b.lessons.map(L => `<li><span>제${L.no}과${L.name ? ' ' + esc(L.name) : ''}</span><span>${esc(L.ref || L.date || '')}</span></li>`).join('') || '<li><span>아직 과가 없어요</span><span></span></li>'}</ul>${ppPg(1)}</article></div>`;
 }
 // 진행 준비의 리더용 인쇄(#prepprint): 이번 주 과에 해설과 내 진행 메모(이 기기의 내 것만)
@@ -1931,6 +2588,7 @@ function wPara(runs, o) {
   const pr = (o.keep ? '<w:keepNext/>' : '') + (o.brk ? '<w:pageBreakBefore/>' : '')
     + (o.top || o.bot ? `<w:pBdr>${o.top ? wBdr('top', o.top[0], o.top[1]) : ''}${o.bot ? wBdr('bottom', o.bot[0], o.bot[1]) : ''}</w:pBdr>` : '')
     + (o.tab ? '<w:tabs><w:tab w:val="right" w:pos="9866"/></w:tabs>' : '')
+    + (o.jc ? `<w:jc w:val="${o.jc}"/>` : '')
     + `<w:spacing w:before="${o.before || 0}" w:after="${o.after || 0}" w:line="${o.line || 320}" w:lineRule="auto"/>`
     + (o.left ? `<w:ind w:left="${o.left}"${o.right ? ` w:right="${o.right}"` : ''}${o.hang ? ` w:hanging="${o.hang}"` : ''}/>` : '');
   return `<w:p><w:pPr>${pr}</w:pPr>${runs}</w:p>`;
@@ -1970,7 +2628,20 @@ function wordLessonXml(src, o, brk) {
       const vs = Array.isArray(q.vs) ? q.vs.filter(ppHas) : [];
       if (isRead(q)) {
         if (ppHas(q.h)) ps.push(wPara(wRun(q.h, { f: W_SERIF, b: true, sz: 22 }), { keep: true, before: 40 }));
-        ps.push(wPara(wRun(q.t, { f: W_SERIF, sz: 22 }), { keep: true }));
+        const mdRuns = (text, opt) => String(text).split(/(\*\*[^\n*]+\*\*)/g).filter(Boolean).map(part => {
+          const bold = part.startsWith('**') && part.endsWith('**');
+          return wRun(bold ? part.slice(2, -2) : part, { f: W_SERIF, sz: 22, ...opt, b: bold || !!(opt && opt.b) });
+        }).join('');
+        mdBlocks(q.t).forEach(block => {
+          if (block.type === 'h') ps.push(wPara(mdRuns(block.text, { b: true }), { keep: true, after: 80 }));
+          else if (block.type === 'p') ps.push(wPara(mdRuns(block.text), { jc: 'both', after: 80 }));
+          else if (block.items) block.items.forEach(item => ps.push(wPara(
+            wRun(block.type === 'ul' ? '· ' : item.marker, { f: W_SERIF, sz: 22 }) + mdRuns(item.text),
+            { left: 400, hang: 300, after: 80 })));
+          else if (block.type === 'quote') ps.push(wPara(mdRuns(block.text, { c: W_GRAY }), { left: 400, after: 80 }));
+          else if (block.type === 'table') [block.head, ...block.rows].forEach((row, ix) =>
+            ps.push(wPara(mdRuns(row.join(' · '), ix === 0 ? { b: true } : {}), { after: 80 })));
+        });
         if (vs.length) ps.push(wPara(wRun('관련 구절 ' + vs.join(' · '), { c: W_GRAY, sz: 19 }), { keep: true }));
         return;
       }
@@ -2017,7 +2688,7 @@ function buildDocxBlob(body) {
 function wordTocXml(b) {
   const ps = [];
   ps.push(wPara(wRun(b.title, { f: W_SERIF, b: true, sz: 52 }), { before: 0, after: 80, line: 380 }));
-  ps.push(wPara(wRun(b.target || DATA.church.dept, { f: W_SERIF, b: true, sz: 24 }), { after: 120 }));
+  ps.push(wPara(wRun(b.target || deptLabel(), { f: W_SERIF, b: true, sz: 24 }), { after: 120 }));
   ps.push(wPara(wRun('차례', { f: W_SERIF, b: true, sz: 26 }), { keep: true, bot: [W_ACC, 4], before: 240, after: 120 }));
   b.lessons.forEach(L => ps.push(wPara(wRun(`제${L.no}과${L.name ? ' ' + L.name : ''}`) + wTab + wRun(L.ref || L.date || '', { c: W_GRAY, sz: 19 }), { tab: true, bot: ['DDE4E0', 4], before: 60, after: 60 })));
   if (!b.lessons.length) ps.push(wPara(wRun('아직 과가 없어요', { c: W_GRAY })));
@@ -2047,24 +2718,31 @@ function mgStepsHtml() {
   return `<ol class="mg-step-list">${steps.map(([icon, name, desc], i) => `<li class="mg-step"><span class="mg-step-ic" aria-hidden="true"><svg viewBox="0 0 24 24">${MG_STEP_IC[icon]}</svg></span><span class="mg-step-tx"><b><span class="mg-step-no">${i + 1}</span>${esc(name)}</b><span class="mg-step-d">${esc(desc)}</span>${i === steps.length - 1 ? flow : ''}</span></li>`).join('')}</ol>`;
 }
 function mgBooksView() {
-  const books = mg().books.filter(b => !!b.closed === (mgTab === 'past'));
+  const books = mgBooks().filter(b => !!b.closed === (mgTab === 'past'));
   const dateKey = L => { const m = /(\d+)월\s*(\d+)일/.exec(L.date || ''); return m ? Number(m[1]) * 100 + Number(m[2]) : Infinity; };
-  const upcoming = mgTab === 'now' ? mg().books.filter(b => !b.closed).flatMap(b => b.lessons.filter(L => ['now', 'upcoming', 'prep'].includes(L.state)).map(L => ({ b, L }))).sort((a, b) => dateKey(a.L) - dateKey(b.L)).slice(0, 4) : [];
-  return `<a class="back-link" href="#more">${ic('back')}<span>더보기</span></a><p class="eyebrow top-eyebrow">${esc(DATA.church.dept)} · ${esc(roleName())}</p><div class="page-top"><h1>교재 관리</h1></div>
+  const upcoming = mgTab === 'now' ? mgBooks().filter(b => !b.closed).flatMap(b => b.lessons.filter(L => ['now', 'upcoming', 'prep'].includes(L.state)).map(L => ({ b, L }))).sort((a, b) => dateKey(a.L) - dateKey(b.L)).slice(0, 4) : [];
+  return `<a class="back-link" href="#more">${ic('back')}<span>더보기</span></a><p class="eyebrow top-eyebrow">${esc(deptLabel())} · ${esc(LIVE && (D.role === 'member' || D.role === 'leader') ? '교재 담당' : roleName())}</p><div class="page-top"><h1>교재 관리</h1></div>
     <div class="mg-tabs"><div class="seg" style="--n:2">${[['now', '지금 쓰는 교재'], ['past', '지난 교재']].map(([v, name]) => `<button type="button" data-act="mg-tab" data-v="${v}" class="${mgTab === v ? 'on' : ''}" aria-pressed="${mgTab === v}">${name}</button>`).join('')}</div></div>
     <div class="more-grid"><div>
       ${mgTab === 'now' ? '<button class="btn wide" type="button" data-act="mg-new">새 교재 만들기</button>' : ''}
-      <div class="gl">교재</div><div class="gc">${books.map(b => `<a class="gr mg-row" href="#mb-${b.id}"><span class="mg-cover">${bookCover({ ...b, id: '' }, 'list')}</span><span class="gt"><b>${esc(b.title)}</b><span class="gd">${esc(b.kind)} · ${esc(b.period)}${b.edited ? ' · 오늘 고침' : ''}</span></span><span class="ch" aria-hidden="true">›</span></a>`).join('') || `<div class="gr"><span class="gt"><span class="gd">${mgTab === 'now' ? '지금 쓰는 교재가 없어요. 새 교재를 만들어 시작해요.' : '지난 교재가 아직 없어요.'}</span></span></div>`}</div>
+      <div class="gl">교재</div><div class="gc">${books.map(b => `<a class="gr mg-row" href="#mb-${b.id}"><span class="mg-cover">${bookCover({ ...b, id: '' }, 'list')}</span><span class="gt"><b>${esc(b.title)}</b><span class="gd">${esc(b.kind)} · ${esc(b.period)}${mgSavedText(b) ? ' · ' + esc(mgSavedText(b)) : ''}</span></span><span class="ch" aria-hidden="true">›</span></a>`).join('') || `<div class="gr"><span class="gt"><span class="gd">${mgTab === 'now' ? '지금 쓰는 교재가 없어요. 새 교재를 만들어 시작해요.' : '지난 교재가 아직 없어요.'}</span></span></div>`}</div>
+      ${LIVE && mgTab === 'now' ? mgBasicHtml() : ''}
       ${upcoming.length ? `<div class="gl">다가오는 과</div><div class="gc">${upcoming.map(({ b, L }) => `<a class="gr" href="#me-${b.id}.${L.no}"><span class="gt"><b>제${L.no}과 ${esc(L.name || '(제목을 적어 주세요)')}</b><span class="gd">${esc(L.date)} · ${esc(b.title)}</span></span>${mgPill(b, L)}</a>`).join('')}</div>` : ''}
     </div><div><div class="gl">교재 제작 순서</div><div class="gc"><div class="mg-steps">${mgStepsHtml()}<p class="hint">${ic('lock')} 회원이 쓴 답과 기록은 잠겨 있어서 아무도 볼 수 없어요.</p></div></div></div></div>`;
+}
+// 디다코 기본 교재(실제 모드): 앱에 들어 있는 교재를 우리 교회 교재로 복제한다. 줄 모양은 교재 목록 줄과 같다
+function mgBasicHtml() {
+  if (!BASIC.books.length) return '';
+  return `<div class="gl">디다코 기본 교재</div><div class="gc">${BASIC.books.map(b => `<div class="gr mg-row"><span class="mg-cover">${bookCover({ ...b, id: '' }, 'list')}</span><span class="gt"><b>${esc(b.title)}</b><span class="gd">${esc(b.kind)} · ${b.lessons.length}과</span></span><button class="btn ghost small" type="button" data-act="mg-basic" data-v="${esc(b.id)}" aria-label="${esc(b.title)} 가져오기">가져오기</button></div>`).join('')}
+    <div class="gr"><span class="gt"><span class="gd">우리 교회 교재로 복제해서 읽고 고친 뒤 배포해요.</span></span></div></div>`;
 }
 const mgLongDate = v => { const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(v || ''); return m ? `${m[1]}년 ${Number(m[2])}월 ${Number(m[3])}일` : (v || ''); };
 function mgBookView(b) {
   const row = (name, desc, act) => `<button class="gr" type="button" data-act="${act}"><span class="gt"><b>${name}</b>${desc ? `<span class="gd">${desc}</span>` : ''}</span><span class="ch" aria-hidden="true">›</span></button>`;
-  return `<a class="back-link" href="#manage">${ic('back')}<span>교재 관리</span></a><p class="eyebrow top-eyebrow">${esc(b.kind)} · ${esc(b.period)}</p><div class="page-top"><h1>${esc(b.title)}</h1></div>${b.edited ? '<p class="fine">오늘 고침</p>' : ''}
+  return `<a class="back-link" href="#manage">${ic('back')}<span>교재 관리</span></a><p class="eyebrow top-eyebrow">${esc(b.kind)} · ${esc(b.period)}</p><div class="page-top"><h1>${esc(b.title)}</h1></div>${mgSavedText(b) ? '<p class="fine">' + esc(mgSavedText(b)) + '</p>' : ''}
     <div class="more-grid"><div>${!b.closed ? '<button class="btn wide" type="button" data-act="mg-lesson-add">과 추가</button>' : ''}<div class="gl">과</div><div class="gc">
       ${b.lessons.map(L => `<a class="gr" href="#me-${b.id}.${L.no}"><span class="gt"><b>제${L.no}과 ${esc(L.name || '(제목을 적어 주세요)')}</b><span class="gd">${esc(L.date)}${L.ref ? ' · ' + esc(L.ref) : ''}</span></span>${mgPill(b, L)}</a>`).join('') || '<div class="gr"><span class="gt"><span class="gd">아직 과가 없어요. 과를 더해 시작해요.</span></span></div>'}
-    </div></div><div><div class="gc"><div class="gr"><span class="mg-cover big">${bookCover({ ...b, id: '' }, 'list')}</span><span class="gt"><b>${esc(b.title)}</b><span class="gd">${esc(b.kind)}</span></span></div><dl class="mg-info"><div><dt>대상 모임</dt><dd>${esc(b.target || DATA.church.dept)}</dd></div>${b.source ? `<div><dt>출처</dt><dd>${esc(b.source)}</dd></div>` : ""}${b.start ? `<div><dt>시작 날짜</dt><dd>${esc(mgLongDate(b.start))}</dd></div>` : ''}${b.closed && b.end ? `<div><dt>끝난 날짜</dt><dd>${esc(mgLongDate(b.end))}</dd></div>` : ''}</dl></div>
+    </div></div><div><div class="gc"><div class="gr"><span class="mg-cover big">${bookCover({ ...b, id: '' }, 'list')}</span><span class="gt"><b>${esc(b.title)}</b><span class="gd">${esc(b.kind)}</span></span></div><dl class="mg-info"><div><dt>대상 모임</dt><dd>${esc(b.target || deptLabel())}</dd></div>${b.source ? `<div><dt>출처</dt><dd>${esc(b.source)}</dd></div>` : ""}${b.start ? `<div><dt>시작 날짜</dt><dd>${esc(mgLongDate(b.start))}</dd></div>` : ''}${b.closed && b.end ? `<div><dt>끝난 날짜</dt><dd>${esc(mgLongDate(b.end))}</dd></div>` : ''}</dl></div>
     <div class="gc">${row('교재 정보 편집', '제목, 표지 이름, 표지, 대상 모임, 시작 날짜', 'mg-edit')}${row('교재 통째로 복제', '내용만 가져오고 배포 이력은 가져오지 않아요', 'mg-dup')}${`<a class="gr" href="#mxb-${b.id}"><span class="gt"><b>인쇄용 보기</b><span class="gd">PDF나 Word로 내려받아요</span></span><span class="ch" aria-hidden="true">›</span></a>`}${b.closed ? '' : row('교재 닫기', '오늘 날짜로 끝내고 지난 교재로 옮겨요', 'mg-close')}</div>${b.closed ? '<button class="quiet-link" type="button" data-act="mg-reopen">다시 열기</button>' : ''}</div></div>`;
 }
 function mgForm(b) {
@@ -2083,8 +2761,8 @@ function mgForm(b) {
     <div><label for="mgMotif">상징</label><select class="field" id="mgMotif">${options(group.items.map(i => [i.id, i.name]), cover.motif)}</select></div>
     <div><label for="mgColor">색</label><select class="field" id="mgColor">${options(COVERS.colors.map(c => [c[0], c[2]]), cover.color)}</select></div>
     <span class="mg-cover big" id="mgPreview">${bookCover({ cover, coverName: b ? b.coverName : '' }, 'list')}</span>
-    <div><label for="mgTarget">대상 모임</label><select class="field" id="mgTarget">${options(DATA.admin.depts.map(d => [d.name, d.name]), b && b.target || DATA.church.dept)}</select></div>
-    <div><label for="mgStart">시작 날짜</label><input class="field" type="date" id="mgStart" value="${esc(b ? b.start || '' : '2026-10-25')}"></div>
+    <div><label for="mgTarget">대상 모임</label><select class="field" id="mgTarget">${LIVE ? options(LV.writeDepts.map(d => [d.id, d.name]), b ? b.deptId : liveDefaultDept()) : options(DATA.admin.depts.map(d => [d.name, d.name]), b && b.target || DATA.church.dept)}</select></div>
+    <div><label for="mgStart">시작 날짜</label><input class="field" type="date" id="mgStart" value="${esc(b ? b.start || '' : LIVE ? liveWeek().sun : '2026-10-25')}"></div>
     </div><div class="set-btns"><button class="btn ghost" type="button" data-act="pop-close">취소</button><button class="btn" type="button" data-act="mg-save">${b ? '저장하기' : '만들기'}</button></div>`);
 }
 function mgPreview() {
@@ -2101,12 +2779,15 @@ const isRead = q => q && q.kind === 'read';
 const qNo = (st, qi) => st.qs.slice(0, qi).filter(q => !isRead(q)).length + 1;
 const stageQuestions = st => st.qs.filter(q => !isRead(q));
 const stageCaption = st => stageQuestions(st).length ? '질문 ' + stageQuestions(st).length + '개' : st.qs.some(isRead) ? '읽을 글' : '질문 0개';
-const readLabel = q => '읽을 글 · ' + (String(q.h || '').trim() || String(q.t || '').split('\n')[0]);
+const readLabel = q => '읽을 글 · ' + (String(q.h || '').trim() || mdPlain(String(q.t || '').split('\n')[0]));
 const mgQuestionId = () => 'q' + Date.now().toString(36) + (++mgQSerial);
 function mgGuide(b, L) {
   const key = b.id + ':' + L.no;
-  return mg().guides[key] || (mg().guides[key] = { stages: ['마음 열기', '말씀 관찰', '말씀 해석', '삶에 적용'].map(name => ({ name, qs: [] })), triple: JSON.parse(JSON.stringify(DATA.guides['john:3'].triple)) });
+  return mg().guides[key] || (mg().guides[key] = { stages: ['마음 열기', '말씀 관찰', '말씀 해석', '삶에 적용'].map(name => ({ name, qs: [] })), triple: mgNewTriple() });
 }
+// 새 과의 깊이 묵상하기 질문: 교재마다 같은 세 질문(아버지·아들·성령). 실제 모드는 과마다 새 질문 ID를 붙인다(내 생각이 서로 섞이지 않게)
+const MG_TRIPLE = [['아버지', '이 본문에서 알 수 있는 하나님은 어떤 분이신가요?'], ['아들', '이 본문은 예수님을 어떻게 가리키나요?'], ['성령', '오늘 성령님은 나를 어디로 이끄시는 것 같나요?']];
+const mgNewTriple = () => LIVE ? MG_TRIPLE.map(([who, t]) => ({ id: mgQuestionId(), who, t })) : JSON.parse(JSON.stringify(DATA.guides['john:3'].triple));
 function mgEditCurrent() {
   if (!canManage()) return null;
   const m = /^me-([\w-]+)\.(\d+)$/.exec(parseHash().arg || ''), b = m && mgBook(m[1]), L = b && b.lessons.find(l => l.no === Number(m[2]));
@@ -2115,11 +2796,11 @@ function mgEditCurrent() {
 function mgEditSeg(act, key, values, selected) {
   return `<div class="seg" style="--n:${values.length}">${values.map(([v, name]) => `<button type="button" data-act="${act}"${key ? ` data-mg="${key}"` : ''} data-v="${v}" class="${String(selected) === v ? 'on' : ''}" aria-pressed="${String(selected) === v}">${name}</button>`).join('')}</div>`;
 }
-const mgDateInput = date => { const m = /(\d+)월\s*(\d+)일/.exec(date || ''); return m ? `2026-${m[1].padStart(2, '0')}-${m[2].padStart(2, '0')}` : ''; };
+const mgDateInput = (date, L) => { if (LIVE) return (L && L.iso) || ''; const m = /(\d+)월\s*(\d+)일/.exec(date || ''); return m ? `2026-${m[1].padStart(2, '0')}-${m[2].padStart(2, '0')}` : ''; };
 function mgEditView(b, L) {
   const g = mgGuide(b, L);
   return `<a class="back-link" href="#mb-${b.id}">${ic('back')}<span>${esc(b.title)}</span></a><p class="eyebrow top-eyebrow">${esc(b.title)} · ${esc(b.period)}</p><div class="page-top"><h1>제${L.no}과 편집</h1></div>
-    <p class="fine">쓰는 대로 저장돼요. 배포하기 전까지 회원에게는 보이지 않아요.</p>
+    <p class="fine" id="mgSaveNote">${LIVE ? mgSaveNoteText(L) : '쓰는 대로 저장돼요. 배포하기 전까지 회원에게는 보이지 않아요.'}</p>
     <div class="mg-edit-tabs">${mgEditSeg('mg-edit-tab', '', [['write', '쓰기'], ['preview', '미리보기']], mgEditTab)}</div>
     <div class="mg-edit"><div id="mgWrite"${mgEditTab !== 'write' ? ' hidden' : ''}>${mgWriteHtml(b, L, g)}</div>
       <div id="mgPvPane"${mgEditTab !== 'preview' ? ' hidden' : ''}><section class="card"><p class="opt-name">미리보기</p>${mgEditSeg('mg-pv-mode', '', [['member', '회원용'], ['leader', '리더용']], mgPvMode)}</section><div id="mgPvBody">${mgPvHtml(b, L, g)}</div></div>
@@ -2132,7 +2813,7 @@ function mgWriteHtml(b, L, g) {
     return `<div><label for="${id}">${label}</label>${opts.ta ? `<textarea ${attrs} rows="${opts.rows || 3}">${esc(value || '')}</textarea>` : `<input ${attrs} type="${opts.type || 'text'}" value="${esc(value || '')}">`}${opts.hint ? `<p class="hint" data-mg-hint="${opts.hint}"${mgTouched.has(opts.hint) && !String(value || '').trim() ? '' : ' hidden'}>${name === 'name' ? '과 제목을 적어 주세요' : '질문을 적어 주세요'}</p>` : ''}</div>`;
   };
   return `<section class="card"><p class="opt-name">기본 정보</p><div class="keep-form">
-      ${field('name', '과 제목', L.name, { hint: key + ':name' })}${field('date', '날짜', mgDateInput(L.date), { type: 'date' })}${field('ref', '본문 장절', L.ref, { placeholder: '예: 요한복음 15:1~8 · 비워 둘 수 있어요' })}${field('intro', '소개', L.intro, { ta: true })}
+      ${field('name', '과 제목', L.name, { hint: key + ':name' })}${field('date', '날짜', mgDateInput(L.date, L), { type: 'date' })}${field('ref', '본문 장절', L.ref, { placeholder: '예: 요한복음 15:1~8 · 비워 둘 수 있어요' })}${field('intro', '소개', L.intro, { ta: true })}
     </div></section>
     <section class="card"><div class="keep-form">${field('guide', '전체 진행 안내 <span class="hint">리더에게만 보여요</span>', g.guide, { ta: true })}</div></section>
     <p class="hint" id="mgEmptyHint"${g.stages.some(s => s.qs.length) ? ' hidden' : ''}>배포하려면 질문이나 읽을 글이 하나 이상 있어야 해요.</p>
@@ -2141,6 +2822,7 @@ function mgWriteHtml(b, L, g) {
         ${isRead(q) ? `${field('q-h', '제목 (선택)', q.h, { id: 'mge-' + q.id + '-h', si, qi })}
           ${field('q-t', '글', q.t, { id: 'mge-' + q.id + '-t', ta: true, rows: 6, si, qi })}
           <p class="hint">성경 구절은 장절만 적어 주세요. 회원은 각자 성경을 펴서 읽어요.</p>
+          <p class="hint">**굵게**, ### 소제목, - 목록, > 인용, | 표 |를 쓸 수 있어요.</p>
           ${field('q-vs', '관련 구절 (선택)', (q.vs || []).join(', '), { id: 'mge-' + q.id + '-vs', si, qi, placeholder: '예: 요한복음 3:16' })}` :
           `${field('q-t', '질문', q.t, { id: 'mge-' + q.id + '-t', ta: true, si, qi, hint: key + ':' + q.id })}
           ${field('q-sub', '보조 설명', q.sub, { id: 'mge-' + q.id + '-sub', si, qi })}
@@ -2174,18 +2856,20 @@ function mgPvHtml(b, L, g) {
 function mgRenderPreview() {
   const c = mgEditCurrent(), pane = $('#mgPvBody'); if (c && pane) pane.innerHTML = mgPvHtml(c.b, c.L, c.g);
 }
+// 고친 과를 서버에 저장하도록 알린다(실제 모드만. 데모는 이 화면 안에서만 고친다)
+function mgDirty(b, L) { if (LIVE) liveDirty(b, L); }
 function mgEditRedraw() { clearTimeout(mgPvTimer); const y = window.scrollY; route(false); window.scrollTo(0, y); }
 function mgEditInput(t) {
   const c = mgEditCurrent(); if (!c) return;
   const { b, L, g, key } = c, name = t.dataset.mg, si = Number(t.dataset.si), qi = Number(t.dataset.qi), st = g.stages[si], q = st && st.qs[qi];
   if (['name', 'ref', 'intro', 'wrap'].includes(name)) L[name] = t.value;
-  else if (name === 'date') { const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(t.value); L.date = m ? `${Number(m[2])}월 ${Number(m[3])}일${new Date(Number(m[1]), Number(m[2]) - 1, Number(m[3])).getDay() === 0 ? ' 주일' : ''}` : ''; }
+  else if (name === 'date') { const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(t.value); L.iso = m ? t.value : ''; L.date = m ? `${Number(m[2])}월 ${Number(m[3])}일${new Date(Number(m[1]), Number(m[2]) - 1, Number(m[3])).getDay() === 0 ? ' 주일' : ''}` : ''; }
   else if (name === 'guide') g.guide = t.value;
   else if (name === 'stage-name' && st) { st.name = t.value; $$(`[data-mg-stage-label="${si}"]`).forEach((el, i) => { el.textContent = t.value + ' · ' + (isRead(st.qs[i]) ? '읽을 글' : qNo(st, i)); }); }
   else if (name.startsWith('q-') && q) q[name.slice(2)] = name === 'q-vs' ? t.value.split(',').map(v => v.trim()).filter(Boolean) : t.value;
   else if (name === 'print-text') L.text = t.value;
   else return;
-  b.edited = true;
+  b.edited = true; mgDirty(b, L);
   const hint = t.parentElement.querySelector('[data-mg-hint]'); if (hint && mgTouched.has(hint.dataset.mgHint)) hint.hidden = !!t.value.trim();
   clearTimeout(mgPvTimer); mgPvTimer = setTimeout(() => { const cur = mgEditCurrent(); if (cur && cur.key === key) mgRenderPreview(); }, 300);
 }
@@ -2198,7 +2882,7 @@ function mgEditBlur(t) {
 function mgStageDelete(si) {
   const c = mgEditCurrent(); if (!c || c.g.stages.length <= 1 || !c.g.stages[si]) return;
   c.g.stages.splice(si, 1);
-  c.b.edited = true;
+  c.b.edited = true; mgDirty(c.b, c.L);
   mgEditRedraw();
 }
 function mgQuestionChange(el, action) {
@@ -2212,15 +2896,16 @@ function mgQuestionChange(el, action) {
     else if (action === 'del') st.qs.splice(qi, 1);
     else { const target = qi + (action === 'up' ? -1 : 1); if (target < 0 || target >= st.qs.length) return; [st.qs[qi], st.qs[target]] = [st.qs[target], st.qs[qi]]; }
   }
-  c.b.edited = true; mgEditRedraw();
+  c.b.edited = true; mgDirty(c.b, c.L); mgEditRedraw();
 }
 
 // ── 우리 사랑방(L-02): 바뀐 명단은 화면에서만 기억한다 ──
 function churchView() {
-  if (D.role !== 'leader') return `<div class="page-top"><h1>우리 사랑방</h1></div>
+  if (!(D.role === 'leader' || (LIVE && liveLeads()))) return `<div class="page-top"><h1>우리 사랑방</h1></div>
     <section class="card calm"><p class="calm-t">리더가 여는 화면이에요</p>
-      <p class="soft" style="margin:0">데모 설정에서 역할을 리더로 바꿔 보세요.</p>
+      <p class="soft" style="margin:0">${LIVE ? '우리 사랑방의 리더와 코리더에게 열려요.' : '데모 설정에서 역할을 리더로 바꿔 보세요.'}</p>
       <a class="btn ghost" href="#more">더보기로 돌아가기</a></section>`;
+  if (LIVE) return liveChurchView();
   const room = DATA.rooms.mine, { members, pending } = myRoom();
   return `<a class="back-link" href="#more">${ic('back')}<span>더보기</span></a>
     <p class="eyebrow top-eyebrow">${esc(room.name)} · 리더</p><div class="page-top"><h1>우리 사랑방</h1></div>
@@ -2888,7 +3573,7 @@ function adTrend(vals, months, label) {
 const adDateKey = L => { const m = /(\d+)월\s*(\d+)일/.exec(L.date || ''); return m ? Number(m[1]) * 100 + Number(m[2]) : Infinity; };
 // 교재 진행: 지금 열린 교재마다 모두에게 공개한 과까지와 다음 과 날짜, 다가오는 과 세 개. 교재 관리가 쓰는 자료(mg())에서 읽는다
 function adBookCard(names, church) {
-  const books = mg().books.filter(b => !b.closed && names.includes(b.target || DATA.church.dept));
+  const books = mgBooks().filter(b => !b.closed && names.includes(b.target || DATA.church.dept));
   const prog = b => {
     const pub = b.lessons.filter(L => mgStatus(b, L) === 'all').map(L => L.no), last = pub.length ? Math.max(...pub) : 0;
     const next = b.lessons.filter(L => L.no > last).sort((x, y) => x.no - y.no)[0], lead = b.lessons.find(L => L.no > last && mgStatus(b, L) === 'leader');
@@ -2974,7 +3659,7 @@ function placeView(v) {
 // 질문 자료는 demo-data.js의 guides에 있다. 배포 전이거나 데모에 질문 예시가 없는 과(교재 번갈아 쓰기 예시의 창세기)는 안내 한 장을 보인다.
 // 성경 본문은 싣지 않고 장절만 쓴다
 let G = null;
-const weekHidden = () => D.before || D.status === 'draft' || (D.status === 'leader' && !isLead());
+const weekHidden = () => LIVE ? liveWeekHidden() : D.before || D.status === 'draft' || (D.status === 'leader' && !isLead());
 const readyGuide = () => (weekHidden() ? null : DATA.guides[thisLesson().id] || null);
 function noGuideView(name) {
   return `<div class="page-top"><h1>${esc(name)}</h1></div>
@@ -3084,10 +3769,74 @@ function paintBookmark() {
   $$('[data-qid]').forEach(el => { const on = !!BM && el.dataset.qid === BM.id; el.classList.toggle('has-bm', on); const b = $('.bm', el); if (b) b.hidden = !on; });
   $$('.toc-q').forEach(el => el.classList.toggle('has-bm', !!BM && el.dataset.id === BM.id));
 }
+// 읽을 글에만 쓰는 마크다운 다섯 가지. HTML은 항상 esc로 막는다.
+function mdBlocks(text) {
+  const lines = String(text || '').replace(/\r\n?/g, '\n').split('\n'), blocks = [];
+  const row = l => l.trim().split('|').slice(1, -1).map(x => x.trim());
+  const tableLine = l => /^\s*\|.*\|\s*$/.test(l);
+  const separator = l => tableLine(l) && row(l).length > 0 && row(l).every(c => /^:?-{3,}:?$/.test(c));
+  const tableStart = i => i + 1 < lines.length && tableLine(lines[i]) && separator(lines[i + 1])
+    && row(lines[i]).length === row(lines[i + 1]).length;
+  const heading = l => /^#{1,3} /.test(l);
+  const kind = l => /^(- |· )/.test(l) ? 'ul' : /^\d+\. /.test(l) ? 'ol' : '';
+  let i = 0;
+  while (i < lines.length) {
+    if (!lines[i].trim()) { i++; continue; }
+    if (tableStart(i)) {
+      const head = row(lines[i]), rows = []; i += 2;
+      while (i < lines.length && tableLine(lines[i]) && !separator(lines[i])) rows.push(row(lines[i++]));
+      blocks.push({ type: 'table', head, rows }); continue;
+    }
+    if (heading(lines[i])) { blocks.push({ type: 'h', text: lines[i++].replace(/^#{1,3} /, '') }); continue; }
+    const listType = kind(lines[i]);
+    if (listType) {
+      const items = [];
+      while (i < lines.length && kind(lines[i]) === listType) {
+        const m = /^(- |· |\d+\. )/.exec(lines[i]);
+        items.push({ marker: m[0], text: lines[i++].slice(m[0].length) });
+      }
+      blocks.push({ type: listType, items }); continue;
+    }
+    if (lines[i].startsWith('> ')) {
+      const parts = [];
+      while (i < lines.length && lines[i].startsWith('> ')) parts.push(lines[i++].slice(2));
+      blocks.push({ type: 'quote', text: parts.join('\n') }); continue;
+    }
+    const parts = [];
+    while (i < lines.length && lines[i].trim() && !tableStart(i) && !heading(lines[i])
+      && !kind(lines[i]) && !lines[i].startsWith('> ')) parts.push(lines[i++]);
+    blocks.push({ type: 'p', text: parts.join('\n') });
+  }
+  return blocks;
+}
+function mdHtml(input) {
+  const blocks = Array.isArray(input) ? input : input && typeof input === 'object' ? [input] : mdBlocks(input);
+  const inline = s => esc(s).replace(/\*\*([^\n*]+)\*\*/g, '<strong>$1</strong>');
+  const withBreaks = s => inline(s).replace(/\n/g, '<br>');
+  return blocks.map(b => {
+    if (b.type === 'h') return '<h4 class="md-h">' + inline(b.text) + '</h4>';
+    if (b.type === 'p') return '<p>' + withBreaks(b.text) + '</p>';
+    if (b.type === 'quote') return '<blockquote class="md-q">' + withBreaks(b.text) + '</blockquote>';
+    if (b.items) return '<' + b.type + ' class="md-list">' + b.items.map(x => '<li>' + withBreaks(x.text) + '</li>').join('') + '</' + b.type + '>';
+    if (b.type === 'table') {
+      const cells = (items, tag) => items.map(x => '<' + tag + '>' + inline(x) + '</' + tag + '>').join('');
+      return '<div class="md-tw"><table class="md-t"><thead><tr>' + cells(b.head, 'th') + '</tr></thead><tbody>'
+        + b.rows.map(items => '<tr>' + cells(items, 'td') + '</tr>').join('') + '</tbody></table></div>';
+    }
+    return '';
+  }).join('');
+}
+function mdPlain(text) {
+  const clean = s => String(s).replace(/\*\*/g, '');
+  return mdBlocks(text).map(b => b.type === 'table'
+    ? [b.head, ...b.rows].map(row => row.map(clean).join(' · ')).join('\n')
+    : b.items ? b.items.map(x => clean(x.text)).join('\n') : clean(b.text)).join('\n');
+}
+
 function readHtml(st, q) {
   return `<article class="card qcard rcard" id="q-${q.id}"><div class="q-meta"><span class="q-eyebrow">${esc(st.name)} · 읽을 글</span></div>
     ${String(q.h || '').trim() ? `<h3 class="q-t">${esc(q.h)}</h3>` : ''}
-    <p class="r-t">${esc(q.t)}</p>
+    <div class="r-t md">${mdHtml(q.t)}</div>
     ${Array.isArray(q.vs) && q.vs.length ? `<div class="verse-row"><span class="lab">관련 구절</span>${q.vs.map(verseChip).join('')}</div>` : ''}
     </article>`;
 }
@@ -3480,6 +4229,7 @@ function saveKeepShare() {
 }
 // 다른 화면으로 옮기기 전에 쓰던 것을 정리한다(내 생각 저장, 말씀을 열며 닫기, 나눔하기 마치기)
 function teardown() {
+  if (LIVE) liveFlush();
   flushAll(); if (keepT) saveKeepRead();
   hideOpening(true);
   if (R.on) exitShare();
@@ -3497,7 +4247,7 @@ const weekSel = () => {
   const open = l => l.state === 'past' || l.state === 'now';
   const lesson = (saved.book === book.id && book.lessons.find(l => l.no === saved.no && open(l)))
     || book.lessons.find(l => l.state === 'now')
-    || book.lessons.find(l => l.no === 1);
+    || (LIVE ? liveFallbackLesson(book) : book.lessons.find(l => l.no === 1));
   return { book: book.id, no: lesson.no };
 };
 const shelfBooks = () => DATA.books;
@@ -3567,7 +4317,7 @@ function capOf(b) {
   return c ? { lead: '이번 주', text: `제${c.no}과 ${c.name}`, date: c.date || DATA.thisWeek.date } : null;
 }
 // 아직 회원에게 열리지 않은 과(준비 중)는 목차에 넣지 않는다
-const tocLessons = b => b.lessons.filter(l => l.state !== 'prep');
+const tocLessons = b => b.lessons.filter(l => l.state !== 'prep' && !l.hold);
 // 과 점: 회원 목차에 보이는 과(준비 중 제외)마다 점 하나. 지난 과는 채운 점, 이번 주 과는 긴 점, 다가오는 과는 빈 점이다.
 //  이번 주 과를 아직 공개하지 않았으면(weekHidden) 카드 글("이번 주 과를 준비하고 있어요")과 맞게 그 과도 빈 점으로 둔다
 const dotsHtml = b => `<span class="sh-dots" aria-hidden="true">${tocLessons(b).map(l => {
@@ -3692,7 +4442,7 @@ const recDeleted = () => { const v = readJson(K.recDel); return Array.isArray(v)
 // 깊이 묵상하기 질문 글. 기록마다 당시 질문 글을 함께 담아 둔다(M-06): 나중에 과의 질문이 바뀌어도 내 기록에는 그때 질문이 남는다
 const tqOf = id => { const g = DATA.guides[id] || DATA.guides['john:3'], o = {}; if (g) g.triple.forEach(t => { o[t.who] = t.t; }); return o; };
 function liveEntry() {
-  if (ls.get(K.shareDone) !== '1') return null;
+  if (ls.get(K.shareDone) !== '1' || (LIVE && !DATA.books.length)) return null;
   const L = lessonOf(weekSel()), g = DATA.guides[L.id], k = readJson(K.keep), ans = readJson(K.answers);
   const sentence = String(k.sentence || '').trim(), action = String(k.action || '').trim(), answers = [], threads = {};
   if (g) {
@@ -3700,7 +4450,7 @@ function liveEntry() {
     g.triple.forEach(t => { if (String(ans[t.id] || '').trim()) threads[t.who] = [ans[t.id]]; });
   }
   if (!sentence && !action && !answers.length && !Object.keys(threads).length) return null;
-  const bk = DATA.books.find(b => b.id === weekSel().book), ls0 = bk.lessons.find(l => l.no === weekSel().no), md = /(\d+)월\s*(\d+)일/.exec(L.date || DATA.thisWeek.date);
+  const bk = DATA.books.find(b => b.id === weekSel().book), ls0 = bk.lessons.find(l => l.no === weekSel().no), md = /(\d+)월\s*(\d+)일/.exec(L.date || DATA.thisWeek.date) || [0, new Date().getMonth() + 1, new Date().getDate()];
   return { id: 'live-' + L.id.replace(':', '-'), live: true, year: THIS_YEAR, month: Number(md[1]), date: `${md[1]}월 ${md[2]}일`, title: ls0.name, ref: L.ref, book: L.book, keep: sentence, action, answers, threads, tq: tqOf(L.id) };
 }
 // 보이는 기록 모두(지운 것, 숨긴 것 빼고). 고친 글과 돌아보기를 입혀서 돌려준다
@@ -3744,7 +4494,7 @@ function reportHtml() {
   const prac = es.filter(e => e.action);
   const acts = prac.slice(0, rec.more ? prac.length : 3).map(e => `<div class="path-item"><strong>${esc(e.action)}</strong><p class="reflection">${e.reflectionDate ? `<small style="display:block">${esc(e.reflectionDate)}</small>` : ''}${e.reflection ? esc(e.reflection) : '아직 돌아보지 않았어요'}</p></div>`).join('')
     + (prac.length > 3 ? `<button type="button" class="more-practices" data-act="rec-more">${rec.more ? '접기' : '더 보기 ↓'}</button>` : '');
-  return monthNav(ps, p) + `<p class="eyebrow" style="margin:.2em 0 .6em">${esc(DATA.church.room)}과 함께</p><div class="report-grid">${recSection('간직한 말씀', rec.year && keeps ? '<p class="fine">달마다 한 문장씩 모았어요</p>' + keeps : keeps)}${recSection(rec.year ? '나의 고백' : '삼위일체 하나님 묵상', threads)}${recSection('작은 실천의 길', acts)}</div>`;
+  return monthNav(ps, p) + `<p class="eyebrow" style="margin:.2em 0 .6em">${esc(LIVE ? ((LV.me && LV.me.roomName) || liveGroupName()) : DATA.church.room)}과 함께</p><div class="report-grid">${recSection('간직한 말씀', rec.year && keeps ? '<p class="fine">달마다 한 문장씩 모았어요</p>' + keeps : keeps)}${recSection(rec.year ? '나의 고백' : '삼위일체 하나님 묵상', threads)}${recSection('작은 실천의 길', acts)}</div>`;
 }
 function listRows(es) {
   if (!es.length) return `<section class="card"><p style="margin:0">찾는 기록이 없어요. 검색어를 바꿔 보세요.</p></section>`;
@@ -3861,11 +4611,18 @@ let adNote = '';
 let lastV = '', prevV = '';   // 지금 화면과 바로 앞 화면(교회 전체의 돌아가기 링크가 쓴다)
 function route(moved) {
   teardown();
+  // 실제 모드: 교재를 받기 전에 열려던 화면은 기억해 두었다가, 다 받으면 그 화면으로 간다(받는 동안은 "불러오고 있어요")
+  if (LIVE && D.entered && LV.booksOk && LV.want) { const w = LV.want; LV.want = ''; if ((!/^#start/.test(w) || w === '#start/done') && /^#start\/loading$/.test(location.hash)) history.replaceState(null, '', w); }
   let { v, arg } = parseHash();
   // 모르는 주소이거나 데모로 들어오기 전이면 첫 화면(들어온 뒤의 빈 주소는 이번 주)
   if (!v) v = D.entered ? 'week' : 'start';
   else if (v !== 'start' && !D.entered) v = 'start';
+  if (LIVE && v !== 'start' && canSetup() && LV.me && !LV.me.ops && ls.get(LK.tok)) { v = 'start'; arg = 'setup'; }
+  if (LIVE && v !== 'start' && D.entered && !LV.booksOk) { if (!LV.want) LV.want = location.hash; v = 'start'; arg = ''; }
+  // 실제 모드: 첫 접속의 어느 걸음을 보일지는 서버에서 받은 나의 정보와 고른 것으로 정한다. 이미 들어와 있으면 이번 주로
+  if (LIVE && v === 'start') { arg = liveStep(arg); if (arg === 'enter') { v = 'week'; arg = ''; } }
   if (v !== 'read') { readFrom = ''; readAsMember = false; }
+  const entering = v !== lastV;
   if (v !== lastV) { prevV = lastV; lastV = v; }
   const adv = (v === 'admin' || v === 'admin-reorg' || v === 'church-admin') && D.role === 'admin' ? (v === 'church-admin' ? v : 'admin') : '';   // 연도 개편 마법사(#admin-reorg)는 부서 관리 안이라 전환 화면을 다시 띄우지 않는다
   if (adShown !== adv) { adShown = ''; killAdSplash(); }   // 관리 화면(부서 관리, 교회 전체)을 떠났다 다시 들어오거나 둘 사이를 오가면 전환 화면을 다시 띄운다
@@ -3873,14 +4630,14 @@ function route(moved) {
   // 없는 책, 없는 기록이면 목록으로(책이 하나도 없게 한 상태에서도)
   if (v === 'shelf' && arg && (D.noBooks || !bookById(arg))) arg = '';
   if (v === 'record' && arg && !recById(arg)) arg = '';
-  if (v !== 'shelf' && v !== 'record' && v !== 'manage') arg = '';
+  if (v !== 'shelf' && v !== 'record' && v !== 'manage' && !(LIVE && v === 'start')) arg = '';
   if (location.hash !== hashFor(v, arg)) history.replaceState(null, '', hashFor(v, arg));
   if (moved) { closeMenu(); $('#toast').hidden = true; }
   const start = v === 'start';
   $('#topbar').classList.toggle('bare', start);
   $('#topnav').hidden = start; $('#tabs').hidden = start;
   document.body.dataset.view = v;
-  $('#view').innerHTML = start ? startView() : v === 'week' ? weekView() : v === 'wq' ? wqView() : v === 'read' ? readView() : v === 'share' ? shareView() : v === 'shelf' ? shelfView(arg) : v === 'record' ? recordView(arg) : v === 'records' ? recordsView() : v === 'gallery' ? galleryView() : v === 'more' ? moreView() : v === 'admin' ? adminView() : v === 'admin-reorg' ? adminReorgView() : v === 'church-admin' ? churchAdminView() : v === 'about' ? aboutView() : v === 'feedback' ? feedbackView() : v === 'prep' ? prepView() : v === 'prepprint' ? prepPrintView() : v === 'church' ? churchView() : v === 'rooms' ? roomsView() : v === 'manage' ? manageView(arg) : placeView(v);
+  $('#view').innerHTML = start ? startView(arg) : v === 'week' ? weekView() : v === 'wq' ? wqView() : v === 'read' ? readView() : v === 'share' ? shareView() : v === 'shelf' ? shelfView(arg) : v === 'record' ? recordView(arg) : v === 'records' ? recordsView() : v === 'gallery' ? galleryView() : v === 'more' ? moreView() : v === 'admin' ? adminView() : v === 'admin-reorg' ? adminReorgView() : v === 'church-admin' ? churchAdminView() : v === 'about' ? aboutView() : v === 'feedback' ? feedbackView() : v === 'prep' ? prepView() : v === 'prepprint' ? prepPrintView() : v === 'church' ? churchView() : v === 'rooms' ? roomsView() : v === 'manage' ? manageView(arg) : placeView(v);
   if (adv && !adShown) { adShown = adv; showAdSplash(adv === 'admin' ? DATA.church.dept + ' 관리' : '교회 전체'); }
   reuseImgs($('#view'));
   const tab = start ? '' : v === 'week' ? 'week' : PLACE[v][1];
@@ -3891,6 +4648,7 @@ function route(moved) {
     window.scrollTo(0, 0);
     const h = $('h1', $('#view')); if (h) { h.setAttribute('tabindex', '-1'); h.focus({ preventScroll: true }); }
   }
+  if (LIVE && entering) liveEnter(v);
   if (v === 'wq') wqInit(); else if (v === 'read') readInit(); else if (v === 'share') shareInit(); else if (v === 'shelf') shelfInit(arg); else if (v === 'manage' || v === 'prepprint') ppFill();
   if (v === 'share' && shareAuto) { shareAuto = false; if (G) startShare(); }
   if (adNote) { const m = adNote; adNote = ''; toast(m); }   // 화면을 옮긴 뒤에 알릴 글(연도 개편 예약)
@@ -4122,7 +4880,7 @@ const acts = {
     if (st !== 'draft' && !(st === 'leader' && v === 'all')) return;
     if (!['leader', 'all', 'both'].includes(v) || (st === 'draft' && v === 'all')) return;
     const { target, count } = mgPublishTarget(c.b);
-    const who = v === 'leader' ? '리더 ' + count + '명' : v === 'all' ? target + ' 회원' : '리더 ' + count + '명과 ' + target + ' 회원';
+    const who = v === 'leader' ? mgLeadWho(count) : v === 'all' ? target + ' 회원' : mgLeadWho(count) + '과 ' + target + ' 회원';
     openSheet(sheetHead('배포') + '<p>' + esc(who) + '에게 제' + c.L.no + '과를 배포할까요?</p><div class="set-btns"><button class="btn ghost" type="button" data-act="pop-close">그만두기</button><button class="btn" type="button" data-act="mg-pub-do" data-v="' + v + '">배포하기</button></div>');
   },
   'mg-pub-do'(e, el) {
@@ -4148,12 +4906,12 @@ const acts = {
   },
   'mg-pv-mode'(e, el) { if (!mgEditCurrent()) return; mgPvMode = el.dataset.v; $$('#mgPvPane [data-act="mg-pv-mode"]').forEach(b => { const on = b.dataset.v === mgPvMode; b.classList.toggle('on', on); b.setAttribute('aria-pressed', String(on)); }); mgRenderPreview(); },
   'mg-pv-fold'() { if (!mgEditCurrent()) return; mgPvOpen = !mgPvOpen; mgRenderPreview(); },
-  'mg-edit-seg'(e, el) { const c = mgEditCurrent(); if (!c) return; if (el.dataset.mg === 'print-on') c.L.useText = el.dataset.v === '1'; else if (el.dataset.mg === 'print-size') c.L.fs = el.dataset.v; c.b.edited = true; mgEditRedraw(); },
+  'mg-edit-seg'(e, el) { const c = mgEditCurrent(); if (!c) return; if (el.dataset.mg === 'print-on') c.L.useText = el.dataset.v === '1'; else if (el.dataset.mg === 'print-size') c.L.fs = el.dataset.v; c.b.edited = true; mgDirty(c.b, c.L); mgEditRedraw(); },
   'mg-stage-add'() {
     const c = mgEditCurrent(); if (!c) return;
     const si = c.g.stages.length;
     c.g.stages.push({ name: '새 단계', qs: [] });
-    c.b.edited = true; mgEditRedraw();
+    c.b.edited = true; mgDirty(c.b, c.L); mgEditRedraw();
     const input = $('#mge-stage-' + si);
     if (input) { input.scrollIntoView({ block: 'center' }); input.focus({ preventScroll: true }); }
   },
@@ -4207,7 +4965,7 @@ const acts = {
     const b = canManage() && mgCurrent(); if (!b || b.closed) return;
     const no = (b.lessons.length ? b.lessons[b.lessons.length - 1].no : 0) + 1;
     b.lessons.push({ no, name: '', ref: '', date: '', state: 'prep', intro: '' });
-    mg().guides[b.id + ':' + no] = { stages: ['마음 열기', '말씀 관찰', '말씀 해석', '삶에 적용'].map(name => ({ name, qs: [] })), triple: JSON.parse(JSON.stringify(DATA.guides['john:3'].triple)) };
+    mg().guides[b.id + ':' + no] = { stages: ['마음 열기', '말씀 관찰', '말씀 해석', '삶에 적용'].map(name => ({ name, qs: [] })), triple: mgNewTriple() };
     b.edited = true; location.hash = '#me-' + b.id + '.' + no;
   },
   'mg-dup'() {
@@ -4354,6 +5112,268 @@ const acts = {
   },
   'jump-to'(e, el) { const p = +el.dataset.p; closeSheet(); R.pos = p; renderStep(); }
 };
+// ── 실제 모드의 눌림 처리(2-2): 위 acts 가운데 데모로만 도는 것을 서버와 잇는 것으로 바꾸고, 첫 접속의 걸음을 더한다 ──
+const lvForms = {};
+async function liveLogout() {
+  try { if (ls.get(LK.tok)) await api('logout'); } catch (_) { /* 통신에 실패해도 로그아웃한다 */ }
+  // 노트와 같은 열쇠를 지운다: 이 기기에서 노트도 로그아웃된다
+  [LK.tok, LK.uid, LK.hub, LK.depts, LK.join].forEach(k => ls.del(k));
+  liveClearUnsaved();   // 로그아웃하면 이 기기에 임시로 둔 교재 글도 지운다
+  sset(LK.setup, null);
+  liveReset(); LV.booting = false; LV.authBusy = false;
+  closeSheet(); closeMenu();
+  goHash('#start');
+}
+if (LIVE) {
+  // 서버를 부르는 동안 같은 단추를 두 번 누르지 못하게 하고, 오류는 쉬운 말로 알린다
+  const lvRun = fn => async (e, el) => {
+    if (LV.busy) return;
+    const btn = el && el.matches && el.matches('button') ? el : el && el.querySelector ? el.querySelector('button[type="submit"]') : null;
+    LV.busy = true; if (btn) btn.disabled = true;
+    try { await fn(e, el); } catch (err) { liveError(err); } finally { LV.busy = false; if (btn && btn.isConnected) btn.disabled = false; }
+  };
+  const msg = t => { const m = $('#liveMsg'); if (m) m.textContent = t; };
+  const nameOf = el => (el && el.dataset && el.dataset.n) || '이 분';
+
+  // 걸음마다 고른 것을 기억하고 다음 걸음으로 간다. 뒤로 가면 고른 것을 지켜서 다시 고르지 않아도 된다
+  Object.assign(acts, {
+    'lv-kakao'() {
+      if (LV.authBusy) return;
+      LV.authBusy = true; route(false);
+      location.href = 'https://kauth.kakao.com/oauth/authorize?response_type=code&client_id=' + encodeURIComponent(CFG.KAKAO_REST_KEY) + '&redirect_uri=' + encodeURIComponent(CFG.REDIRECT_URI);
+    },
+    'lv-pick-dept'(e, el) { Object.assign(ST, lvFresh(), { deptId: el.dataset.v }); lvGo('room'); },
+    'lv-pick-room'(e, el) {
+      Object.assign(ST, { roomId: el.dataset.v, staff: false, familyId: '', person: '', byName: false, newFamily: null });
+      lvGo(Array.isArray(lvRoom().families) ? 'family' : 'name');
+    },
+    'lv-staff'() { Object.assign(ST, { roomId: '', staff: true, familyId: '', person: '', byName: false, newFamily: null }); lvGo('name'); },
+    'lv-pick-fam'(e, el) {
+      ST.familyId = el.dataset.v; ST.newFamily = null; ST.byName = false;
+      const names = String(lvFam().name).split(' · ');
+      if (names.length > 1) lvGo('who'); else { ST.person = names[0]; lvGo('consent'); }
+    },
+    'lv-pick-who'(e, el) { ST.person = el.dataset.v; ST.newFamily = null; ST.byName = false; lvGo('consent'); },
+    'lv-new'() { ST.familyId = ''; lvGo('new'); },
+    'lv-back'(e, el) { lvGo(el.dataset.v); },
+    'lv-request': lvRun(async () => {
+      const body = ST.newFamily ? { newFamily: ST.newFamily, roomId: ST.roomId }
+        : ST.byName ? { byName: true, person: ST.person, roomId: ST.roomId, staff: !!ST.staff, deptId: ST.deptId }
+        : { familyId: ST.familyId, person: ST.person };
+      try { LV.me = await api('requestLink', body); }
+      catch (err) {
+        // 이름을 찾지 못했으면: 사랑방은 새로 왔어요 신청으로(이름을 채워서), 교역자는 이름 쓰기로 돌아간다
+        if (err.code === 'notfound') {
+          toast(err.message);
+          if (ST.staff) { ST.byName = false; lvGo('name'); } else { ST.newFamily = { a: ST.person }; ST.byName = false; lvGo('new'); }
+          return;
+        }
+        throw err;
+      }
+      LV.repick = false; ls.del(LK.join); applyMe();
+      goHash(D.entered ? '#start/done' : '#start/wait');
+    }),
+    // 승인됐는지 다시 확인: 승인됐으면 "함께하게 되었어요", 아직이면 안내만
+    'lv-recheck': lvRun(async () => {
+      await loadStart();
+      if (D.entered) { goHash('#start/done'); return; }
+      route(true);
+      if (!LV.me.link) toast('이전 요청이 거절되었거나 취소되었어요. 다시 골라 주세요.');
+      else toast(LV.me.notLinked ? '아직 그대로예요. 리더에게 알려 주세요.' : '아직 승인 전이에요. 조금 뒤 다시 확인해 주세요.');
+    }),
+    'lv-repick'() {
+      LV.depts = LV.depts || lvCachedDepts();
+      if (!LV.depts || !LV.depts.length) { toast('이 기기에서는 목록을 다시 불러오지 못했어요. 리더에게 알려 주세요.'); return; }
+      Object.assign(ST, lvFresh()); LV.repick = true;
+      lvGo(LV.depts.length > 1 ? 'dept' : 'room');
+    },
+    'lv-unpick'() { LV.repick = false; lvGo('wait'); },
+    'lv-reload': lvRun(async () => {
+      LV.err = ''; route(false);
+      try { await loadStart(); } catch (err) { if (err.cancelled) return; LV.err = err.code && err.message ? err.message : '서버가 답하지 않아요. 잠시 뒤 다시 해 주세요.'; liveError(err); }
+      route(true);
+    }),
+    'lv-logout'() { liveLogout(); },
+    'lv-setup-skip'() { sset(LK.setup, null); goHash('#start'); },
+    'lv-pend'() { PEND.err = ''; roomRedraw(); livePendLoad(); },
+    // 로그아웃: 확인 한 번. 디다코 노트에서도 로그아웃된다
+    'more-logout'() {
+      openSheet(sheetHead('로그아웃') + `<p>로그아웃할까요?</p><p class="hint">다시 들어올 때는 카카오로 로그인해요.<br>디다코 노트에서도 로그아웃돼요.</p><div class="set-btns"><button class="btn ghost" type="button" data-act="pop-close" data-focus>그만두기</button><button class="btn" type="button" data-act="lv-logout">로그아웃</button></div>`);
+    },
+    // 우리 사랑방: 서버가 처리한 뒤의 요청·명단으로 화면을 바꾼다
+    'room-approve': lvRun(async (e, el) => {
+      if (!liveLeads()) return;
+      PEND.data = await api('approve', { kakaoId: el.dataset.k }); roomRedraw(); toast(`${nameOf(el)} 님의 연결을 승인했어요`);
+    }),
+    'room-reject': lvRun(async (e, el) => {
+      if (!liveLeads()) return;
+      PEND.data = await api('reject', { kakaoId: el.dataset.k }); roomRedraw(); toast(`${nameOf(el)} 님의 요청을 거절했어요`);
+    }),
+    'room-apall'() {
+      if (!liveLeads() || !PEND.data || PEND.data.requests.length < 2) return;
+      PEND.ask = PEND.data.requests.map(r => r.kakaoId);
+      openSheet(sheetHead('모두 승인') + `<p>보이는 요청 ${PEND.ask.length}건을 모두 승인할까요?</p><p class="hint">이름과 카카오 닉네임을 확인한 뒤에 눌러 주세요.</p><div class="set-btns"><button class="btn ghost" type="button" data-act="pop-close" data-focus>그만두기</button><button class="btn" type="button" data-act="room-apall-do">모두 승인</button></div>`);
+    },
+    'room-apall-do': lvRun(async () => {
+      if (!liveLeads() || !PEND.ask || !PEND.ask.length) return;
+      const r = await api('approveAll', { kakaoIds: PEND.ask }); PEND.ask = null; PEND.data = r; closeSheet(); roomRedraw();
+      toast(`${r.bulk.done}명을 승인했어요${r.bulk.skipped ? ` (이미 처리된 ${r.bulk.skipped}건은 건너뛰었어요)` : ''}`);
+    }),
+    'room-dc'(e, el) {
+      if (!liveLeads()) return;
+      openSheet(sheetHead('연결 해제') + `<p>${esc(nameOf(el))} 님의 연결을 해제할까요?</p><p class="hint">기기를 잃었거나 잘못 연결된 경우에 써요. 해제해도 그 사람의 기록은 지워지지 않아요.</p><div class="set-btns"><button class="btn ghost" type="button" data-act="pop-close">그만두기</button><button class="btn" type="button" data-act="room-dc-do" data-k="${esc(el.dataset.k)}">연결 해제</button></div>`);
+    },
+    'room-dc-do': lvRun(async (e, el) => {
+      if (!liveLeads()) return;
+      PEND.data = await api('unlink', { kakaoId: el.dataset.k }); closeSheet(); roomRedraw(); toast('연결을 해제했어요');
+    })
+  });
+
+  // 교재 관리(2-3): 고치는 지점마다 서버에 저장하고, 서버가 돌려준 답으로 MG와 책장 자료를 맞춘다.
+  //  저장하지 못했을 때는 쓴 글을 지우거나 처음으로 돌리지 않고 안내만 한다(P-02)
+  const mgRun = fn => lvRun(async (e, el) => { try { await fn(e, el); } catch (err) { if (err && err.cancelled) return; mgFail(err); } });
+  const bookFields = nb => ({ deptId: nb.deptId || '', target: nb.target || '', title: nb.title, kind: nb.kind, period: nb.period || '', closed: !!nb.closed, cover: nb.cover, coverName: nb.coverName || '', range: nb.range || '', start: nb.start || '', source: nb.source || '' });
+  const touched = b => { b.edited = true; b.savedAt = liveClock(new Date()); };
+  const pubOk = (c, v) => {
+    const st = mgStatus(c.b, c.L);
+    return ['leader', 'all', 'both'].includes(v) && (st === 'draft' || (st === 'leader' && v === 'all')) && !(st === 'draft' && v === 'all');
+  };
+  const applyStatus = (b, L, r) => {
+    L.status = r.status;
+    if (r.pubAt) L.pubAt = liveTimeText(r.pubAt); else delete L.pubAt;
+    touched(b); liveSyncData();
+  };
+  Object.assign(acts, {
+    'mg-save': mgRun(async () => {
+      if (!canManage()) return;
+      const title = $('#mgTitle').value.trim(); $('#mgTitleHint').hidden = !!title; if (!title) { $('#mgTitle').focus(); return; }
+      const b = mgEditing && mgBook(mgEditing), start = $('#mgStart').value;
+      const body = { title, coverName: $('#mgCoverName').value.trim(), kind: $('#mgKind').value, cover: { motif: $('#mgMotif').value, color: $('#mgColor').value }, deptId: $('#mgTarget').value, start,
+        period: start ? `${Number(start.slice(0, 4))}년 ${Number(start.slice(5, 7))}월부터` : b ? b.period : '' };
+      if (b) body.id = b.id;
+      const nb = (await api('bookSave', body)).book;
+      if (b) { Object.assign(b, bookFields(nb)); touched(b); liveSyncData(); closeSheet(); route(false); toast('저장했어요'); }
+      else { const mb = liveMapBook({ ...nb, lessons: [] }); touched(mb); mg().books.unshift(mb); mgTab = 'now'; liveSyncData(); closeSheet(); mgGo('mb-' + mb.id, '교재를 만들었어요'); }
+    }),
+    'mg-lesson-add': mgRun(async () => {
+      const b = canManage() && mgCurrent(); if (!b || b.closed) return;
+      const g = { stages: ['마음 열기', '말씀 관찰', '말씀 해석', '삶에 적용'].map(name => ({ name, qs: [] })), triple: mgNewTriple() };
+      const r = await api('lessonSave', { bookId: b.id, lesson: { name: '', stages: g.stages, triple: g.triple } });
+      b.lessons.push({ no: r.no, name: '', ref: '', iso: '', date: '', intro: '', body: '', wrap: '', status: 'draft', state: 'prep' });
+      mg().guides[b.id + ':' + r.no] = g; touched(b); liveSyncData();
+      location.hash = '#me-' + b.id + '.' + r.no;
+    }),
+    'mg-resave'() { const c = mgEditCurrent(); if (c) { c.L.saveState = { busy: true }; mgSaveNoteShow(c.b, c.L); liveSaveLesson(c.b, c.L); } },
+    'mg-q-lesson-dup': mgRun(async () => {
+      const c = mgEditCurrent(); if (!c) return;
+      const { b, L, g } = c;
+      await liveSettle(b, L);
+      const copy = clone(L), guide = clone(g);
+      guide.stages.forEach(st => st.qs.forEach(q => { q.id = mgQuestionId(); })); guide.triple.forEach(t => { t.id = mgQuestionId(); });
+      const r = await api('lessonSave', { bookId: b.id, lesson: liveLessonOut(copy, guide) });
+      copy.no = r.no; copy.state = 'prep'; copy.status = 'draft'; delete copy.pubAt; delete copy.saveState;
+      b.lessons.push(copy); mg().guides[b.id + ':' + r.no] = guide; touched(b); liveSyncData();
+      mgGo('me-' + b.id + '.' + r.no, '과를 복제했어요');
+    }),
+    'mg-lesson-del-do': mgRun(async () => {
+      const c = mgEditCurrent(); if (!c || mgStatus(c.b, c.L) !== 'draft') return;
+      const k = lkey(c.b, c.L); clearTimeout(LS.timers[k]); delete LS.timers[k];
+      await api('lessonDelete', { bookId: c.b.id, no: c.L.no });
+      c.b.lessons = c.b.lessons.filter(l => l !== c.L); delete mg().guides[c.key]; touched(c.b); liveSyncData(); closeSheet(); mgGo('mb-' + c.b.id, '과를 지웠어요');
+    }),
+    'mg-dup': mgRun(async () => {
+      const source = canManage() && mgCurrent(); if (!source) return;
+      for (const L of source.lessons) await liveSettle(source, L);
+      const r = await api('bookCopy', { id: source.id });
+      const mb = liveMapBook(r.book); Object.assign(mg().guides, clone(r.guides)); touched(mb); mg().books.unshift(mb); mgTab = 'now'; liveSyncData();
+      mgGo('mb-' + mb.id, '복제했어요. 배포 이력은 가져오지 않아요');
+    }),
+    'mg-close-do': mgRun(async () => {
+      const b = canManage() && mgCurrent(); if (!b) return;
+      const nb = (await api('bookClose', { id: b.id })).book;
+      Object.assign(b, bookFields(nb)); if (nb.end) b.end = nb.end; touched(b); liveSyncData(); closeSheet(); route(false); toast('교재를 닫았어요');
+    }),
+    'mg-reopen': mgRun(async () => {
+      const b = canManage() && mgCurrent(); if (!b) return;
+      const nb = (await api('bookClose', { id: b.id, closed: false })).book;
+      Object.assign(b, bookFields(nb)); delete b.end; touched(b); liveSyncData(); route(false); toast('다시 열었어요');
+    }),
+    // 배포·배포 중단: 서버가 공개 범위를 바꾸고 배포 시각을 적는다. 배포하기 전에 쓰던 글은 먼저 저장한다
+    'mg-pub-do': mgRun(async (e, el) => {
+      const c = mgPublishCurrent(); if (!c || mgPublishMissing(c.b, c.L).length) return;
+      const v = el.dataset.v; if (!pubOk(c, v)) return;
+      await liveSettle(c.b, c.L);
+      applyStatus(c.b, c.L, await api('lessonStatus', { bookId: c.b.id, no: c.L.no, status: v === 'leader' ? 'leader' : 'all' }));
+      closeSheet(); route(false); toast(v === 'leader' ? '리더에게 배포했어요' : '회원에게 배포했어요');
+    }),
+    'mg-unpub-do': mgRun(async () => {
+      const c = mgPublishCurrent(); if (!c || mgStatus(c.b, c.L) === 'draft') return;
+      applyStatus(c.b, c.L, await api('lessonStatus', { bookId: c.b.id, no: c.L.no, status: 'draft' }));
+      closeSheet(); route(false); toast('배포를 멈췄어요');
+    }),
+    // 디다코 기본 교재 가져오기: 확인 한 번 → 우리 교회 교재로 복제(모든 과가 준비 중, 출처가 남는다)
+    'mg-basic'(e, el) {
+      const src = BASIC.books.find(b => b.id === el.dataset.v); if (!src || !canManage()) return;
+      const list = LV.writeDepts, def = liveDefaultDept();
+      openSheet(sheetHead('디다코 기본 교재 가져오기') + `<p><b>${esc(src.title)}</b></p><p>우리 교회 교재로 복제돼요. 모든 과가 준비 중으로 들어오고, 읽고 고친 뒤 배포해요.</p>`
+        + (list.length > 1 ? `<div class="keep-form"><div><label for="mgBasicDept">대상 모임</label><select class="field" id="mgBasicDept">${list.map(d => `<option value="${esc(d.id)}"${d.id === def ? ' selected' : ''}>${esc(d.name)}</option>`).join('')}</select></div></div>` : '')
+        + `<div class="set-btns"><button class="btn ghost" type="button" data-act="pop-close">그만두기</button><button class="btn" type="button" data-act="mg-basic-do" data-v="${esc(src.id)}">가져오기</button></div>`);
+    },
+    'mg-basic-do': mgRun(async (e, el) => {
+      const src = BASIC.books.find(b => b.id === el.dataset.v); if (!src || !canManage()) return;
+      const sel = $('#mgBasicDept'), deptId = sel ? sel.value : liveDefaultDept();
+      const lessons = src.lessons.map(L => {
+        const g = BASIC.guides[src.id + ':' + L.no] || { stages: [], triple: [] };
+        return { name: L.name, ref: L.ref, intro: L.intro || '', body: L.body || '', wrap: L.wrap || '', guide: g.guide || '', stages: g.stages, triple: g.triple && g.triple.length ? g.triple : mgNewTriple() };
+      });
+      const r = await api('basicImport', { deptId, book: { title: src.title, kind: src.kind, cover: src.cover, coverName: src.coverName || '', range: src.range || '' }, lessons });
+      const mb = liveMapBook(r.book); Object.assign(mg().guides, clone(r.guides)); touched(mb); mg().books.unshift(mb); mgTab = 'now'; liveSyncData();
+      closeSheet(); mgGo('mb-' + mb.id, '디다코 기본 교재를 가져왔어요. 모든 과가 준비 중이에요');
+    })
+  });
+
+  // 입력 칸이 있는 걸음
+  lvForms.church = lvRun(async () => {
+    const code = ($('#lvCode').value || '').trim();
+    if (code.length < 4) return;
+    LV.notice = '';
+    await enterChurch(await hubApi('join', { code }));
+    route(true);
+  });
+  lvForms.name = (e, f) => {
+    const v = ($('#lvName').value || '').trim();
+    if (!v) return;
+    ST.person = v; ST.byName = true; ST.newFamily = null; ST.familyId = ''; lvGo('consent');
+  };
+  lvForms.new = (e, f) => {
+    const a = ($('#lvNa').value || '').trim(), b = $('#lvNb') ? $('#lvNb').value.trim() : '', kids = $('#lvNk') ? $('#lvNk').value.trim() : '';
+    if (!a) return;
+    ST.newFamily = { a, b, kids }; ST.person = a; ST.byName = false; ST.familyId = ''; lvGo('consent');
+  };
+  // 설치 코드: 처음 한 번 첫 교회 관리자를 세운다. 맞으면 관리자 역할로 앱에 들어간다
+  lvForms.setup = lvRun(async () => {
+    const code = ($('#lvSetupCode').value || '').trim(), name = ($('#lvSetupName').value || '').trim();
+    if (!code) { msg('설치 코드를 넣어 주세요.'); return; }
+    if (!name) { msg('이름을 적어 주세요.'); return; }
+    msg('');
+    try { LV.me = await api('setupAdmin', { code, name }); }
+    catch (err) {
+      // 코드는 맞아 관리자가 됐는데 연결된 가정의 올해 편성이 없어 나의 정보를 못 받은 경우: 나의 정보를 다시 받는다
+      if (err.code === 'notLinked') await loadStart(); else throw err;
+    }
+    applyMe(); sset(LK.setup, null);
+    toast('교회 관리자로 시작했어요');
+    goHash('#week');
+  });
+  window.addEventListener('pageshow', e => { if (e.persisted && LV.authBusy && !LV.work && !LV.booting) { LV.authBusy = false; route(false); } });
+}
+document.addEventListener('submit', e => {
+  const f = LIVE && e.target.closest && e.target.closest('[data-lform]');
+  if (!f) return;
+  e.preventDefault();
+  const h = lvForms[f.dataset.lform];
+  if (h) h(e, f);
+});
 document.addEventListener('click', e => {
   if (!e.target.closest('#placeMenu, #badge')) closePlaceMenu();
   if (e.target.closest('#opening')) { hideOpening(); return; }
@@ -4361,6 +5381,7 @@ document.addEventListener('click', e => {
   if (set) {
     const [k, v] = set.dataset.set.split(':');
     if (DISPLAY_KEYS.includes(k)) { S[k] = k === 'big' ? v === '1' : v; saveDisplay(); }
+    else if (LIVE) return;   // 실제 모드에는 화면 설정 말고는 바꿀 설정이 없다
     else if (k === 'galleryDemo') { D.galleryDemo = v === '1'; saveDemo(); }
     else if (k === 'bookmark') { if (v === '1') { if (!hasBm()) ls.set(K.bookmark, JSON.stringify({ id: 'o2', at: Date.now() })); } else ls.del(K.bookmark); }   // 책갈피는 펼치기가 꽂는 것과 같은 자리
     else { D[k] = ['before', 'alt', 'readOpen', 'readTriple', 'two', 'noBooks', 'longTitle', 'newcomer'].includes(k) ? v === '1' : k === 'dimSec' ? (v === '5' ? 5 : 15) : v; saveDemo(); }
@@ -4395,6 +5416,7 @@ document.addEventListener('error', e => {
 document.addEventListener('input', e => {
   if (e.target.id === 'mgCoverName') { mgPreview(); return; }
   const t = e.target;
+  if (t.id === 'lvCode') { const g = $('#lvGo'); if (g) g.disabled = t.value.trim().length < 4; return; }   // 교회 코드는 네 글자부터
   if (t.dataset && t.dataset.adin) { adInput(t); return; }
   if (t.id === 'adRgFind' && AD.rg) { AD.rg.find = t.value.trim(); $$('.ad-rg-table tbody tr').forEach(tr => { tr.hidden = !!AD.rg.find && !tr.dataset.name.includes(AD.rg.find); }); return; }
   if (t.dataset && t.dataset.mg) { mgEditInput(t); return; }
@@ -4498,6 +5520,11 @@ document.addEventListener('submit', e => {
 window.addEventListener('hashchange', () => route(true));
 
 applySettings(); route(false);
+if (LIVE) {
+  // 실제 모드에는 데모 표시가 없다. 로그인 상태를 확인하고 첫 화면을 정한다
+  const demoTag = $('.topbar .demo-tag'); if (demoTag) demoTag.remove();
+  bootLive();
+}
 // 홈 화면 앱: 한 번 열어 두면 인터넷이 없어도 열린다
 if ('serviceWorker' in navigator && (location.protocol === 'https:' || location.hostname === 'localhost')) navigator.serviceWorker.register('sw.js').catch(() => { /* 없어도 앱은 그대로 */ });
 })();
