@@ -3758,7 +3758,7 @@ const acts = {
   'past-month'(e, el) { const l = el.getAttribute('aria-label'); after = () => { const b = $(`[data-act="past-month"][aria-label="${l}"]`); if (b && !b.disabled) b.focus({ preventScroll: true }); }; setHash('today/past/' + el.dataset.ym); },
   'date-today'() { setDemoDate(''); },
   'soon'() { toast(SOON); },
-  koinonia() { location.href = 'community.html?demo'; },   // 디다코 공동체: 같은 폴더의 공동체 데모(community.html)로 간다
+  koinonia() { location.href = '../community/?demo'; },   // 디다코 공동체: 같은 주소 아래 공동체 층 앱(community/)의 데모로 간다
   community() { location.href = '../app/'; },   // 디다코 교회: 같은 주소 아래 교회 층 앱(app/)으로 간다
   // 탐구하기(③-1)
   'srch-ex'() { srchBack = 'explore'; setHash('mine/search'); },
@@ -4006,7 +4006,7 @@ const acts = {
   'place-menu'() { const m = $('#placeMenu'), open = m.hidden; closeMenus(); m.hidden = !open; $('#placeBtn').setAttribute('aria-expanded', String(open)); },
   'set-menu'() { const m = $('#setMenu'), open = m.hidden; closeMenus(); m.hidden = !open; $('#setBtn').setAttribute('aria-expanded', String(open)); },
   'place-current'() { closeMenus(); },
-  'place-koinonia'() { closeMenus(); location.href = 'community.html?demo'; },   // 디다코 공동체: 같은 폴더의 공동체 데모(community.html)로 간다
+  'place-koinonia'() { closeMenus(); location.href = '../community/?demo'; },   // 디다코 공동체: 같은 주소 아래 공동체 층 앱(community/)의 데모로 간다
   'place-community'() { closeMenus(); location.href = '../app/'; },   // 디다코 교회: 같은 주소 아래 교회 층 앱(app/)으로 간다
   gear() { const p = $('#gearPanel'), open = p.hidden; closeMenus(); p.hidden = !open; $('#gearBtn').setAttribute('aria-expanded', String(open)); },
   'demo-reset'() { resetAll(); },
