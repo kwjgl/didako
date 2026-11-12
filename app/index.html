@@ -1373,9 +1373,33 @@ const BUBBLE = '<svg viewBox="0 0 18 18" width="18" height="18" aria-hidden="tru
 // 화면 설정(화면 모드·색 테마·디자인·큰 글씨)은 한 자리에만 적는다. 데모 설정과 쓴 글은 따로 둔다
 // answers 내 생각(펼치기), bookmark 책갈피(펼치기), memo 리더의 내 진행 메모(나눔하기), leadopen 해설 접기/펼치기, keep 오늘 남길 것(펼치기·나눔하기가 같이 쓴다)
 // shareDone 나눔하기를 끝까지 넘겼는지(내 기록에 이번 주 기록이 나타나는 때), record… 내 기록에서 고친 글·돌아보기·지운 기록·비워 둔 상태
+// liveRec 실제 모드에서 과마다 남긴 기록(과 ID별 한 쪽)
 const K = { display: 'didako-note-display', demo: 'didako-demo', myBook: 'didako-my-book', shareLesson: 'didako-share-lesson', keep: 'didako-keep', answers: 'didako-read-answers', bookmark: 'didako-read-bookmark', memo: 'didako-share-memo', leadopen: 'didako-leadopen',
   walkRead: 'didako-weekwalk-read', walkThought: 'didako-weekwalk-thought', walkDone: 'didako-weekwalk-done', walkMeditate: 'didako-weekwalk-meditate',
-  shareDone: 'didako-share-done', recRefl: 'didako-record-reflections', recAns: 'didako-record-answers', recEdit: 'didako-record-edits', recDel: 'didako-record-deleted', recHide: 'didako-record-hidden' };
+  shareDone: 'didako-share-done', liveRec: 'didako-live-records', recRefl: 'didako-record-reflections', recAns: 'didako-record-answers', recEdit: 'didako-record-edits', recDel: 'didako-record-deleted', recHide: 'didako-record-hidden' };
+// note/index.html switchOwner의 keys와 같게 둔다(한 휴대폰을 다른 사람이 쓸 때 기록을 섞지 않으려고)
+const GBS_MAPS = ['didako-read-answers', 'didako-share-memo', 'didako-live-records', 'didako-record-reflections', 'didako-record-answers', 'didako-record-edits', 'didako-weekwalk-thought', 'didako-weekwalk-meditate', 'didako-weekwalk-done'];
+const GBS_ONE = ['didako-read-bookmark'];
+const GBS_BASE = 'didako-gbs-base';
+const OWNER_KEYS = ['didako-note-notes', 'didako-note-badges', 'didako-note-session', 'didako-note-demo', 'didako-note-vine', 'didako-note-vault', 'didako-note-lock', 'didako-note-gone', 'didako-read-answers', 'didako-share-memo', 'didako-live-records', 'didako-record-reflections', 'didako-record-answers', 'didako-record-edits', 'didako-weekwalk-thought', 'didako-weekwalk-meditate', 'didako-weekwalk-done', 'didako-read-bookmark', 'didako-gbs-base', 'didako-weekwalk-read', 'didako-share-lesson', 'didako-my-book'];
+// 같은 기기를 쓰는 사람마다 노트와 교회 기록을 따로 둔다
+function switchOwnerApp(uid) {
+  const owner = ls.get('didako-note-owner');
+  if (owner === uid) return;
+  const old = Object.fromEntries(OWNER_KEYS.map(k => [k, ls.get(k)]));
+  const stashKey = 'didako-note-stash.' + uid, stash = ls.get(stashKey);
+  const next = stash ? JSON.parse(stash) : {};
+  if (owner) localStorage.setItem('didako-note-stash.' + owner, JSON.stringify(old));
+  try {
+    OWNER_KEYS.forEach(k => next[k] == null ? localStorage.removeItem(k) : localStorage.setItem(k, next[k]));
+    localStorage.setItem('didako-note-owner', uid);
+  } catch (err) {
+    OWNER_KEYS.forEach(k => old[k] == null ? localStorage.removeItem(k) : localStorage.setItem(k, old[k]));
+    throw err;
+  }
+  if (stash) localStorage.removeItem(stashKey);
+  loadState();
+}
 const MODES = ['auto', 'light', 'dark'], ACCENTS = ['green', 'amber', 'blue', 'rose', 'ink', 'paper'], STYLES = ['basic', 'neu', 'skeu', 'glass'];
 const ROLES = [['member', '회원'], ['leader', '리더'], ['pastor', '목사님'], ['admin', '관리자']];
 const STATUS = [['draft', '준비 중'], ['leader', '리더까지'], ['all', '모두']];
@@ -1519,7 +1543,7 @@ function lessonOf(sel) {
 }
 const thisLesson = () => lessonOf(weekSel());
 function keepCard() {
-  const k = readJson(K.keep);
+  const k = readKeep();
   if (!k.sentence && !k.action) return '';
   return `<section class="card" aria-labelledby="kpT">
     <h2 id="kpT">이번 주 작은 실천</h2>
@@ -1752,6 +1776,7 @@ async function enterChurch(result) {
   ls.set(LK.url, c.url); ls.set(LK.name, c.name); ls.set(LK.kind, c.kind);
   const login = await api('ticketLogin', { ticket: result.ticket });
   ls.set(LK.tok, login.token); ls.set(LK.uid, String(login.uid));
+  if (LIVE) switchOwnerApp(String(login.uid));
   LV.needChurch = false;
   await loadStart();
 }
@@ -1788,7 +1813,7 @@ async function bootLive() {
       } finally { LV.authBusy = false; }
     } else if (ls.get(LK.tok)) {
       // 교회 서버 주소나 기기 표시가 빠진 불완전한 로그인은 지우고 첫 화면으로
-      if (ls.get(LK.uid) && ls.get(LK.url)) await loadStart(); else ls.del(LK.tok);
+      if (ls.get(LK.uid) && ls.get(LK.url)) { switchOwnerApp(ls.get(LK.uid)); await loadStart(); } else ls.del(LK.tok);
     }
   } catch (err) {
     if (!err.cancelled) {
@@ -3735,7 +3760,44 @@ function hideOpening(quiet) {
 }
 
 // ── 오늘 남길 것(펼치기 끝의 "모임에 가지 못했다면"과 나눔하기의 "오늘 남길 것"이 같은 자리 K.keep을 쓴다) ──
+// 실제 기록은 과별로 모으고, 처음 만든 날짜는 그대로 둔다
+function readLive() {
+  const v = readJson(K.liveRec);
+  return !Array.isArray(v) ? v : {};
+}
+function touchLive(lessonId, patch) {
+  const all = readLive(), old = all[lessonId] || {};
+  const colon = lessonId.lastIndexOf(':'), bookId = lessonId.slice(0, colon), no = Number(lessonId.slice(colon + 1));
+  const book = DATA.books.find(b => b.id === bookId), lesson = book && book.lessons.find(l => l.no === no);
+  const now = new Date(), guide = DATA.guides[lessonId], qs = {}, tri = {};
+  if (guide) {
+    guide.stages.forEach(st => st.qs.forEach(q => { if (!isRead(q)) qs[q.id] = q.t; }));
+    guide.triple.forEach(t => { tri[t.id] = { who: t.who, q: t.t }; });
+  }
+  const fresh = !Object.prototype.hasOwnProperty.call(all, lessonId);
+  const row = {
+    ...old,
+    book: lesson ? book.title : (old.book || ''),
+    title: lesson ? `제${lesson.no}과 · ${lesson.name}` : (old.title || ''),
+    ref: lesson ? lesson.ref : (old.ref || ''),
+    year: fresh ? now.getFullYear() : old.year,
+    month: fresh ? now.getMonth() + 1 : old.month,
+    date: fresh ? `${now.getMonth() + 1}월 ${now.getDate()}일` : old.date,
+    sentence: old.sentence || '', action: old.action || '', shared: old.shared === true, ...patch,
+    qs: guide ? qs : (old.qs || {}),
+    tri: guide ? tri : (old.tri || {}),
+    at: Date.now()
+  };
+  all[lessonId] = row;
+  return ls.set(K.liveRec, JSON.stringify(all));
+}
+function readKeep() {
+  if (!LIVE) return readJson(K.keep);
+  const row = readLive()[thisLesson().id];
+  return row ? { sentence: row.sentence, action: row.action, ref: row.ref, at: row.at } : {};
+}
 function putKeep(sentence, action) {
+  if (LIVE) return touchLive(thisLesson().id, { sentence, action });
   if (sentence || action) return ls.set(K.keep, JSON.stringify({ sentence, action, ref: thisLesson().ref, at: Date.now() }));
   ls.del(K.keep); return true;
 }
@@ -3856,7 +3918,7 @@ function deepHtml() {
   </section>`;
 }
 function wrapHtml() {
-  const k = readJson(K.keep);
+  const k = readKeep();
   return `<section class="card wrapup" id="wrapup" aria-labelledby="wrapT">
     <h2 id="wrapT">모임에 가지 못했다면</h2>
     <p class="soft" style="margin:.3em 0 0">혼자 읽었다면 마음에 남은 말과 작은 실천을 남길 수 있어요. 둘 다 비워 두어도 괜찮아요. 모임에 함께했다면 나눔하기 끝에서 남기면 돼요.</p>
@@ -4200,7 +4262,7 @@ function renderStep() {
     html = `<div class="st-in"><p class="st-eyebrow">깊이 묵상하기</p><h2 class="h2d tri-lead">오늘 말씀에서 삼위일체 하나님을 묵상해요.</h2><div class="card triple">${G.triple.map(t => `<div class="tri"><span class="who">${esc(t.who)}</span><p>${esc(t.t)}</p>${isLead() && R.view !== 'big' ? `<div class="pn memo tri-memo"><label class="lab" for="sm-${t.id}">${ic('lock')}내 메모</label><textarea class="field" id="sm-${t.id}" data-memo-key="${t.id}" rows="2" maxlength="1000" placeholder="진행하며 기억할 것">${esc(readMemo()[t.id] || '')}</textarea></div>` : ''}</div>`).join('')}</div></div>`;
     nav = prev + next();
   } else if (s.t === 'keep') {
-    const sv = readJson(K.keep);
+    const sv = readKeep();
     html = `<div class="st-in"><p class="st-eyebrow">오늘 남길 것</p><h2 class="h2d">오늘 마음에 남은 한 문장을 각자 품고 가요.</h2>
       <div class="keep-form"><div><label for="kSentence">한 문장</label><textarea class="field" id="kSentence" rows="2" maxlength="200" placeholder="마음에 남은 말을 짧게">${esc(sv.sentence || '')}</textarea></div>
       <div><label for="kAction">이번 주 작은 실천</label><input class="field" id="kAction" maxlength="120" placeholder="하나만 적어요" value="${esc(sv.action || '')}" autocomplete="off"></div></div></div>`;
@@ -4209,7 +4271,7 @@ function renderStep() {
     html = `<div class="st-in"><div class="bless" aria-live="polite"><div class="st-eyebrow bl-lead">함께 읽어요</div>${BLESS_LINES.map((l, i) => `<p class="${i === BLESS_LINES.length - 1 ? 'lastline' : ''}" style="--i:${i}">${esc(l)}</p>`).join('')}<span class="verse bl-ref">${esc(BLESS_REF)}</span></div></div>`;
     nav = prev + next();
   } else if (s.t === 'done') {
-    ls.set(K.shareDone, '1');   // 나눔하기를 끝까지 넘겼다: 이때부터 내 기록에 이번 주 기록이 나타난다
+    if (LIVE) touchLive(thisLesson().id, { shared: true }); else ls.set(K.shareDone, '1');   // 나눔하기를 끝까지 넘겼다: 이때부터 내 기록에 이번 주 기록이 나타난다
     html = `<div class="st-in center">${bookmarkSvg()}<div class="center">${bookHtml(true)}</div><h1 class="h2d" style="margin:.5em 0 0;font-size:1.2em">오늘 나눈 말씀 · ${esc(L.ref)}</h1>
       <div class="done-btns"><button class="btn" type="button" data-act="pray">${ic('cord')}함께 기도하기 → 코이데로 이동</button><button class="btn ghost" type="button" data-act="finish">마치기</button></div></div>`;
   }
@@ -4237,7 +4299,7 @@ function teardown() {
 
 // ══ 책장(#shelf) ══
 // 시안 shelf.html에서 시작했고, 첫 화면은 디다코 노트 탐구하기와 같은 모양(카드와 한 줄 목록)으로 바꿨다. 책 자료(종류, 표지 그림, 과 풀이, 남긴 한 문장)는 demo-data.js의 books에 있다.
-// 이 기기에 남은 책갈피(K.bookmark)와 오늘 남길 것(K.keep)을 읽어서 카드의 세 겹 책갈피 길이와 목차의 책갈피 표시를 정한다(숫자는 어디에도 적지 않는다)
+// 이 기기에 남은 책갈피(K.bookmark)와 오늘 남길 것(readKeep)을 읽어서 카드의 세 겹 책갈피 길이와 목차의 책갈피 표시를 정한다(숫자는 어디에도 적지 않는다)
 const LONG_JOHN = '요한복음 — 예수님께 붙어 있는 삶, 열매 맺는 제자';
 const KIND_ICON = { 'GBS': 'share', '새가족반': 'sprout' };
 const kindIcon = k => ic(KIND_ICON[k] || 'shelf');
@@ -4443,7 +4505,7 @@ const recDeleted = () => { const v = readJson(K.recDel); return Array.isArray(v)
 const tqOf = id => { const g = DATA.guides[id] || DATA.guides['john:3'], o = {}; if (g) g.triple.forEach(t => { o[t.who] = t.t; }); return o; };
 function liveEntry() {
   if (ls.get(K.shareDone) !== '1' || (LIVE && !DATA.books.length)) return null;
-  const L = lessonOf(weekSel()), g = DATA.guides[L.id], k = readJson(K.keep), ans = readJson(K.answers);
+  const L = lessonOf(weekSel()), g = DATA.guides[L.id], k = readKeep(), ans = readJson(K.answers);
   const sentence = String(k.sentence || '').trim(), action = String(k.action || '').trim(), answers = [], threads = {};
   if (g) {
     g.stages.forEach(st => st.qs.forEach(q => { if (!isRead(q) && String(ans[q.id] || '').trim()) answers.push({ q: q.t, a: ans[q.id] }); }));
@@ -4457,8 +4519,23 @@ function liveEntry() {
 function recRows() {
   if (ls.get(K.recHide) === '1') return [];
   const del = recDeleted(), ed = readJson(K.recEdit), refl = readJson(K.recRefl), tq = tqOf('john:3');
-  const rows = DATA.records.flatMap(m => m.entries.map(e => Object.assign({ tq }, e, { year: m.year, month: m.month, book: m.book })));
-  const live = liveEntry(); if (live) rows.push(live);
+  let rows;
+  if (LIVE) {
+    const ans = readJson(K.answers);
+    rows = Object.entries(readLive()).filter(([, r]) => r && (r.sentence || r.action || r.shared === true)).map(([lessonId, r]) => {
+      const answers = Object.entries(r.qs || {}).filter(([id]) => String(ans[id] || '').trim()).map(([id, q]) => ({ q, a: ans[id] }));
+      const threads = {}, tq = {};
+      Object.entries(r.tri || {}).forEach(([id, t]) => {
+        tq[t.who] = t.q;
+        if (String(ans[id] || '').trim()) threads[t.who] = [ans[id]];
+      });
+      return { id: 'live-' + lessonId.replace(':', '-'), live: true, year: r.year, month: r.month, date: r.date, title: r.title, ref: r.ref, book: r.book,
+        keep: r.sentence, action: r.action, answers, threads, tq };
+    });
+  } else {
+    rows = DATA.records.flatMap(m => m.entries.map(e => Object.assign({ tq }, e, { year: m.year, month: m.month, book: m.book })));
+    const live = liveEntry(); if (live) rows.push(live);
+  }
   return rows.filter(e => !del.includes(e.id) && (D.newcomer || !e.book.startsWith('새가족반 ·')))
     .map(e => {
       const x = Object.assign({}, e, ed[e.id] || {}), rr = Array.isArray(refl[e.id]) ? refl[e.id] : [], last = rr[rr.length - 1] || null;
@@ -4819,7 +4896,7 @@ const acts = {
   'demo-reset'() {
     closeSheet(); roomState = null; MG = null; mgTab = 'now'; mgEditing = ''; mgSerial = 0; clearTimeout(mgPvTimer); mgEditTab = 'write'; mgPvMode = 'member'; mgPvOpen = true; mgTouched.clear();
     ls.del(K.demo); ls.del(K.keep); ls.del(K.answers); ls.del(K.walkRead); ls.del(K.walkThought); ls.del(K.walkDone); ls.del(K.walkMeditate); ls.del(K.bookmark); ls.del(K.memo); ls.del(K.leadopen);
-    [K.shareDone, K.recRefl, K.recAns, K.recEdit, K.recDel, K.recHide].forEach(ls.del); loadState();
+    [K.shareDone, K.liveRec, K.recRefl, K.recAns, K.recEdit, K.recDel, K.recHide].forEach(ls.del); loadState();
     if (location.hash === '#start') route(true); else location.hash = '#start';
   },
   'pop-close'() { closeSheet(); },
@@ -4866,7 +4943,18 @@ const acts = {
   'rec-del-ok'() {
     const { id } = rec.action, e = recById(id);
     // 이번 주 기록은 기기에 남은 글(오늘 남길 것, 펼치기에서 쓴 내 생각)을 모아 보인 것이라, 지우면 그 글도 함께 지운다. 예시 기록은 지운 것으로만 표시해 두고 설정에서 되살린다
-    if (e && e.live) { ls.del(K.keep); ls.del(K.answers); ls.del(K.shareDone); }
+    if (e && e.live) {
+      if (LIVE) {
+        const all = readLive(), lessonId = Object.keys(all).find(k => 'live-' + k.replace(':', '-') === id);
+        if (lessonId) {
+          const row = all[lessonId], ans = readJson(K.answers);
+          [...Object.keys(row.qs || {}), ...Object.keys(row.tri || {})].forEach(qid => { delete ans[qid]; });
+          delete all[lessonId];
+          ls.set(K.liveRec, JSON.stringify(all));
+          ls.set(K.answers, JSON.stringify(ans));
+        }
+      } else { ls.del(K.keep); ls.del(K.answers); ls.del(K.shareDone); }
+    }
     else { const d = recDeleted(); if (!d.includes(id)) d.push(id); recSave(K.recDel, d); }
     [K.recRefl, K.recAns, K.recEdit].forEach(k => { const o = readJson(k); if (o[id]) { delete o[id]; recSave(k, o); } });
     closeSheet(); history.replaceState(null, '', '#record'); route(false); window.scrollTo(0, 0); toast('기록을 지웠어요');
@@ -5468,7 +5556,7 @@ document.addEventListener('submit', e => {
   e.preventDefault();
   const id = f.dataset.id, text = $('#recReflection').value.trim(); if (!text) return;
   const all = readJson(K.recRefl); all[id] = Array.isArray(all[id]) ? all[id] : [];
-  all[id].push({ date: DATA.today.replace(/\(.*$/, '').trim(), text });
+  all[id].push({ date: LIVE ? `${new Date().getMonth() + 1}월 ${new Date().getDate()}일` : DATA.today.replace(/\(.*$/, '').trim(), text });
   const ok = recSave(K.recRefl, all); recRedraw(); recDone(ok);
 });
 // 편성의 쓰는 칸은 쓰는 대로 AD에 담아 둔다(다시 그려져도 쓴 글이 남도록)

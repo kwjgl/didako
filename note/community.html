@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover">
+<title>디다코 공동체</title>
+<meta name="theme-color" content="#6B4A2E">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" type="image/png" sizes="32x32" href="icons/favicon-32.png">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="디다코">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Gowun+Batang:wght@400;700&family=IBM+Plex+Sans+KR:wght@400;500;600;700&display=swap">
+<script src="config.js"></script>
+<script>
+// 저장된 화면 설정을 그림이 그려지기 전에 먼저 입힌다(밝은 화면이 잠깐 번쩍이지 않게). 읽을 수 없으면 기기 설정을 따른다
+try {
+  const d = JSON.parse(localStorage.getItem('didako-note-display') || '{}'), r = document.documentElement;
+  if (d.mode === 'light' || d.mode === 'dark') r.setAttribute('data-mode', d.mode);
+  if (d.accent !== 'green') r.setAttribute('data-accent', ['amber', 'blue', 'rose', 'ink', 'paper'].includes(d.accent) ? d.accent : 'paper');   // 기본은 종이(S-83). 초록은 속성 없이 :root 값
+  if (['neu', 'skeu', 'glass'].includes(d.style)) r.setAttribute('data-style', d.style);
+  if (d.big === true) r.setAttribute('data-big', '');
+} catch (e) {}
+</script>
+<link rel="stylesheet" href="community.css">
+<link rel="stylesheet" href="design-styles.css">
+</head>
+<body>
+<!-- 세 겹 책갈피 로고(위쪽 바와 로그인 카드에서 쓴다. 디다코 노트와 같은 그림) -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs><symbol id="i-didako" viewBox="0 0 16 16"><g fill="none"><circle cx="8" cy="2.6" r="1.5" stroke="var(--s1, var(--accent))" stroke-width="1.4"/><path d="M8 4.2V5.8" stroke="var(--s1, var(--accent))" stroke-width="1.2"/><clipPath id="didako-clip"><path d="M4.2 5.6H11.8V14.8L8 11.8L4.2 14.8Z"/></clipPath><g clip-path="url(#didako-clip)" stroke="none"><rect x="4.2" y="4.6" width="2.53" height="12" fill="var(--s1, var(--accent))"/><rect x="6.73" y="4.6" width="2.54" height="12" fill="var(--s2, var(--accent-mid))"/><rect x="9.27" y="4.6" width="2.53" height="12" fill="var(--s3, var(--ink-2))"/><path d="M6.73 4.6V15M9.27 4.6V15" stroke="var(--cord-bg, var(--page))" stroke-width=".5"/></g></g></symbol></defs></svg>
+<div id="root"><main class="wrap"><h1>디다코 공동체</h1><p class="hint">불러오는 중이에요…</p></main></div>
+<script src="walks-data.js"></script>
+<script src="community.js"></script>
+<script>
+if ('serviceWorker' in navigator && location.protocol.startsWith('http'))
+  navigator.serviceWorker.register('sw.js').catch(()=>{});
+</script>
+</body>
+</html>

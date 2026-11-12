@@ -986,7 +986,8 @@ body.fs .xw-top { padding-right: 52px; }   /* 시안 보기 설정(톱니)이 �
     <div class="menu" id="placeMenu" hidden>
       <p class="mlabel">함께하는 곳</p>
       <button class="place-row" type="button" data-act="place-current" aria-current="true"><span>디다코 노트<span class="role-tag">나</span></span><span aria-hidden="true">✓</span></button>
-      <button class="place-row" type="button" data-act="place-community"><span class="place-copy"><span>디다코 공동체</span><span class="sm">사랑방 성경공부 데모를 둘러봐요.</span></span></button>
+      <button class="place-row" type="button" data-act="place-koinonia"><span class="place-copy"><span>디다코 공동체</span><span class="sm">작은 모임 데모를 둘러봐요.</span></span></button>
+      <button class="place-row" type="button" data-act="place-community"><span class="place-copy"><span>디다코 교회</span><span class="sm">사랑방 성경공부 데모를 둘러봐요.</span></span></button>
     </div>
     <div class="menu" id="setMenu" hidden></div>
   </div>
@@ -1525,7 +1526,8 @@ function viewMore() {
   const on = D.sync === 'on';
   const me1 = `<div class="gl">나</div><div class="gc">
       <a class="gr" href="#/more/sync"><span class="gt"><b>동기화</b><span class="gd">${on ? `연결됨 · 마지막으로 맡긴 때 ${syncLine()}` : '켜면 기기를 바꿔도 기록이 이어져요'}</span></span>${on ? '<span class="chip">켜짐</span>' : ''}<span class="ch" aria-hidden="true">›</span></a>
-      <button class="gr" type="button" data-act="community"><span class="gt"><b>디다코 공동체</b><span class="gd">사랑방 성경공부 데모를 둘러봐요.</span></span><span class="ch" aria-hidden="true">›</span></button>
+      <button class="gr" type="button" data-act="koinonia"><span class="gt"><b>디다코 공동체</b><span class="gd">작은 모임 데모를 둘러봐요.</span></span><span class="ch" aria-hidden="true">›</span></button>
+      <button class="gr" type="button" data-act="community"><span class="gt"><b>디다코 교회</b><span class="gd">사랑방 성경공부 데모를 둘러봐요.</span></span><span class="ch" aria-hidden="true">›</span></button>
     </div>`;
   const set1 = `<div class="gl">앱 설정</div><div class="gc">
       <button class="gr${dispOpen ? ' open' : ''}" type="button" data-act="disp" aria-expanded="${dispOpen}" aria-controls="dispEx"><span class="gt"><b>화면 설정</b><span class="gd">화면 모드 · 색 테마 · 디자인 · 큰 글씨</span></span>${dispOpen ? CHEV_DOWN_S : '<span class="ch" aria-hidden="true">›</span>'}</button>
@@ -3756,7 +3758,8 @@ const acts = {
   'past-month'(e, el) { const l = el.getAttribute('aria-label'); after = () => { const b = $(`[data-act="past-month"][aria-label="${l}"]`); if (b && !b.disabled) b.focus({ preventScroll: true }); }; setHash('today/past/' + el.dataset.ym); },
   'date-today'() { setDemoDate(''); },
   'soon'() { toast(SOON); },
-  community() { location.href = '../app/'; },   // 디다코 공동체: 같은 주소 아래 공동체용 데모 앱(app/)으로 간다
+  koinonia() { location.href = 'community.html?demo'; },   // 디다코 공동체: 같은 폴더의 공동체 데모(community.html)로 간다
+  community() { location.href = '../app/'; },   // 디다코 교회: 같은 주소 아래 교회 층 앱(app/)으로 간다
   // 탐구하기(③-1)
   'srch-ex'() { srchBack = 'explore'; setHash('mine/search'); },
   'week-open'() { WK = { max: 0, view: 0 }; showOpening(() => setHash('explore/week')); },   // 말씀을 열며 한 장 뒤에 한 단계씩
@@ -4003,7 +4006,8 @@ const acts = {
   'place-menu'() { const m = $('#placeMenu'), open = m.hidden; closeMenus(); m.hidden = !open; $('#placeBtn').setAttribute('aria-expanded', String(open)); },
   'set-menu'() { const m = $('#setMenu'), open = m.hidden; closeMenus(); m.hidden = !open; $('#setBtn').setAttribute('aria-expanded', String(open)); },
   'place-current'() { closeMenus(); },
-  'place-community'() { closeMenus(); location.href = '../app/'; },   // 디다코 공동체: 같은 주소 아래 공동체용 데모 앱(app/)으로 간다
+  'place-koinonia'() { closeMenus(); location.href = 'community.html?demo'; },   // 디다코 공동체: 같은 폴더의 공동체 데모(community.html)로 간다
+  'place-community'() { closeMenus(); location.href = '../app/'; },   // 디다코 교회: 같은 주소 아래 교회 층 앱(app/)으로 간다
   gear() { const p = $('#gearPanel'), open = p.hidden; closeMenus(); p.hidden = !open; $('#gearBtn').setAttribute('aria-expanded', String(open)); },
   'demo-reset'() { resetAll(); },
   'demo-fill'() { N = sampleNotes(); saveNotes(); closeMenus(); if (me) render(); toast('예시 기록을 채웠어요'); },   // 첫 접속을 마치기 전이면 저장만 한다
@@ -4130,6 +4134,11 @@ window.matchMedia('(min-width: 1000px)').addEventListener('change', () => { rend
 
 // ── 실제 서버: 이름·기록은 기기에 두고 잠근 덩어리만 맡긴다 ──
 const VK = 'didako-note-vault', LK = 'didako-note-lock', GK = 'didako-note-gone';
+// 디다코 교회(app/) 기록도 노트 덩어리에 함께 맡긴다. 이 목록은 app/index.html의 같은 목록과 같게 둔다
+const GBS_MAPS = ['didako-read-answers', 'didako-share-memo', 'didako-live-records', 'didako-record-reflections', 'didako-record-answers', 'didako-record-edits', 'didako-weekwalk-thought', 'didako-weekwalk-meditate', 'didako-weekwalk-done'];
+const GBS_ONE = ['didako-read-bookmark'];
+const GBS_BASE = 'didako-gbs-base';
+
 let V = readJson(VK), gone = new Set(Array.isArray(readJson(GK)) ? readJson(GK) : []);
 const liveEntryRoute = routeKey();
 let churchNotice = '', liveReady = false, epoch = 0, authWork = null;
@@ -4201,7 +4210,7 @@ function liveError(err) {
 function switchOwner(uid) {
   clearVineMoments();
   const owner = ls.get('didako-note-owner');
-  const keys = [K.notes, K.badges, K.session, K.demo, K.vine, VK, LK, GK];
+  const keys = [K.notes, K.badges, K.session, K.demo, K.vine, VK, LK, GK, ...GBS_MAPS, ...GBS_ONE, GBS_BASE, 'didako-weekwalk-read', 'didako-share-lesson', 'didako-my-book'];
   if (owner !== uid) {
     const old = Object.fromEntries(keys.map(k => [k, ls.get(k)]));
     const stashKey = 'didako-note-stash.' + uid, stash = ls.get(stashKey);
@@ -4289,6 +4298,60 @@ function rememberGone() {
   }
   ls.set(GK, JSON.stringify([...gone])); savedNotes = normalizeNotes(N);
 }
+// 교회 기록은 유효한 저장 칸만 읽는다
+function readGbs() {
+  const data = {};
+  for (const key of [...GBS_MAPS, ...GBS_ONE]) {
+    const raw = ls.get(key);
+    if (raw == null) continue;
+    try {
+      const value = JSON.parse(raw);
+      if (GBS_MAPS.includes(key) ? value && typeof value === 'object' && !Array.isArray(value) : value && typeof value === 'object' && !Array.isArray(value)) data[key] = value;
+    } catch (_) { /* 깨진 저장 칸은 제외 */ }
+  }
+  return { v: 1, data };
+}
+// 받은 교회 기록을 이 기기에 반영한다
+function writeGbs(gbs) {
+  const data = gbs && gbs.data && typeof gbs.data === 'object' && !Array.isArray(gbs.data) ? gbs.data : {};
+  for (const key of [...GBS_MAPS, ...GBS_ONE]) {
+    if (Object.prototype.hasOwnProperty.call(data, key)) ls.set(key, JSON.stringify(data[key]));
+    else ls.del(key);
+  }
+}
+// 마지막 성공 기준점과 비교하여 칸별 수정과 삭제를 함께 합친다
+function mergeGbs(local, remote, base) {
+  const entries = x => x && x.data && typeof x.data === 'object' && !Array.isArray(x.data) ? x.data : {};
+  const ld = entries(local), rd = entries(remote), bd = entries(base), data = {};
+  const equal = (a, b) => JSON.stringify(a) === JSON.stringify(b);
+  for (const name of GBS_MAPS) {
+    const l = ld[name] || {}, r = rd[name] || {}, b = bd[name] || {}, merged = {};
+    for (const k of new Set([...Object.keys(l), ...Object.keys(r), ...Object.keys(b)])) {
+      const lv = l[k], rv = r[k], bv = b[k];
+      let selected;
+      if (equal(lv, bv)) selected = rv;
+      else if (equal(rv, bv)) selected = lv;
+      else if (name === 'didako-live-records') selected = (Number(rv?.at || 0) > Number(lv?.at || 0)) ? rv : lv;
+      else if (name === 'didako-record-reflections' && Array.isArray(lv) && Array.isArray(rv)) {
+        const seen = new Set();
+        selected = [...lv, ...rv].filter(item => {
+          const id = JSON.stringify([item?.date, item?.text]);
+          if (seen.has(id)) return false;
+          seen.add(id); return true;
+        });
+      } else selected = lv;
+      if (selected !== undefined) merged[k] = selected;
+    }
+    if (Object.keys(merged).length) data[name] = merged;
+  }
+  for (const name of GBS_ONE) {
+    const l = ld[name], r = rd[name];
+    if (l !== undefined || r !== undefined) {
+      data[name] = l === undefined ? r : r === undefined ? l : Number(r?.at || 0) > Number(l?.at || 0) ? r : l;
+    }
+  }
+  return { v: 1, data };
+}
 function mergePayload(local, remote) {
   const a = normalizeNotes(local.notes), b = normalizeNotes(remote.notes);
   const removed = new Set([...(local.gone || []), ...(remote.gone || [])]);
@@ -4310,10 +4373,14 @@ function mergePayload(local, remote) {
   const starts = [local.start, remote.start].filter(x => parseYmd(x)).sort();
   const av = normalizeVine(local.vine), bv = normalizeVine(remote.vine), vineStarts = [av.start, bv.start].filter(Boolean).sort();
   const vine = normalizeVine({ start: vineStarts[0] || '', days: [...av.days, ...bv.days], dew: [...av.dew, ...bv.dew], seen: [...av.seen, ...bv.seen] });
-  return { v: 1, name: local.name || remote.name || '', start: starts[0] || '', notes, badges, gone: [...removed], vine };
+  const gbsBase = { v: 1, data: readJson(GBS_BASE) };
+  // 예전 판 노트가 올린 덩어리에는 gbs 칸이 없다. 그때는 서버 쪽이 바뀌지 않은 것으로 보고 이 기기 기록을 지킨다
+  return { v: 1, name: local.name || remote.name || '', start: starts[0] || '', notes, badges, gone: [...removed], vine,
+    gbs: mergeGbs(local.gbs, remote.gbs == null ? gbsBase : remote.gbs, gbsBase) };
 }
-const payload = () => ({ v: 1, name: me?.name || '', start: D.start, notes: normalizeNotes(N), badges: B, gone: [...gone], vine: VN });
+const payload = () => ({ v: 1, name: me?.name || '', start: D.start, notes: normalizeNotes(N), badges: B, gone: [...gone], vine: VN, gbs: readGbs() });
 function takeMerged(m) {
+  if (m.gbs) writeGbs(m.gbs);
   N = m.notes; savedNotes = normalizeNotes(N); B = m.badges; gone = new Set(m.gone); D.start = m.start;
   VN = normalizeVine(m.vine); ls.set(K.vine, JSON.stringify(VN));
   if (!me?.name && m.name) { me = { name: m.name, at: Date.now() }; ls.set(K.session, JSON.stringify(me)); }
@@ -4352,10 +4419,12 @@ async function syncLive(fromForm = false) {
       // 쓰던 편집기의 최신 글부터 기기에 남긴 뒤 합친다. 초점은 그대로 둔다.
       if (F.id && F.dirty) saveFree(false); if (X.id && X.dirty) flushNote();
       if (remote) takeMerged(mergePayload(payload(), remote));
-      const data = await lockUp(key, payload()); check();
+      const sent = payload();
+      const data = await lockUp(key, sent); check();
       const pending = V.pend;
       const put = await noteApi('notePut', { data, salt: r.none ? V.salt : r.salt, baseRev: r.none ? 0 : r.rev, ...(r.none ? pending : {}) }); check();
       if (put.stale) continue;
+      ls.set(GBS_BASE, JSON.stringify(sent.gbs.data));
       V.rev = put.rev; V.last = put.at; V.salt = r.none ? V.salt : r.salt;
       if (!r.none) V.rec = { rsalt: r.rsalt, rwrap: r.rwrap };
       V.pend = null; saveVault(); syncStatus = ''; paintSyncStatus();
