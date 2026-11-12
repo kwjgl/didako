@@ -33,6 +33,12 @@ try {
 <!-- 세 겹 책갈피 로고(위쪽 바와 로그인 카드에서 쓴다. 디다코 노트와 같은 그림) -->
 <svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs><symbol id="i-didako" viewBox="0 0 16 16"><g fill="none"><circle cx="8" cy="2.6" r="1.5" stroke="var(--s1, var(--accent))" stroke-width="1.4"/><path d="M8 4.2V5.8" stroke="var(--s1, var(--accent))" stroke-width="1.2"/><clipPath id="didako-clip"><path d="M4.2 5.6H11.8V14.8L8 11.8L4.2 14.8Z"/></clipPath><g clip-path="url(#didako-clip)" stroke="none"><rect x="4.2" y="4.6" width="2.53" height="12" fill="var(--s1, var(--accent))"/><rect x="6.73" y="4.6" width="2.54" height="12" fill="var(--s2, var(--accent-mid))"/><rect x="9.27" y="4.6" width="2.53" height="12" fill="var(--s3, var(--ink-2))"/><path d="M6.73 4.6V15M9.27 4.6V15" stroke="var(--cord-bg, var(--page))" stroke-width=".5"/></g></g></symbol></defs></svg>
 <div id="root"><main class="wrap"><h1>디다코 공동체</h1><p class="hint">불러오는 중이에요…</p></main></div>
+<div class="stage pss" id="stage" hidden role="dialog" aria-label="나눔하기">
+  <div class="st-top" id="stTop"></div>
+  <div class="st-body" id="stBody"></div>
+  <div class="st-foot" id="stFoot"></div>
+  <div class="dimmer" id="dimmer" aria-hidden="true"><p class="dm-msg">서로의 이야기에 귀 기울이는 시간</p><p class="dm-sub">화면을 누르면 다시 밝아져요</p></div>
+</div>
 <script src="walks-data.js"></script>
 <script src="community.js"></script>
 <script>

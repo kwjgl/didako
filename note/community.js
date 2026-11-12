@@ -99,13 +99,148 @@
     return '<section class="card cb"><div class="xlb">함께 걷는 책</div>'+
       '<div class="xcard">'+walkCover(w)+'<div class="sm">'+esc(walkName(w))+'</div><div class="sf xct" style="margin-top:4px">'+esc(w.title)+'</div></div>'+
       '<div class="xlb">지금 함께 읽는 편</div><div class="sf">'+current+'편 '+esc(ep.title)+'</div><div class="wk-meta"><span class="ref-pill">'+esc(ep.ref)+'</span></div>'+
-      '<a class="btn ghost cb-read" href="'+walkHref(w)+'">혼자 묵상하기</a>'+
+      '<div class="row cb-share-links"><a class="btn ghost cb-read" href="'+walkHref(w)+'">혼자 묵상하기</a><button class="btn" data-a="together">함께 나누기</button></div>'+
       (leader?'<div class="row">'+(current<w.eps.length?'<button class="btn" data-a="next-ep">다음 편으로</button>':'')+'<button class="link" data-a="pick">책 바꾸기</button></div>':'')+
       '<details class="cb-episodes"><summary class="link">편 목록</summary><div class="mlist">'+w.eps.map(e=>{
         const label='<span class="wk-tt"><span style="display:block">'+e.n+'편 '+esc(e.title)+'</span><span class="sm">'+esc(e.ref)+'</span></span>'+(Number(e.n)===current?chip('지금'):'');
         return leader?'<button class="xrow wk-row" data-a="setep" data-v="'+e.n+'">'+label+'</button>':'<div class="xrow wk-row">'+label+'</div>';
       }).join('')+'</div></details></section>';
   }
+  // 디다코 교회의 나눔하기에서 가져왔다. 공동체 데모는 묵상 기록을 저장하지 않는다.
+  const BLESS_REF = '고린도후서 13:13';
+  const BLESS_LINES = ['주 예수 그리스도의 은혜와', '하나님의 사랑과', '성령의 교통하심이', '너희 무리와 함께 있을지어다'];
+  const OPEN_LINES = ['아버지께서 주신 말씀을', '말씀이 가리키는 예수님 안에서', '성령님이 깨닫게 해 주시기를'];
+  const STRAND = ['var(--accent)', 'var(--accent-mid)', 'var(--ink-2)'];
+  function braidPaths(len, amp, periods, vert, sw, ol, cols, n, sub) {
+    ol = ol == null ? 3 : ol; cols = cols || STRAND; n = n || periods * 22; sub = sub || 1;
+    const ph = [0, 2 * Math.PI / 3, 4 * Math.PI / 3], out = [], f = v => v.toFixed(2);
+    for (let i = 0; i < n; i++) {
+      ph.map((p, k) => {
+        const pts = [];
+        for (let m = 0; m <= sub; m++) { const t = (i + m / sub) / n; pts.push([len * t, amp * Math.sin(t * periods * 2 * Math.PI + p)]); }
+        const tm = (i + .5) / n;
+        return { k, pts, z: Math.cos(tm * periods * 2 * Math.PI + p) };
+      }).sort((a, b) => a.z - b.z).forEach(o => {
+        const d = o.pts.map((q, m) => (m ? 'L' : 'M') + (vert ? `${f(q[1])} ${f(q[0])}` : `${f(q[0])} ${f(q[1])}`)).join('');
+        out.push(`<path d="${d}" stroke="var(--cord-bg, var(--page))" stroke-width="${sw + ol}" stroke-linecap="butt"/><path d="${d}" stroke="${cols[o.k]}" stroke-width="${sw}" stroke-linecap="round"/>`);
+      });
+    }
+    return out.join('');
+  }
+  const braidH = (w, h, per, sw) => `<svg viewBox="0 ${-h / 2} ${w} ${h}" aria-hidden="true">${braidPaths(w, h / 2 - sw, per, false, sw)}</svg>`;
+  function parallelSvg() {
+    return `<svg class="wo-par" viewBox="0 -32 240 64" aria-hidden="true">${[-14, 0, 14].map((y, k) => `<path pathLength="1" d="M4 ${y}Q64 ${y - 9} 120 ${y}T236 ${y}" stroke="${STRAND[k]}"/>`).join('')}</svg>`;
+  }
+  
+  const R={open:true,dim:true,on:false,steps:[],pos:0,w:null,ep:null,room:''};
+  const stage=$('stage');
+  let dimT=0,openT=0,wl=null,swipeX=null,swipeY=null;
+  const clearShareTimers=()=>{clearTimeout(dimT);clearTimeout(openT);dimT=openT=0;};
+  function shareView(){
+    const w=R.w,ep=R.ep;if(!w||!ep)return '';
+    return '<div class="cs"><p class="eyebrow top-eyebrow">'+esc(R.room)+' · 함께 나누기</p>'+
+      '<div class="page-top"><h1>함께 나누기</h1></div><div class="start-grid">'+
+      '<section class="card today"><p class="lesson-book">'+esc(walkName(w))+'</p>'+
+      '<h2 class="lesson-title">'+ep.n+'편 '+esc(ep.title)+'</h2><span class="passage-chip">'+esc(ep.ref)+'</span>'+
+      '<p class="fine">화면에서 눈을 뗄 시간이에요. 함께 질문과 답을 나눕니다.</p></section>'+
+      '<section class="card" aria-label="나눔 설정">'+
+      '<div class="opt"><div class="row"><div><p class="opt-name">말씀을 열며</p><p class="opt-sub">삼위일체 하나님께 간구하며 시작해요.</p></div>'+
+      '<button class="switch'+(R.open?' on':'')+'" type="button" role="switch" aria-checked="'+R.open+'" aria-label="말씀을 열며" data-a="share-open"><span></span></button></div></div>'+
+      '<div class="opt"><div class="row"><div><p class="opt-name">화면 어둡게 하기</p><p class="opt-sub">질문을 연 지 얼마 뒤 화면이 어두워져요.</p></div>'+
+      '<button class="switch'+(R.dim?' on':'')+'" type="button" role="switch" aria-checked="'+R.dim+'" aria-label="화면 어둡게 하기" data-a="share-dim"><span></span></button></div></div>'+
+      '<button class="btn wide start-btn" data-a="share-start">나눔 시작</button></section></div>'+
+      '<button class="link" data-a="share-back">‹ 공동체로</button></div>';
+  }
+  function enterShare(){
+    const w=selectedWalk(),ep=w?.eps.find(x=>x.n===Number(S.info?.ep));
+    if(!w||!ep)return;
+    R.w=w;R.ep=ep;R.room=S.info.name;R.open=true;R.dim=true;R.on=false;
+    S.page='share';render();
+  }
+  // 디다코 교회 buildSteps와 같은 순서로 장을 쌓는다.
+  function buildSteps(){
+    return [...(R.open?['open']:[]),'cover','read','look','ask','p','stay','bless','done'];
+  }
+  async function requestWake(){
+    try{if('wakeLock' in navigator&&!wl){wl=await navigator.wakeLock.request('screen');wl.addEventListener('release',()=>{wl=null;});}}catch(e){wl=null;}
+  }
+  function releaseWake(){try{if(wl)wl.release();}catch(e){}wl=null;}
+  function undim(){
+    stage.classList.add('nt');stage.classList.remove('dim');
+    void stage.offsetWidth;requestAnimationFrame(()=>stage.classList.remove('nt'));
+  }
+  function armDim(){
+    clearTimeout(dimT);dimT=0;
+    if(!R.on||!R.dim||!['look','ask','stay'].includes(R.steps[R.pos]))return;
+    dimT=setTimeout(()=>stage.classList.add('dim'),15000);
+  }
+  function startShare(){
+    R.steps=buildSteps();R.pos=0;R.on=true;
+    stage.hidden=false;document.body.classList.add('sharing');stage.classList.remove('dim');
+    requestWake();renderStep();
+  }
+  function exitShare(){
+    R.on=false;clearShareTimers();stage.hidden=true;stage.classList.remove('dim','nt');
+    document.body.classList.remove('sharing');releaseWake();
+    S.page='info';render();window.scrollTo(0,0);
+  }
+  function go(dir){
+    undim();const next=R.pos+dir;if(next<0||next>=R.steps.length)return;
+    R.pos=next;renderStep();
+  }
+  function renderStep(){
+    clearShareTimers();undim();
+    const t=R.steps[R.pos],w=R.w,ep=R.ep;
+    const body=$('stBody'),top=$('stTop'),foot=$('stFoot');
+    top.innerHTML=t==='open'||t==='done'?'':'<button class="st-pill" data-a="share-exit" aria-label="닫기">닫기</button>';
+    top.hidden=!top.innerHTML;
+    const prev='<button class="btn ghost" data-a="share-prev"'+(R.pos===0?' disabled':'')+'>이전</button>';
+    const next='<button class="btn" data-a="share-next">다음</button>';
+    let content='';
+    if(t==='open'){
+      content='<div class="st-in"><div class="wo" data-a="share-next" role="button" tabindex="0" aria-label="말씀을 열며. 누르면 넘어가요">'+
+        '<div class="wo-cord" aria-hidden="true">'+parallelSvg()+'<div class="wo-braid" style="position:absolute;inset:0">'+braidH(240,64,2.5,5)+'</div></div>'+
+        '<p class="wo-eyebrow">말씀을 열며</p><div class="wo-lines">'+OPEN_LINES.map(l=>'<p>'+esc(l)+'</p>').join('')+'</div>'+
+        '<p class="wo-skip">화면을 누르면 바로 넘어가요</p></div></div>';
+      openT=setTimeout(()=>{if(R.on&&R.steps[R.pos]==='open')go(1);},6000);
+    }else if(t==='cover'){
+      content='<div class="st-in center"><svg class="cover-mark" viewBox="0 -20 240 40" aria-hidden="true">'+braidPaths(240,8,5,false,4)+'</svg>'+
+        '<p class="st-eyebrow">'+esc(walkName(w))+'</p><h2 class="cover-name">'+ep.n+'편 '+esc(ep.title)+'</h2></div>';
+    }else if(t==='bless'){
+      content='<div class="st-in"><div class="bless" aria-live="polite"><div class="st-eyebrow bl-lead">함께 읽어요</div>'+
+        BLESS_LINES.map((l,i)=>'<p class="'+(i===BLESS_LINES.length-1?'lastline':'')+'" style="--i:'+i+'">'+esc(l)+'</p>').join('')+
+        '<span class="verse bl-ref">'+esc(BLESS_REF)+'</span></div></div>';
+    }else if(t==='done'){
+      content='<div class="st-in center"><svg class="done-mark" viewBox="-30 -8 60 190" aria-label="세 겹 책갈피" role="img">'+
+        '<circle cx="0" cy="4" r="6" fill="none" stroke="var(--accent)" stroke-width="3.2"/>'+
+        '<g transform="translate(0 10)">'+braidPaths(138,10,3,true,6.6)+'</g></svg>'+
+        '<h1 class="h2d">오늘 나눈 말씀 · '+esc(ep.ref)+'</h1>'+
+        '<div class="done-btns"><button class="btn ghost" data-a="share-finish">마치기</button></div></div>';
+    }else if(t==='read'){
+      content='<div class="st-in center"><p class="st-eyebrow">본문 읽기</p><p class="passage-big">'+esc(ep.ref)+'</p><p class="soft">'+esc(ep.read)+'</p></div>';
+    }else if(t==='p'){
+      content='<div class="st-in"><p class="st-eyebrow">풀이</p>'+
+        (Array.isArray(ep.p)?ep.p:[ep.p]).map(p=>'<p class="share-p">'+esc(p)+'</p>').join('')+'</div>';
+    }else{
+      const k=t==='look'?'보기':t==='ask'?'묵상':'머묾';
+      const val=t==='look'?ep.look:t==='ask'?ep.ask:ep.stay;
+      content='<div class="st-in"><p class="st-eyebrow">'+k+'</p><h2 class="h2d q-text">'+esc(val)+'</h2></div>';
+    }
+    body.className='st-body';body.innerHTML=content;body.scrollTop=0;
+    foot.innerHTML=t==='done'?'':'<div class="st-nav">'+prev+next+'</div>';foot.hidden=t==='done';
+    armDim();
+  }
+  stage.addEventListener('pointerdown',ev=>{
+    if(stage.classList.contains('dim')){stage.classList.remove('dim');armDim();return;}
+    swipeX=ev.clientX;swipeY=ev.clientY;armDim();
+  });
+  stage.addEventListener('pointerup',ev=>{
+    if(swipeX==null)return;
+    const dx=ev.clientX-swipeX,dy=ev.clientY-swipeY;swipeX=swipeY=null;
+    if(Math.abs(dx)>65&&Math.abs(dx)>Math.abs(dy)*1.4){go(dx<0?1:-1);}
+  });
+  stage.addEventListener('keydown',ev=>{if(!R.on)return;if(ev.key==='ArrowRight'){go(1);ev.preventDefault();}else if(ev.key==='ArrowLeft'){go(-1);ev.preventDefault();}});
+  document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible'&&R.on)requestWake();});
   function detail(){
     const c=S.info;return '<button class="link" data-a="back">‹ 목록으로</button><h1>'+esc(c.name)+'</h1>'+
       '<p class="hint" style="margin-bottom:16px">'+c.members.length+'명'+(c.state==='열림'?endText(c.endsOn):', 끝난 공동체예요')+'</p>'+
@@ -161,6 +296,7 @@
     else if(S.page==='login')inside=login();
     else if(S.page==='list')inside=list();
     else if(S.page==='info')inside=detail();
+    else if(S.page==='share')inside=shareView();
     else if(S.page==='invite')inside=invite();
     else if(S.page==='waiting')inside=waiting();
     else if(S.page==='error')inside=failed();
@@ -242,6 +378,16 @@
     if(a==='months'){S.months=Number(v);return render();}
     if(a==='open')return open(v);
     if(a==='asks'){S.sheet='asks';return render();}
+    // 초대 링크 "보내기"(share)와 겹치지 않게 함께 나누기는 together로 부른다
+    if(a==='together'&&S.info?.book)return enterShare();
+    if(a==='share-open'&&S.page==='share'){R.open=!R.open;return render();}
+    if(a==='share-dim'&&S.page==='share'){R.dim=!R.dim;return render();}
+    if(a==='share-start'&&S.page==='share')return startShare();
+    if(a==='share-back'&&S.page==='share')return exitShare();
+    if(a==='share-exit'&&R.on)return exitShare();
+    if(a==='share-next'&&R.on)return go(1);
+    if(a==='share-prev'&&R.on)return go(-1);
+    if(a==='share-finish'&&R.on)return exitShare();
     if(a==='pick'&&S.info?.role==='모임장'){S.sheet='pick';S.sheetError='';return render();}
     if(a==='setbook'&&S.info?.role==='모임장'){
       return busy(async()=>{await kApi('community_book',{p_id:S.id,p_book:v});S.info=await kApi('community_info',{p_id:S.id});S.sheet='';},'sheet');
