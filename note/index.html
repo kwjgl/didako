@@ -126,6 +126,13 @@ textarea.field { resize: none; line-height: 1.6; }
 .switch.busy, .btn.busy { opacity: .6; pointer-events: none; }
 .kakao:disabled { opacity: .6; cursor: default; }
 .kakao { display: flex; align-items: center; justify-content: center; gap: .5em; width: 100%; min-height: 52px; border: 0; border-radius: 12px; background: #FEE500; color: rgba(0, 0, 0, .85); font: 600 1rem var(--f-body); }
+/* Supabase 로그인(설정 NOTE_BACKEND)의 구글·애플 단추: 카카오 단추와 같은 크기에 각 회사 공식 단추 색(코이데 노트와 같다) */
+.kakao.sso-google { background: #FFFFFF; color: #1F1F1F; border: 1px solid #747775; }
+.kakao.sso-apple { background: #000000; color: #FFFFFF; }
+.kakao svg { width: 18px; height: 18px; flex: none; }
+@media (prefers-color-scheme: dark) { :root:not([data-mode="light"]) .kakao.sso-google { background: #131314; color: #E3E3E3; border-color: #8E918F; } :root:not([data-mode="light"]) .kakao.sso-apple { background: #FFFFFF; color: #000000; } }
+:root[data-mode="dark"] .kakao.sso-google { background: #131314; color: #E3E3E3; border-color: #8E918F; }
+:root[data-mode="dark"] .kakao.sso-apple { background: #FFFFFF; color: #000000; }
 .col { max-width: 640px; margin: 0 auto; padding: 24px max(16px, env(safe-area-inset-right, 0px)) calc(120px + env(safe-area-inset-bottom, 0px)) max(16px, env(safe-area-inset-left, 0px)); }
 .back-row { display: flex; align-items: center; }
 .h1 { font: 700 1.375rem/1.4 var(--f-display); margin: 0; }
@@ -1029,10 +1036,50 @@ body.fs .xw-top { padding-right: 52px; }   /* 시안 보기 설정(톱니)이 �
 <script src="map-places.js"></script>
 <script src="demo-data.js"></script>
 <script>
+// 새 길(Supabase) 로그인에서 돌아오는 길(?code=): 노트 자리를 정하기 전에 먼저 세션을 받고, 기기에는 사용자 id의 해시 앞 16자만 적어 둔 뒤 주소를 정리해 다시 연다(코이데 노트와 같다).
+//  다시 열린 화면이 그 해시로 내 노트 자리(주인 'sb:해시')를 정한다. 이 일이 도는 동안 아래 노트 스크립트는 아무것도 하지 않는다(시작 화면도 그대로).
+//  예전 길(카카오 → 기본 서버)도 ?code=로 돌아온다. 그래서 새 길 로그인을 시작할 때 적어 둔 표시(didako-note-sb-go)가 있거나 기본 서버 설정이 없을 때만 여기서 받는다
+(() => {
+  const C = window.DIDAKO_CONFIG || {}, q = new URLSearchParams(location.search);
+  const hq = new URLSearchParams(location.hash.replace(/^#/, ''));
+  if (!(q.has('code') || q.has('error_code') || q.has('error') || hq.has('error_code') || hq.has('error'))) return;
+  if (C.NOTE_BACKEND !== 'supabase' || !C.SUPABASE_URL || !C.SUPABASE_KEY || q.has('demo')) return;
+  let mine = !C.HUB_URL;
+  try { mine = mine || !!localStorage.getItem('didako-note-sb-go'); localStorage.removeItem('didako-note-sb-go'); } catch (e) { /* 표시를 못 읽으면 설정만 본다 */ }
+  if (!mine) return;
+  window.__didakoSbReturn = true;
+  let gone = false;
+  const back = () => {
+    if (gone) return; gone = true;
+    ['code', 'state', 'error', 'error_code', 'error_description'].forEach(k => q.delete(k));
+    const s = q.toString().replace(/=(&|$)/g, '$1'); location.replace(location.pathname + (s ? '?' + s : ''));
+  };
+  const fail = m => { try { sessionStorage.setItem('didako-note-sb-err', m || 'fail'); } catch (e) { /* 표시를 못 남겨도 돌아간다 */ } back(); };
+  const pick = k => q.get(k) || hq.get(k) || '';
+  if (q.has('error_code') || q.has('error') || hq.has('error_code') || hq.has('error')) return fail(pick('error_code') || pick('error'));
+  setTimeout(() => fail('timeout'), 20000);
+  const run = async () => {
+    try {
+      const c = window.supabase.createClient(String(C.SUPABASE_URL).replace(/\/+$/, ''), C.SUPABASE_KEY, { auth: { flowType: 'pkce', detectSessionInUrl: true, persistSession: true, autoRefreshToken: true, storageKey: 'didako-note-sb' } });
+      const r = await c.auth.getSession(), s = r && r.data && r.data.session;
+      if (!s) return fail('nosession');
+      const h = [...new Uint8Array(await crypto.subtle.digest('SHA-256', new TextEncoder().encode(String(s.user.id))))].map(x => x.toString(16).padStart(2, '0')).join('').slice(0, 16);
+      try { localStorage.setItem('didako-note-sbh', h); } catch (e) { return fail('storage'); }
+      back();
+    } catch (e) { fail('error'); }
+  };
+  if (window.supabase && window.supabase.createClient) return run();
+  const a = document.createElement('script'); a.src = 'vendor/supabase.js'; a.onload = run; a.onerror = () => fail('load'); document.head.appendChild(a);
+})();
+</script>
+<script>
 (() => {
 'use strict';
+if (window.__didakoSbReturn) return;   // 새 길 로그인에서 돌아오는 중: 위 스크립트가 주소를 정리해 다시 연다
 const CFG = window.DIDAKO_CONFIG || {};
-const LIVE = !!CFG.HUB_URL && !new URLSearchParams(location.search).has('demo');
+// 새 길(Supabase 로그인과 보관함): 설정 NOTE_BACKEND가 'supabase'이고 주소·키가 다 있을 때만(docs/setup.md 3-4). 비어 있으면 지금과 똑같이 돈다
+const SB_CFG = CFG.NOTE_BACKEND === 'supabase' && !!CFG.SUPABASE_URL && !!CFG.SUPABASE_KEY && !new URLSearchParams(location.search).has('demo');
+const LIVE = (!!CFG.HUB_URL || SB_CFG) && !new URLSearchParams(location.search).has('demo');
 const DATA = window.NOTE_DATA;
 const KOIDE_PRAY_URL = 'https://koide.koinobia.com/app/note.html';   // 기도하러 갈 곳(코이데 기도 노트). 화면 글에는 '코이데'라고 쓰지 않는다(결정 기록 2026-10-26)
 const Q = window.NOTE_Q;   // 오늘의 질문 409개와 이번 주의 질문 52개(note/tools/make-data.py가 만든다)
@@ -1356,7 +1403,7 @@ function viewStart() {
       <div class="sm" style="margin-top:8px;line-height:1.6">말씀 앞에서 묻고,<br>품고, 알게 되는 곳이에요</div>
     </div>
     <div style="margin-top:auto;margin-bottom:56px;display:flex;flex-direction:column;gap:12px">
-      <button class="kakao" type="button" data-act="kakao"${LIVE && authBusy ? ' disabled aria-busy="true"' : ''}>${BUBBLE}${LIVE && authBusy ? '카카오 로그인을 확인하고 있어요…' : '카카오로 시작하기'}</button>
+      ${LIVE && sbMode() ? sbList.map(k => `<button class="kakao sso-${k}" type="button" data-act="sb-login" data-v="${k}"${authBusy ? ' disabled aria-busy="true"' : ''}>${k === 'kakao' ? BUBBLE : SB_LOGO[k]}${SB_START[k]}</button>`).join('') : `<button class="kakao" type="button" data-act="kakao"${LIVE && authBusy ? ' disabled aria-busy="true"' : ''}>${BUBBLE}${LIVE && authBusy ? '카카오 로그인을 확인하고 있어요…' : '카카오로 시작하기'}</button>`}
       <div class="sm" style="text-align:center;margin-top:4px">${LIVE && authBusy ? '잠시만 기다려 주세요. 몇 초 걸려요.' : '내 질문은 나만 볼 수 있어요'}</div>
     </div>
   </div>`;
@@ -1375,7 +1422,7 @@ function viewChurch() {
 function viewName() {
   return `<form class="ob" data-form="name" novalidate>
     ${STEPS(2)}
-    <div class="sm lead">${LIVE ? esc((ls.get('didako-church-name') || '우리 교회') + (ls.get('didako-church-kind') === 'test' ? ' · 테스트' : '')) : '우리 교회'}</div>
+    <div class="sm lead">${LIVE && sbMode() ? '디다코 노트' : LIVE ? esc((ls.get('didako-church-name') || '우리 교회') + (ls.get('didako-church-kind') === 'test' ? ' · 테스트' : '')) : '우리 교회'}</div>
     <h1 class="ob-h tight">이름을 적어 주세요</h1>
     <input class="field" id="nameIn" style="margin-top:24px" maxlength="10" placeholder="예) 김하늘" aria-label="내 이름" autocomplete="name" value="${esc(ob.name)}">
     <div class="sm" style="margin-top:10px">카카오 닉네임이 아니라 실제 이름이에요.</div>
@@ -1387,7 +1434,7 @@ function viewConsent() {
     ${STEPS(3)}
     <div class="sm lead">${esc(ob.name)}</div>
     <h1 class="ob-h tight">내 기록은 이렇게 지켜요</h1>
-    <div style="margin-top:6px">${KEEP_ROWS}</div>
+    <div style="margin-top:6px">${keepRows()}</div>
     <div class="sm" style="margin-top:14px;line-height:1.6">처음에는 이 기기에만 저장해요. 더보기 › 동기화를 켜면 잠가서 맡겨요.</div>
     <button class="btn big" type="button" data-act="agree" style="margin-top:20px">동의하고 시작하기</button>
   </div>`;
@@ -1398,6 +1445,13 @@ const KEEP_ROWS = `<div class="kv"><b>무엇을</b><span>내가 남긴 질문과
   <div class="kv"><b>누가 보나</b><span>나만 봐요. 잠가서 보내기 때문에 교회와 운영자도 읽을 수 없어요</span></div>
   <div class="kv"><b>얼마나</b><span>교회를 떠나면 바로 지워요. 남겨 두고 싶으면 떠나기 전에 더보기의 '내 기록 내려받기'로 저장해 두세요. 언제든 내 기록을 지워 달라고 할 수 있어요.</span></div>
   <div class="kv"><b>사용 기록</b><span>앱을 좋게 만들기 위해 이름 없는 사용 기록을 남겨요. '탐구하기를 열었다'처럼 누른 것과 숫자만이고, 이름과 질문·발견은 넣지 않아요.</span></div>`;
+
+// 새 길(Supabase 로그인과 보관함, docs/setup.md 3-4)에서 보이는 글. 교회 서버와 구글 시트를 쓰지 않으니 그에 맞게 적는다. 사용 기록은 남기지 않아서 그 줄은 없다
+const KEEP_ROWS_SB = `<div class="kv"><b>무엇을</b><span>내가 남긴 질문과 발견, 탐구 노트. 로그인한 계정을 알아보는 번호</span></div>
+  <div class="kv"><b>어디에</b><span>디다코가 쓰는 서버(Supabase)의 보관함. 휴대폰에서 잠근 덩어리로만 보내요</span></div>
+  <div class="kv"><b>누가 보나</b><span>나만 봐요. 잠가서 보내기 때문에 운영자도 읽을 수 없어요</span></div>
+  <div class="kv"><b>얼마나</b><span>내가 지워 달라고 할 때까지 맡아 둬요. 언제든 내 기록을 지워 달라고 할 수 있어요.</span></div>`;
+const keepRows = () => (sbMode() ? KEEP_ROWS_SB : KEEP_ROWS);
 
 // ── 오늘의 질문(M1, M10, T8) ──
 // 질문 카드: 그림이 있는 질문만 그림 자리를 둔다(그림은 지금 409개 모두 있다)
@@ -1540,7 +1594,7 @@ function viewMore() {
       <a class="gr" href="#/more/feedback"><span class="gt"><b>의견 보내기</b><span class="gd">불편한 점, 바라는 점, 고마운 점</span></span><span class="ch" aria-hidden="true">›</span></a>
     </div><button class="logout" type="button" data-act="logout">이 기기에서 로그아웃</button>`;
   return `<div class="col more">${pageHead('', '더보기')}
-    ${LIVE && ls.get('didako-church-name') ? `<div class="sm" style="margin:-4px 0 12px">${esc((ls.get('didako-church-name') || '') + (ls.get('didako-church-kind') === 'test' ? ' · 테스트' : ''))}</div>` : ''}
+    ${LIVE && !sbMode() && ls.get('didako-church-name') ? `<div class="sm" style="margin:-4px 0 12px">${esc((ls.get('didako-church-name') || '') + (ls.get('didako-church-kind') === 'test' ? ' · 테스트' : ''))}</div>` : ''}
     <div class="more-grid" style="margin-top:4px"><div>${me1}</div><div>${set1}${app1}</div></div></div>`;
 }
 const back = `<a class="bk" href="#/more">${CHEV_L}더보기</a>`;
@@ -1560,7 +1614,7 @@ function viewAbout() {
       <div class="story-mark" aria-hidden="true"><svg class="mk"><use href="#i-didako"/></svg></div>
       <p class="pg">전도서 4장의 세 겹으로 꼰 줄은 쉽게 끊어지지 않는다는 말씀을 떠올려요. 디다코의 로고는 그렇게 꼰 세 가닥이 책갈피가 된 모양이에요. 세 가닥은 성부·성자·성령이에요.</p>
     </div>
-    <div class="sc"><div class="sl">기록은 이렇게 지켜요</div>${KEEP_ROWS}</div>
+    <div class="sc"><div class="sl">기록은 이렇게 지켜요</div>${keepRows()}</div>
     <div class="sc"><div class="sl">디다코는 말씀을 이렇게 이해해요</div>
       <div class="stp"><span class="no">1</span><div class="bd"><h3>말씀은 교회에서 선포돼요.</h3><p>교회에서 선포되는 말씀을 읽고 듣는 가운데 성령께서 일하세요.</p><a class="lk" href="#/write">+ 남기기 열기 ›</a></div></div>
       <div class="stp"><span class="no">2</span><div class="bd"><h3>성령께서 깨닫게 해 주세요.</h3><p>신앙의 여정에서 생긴 질문에 답을 주시는 분은 성령님이세요.</p><a class="lk" href="#/explore">탐구하기 › 이번 주의 질문 ›</a></div></div>
@@ -1620,7 +1674,8 @@ function viewFeedback() {
 // 동기화(M8g 꺼짐 · M8f 켜짐): 데모라 실제 잠금은 없다
 function viewSync() {
   const on = D.sync === 'on';
-  const secret = `<div class="cg">
+  const secret = `<div class="cg">${LIVE && canMoveVault() ? `
+      <button class="gr" type="button" data-act="vault-move"><span class="gt"><b>새 보관함으로 옮기기</b><span class="gd">기록은 휴대폰에서 잠긴 그대로 옮겨요</span></span><span class="ch" aria-hidden="true">›</span></button>` : ''}
       <button class="gr${on ? '' : ' dm'}" type="button" data-act="${on ? 'pass-sheet' : 'need-sync'}"><span class="gt"><b>비밀 문구 바꾸기</b><span class="gd">기록을 잠그는 문구를 새로 정해요</span></span><span class="ch" aria-hidden="true">›</span></button>
       <button class="gr${on ? '' : ' dm'}" type="button" data-act="${on ? 'forgot-sheet' : 'need-sync'}"><span class="gt"><b>비밀 문구를 잊었어요</b><span class="gd">적어 둔 복구용 낱말로 다시 열어요</span></span><span class="ch" aria-hidden="true">›</span></button>
       <button class="gr${on ? '' : ' dm'}" type="button" data-act="${on ? 'rec-new' : 'need-sync'}"><span class="gt"><b>복구용 낱말 새로 만들기</b></span><span class="ch" aria-hidden="true">›</span></button>
@@ -1636,7 +1691,7 @@ function viewSync() {
     <h1 class="tt" style="margin-top:2px">동기화</h1>
     <div class="sc sy" style="margin-top:14px"><div class="hd"><h2>동기화 켜기</h2><button class="switch${on ? ' on' : ''}" type="button" role="switch" aria-checked="${on}" aria-label="동기화 켜기" data-act="${on ? 'cut-sheet' : 'keep-start'}"><span></span></button></div>
       <p class="stt${on ? '' : ' off'}"><i aria-hidden="true"></i><span>${on ? `연결됨 · 마지막으로 맡긴 때 ${syncLine()}` : '켜면 기기를 바꿔도 기록이 이어져요'}</span></p>
-      <div class="act">${on ? `<button class="btn ghost sm2" type="button" data-act="sync-now">${SYNC_IC}지금 동기화</button><button class="ql" type="button" data-act="cut-sheet">연결 끊기</button>` : '<button class="btn sm2" type="button" data-act="keep-start">켜기</button>'}</div></div>
+      <div class="act">${on ? `${LIVE && sbRelogin ? '<button class="btn sm2" type="button" data-act="sb-relogin">다시 로그인</button>' : ''}<button class="btn ghost sm2" type="button" data-act="sync-now">${SYNC_IC}지금 동기화</button><button class="ql" type="button" data-act="cut-sheet">연결 끊기</button>` : '<button class="btn sm2" type="button" data-act="keep-start">켜기</button>'}</div></div>
     ${secret}${file}${how}
     <div class="ft"><div class="sl">알아 두세요</div><p>· 브라우저의 인터넷 기록·사이트 데이터를 지우면 이 기기의 사본과 화면 설정이 지워질 수 있어요.</p><p>· 맡긴 기록은 비밀 문구로 다시 열 수 있어요.</p>${on ? '' : '<p>· 아이폰은 홈 화면에 두지 않고 7일 넘게 열지 않으면 이 기기의 기록이 지워질 수 있어요.</p>'}</div>`);
 }
@@ -4174,6 +4229,141 @@ function readWords(text) {
   return { phrase: list.join(' ') };
 }
 
+// ── 새 길(Supabase): 로그인과 보관함 (설정 NOTE_BACKEND, docs/setup.md 3-4. 코이데 노트와 같은 방식) ──
+//  예전 길(기본 서버 카카오 로그인 + 교회 서버)로 로그인해 있는 기기는 그대로 예전 길이다. 새로 들어오는 기기만 새 길로 로그인한다(교회 코드 없이 로그인만으로 노트를 쓴다).
+//  새 길의 주인 id는 'sb:' + 사용자 id 해시 앞 16자라 예전 길의 주인 id(교회 서버가 주는 uid)와 겹치지 않는다. 기기에는 사용자 id 대신 그 해시만 둔다(didako-note-sbh)
+const SBH = 'didako-note-sbh', SB_STORE = 'didako-note-sb', SB_RESUME = 'didako-note-resume';
+const OLD_CODE = LIVE && !!CFG.HUB_URL && new URLSearchParams(location.search).has('code');   // 예전 길: 카카오에서 돌아오는 중
+// 예전 길로 로그인해 있는지(교회 로그인까지 마쳤거나, 카카오 로그인 뒤 교회 코드를 넣는 중)
+function oldLogin() { return !!CFG.HUB_URL && (!!(ls.get('didako-token') && ls.get('didako-uid') && ls.get('didako-church-url')) || (!!ls.get('didako-hub-token') && !ls.get('didako-token'))); }
+// 이 기기가 새 길로 로그인하는지. 설정이 비었거나 예전 길로 로그인해 있으면 false
+function sbMode() { return SB_CFG && !OLD_CODE && !oldLogin(); }
+// 보관함을 맡기는 곳: 'supabase'(새 길) · 'apps-script'(예전 길). 이미 예전 보관함에 연결된 기기는 설정을 바꿔도 그 길에 남고, 새로 연결하는 기기는 설정이 있으면 새 길(코이데와 같다)
+function vaultBackend() {
+  if (!SB_CFG) return 'apps-script';
+  if (sbMode()) return 'supabase';
+  if (V.on) return V.backend || 'apps-script';
+  return 'supabase';
+}
+// 예전 보관함에 연결된 예전 길 기기만 새 보관함으로 옮길 수 있다
+function canMoveVault() { return SB_CFG && !sbMode() && !!V.on && !V.backend && liveReady; }
+// supabase-js는 새 길을 쓸 때만 늦게 불러온다(PKCE 로그인, 만료 전 자동 갱신은 supabase-js가 한다)
+const SB_URL = () => String(CFG.SUPABASE_URL || '').replace(/\/+$/, '');
+let sbC = null, sbLoad = null, sbRelogin = false, sbAfter = '', moveTo = false, sbList = ['kakao'];
+function sbClient() {
+  if (sbC) return Promise.resolve(sbC);
+  return sbLoad || (sbLoad = new Promise((ok, bad) => {
+    const fail = () => { sbLoad = null; bad({ code: 'net', message: '로그인 도구를 불러오지 못했어요. 인터넷을 확인해 주세요.' }); };
+    const mk = () => { try { sbC = window.supabase.createClient(SB_URL(), CFG.SUPABASE_KEY, { auth: { flowType: 'pkce', detectSessionInUrl: false, persistSession: true, autoRefreshToken: true, storageKey: SB_STORE } }); ok(sbC); } catch (_) { fail(); } };
+    if (window.supabase && window.supabase.createClient) return mk();
+    const a = document.createElement('script'); a.src = 'vendor/supabase.js'; a.onload = mk; a.onerror = fail; document.head.appendChild(a);
+  }));
+}
+// 지금 로그인된 세션(없으면 null). 네트워크가 막혀 못 읽은 것은 net 오류로 알린다
+async function sbSession() {
+  const c = await sbClient();
+  let r; try { r = await c.auth.getSession(); } catch (_) { throw { code: 'net', message: '서버가 답하지 않아요. 잠시 뒤 다시 해 주세요.' }; }
+  if (r.error && /Retryable|fetch/i.test((r.error.name || '') + (r.error.message || ''))) throw { code: 'net', message: '서버가 답하지 않아요. 잠시 뒤 다시 해 주세요.' };
+  return r.data && r.data.session || null;
+}
+// 로그인이 풀렸을 때. 새 길 기기는 예전 길에서 카카오 로그인이 풀렸을 때처럼 시작 화면으로 간다(기기의 기록은 그대로 남고, 같은 계정으로 다시 로그인하면 이어서 본다).
+//  예전 길 기기가 새 보관함만 쓰는 때는 동기화 화면에 [다시 로그인]을 보인다
+function sbLost() {
+  if (sbMode() && liveReady) {
+    ls.del(SBH); liveReady = false; me = null; epoch++; clearTimeout(syncTimer);
+    ob.kakao = ob.church = false; ob.name = ''; closeSheet(true); go('start');
+    toast('로그인이 끝났어요. 다시 로그인해 주세요.');
+    return { code: 'login', message: '로그인이 끝났어요. 다시 로그인해 주세요.' };
+  }
+  sbRelogin = true;
+  return { code: 'login', message: '동기화 로그인이 끝났어요. 다시 로그인하면 이어서 동기화해요.' };
+}
+// 사용자 id를 그대로 기기에 두지 않고 SHA-256 앞 16자만 남긴다(V.sb). 남의 보관함에 올리지 않으려는 비교용
+async function sbHash(id) { return [...new Uint8Array(await crypto.subtle.digest('SHA-256', te.encode(String(id))))].map(x => x.toString(16).padStart(2, '0')).join('').slice(0, 16); }
+async function sbMe() { const s = await sbSession(); if (!s) throw sbLost(); return { id: s.user.id, h: await sbHash(s.user.id), token: s.access_token }; }
+async function sbSignOut() { try { await (await sbClient()).auth.signOut(); } catch (_) { /* 이 기기의 세션만 지우면 된다 */ } }
+// 새 길 요청: apikey 헤더에는 publishable 키, Authorization에는 로그인 access_token. 오류는 postLive와 같은 모양(login · net · bad)
+async function sbFetch(path, opt) {
+  const who = await sbMe(), e = epoch;
+  const ctl = new AbortController(), stop = setTimeout(() => ctl.abort(), 60000);
+  let res, body = null;
+  try { res = await fetch(SB_URL() + path, Object.assign({}, opt, { signal: ctl.signal, headers: Object.assign({ apikey: CFG.SUPABASE_KEY, Authorization: 'Bearer ' + who.token, 'Content-Type': 'application/json' }, opt && opt.headers) })); }
+  catch (_) { throw { code: 'net', message: '서버가 답하지 않아요. 잠시 뒤 다시 해 주세요.' }; }
+  finally { clearTimeout(stop); }
+  try { const t = await res.text(); body = t ? JSON.parse(t) : null; } catch (_) { body = null; }
+  if (e !== epoch) throw { cancelled: true };
+  if (res.status === 401 || res.status === 403 || (body && (String(body.code) === '28000' || /^login$/.test(body.message || '')))) throw sbLost();
+  // 서버 함수가 'bad: 글' · 'busy: 글'로 되돌린 것은 그 글을 그대로 전한다
+  const sm = body && typeof body.message === 'string' && /^(bad|busy): ([\s\S]*)$/.exec(body.message);
+  if (sm) throw { code: sm[1], message: sm[2] };
+  if (!res.ok) throw { code: 'bad', message: '서버가 받지 못했어요. 잠시 뒤 다시 해 주세요.' };
+  return { body, who };
+}
+// 노트 보관함 요청 셋(noteGet · notePut · noteKeys). 예전 길이면 noteApi 그대로, 새 길이면 Supabase 표·함수로 같은 모양의 답을 돌려준다. force는 길을 정해 부를 때만(옮기기)
+async function vaultApi(action, data, force) {
+  if ((force || vaultBackend()) !== 'supabase') return noteApi(action, data);
+  data = data || {};
+  if (action === 'noteGet') {
+    const { body } = await sbFetch('/rest/v1/didako_note_vault?select=*', { method: 'GET' });
+    const r = Array.isArray(body) && body[0];
+    if (!r) return { none: true };
+    return { data: String(r.data), salt: String(r.salt), rev: Number(r.rev) || 0, at: r.at, wrap: String(r.wrap || ''), rsalt: String(r.rsalt || ''), rwrap: String(r.rwrap || '') };
+  }
+  if (action === 'notePut') {
+    const { body } = await sbFetch('/rest/v1/rpc/didako_note_put', { method: 'POST', body: JSON.stringify({ p_data: String(data.data || ''), p_salt: String(data.salt || ''), p_base_rev: Number(data.baseRev || 0), p_wrap: String(data.wrap || ''), p_rsalt: String(data.rsalt || ''), p_rwrap: String(data.rwrap || '') }) });
+    return body || {};
+  }
+  if (action === 'noteKeys') {
+    // 짝 검사는 지금 서버(apps-script/Code.js의 noteKeys_)가 하는 대로 먼저
+    const set = {};
+    if (data.salt !== undefined || data.wrap !== undefined) { if (!data.salt || !data.wrap) throw { code: 'bad', message: '바꿀 열쇠가 모자라요.' }; set.salt = String(data.salt); set.wrap = String(data.wrap); }
+    if (data.rsalt !== undefined || data.rwrap !== undefined) { if (!data.rsalt || !data.rwrap) throw { code: 'bad', message: '바꿀 열쇠가 모자라요.' }; set.rsalt = String(data.rsalt); set.rwrap = String(data.rwrap); }
+    if (!Object.keys(set).length) throw { code: 'bad', message: '바꿀 열쇠가 없어요.' };
+    const who = await sbMe();
+    const { body } = await sbFetch('/rest/v1/didako_note_vault?user_id=eq.' + encodeURIComponent(who.id), { method: 'PATCH', headers: { Prefer: 'return=representation' }, body: JSON.stringify(set) });
+    if (!Array.isArray(body) || !body.length) throw { code: 'bad', message: '맡긴 노트가 없어요.' };
+    return { ok: true };
+  }
+  return noteApi(action, data);
+}
+// 지금 연결하려는 보관함의 길(옮기는 중이면 새 길)과, 새 길이면 V에 남길 표시(backend · 계정 해시)
+const vaultWay = () => (moveTo ? 'supabase' : vaultBackend());
+async function vaultTag() { return vaultWay() === 'supabase' ? { backend: 'supabase', sb: (await sbMe()).h } : {}; }
+// 로그인 단추에 보일 공급자: Supabase에서 켜 둔 것만(/auth/v1/settings). 못 읽으면 카카오만
+async function sbProviders() {
+  try {
+    const ctl = new AbortController(), stop = setTimeout(() => ctl.abort(), 6000);
+    const r = await (await fetch(SB_URL() + '/auth/v1/settings', { headers: { apikey: CFG.SUPABASE_KEY }, signal: ctl.signal })).json(); clearTimeout(stop);
+    const x = r && r.external || {}, L = ['kakao', 'google', 'apple'].filter(k => x[k]);
+    if (L.length) return L;
+  } catch (_) { /* 카카오만 */ }
+  return ['kakao'];
+}
+const SB_START = { kakao: '카카오로 시작하기', google: 'Google로 시작하기', apple: 'Apple로 시작하기' };
+// 각 회사의 공식 로그인 단추 모양을 따른 로고(코이데 노트와 같다. simple-icons 13.21.0, CC0 · 구글 G는 구글 공식 4색). 카카오는 지금 단추의 말풍선(BUBBLE)을 쓴다
+const SB_LOGO = {
+  google: '<svg viewBox="0 0 48 48" aria-hidden="true"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/></svg>',
+  apple: '<svg viewBox="0 0 24 24" aria-hidden="true" fill="currentColor"><path d="M12.152 6.896c-.948 0-2.415-1.078-3.96-1.04-2.04.027-3.91 1.183-4.961 3.014-2.117 3.675-.546 9.103 1.519 12.09 1.013 1.454 2.208 3.09 3.792 3.039 1.52-.065 2.09-.987 3.935-.987 1.831 0 2.35.987 3.96.948 1.637-.026 2.676-1.48 3.676-2.948 1.156-1.688 1.636-3.325 1.662-3.415-.039-.013-3.182-1.221-3.22-4.857-.026-3.04 2.48-4.494 2.597-4.559-1.429-2.09-3.623-2.324-4.39-2.376-2-.156-3.675 1.09-4.61 1.09zM15.53 3.83c.843-1.012 1.4-2.427 1.245-3.83-1.207.052-2.662.805-3.532 1.818-.78.896-1.454 2.338-1.273 3.714 1.338.104 2.715-.688 3.559-1.701"/></svg>'
+};
+// 로그인 화면으로 보내기: 돌아와서 이어 갈 일(after)과 새 길 표시를 적어 둔다. 돌아오는 주소는 지금 열린 노트 주소
+async function sbOauth(provider, after) {
+  if (!['kakao', 'google', 'apple'].includes(provider)) throw { code: 'bad', message: '로그인 방법을 고를 수 없어요.' };
+  ls.set('didako-note-sb-go', '1');
+  if (after) ls.set(SB_RESUME, after); else ls.del(SB_RESUME);
+  const q = new URLSearchParams(location.search); ['code', 'state', 'error', 'error_code', 'error_description'].forEach(k => q.delete(k));
+  const qs = q.toString().replace(/=(&|$)/g, '$1');
+  const c = await sbClient();
+  const r = await c.auth.signInWithOAuth({ provider, options: { redirectTo: location.origin + location.pathname + (qs ? '?' + qs : '') } });
+  if (r && r.error) throw r.error;
+}
+const sbButtons = () => sbList.map(k => `<button class="kakao sso-${k}" type="button" data-act="sb-login" data-v="${k}">${k === 'kakao' ? BUBBLE : SB_LOGO[k]}${SB_START[k]}</button>`).join('');
+// 예전 길 기기가 새 보관함을 쓰려 할 때 여는 로그인 창. after: 'vault'(동기화 켜기) · 'vault-move'(옮기기) · 'sync'(다시 로그인)
+function sbLoginOpen(after) {
+  sbAfter = after;
+  openSheet(`<h2>동기화에 쓸 계정으로 로그인해요</h2><div id="sbList" style="display:flex;flex-direction:column;gap:8px;margin-top:14px">${sbButtons()}</div><p class="msg" id="shMsg" role="alert"></p><div class="ra"><button type="button" class="btn ghost" data-act="sheet-x">취소</button></div>`);
+  sbProviders().then(l => { sbList = l; const el = $('#sbList'); if (el) el.innerHTML = sbButtons(); });
+}
+
 async function postLive(hub, action, data = {}) {
   const tokenKey = hub ? 'didako-hub-token' : 'didako-token';
   const token = ls.get(tokenKey), e = epoch;
@@ -4262,6 +4452,7 @@ function recoverLogin() {
 }
 async function bootLive() {
   D.sync = 'off';
+  if (sbMode()) return bootSb();
   const url = new URL(location.href), code = url.searchParams.get('code');
   if (code || (ls.get('didako-hub-token') && !ls.get('didako-token'))) {
     setAuthBusy(true);
@@ -4278,8 +4469,29 @@ async function bootLive() {
   } else if (ls.get('didako-token') && ls.get('didako-uid') && ls.get('didako-church-url')) {
     switchOwner(ls.get('didako-uid')); liveReady = true; ob.kakao = ob.church = true;
     ensureStart(); go(me ? (!liveEntryRoute || liveEntryRoute.startsWith('start') ? 'today' : liveEntryRoute) : 'start/name');
-    if (me) syncLive();
+    if (me && !sbResume()) syncLive();
   }
+}
+// 새 길 기기: 로그인에서 돌아와 남긴 해시가 있으면 그 주인의 자리로 바로 들어간다(예전 길의 교회 로그인처럼 서버에 묻지 않는다). 없으면 시작 화면의 로그인 단추
+async function bootSb() {
+  sbProviders().then(l => { sbList = l; if (routeKey() === 'start') render(); });
+  let err = null; try { err = sessionStorage.getItem('didako-note-sb-err'); sessionStorage.removeItem('didako-note-sb-err'); } catch (_) { /* 없음 */ }
+  if (err) setTimeout(() => toast(err === 'access_denied' ? '로그인을 취소했어요.' : '로그인을 마치지 못했어요. 다시 해 주세요.'), 300);
+  ls.del(SB_RESUME);
+  const h = ls.get(SBH);
+  if (!h) return;
+  switchOwner('sb:' + h); liveReady = true; ob.kakao = ob.church = true;
+  ensureStart(); go(me ? (!liveEntryRoute || liveEntryRoute.startsWith('start') ? 'today' : liveEntryRoute) : 'start/name');
+  if (me) syncLive();
+}
+// 예전 길 기기가 새 보관함 로그인에서 돌아왔으면 하던 일을 잇는다. 이었으면 true
+function sbResume() {
+  const r = ls.get(SB_RESUME); ls.del(SB_RESUME);
+  if (!r || !SB_CFG || !me) return false;
+  if (r === 'vault' && !V.on) { go('more/sync'); setTimeout(() => acts['keep-start'](), 0); return true; }
+  if (r === 'vault-move' && canMoveVault()) { go('more/sync'); setTimeout(() => acts['vault-move-go'](), 0); return true; }
+  if (r === 'sync') { go('more/sync'); return false; }
+  return false;
 }
 
 function rememberGone() {
@@ -4408,8 +4620,11 @@ async function syncLive(fromForm = false) {
   try {
     syncStatus = '기록을 맞추고 있어요'; paintSyncStatus();
     const key = await keyOfRaw(raw); check();
+    sbRelogin = false;
+    // 새 길: 지금 로그인된 계정이 이 기기가 연결한 계정이 아니면 올리지 않는다(남의 보관함에 올리지 않게)
+    if (vaultBackend() === 'supabase') { const who = await sbMe(); check(); if (who.h !== V.sb) throw { message: '다른 계정으로 로그인돼 있어요. 동기화 연결을 끊고 다시 연결해 주세요.' }; }
     for (let attempt = 0; attempt < 3; attempt++) {
-      const r = await noteApi('noteGet'); check();
+      const r = await vaultApi('noteGet'); check();
       let remote = null;
       if (!r.none && r.data) {
         try { remote = await unlockUp(key, r.data); }
@@ -4422,7 +4637,7 @@ async function syncLive(fromForm = false) {
       const sent = payload();
       const data = await lockUp(key, sent); check();
       const pending = V.pend;
-      const put = await noteApi('notePut', { data, salt: r.none ? V.salt : r.salt, baseRev: r.none ? 0 : r.rev, ...(r.none ? pending : {}) }); check();
+      const put = await vaultApi('notePut', { data, salt: r.none ? V.salt : r.salt, baseRev: r.none ? 0 : r.rev, ...(r.none ? pending : {}) }); check();
       if (put.stale) continue;
       ls.set(GBS_BASE, JSON.stringify(sent.gbs.data));
       V.rev = put.rev; V.last = put.at; V.salt = r.none ? V.salt : r.salt;
@@ -4433,7 +4648,7 @@ async function syncLive(fromForm = false) {
     }
     throw { message: '기록이 바뀌어서 아직 맞추지 못했어요. 잠시 뒤 다시 해 주세요.' };
   } catch (err) {
-    if (!err.cancelled && e === epoch) { syncStatus = err.message; paintSyncStatus(); liveError(err); }
+    if (!err.cancelled && e === epoch) { syncStatus = err.message; paintSyncStatus(); liveError(err); if (sbRelogin && routeKey() === 'more/sync' && $('#pop').hidden && !editing()) render(); }
     return false;
   } finally {
     syncing = false;
@@ -4452,15 +4667,18 @@ async function recoveryWrap(raw) {
   const nextWords = pickWords(), rsalt = randB64(16);
   return { nextWords, rsalt, rwrap: await lockUp(await deriveKey(nextWords.join(' '), rsalt), { k: raw }) };
 }
-async function enableSync(raw, r, keepSheet = false, pending = false) {
+async function enableSync(raw, r, keepSheet = false, pending = false, tag = {}) {
   if (!pending) V.pend = null;
+  // 새 길이면 길과 계정 해시를 남기고, 예전 길이면 지운다
+  if (tag.backend) Object.assign(V, tag); else { delete V.backend; delete V.sb; }
+  moveTo = false;
   ls.set(LK, raw); V.on = true; V.salt = r.salt; V.rev = r.rev || 0; V.rec = { rsalt: r.rsalt, rwrap: r.rwrap }; saveVault();
   if (!keepSheet) closeSheet(true); render(); await syncLive(true);
 }
 // 서버에서 아직 맡기지 않은 열쇠가 있으면 키 교체도 그 묶음에만 반영한다.
 async function changeKeys(fields, e) {
   if (V.pend) Object.assign(V.pend, fields);
-  else { await noteApi('noteKeys', fields); sameAccount(e); }
+  else { await vaultApi('noteKeys', fields, vaultWay()); sameAccount(e); }
   if (fields.salt) V.salt = fields.salt;
   if (fields.rsalt) V.rec = { rsalt: fields.rsalt, rwrap: fields.rwrap };
   saveVault();
@@ -4477,6 +4695,18 @@ if (LIVE) {
   };
   const keepStart = acts['keep-start'];
   acts.kakao = () => { if (authBusy) return; setAuthBusy(true); location.href = 'https://kauth.kakao.com/oauth/authorize?response_type=code&client_id=' + encodeURIComponent(CFG.KAKAO_REST_KEY) + '&redirect_uri=' + encodeURIComponent(CFG.REDIRECT_URI); };
+  // 새 길 로그인 단추(시작 화면과 동기화 로그인 창이 함께 쓴다). 시작 화면에서는 돌아와서 이어 갈 일이 없다
+  acts['sb-login'] = async (ev, el) => {
+    const k = el && el.dataset.v, inSheet = !$('#pop').hidden;
+    if (!k || authBusy) return;
+    setAuthBusy(true); $$('[data-act="sb-login"]').forEach(b => { b.disabled = true; });
+    try { await sbOauth(k, inSheet ? sbAfter : ''); }
+    catch (err) {
+      setAuthBusy(false); $$('[data-act="sb-login"]').forEach(b => { b.disabled = false; });
+      liveError(err && err.code === 'net' ? err : { message: '로그인을 시작하지 못했어요. 다시 해 주세요.' });
+    }
+  };
+  acts['sb-relogin'] = () => sbLoginOpen('sync');
   acts.pray = () => {
     const n = curEx(), q = n && getQ(n.q);
     const we = walkEpOfRoute(), text = routeKey() === 'explore/week' ? weekNow().q : we ? we.ep.ask : q?.text;
@@ -4497,20 +4727,26 @@ if (LIVE) {
   forms.church = run(async () => { if (val('codeIn').length < 4) return; churchNotice = ''; await enterChurch(await hubApi('join', { code: val('codeIn') })); });
   const agree = acts.agree;
   acts.agree = () => { agree(); scheduleSync(); };
+  // 새 길 기기는 다시 들어올 때 카카오가 아닐 수도 있어서 '같은 계정'이라고 쓴다
+  const logoutAsk = acts.logout;
+  acts.logout = () => sbMode() ? confirmSheet('로그아웃할까요?', '다시 들어올 때는 같은 계정으로 로그인해요. 맡긴 기록은 비밀 문구로 다시 열 수 있어요.', '그만두기', '로그아웃', 'logout-go') : logoutAsk();
   acts['logout-go'] = async () => {
     if (!liveReady) return;
     if (F.id) saveFree(false); if (X.id) flushNote();
+    const nb = sbMode();
     liveReady = false; epoch++; clearTimeout(syncTimer);
-    try { await noteApi('logout'); } catch (_) { /* 통신에 실패해도 로그아웃한다 */ }
+    if (!nb) { try { await noteApi('logout'); } catch (_) { /* 통신에 실패해도 로그아웃한다 */ } }
     ['didako-token', 'didako-uid', 'didako-hub-token'].forEach(k => ls.del(k));
-    me = null; words = []; ob.kakao = ob.church = false; ob.name = ''; closeSheet(true); go('start');
+    // 새 길 로그인도 함께 끊는다(예전 길 기기가 새 보관함에 쓰던 로그인 포함). 기기의 기록은 남는다
+    if (SB_CFG) { ls.del(SBH); ls.del(SB_RESUME); if (ls.get(SB_STORE)) await sbSignOut(); }
+    sbRelogin = false; me = null; words = []; ob.kakao = ob.church = false; ob.name = ''; closeSheet(true); go('start');
   };
   // 동기화가 꺼진 채 더보기·동기화 화면에 들어오면 맡긴 기록이 있는지 미리 물어 둔다. [켜기]를 누를 때 이 답을 쓴다(60초 지나면 다시 묻는다, S-68)
   let noteProbe = null, noteProbeAt = 0;
   const probeNote = () => {
     if (!noteProbe || Date.now() - noteProbeAt > 60000) {
       noteProbeAt = Date.now();
-      noteProbe = noteApi('noteGet');
+      noteProbe = vaultApi('noteGet');
       noteProbe.catch(() => { noteProbe = null; });
     }
     return noteProbe;
@@ -4525,14 +4761,17 @@ if (LIVE) {
     if (s) { if (busy) { s.dataset.was = s.textContent; s.textContent = '맡긴 기록이 있는지 확인하고 있어요…'; } else if (s.dataset.was) { s.textContent = s.dataset.was; delete s.dataset.was; } }
   }
   acts['keep-start'] = run(async () => {
+    moveTo = false;
+    // 예전 길 기기가 새 보관함에 처음 연결하려면 새 길 로그인이 먼저 있어야 한다. 없으면 로그인 창
+    if (vaultBackend() === 'supabase' && !sbMode() && !(await sbSession())) { noteProbe = null; return sbLoginOpen('vault'); }
     keepBusy(true);
     try { const r = await probeNote(); noteProbe = null; if (r.none) keepStart(); else acts['connect-sheet'](); }
     finally { keepBusy(false); }
   });
   forms['keep-pw'] = run(async () => {
     const pass = pwPair('kpw1', 'kpw2'); if (!pass) return;
-    const e = epoch, raw = randB64(32), wrapped = await passWrap(pass, raw), rec = await recoveryWrap(raw); sameAccount(e);
-    V = { on: false, salt: wrapped.salt, rev: 0, last: 0, pend: { ...wrapped, rsalt: rec.rsalt, rwrap: rec.rwrap }, rec: { rsalt: rec.rsalt, rwrap: rec.rwrap } };
+    const e = epoch, raw = randB64(32), wrapped = await passWrap(pass, raw), rec = await recoveryWrap(raw), tag = await vaultTag(); sameAccount(e);
+    V = { on: false, salt: wrapped.salt, rev: 0, last: 0, pend: { ...wrapped, rsalt: rec.rsalt, rwrap: rec.rwrap }, rec: { rsalt: rec.rsalt, rwrap: rec.rwrap }, ...tag };
     ls.set(LK, raw); saveVault(); words = rec.nextWords; recEnables = true; recSheet();
   });
   acts['rec-done'] = run(async () => {
@@ -4542,9 +4781,9 @@ if (LIVE) {
   });
   forms['connect-go'] = run(async () => {
     const pass = val('pwConn'); if (pass.length < 6) { sheetMsg('6글자 넘게 써 주세요.'); return; }
-    const e = epoch, r = await noteApi('noteGet');
-    const raw = await unwrapKey(pass, r.salt, r.wrap, '비밀 문구가 맞지 않아요.'); sameAccount(e);
-    await enableSync(raw, r); toast('연결됐어요');
+    const e = epoch, r = await vaultApi('noteGet', null, vaultWay());
+    const raw = await unwrapKey(pass, r.salt, r.wrap, '비밀 문구가 맞지 않아요.'), tag = await vaultTag(); sameAccount(e);
+    await enableSync(raw, r, false, false, tag); toast('연결됐어요');
   });
   // 기존 비밀 문구 창에 같은 복구용 낱말 창으로 가는 길을 둔다.
   const connectSheet = acts['connect-sheet'];
@@ -4554,7 +4793,7 @@ if (LIVE) {
   };
   forms['pass-go'] = run(async () => {
     const current = val('pwNow'), pass = pwPair('pwNew', 'pwNew2', '두 번 쓴 새 비밀 문구가 달라요.'); if (!pass) return;
-    const e = epoch, r = V.pend || await noteApi('noteGet');
+    const e = epoch, r = V.pend || await vaultApi('noteGet', null, vaultWay());
     const raw = await unwrapKey(current, r.salt, r.wrap, '비밀 문구가 맞지 않아요.');
     const wrapped = await passWrap(pass, raw); sameAccount(e); await changeKeys(wrapped, e);
     doneSheet('바뀌었어요', '새 비밀 문구로 바뀌었어요. 다음에 기록을 열 때부터 새 문구를 써요.');
@@ -4562,10 +4801,10 @@ if (LIVE) {
   forms['forgot-go'] = run(async () => {
     const parsed = readWords(val('rwAll')); if (parsed.err) { sheetMsg(parsed.err); return; }
     const pass = pwPair('rwNew', 'rwNew2', '두 번 쓴 새 비밀 문구가 달라요.'); if (!pass) return;
-    const e = epoch, pending = !!V.pend, r = V.pend || await noteApi('noteGet');
+    const e = epoch, pending = !!V.pend, r = V.pend || await vaultApi('noteGet', null, vaultWay());
     const raw = await unwrapKey(parsed.phrase, r.rsalt, r.rwrap, '복구용 낱말이 맞지 않아요.');
-    const wrapped = await passWrap(pass, raw); sameAccount(e); await changeKeys(wrapped, e);
-    await enableSync(raw, { ...r, ...wrapped }, true, pending);
+    const wrapped = await passWrap(pass, raw), tag = await vaultTag(); sameAccount(e); await changeKeys(wrapped, e);
+    await enableSync(raw, { ...r, ...wrapped }, true, pending, tag);
     doneSheet('다시 열렸어요', '기록이 다시 열렸어요. 새 비밀 문구로 잠가서 맡겼어요.');
   });
   acts['rec-new-go'] = run(async () => {
@@ -4575,9 +4814,29 @@ if (LIVE) {
   });
   acts['sync-now'] = run(async () => { if (await syncLive(true)) toast('지금 맞췄어요'); });
   acts['cut-go'] = () => {
-    V.on = false; saveVault(); ls.del(LK); clearTimeout(syncTimer); syncAgain = false; syncStatus = '';
+    V.on = false; delete V.backend; delete V.sb; sbRelogin = false; saveVault(); ls.del(LK); clearTimeout(syncTimer); syncAgain = false; syncStatus = '';
     closeSheet(true); render(); toast('연결을 끊었어요');
   };
+  // 예전 보관함(Apps Script)에 연결된 예전 길 기기를 새 보관함(Supabase)으로 옮긴다. 기록은 잠긴 그대로 옮기고(서버는 내용을 못 본다) 예전 보관함의 기록은 남긴다(코이데와 같다).
+  //  새 보관함에 이미 기록이 있으면 덮어쓰지 않고 비밀 문구로 열어 합친다. 실패하면 예전 길 그대로
+  acts['vault-move'] = () => { if (canMoveVault()) confirmSheet('새 보관함으로 옮길까요?', '기록은 휴대폰에서 잠긴 그대로 옮겨요. 서버는 내용을 볼 수 없어요. 예전 보관함의 기록은 남아요.', '그만두기', '옮기기', 'vault-move-go'); };
+  acts['vault-move-go'] = run(async () => {
+    if (!canMoveVault()) return;
+    moveTo = false;
+    const e = epoch, old = await noteApi('noteGet'); sameAccount(e);
+    if (old.none) throw { message: '예전에 맡긴 기록이 없어요.' };
+    if (!(await sbSession())) return sbLoginOpen('vault-move');
+    const who = await sbMe(), cur = await vaultApi('noteGet', null, 'supabase'); sameAccount(e);
+    if (cur.none) {
+      const w = await vaultApi('notePut', { data: old.data, salt: old.salt, baseRev: 0, wrap: old.wrap, rsalt: old.rsalt, rwrap: old.rwrap }, 'supabase'); sameAccount(e);
+      if (w.stale) throw { message: '새 보관함에 다른 기록이 생겼어요. 다시 해 주세요.' };
+      V.backend = 'supabase'; V.sb = who.h; V.rev = w.rev; V.last = w.at; V.pend = null; saveVault();
+      closeSheet(true); render(); toast('새 보관함으로 옮겼어요'); await syncLive(true); return;
+    }
+    moveTo = true; acts['connect-sheet']();
+  });
+  // 동기화 화면에서 새로 여는 창은 옮기는 중이 아니다(옮기기의 비밀 문구 창 안에서 여는 '비밀 문구를 잊었어요'만 옮기기를 잇는다)
+  ['pass-sheet', 'forgot-sheet', 'rec-new'].forEach(k => { const f = acts[k]; if (f) acts[k] = (...a) => { if ($('#pop').hidden) moveTo = false; return f(...a); }; });
   document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible') syncLive(); });
 }
 
