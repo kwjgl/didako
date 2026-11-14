@@ -184,6 +184,12 @@ body.tabs-off .stickbar { bottom: env(safe-area-inset-bottom, 0px); }
 .place-row .role-tag { margin-left: 6px; }
 .place-row .place-copy { display: flex; flex-direction: column; gap: 2px; }
 .place-row:hover, .place-row:focus-visible { background: var(--surface-2); }
+.place-row.on { cursor: default; }
+.place-row.on:hover { background: none; }
+/* 함께하는 곳 메뉴는 코이데처럼 이름은 왼쪽, 작은 글은 오른쪽, 지금 보는 곳은 굵게(2026-11-14) */
+#placeMenu .place-copy { flex-direction: row; justify-content: space-between; align-items: center; gap: .6em; width: 100%; }
+#placeMenu .place-copy .sm { font-size: .8125rem; color: var(--ink-2); text-align: right; }
+#placeMenu .place-row.on .place-copy > span:first-child { font-weight: 700; }
 #setMenu .set-row { padding-left: 6px; }
 #setMenu > .mlabel:first-child { font-size: .96875rem; font-weight: 700; color: var(--ink); }
 #setMenu { max-height: calc(100dvh - 74px); overflow-y: auto; }
@@ -990,12 +996,7 @@ body.fs .xw-top { padding-right: 52px; }   /* 시안 보기 설정(톱니)이 �
       <button class="place-btn" id="placeBtn" type="button" aria-haspopup="true" aria-expanded="false" data-act="place-menu">디다코 노트<span class="role-tag">나</span></button>
       <button class="tm ic-btn" id="setBtn" type="button" aria-label="화면 설정" aria-haspopup="true" aria-expanded="false" data-act="set-menu"><svg class="ic" style="width:20px;height:20px" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.9l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.9-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1-1.5 1.7 1.7 0 0 0-1.9.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.9 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1 1.7 1.7 0 0 0-.3-1.9l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.9.3 1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.9-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.9 1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg></button>
     </div>
-    <div class="menu" id="placeMenu" hidden>
-      <p class="mlabel">함께하는 곳</p>
-      <button class="place-row" type="button" data-act="place-current" aria-current="true"><span>디다코 노트<span class="role-tag">나</span></span><span aria-hidden="true">✓</span></button>
-      <button class="place-row" type="button" data-act="place-koinonia"><span class="place-copy"><span>디다코 공동체</span><span class="sm">작은 모임에서 말씀을 함께 읽어요.</span></span></button>
-      <button class="place-row" type="button" data-act="place-community"><span class="place-copy"><span>디다코 교회</span><span class="sm">사랑방 성경공부 데모를 둘러봐요.</span></span></button>
-    </div>
+    <div class="menu" id="placeMenu" hidden></div>
     <div class="menu" id="setMenu" hidden></div>
   </div>
 </header>
@@ -1032,6 +1033,7 @@ body.fs .xw-top { padding-right: 52px; }   /* 시안 보기 설정(톱니)이 �
 
 <script src="words-ko.js"></script>
 <script src="questions-data.js"></script>
+<script src="places.js"></script>
 <script src="walks-data.js"></script>
 <script src="map-places.js"></script>
 <script src="demo-data.js"></script>
@@ -1578,10 +1580,12 @@ function displayEx(id = 'dispEx') {
 }
 function viewMore() {
   const on = D.sync === 'on';
-  const me1 = `<div class="gl">나</div><div class="gc">
-      <a class="gr" href="#/more/sync"><span class="gt"><b>동기화</b><span class="gd">${on ? `연결됨 · 마지막으로 맡긴 때 ${syncLine()}` : '켜면 기기를 바꿔도 기록이 이어져요'}</span></span>${on ? '<span class="chip">켜짐</span>' : ''}<span class="ch" aria-hidden="true">›</span></a>
+  const places = `<div class="gl">함께하는 곳</div><div class="gc">
       <button class="gr" type="button" data-act="koinonia"><span class="gt"><b>디다코 공동체</b><span class="gd">작은 모임에서 말씀을 함께 읽어요.</span></span><span class="ch" aria-hidden="true">›</span></button>
-      <button class="gr" type="button" data-act="community"><span class="gt"><b>디다코 교회</b><span class="gd">사랑방 성경공부 데모를 둘러봐요.</span></span><span class="ch" aria-hidden="true">›</span></button>
+      <button class="gr" type="button" data-act="community"><span class="gt"><b>디다코 교회</b><span class="gd">교회 코드가 있으면 우리 교회와 함께 말씀을 나눠요</span></span><span class="ch" aria-hidden="true">›</span></button>
+    </div>`;
+  const account = `<div class="gl">계정과 동기화</div><div class="gc">
+      <a class="gr" href="#/more/sync"><span class="gt"><b>동기화</b><span class="gd">${on ? `연결됨 · 마지막으로 맡긴 때 ${syncLine()}` : '켜면 기기를 바꿔도 기록이 이어져요'}</span></span>${on ? '<span class="chip">켜짐</span>' : ''}<span class="ch" aria-hidden="true">›</span></a>
     </div>`;
   const set1 = `<div class="gl">앱 설정</div><div class="gc">
       <button class="gr${dispOpen ? ' open' : ''}" type="button" data-act="disp" aria-expanded="${dispOpen}" aria-controls="dispEx"><span class="gt"><b>화면 설정</b><span class="gd">화면 모드 · 색 테마 · 디자인 · 큰 글씨</span></span>${dispOpen ? CHEV_DOWN_S : '<span class="ch" aria-hidden="true">›</span>'}</button>
@@ -1589,13 +1593,13 @@ function viewMore() {
       <button class="gr" type="button" data-act="a2hs"><span class="gt"><b>홈 화면에 앱처럼 두기</b><span class="gd">아이콘을 눌러 바로 열 수 있게 해요</span></span><span class="ch" aria-hidden="true">›</span></button>
     </div>`;
   const app1 = `<div class="gl">디다코</div><div class="gc">
-      <a class="gr" href="#/more/about"><span class="gt"><b>디다코 노트 소개</b><span class="gd">이름의 뜻과 디다코가 지키는 것</span></span><span class="ch" aria-hidden="true">›</span></a>
+      <a class="gr" href="#/more/about"><span class="gt"><b>디다코 소개</b><span class="gd">이름의 뜻과 디다코가 지키는 것</span></span><span class="ch" aria-hidden="true">›</span></a>
       <a class="gr" href="#/more/guide"><span class="gt"><b>사용법</b><span class="gd">따라 하기와 도움말</span></span><span class="ch" aria-hidden="true">›</span></a>
       <a class="gr" href="#/more/feedback"><span class="gt"><b>의견 보내기</b><span class="gd">불편한 점, 바라는 점, 고마운 점</span></span><span class="ch" aria-hidden="true">›</span></a>
     </div><button class="logout" type="button" data-act="logout">이 기기에서 로그아웃</button>`;
   return `<div class="col more">${pageHead('', '더보기')}
     ${LIVE && !sbMode() && ls.get('didako-church-name') ? `<div class="sm" style="margin:-4px 0 12px">${esc((ls.get('didako-church-name') || '') + (ls.get('didako-church-kind') === 'test' ? ' · 테스트' : ''))}</div>` : ''}
-    <div class="more-grid" style="margin-top:4px"><div>${me1}</div><div>${set1}${app1}</div></div></div>`;
+    <div class="more-grid" style="margin-top:4px"><div>${places}${account}</div><div>${set1}${app1}</div></div></div>`;
 }
 const back = `<a class="bk" href="#/more">${CHEV_L}더보기</a>`;
 const colWrap = inner => `<div class="col">${inner}</div>`;
@@ -4060,9 +4064,6 @@ const acts = {
   },
   'place-menu'() { const m = $('#placeMenu'), open = m.hidden; closeMenus(); m.hidden = !open; $('#placeBtn').setAttribute('aria-expanded', String(open)); },
   'set-menu'() { const m = $('#setMenu'), open = m.hidden; closeMenus(); m.hidden = !open; $('#setBtn').setAttribute('aria-expanded', String(open)); },
-  'place-current'() { closeMenus(); },
-  'place-koinonia'() { closeMenus(); location.href = '../community/'; },   // 디다코 공동체: 같은 주소 아래 공동체 층 앱(community/)으로 간다. 설정이 비어 있으면 그쪽이 데모로 연다
-  'place-community'() { closeMenus(); location.href = '../app/'; },   // 디다코 교회: 같은 주소 아래 교회 층 앱(app/)으로 간다
   gear() { const p = $('#gearPanel'), open = p.hidden; closeMenus(); p.hidden = !open; $('#gearBtn').setAttribute('aria-expanded', String(open)); },
   'demo-reset'() { resetAll(); },
   'demo-fill'() { N = sampleNotes(); saveNotes(); closeMenus(); if (me) render(); toast('예시 기록을 채웠어요'); },   // 첫 접속을 마치기 전이면 저장만 한다
@@ -4857,6 +4858,7 @@ window.addEventListener('pageshow', e => { if (e.persisted && !new URLSearchPara
 
 // ── 시작 ──
 $('#vineDemo').hidden = LIVE;
+$('#placeMenu').innerHTML = didakoPlaces.html({ cur: 'note', attr: k => k === 'circleOne' ? 'href="../community/"' : k === 'church' ? 'href="../app/"' : '' });
 $('#setMenu').innerHTML = '<p class="mlabel">화면 설정</p>' + displayEx('topDispEx') + (LIVE ? '' : '<div class="mdiv"></div><button class="place-row" type="button" data-act="gear"><span class="sm">시안 보기 설정(데모에만 있어요)</span></button>');
 if (!LIVE) saveBadges();
 applySettings();

@@ -108,6 +108,14 @@ button, a, label, summary, select, input, [role="button"], [data-act], .brand { 
 .place-row { display: flex; align-items: center; justify-content: space-between; width: 100%; gap: 8px; min-height: 44px; padding: 10px 6px; border: 0; border-radius: 10px; background: none; color: var(--ink); font: 500 .875rem var(--f-body); text-align: left; text-decoration: none; cursor: pointer; }
 .place-row .role-tag { margin-left: 6px; }
 .place-row:hover, .place-row:focus-visible { background: var(--surface-2); }
+.place-row .place-copy { display: flex; flex-direction: column; gap: 2px; }
+.place-row .sm { font-size: .875rem; color: var(--ink-2); }
+.place-row.on { cursor: default; }
+.place-row.on:hover { background: none; }
+/* 함께하는 곳 메뉴는 코이데처럼 이름은 왼쪽, 작은 글은 오른쪽, 지금 보는 곳은 굵게(2026-11-14) */
+#placeMenu .place-copy { flex-direction: row; justify-content: space-between; align-items: center; gap: .6em; width: 100%; }
+#placeMenu .place-copy .sm { font-size: .8125rem; color: var(--ink-2); text-align: right; }
+#placeMenu .place-row.on .place-copy > span:first-child { font-weight: 700; }
 .mitem { display: flex; justify-content: space-between; align-items: center; gap: .6em; width: 100%; text-align: left; font-size: .9em; color: var(--ink); background: none; border: 0; border-radius: 10px; padding: .55em .7em; min-height: 44px; cursor: pointer; text-decoration: none; }
 .mitem:hover { background: var(--surface-2); }
 .mitem.static { cursor: default; flex-direction: column; align-items: flex-start; gap: .1em; }
@@ -1307,11 +1315,7 @@ button.gallery-cell { display: block; width: 100%; padding: 0; cursor: pointer; 
     <span class="spacer"></span>
     <button class="demo-tag" type="button" data-act="demo-info" aria-label="데모예요. 눌러서 안내 보기">데모</button>
     <button class="badge-btn" id="badge" type="button" data-act="place-menu" aria-haspopup="true" aria-expanded="false"></button>
-    <div class="menu" id="placeMenu" hidden>
-      <p class="mlabel">함께하는 곳</p>
-      <a class="place-row" href="../note/"><span>디다코 노트<span class="role-tag">나</span></span></a>
-      <div id="placeRooms"></div>
-    </div>
+    <div class="menu" id="placeMenu" hidden></div>
     <button class="icon-btn" type="button" id="gearBtn" data-act="gear" aria-expanded="false" aria-label="설정"><svg class="ic" aria-hidden="true"><use href="#i-gear"/></svg></button>
     <div class="menu" id="settings" hidden></div>
   </div>
@@ -1345,6 +1349,7 @@ button.gallery-cell { display: block; width: 100%; padding: 0; cursor: pointer; 
 <script src="demo-data.js"></script>
 <script src="book-gospel.js"></script>
 <script src="book-prophets.js"></script>
+<script src="../note/places.js"></script>
 <script src="../note/walks-data.js"></script>
 <script src="walks-books.js"></script>
 <script src="sb.js"></script>
@@ -1520,10 +1525,12 @@ const groupName = () => DATA.church.room;
 // 실제 모드에서는 서버가 알려 준 직분(목사님·전도사님, 리더·코리더)을 그대로 보인다
 const roleName = () => LIVE && LV.me && LV.me.role && (D.role === 'pastor' || D.role === 'leader') ? LV.me.role : ROLES.find(x => x[0] === D.role)[1];
 function paintBadge() {
-  const cur = cmCur(), tag = g => `${esc(g.name)} <span class="role-tag${g.role === 'leader' ? ' leader' : ''}">${cmTagText(g)}</span>`;
-  $('#badge').innerHTML = cur ? tag(cur) : '';
-  $('#placeRooms').innerHTML = CM.list.map(g => `<button class="place-row" type="button" data-act="place-room" data-v="${esc(g.id)}"${g === cur ? ' aria-current="true"' : ''}><span>${tag(g)}</span><span class="pk" aria-hidden="true"${g === cur ? '' : ' hidden'}>✓</span></button>`).join('')
-    + '<a class="place-row" href="#start/list"><span>내 공동체 · 만들기와 들어오기</span></a>';
+  // 이름표는 코이데 공동체처럼 "디다코 공동체 + 역할"이다. 어느 공동체인지는 함께하는 곳 메뉴의 "지금 보는 곳"과 화면 머리가 알린다
+  const cur = cmCur();
+  $('#badge').innerHTML = cur ? `디다코 공동체<span class="role-tag${cur.role === 'leader' ? ' leader' : ''}">${cmTagText(cur)}</span>` : '디다코 공동체';
+  $('#placeMenu').innerHTML = didakoPlaces.html({ cur: cur ? cur.id : '', circles: CM.list.map(g => ({ id: g.id, name: g.name, wait: !!g.wait })),
+    circleMake: !cmFull() && !(SB && CM.open === false),
+    attr: (k, id) => k === 'note' ? 'href="../note/"' : k === 'church' ? 'href="../app/"' : k === 'circleMake' ? 'href="#start/new"' : `data-act="place-room" data-v="${esc(id)}"` });
 }
 
 // ── 알림과 아래에서 올라오는 창 ──
@@ -2412,11 +2419,6 @@ function moreView() {
   if (D.role === 'leader') jobs = jobRow('우리 공동체', '함께하는 사람 · 들어오기 승인 · 초대 링크', '#church') + (SB ? '' : jobRow('교재 관리', '이 공동체에서 쓸 교재를 써요', '#manage'));
   return `<div class="page-top"><h1>더보기</h1></div>
     <div class="more-grid"><div>
-      <div class="gl">나</div><div class="gc">
-        <a class="gr" href="../note/"><span class="gt"><b>디다코 노트</b><span class="gd">혼자 묵상하는 노트</span></span>${chevron}</a>
-        <a class="gr" href="#start/list"><span class="gt"><b>내 공동체</b><span class="gd">공동체 바꾸기 · 만들기 · 초대 링크로 들어오기</span></span>${chevron}</a>${SB ? `
-        <button class="gr" type="button" data-act="sb-logout"><span class="gt"><b>로그아웃</b><span class="gd">이 기기에서 로그아웃</span></span>${chevron}</button>` : ''}
-      </div>
       ${LIVE ? liveRoomCard() : `<div class="gc" style="margin:14px 0;padding-top:14px;padding-bottom:14px">
         <b>우리 공동체</b><p>${esc(room.name)}</p>
         <p class="mlabel">모임장</p><div class="kids"><span class="kid lead">${esc(room.leader)}</span></div>
@@ -2424,18 +2426,38 @@ function moreView() {
         <p class="hint">이름만 보여요. 서로 얼마나 썼는지는 보이지 않아요.</p>
         ${cmEndText(cmCur().ends) ? `<p class="hint">이 공동체는 ${cmEndText(cmCur().ends)} 열려 있어요.</p>` : ''}
       </div>`}
+      <div class="gl">함께하는 곳</div><div class="gc">
+        <a class="gr" href="../note/"><span class="gt"><b>디다코 노트</b><span class="gd">혼자 묵상하는 노트</span></span>${chevron}</a>
+        <a class="gr" href="#start/list"><span class="gt"><b>내 공동체</b><span class="gd">공동체 바꾸기 · 만들기 · 초대 링크로 들어오기</span></span>${chevron}</a>
+        <a class="gr" href="../app/"><span class="gt"><b>디다코 교회</b><span class="gd">교회 코드가 있으면 우리 교회와 함께 말씀을 나눠요</span></span>${chevron}</a>
+      </div>
     </div><div>
       ${jobs ? `<div class="gl">맡은 일</div><div class="gc">${jobs}</div>` : ''}
       <div class="gl">앱 설정</div><div class="gc">
         <button class="gr${dispOpen ? ' open' : ''}" type="button" data-act="disp" aria-expanded="${dispOpen}" aria-controls="dispEx"><span class="gt"><b>화면 설정</b><span class="gd">화면 모드 · 색 테마 · 디자인 · 큰 글씨</span></span>${dispOpen ? ic('chev', 'ch') : chevron}</button>
         ${dispOpen ? `<div id="dispEx" style="padding:4px 0 14px">${displayControls()}</div>` : ''}
+        <button class="gr" type="button" data-act="a2hs"><span class="gt"><b>홈 화면에 앱처럼 두기</b><span class="gd">아이콘을 눌러 바로 열 수 있게 해요</span></span>${chevron}</button>
       </div>
       <div class="gl">디다코</div><div class="gc">
         <a class="gr" href="#about"><span class="gt"><b>디다코 소개</b><span class="gd">이름의 뜻과 디다코가 지키는 것</span></span>${chevron}</a>
-        <button class="gr" type="button" data-act="more-guide"><span class="gt"><b>사용법 보기</b><span class="gd">화면마다 무엇을 하는지 한 장씩 봐요</span></span>${chevron}</button>${SB ? '' : `
+        <button class="gr" type="button" data-act="more-guide"><span class="gt"><b>사용법</b><span class="gd">화면마다 무엇을 하는지 한 장씩 봐요</span></span>${chevron}</button>${SB ? '' : `
         <a class="gr" href="#feedback"><span class="gt"><b>의견 보내기</b><span class="gd">불편한 점, 바라는 점, 고마운 점</span></span>${chevron}</a>`}
       </div>
+      ${SB ? '<button class="logout" type="button" data-act="sb-logout">이 기기에서 로그아웃</button>' : ''}
     </div></div>`;
+}
+
+let a2hsOs = /android/i.test(navigator.userAgent) ? 'android' : 'ios';
+function a2hsSheet() {
+  const how = a2hsOs === 'ios' ? ['사파리에서 이 화면을 열어요', '아래쪽 공유 버튼(네모에 위 화살표)을 눌러요', '"홈 화면에 추가"를 눌러요']
+    : ['크롬에서 이 화면을 열어요', '오른쪽 위 점 세 개를 눌러요', '"홈 화면에 추가" 또는 "앱 설치"를 눌러요'];
+  const from = $('#pop').hidden ? document.activeElement : sheetFrom;
+  openSheet(sheetHead('휴대폰 홈 화면에 디다코를 두세요') + `
+    <p>앱처럼 아이콘을 눌러 바로 열 수 있어요. 홈 화면에 두면 휴대폰이 저장된 내용을 함부로 정리하지 않아서 기록도 더 안전해요.</p>
+    <div class="seg" style="--n:2" role="tablist" aria-label="휴대폰 종류">${[['ios', '아이폰'], ['android', '안드로이드']].map(([k, l]) => `<button type="button" class="${a2hsOs === k ? 'on' : ''}" role="tab" aria-selected="${a2hsOs === k}" data-act="a2hsos" data-v="${k}">${l}</button>`).join('')}</div>
+    <ol>${how.map(x => `<li>${x}</li>`).join('')}</ol>
+    <button class="btn ghost wide" type="button" data-act="pop-close">알겠어요</button>`);
+  sheetFrom = from;
 }
 
 // ── 디다코 소개·사용법·의견 보내기(C-03) ──
@@ -4121,6 +4143,11 @@ const acts = {
   'walk-pick'(e, el) { const w = walkWeek(), d = walkDay || walkToday(), day = w.days.find(x => x.d === d), key = w.n + '-' + d, i = Number(el.dataset.i); if (i === day.answer) { const saved = readJson(K.walkRead); if (saved[key] !== true) lampNow = key; saved[key] = true; ls.set(K.walkRead, JSON.stringify(saved)); delete walkWrong[key]; } else walkWrong[key] = i; walkRedraw(); },
   'walk-day'(e, el) { const days = ['월', '화', '수', '목', '금'], d = el.dataset.d; if (days.indexOf(d) > days.indexOf(walkToday())) { toast(walkNames[d] + '에 열려요'); return; } walkDay = d; walkRedraw(); },
   disp() { dispOpen = !dispOpen; rerender(); },
+  a2hs() { a2hsSheet(); },
+  a2hsos(e, el) {
+    a2hsOs = el.dataset.v; a2hsSheet();
+    $('#popSheet [data-act="a2hsos"].on').focus({ preventScroll: true });
+  },
   'more-guide'() { guideIndex = 0; showGuide(); },
   'guide-prev'() { if (guideIndex > 0) { guideIndex--; showGuide(); } },
   'guide-next'() { if (guideIndex < GUIDE_CARDS.length - 1) { guideIndex++; showGuide(); } },

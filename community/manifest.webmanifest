@@ -4,7 +4,7 @@
   "description": "교회 소그룹 성경공부(GBS) 교재와 묵상 앱",
   "lang": "ko",
   "start_url": "./",
-  "scope": "./",
+  "scope": "../",
   "display": "standalone",
   "background_color": "#F0EEE6",
   "theme_color": "#6B4A2E",

@@ -4,8 +4,8 @@
  * 아래 CACHE 번호는 남겨 둔 사본의 이름표다. 번호를 올리면 예전 사본을 지운다(AGENTS.md 서비스워커 캐시).
  * 데모에는 서버가 없다. 같은 주소의 파일만 다루고, 글꼴 같은 다른 주소의 요청은 건드리지 않는다.
  */
-const CACHE = 'didako-v85';
-const SHELL = ['./', 'index.html', 'config.js', 'design-styles.css', 'covers.js', 'demo-data.js', 'book-gospel.js', 'book-prophets.js', 'manifest.webmanifest', 'icons/icon-192.png', 'icons/icon-512.png', 'icons/icon-maskable-512.png', 'icons/apple-touch-icon.png', 'icons/favicon-32.png'];
+const CACHE = 'didako-v88';
+const SHELL = ['./', 'index.html', 'config.js', 'design-styles.css', 'covers.js', 'demo-data.js', 'book-gospel.js', 'book-prophets.js', '../note/places.js', 'manifest.webmanifest', 'icons/icon-192.png', 'icons/icon-512.png', 'icons/icon-maskable-512.png', 'icons/apple-touch-icon.png', 'icons/favicon-32.png'];
 
 self.addEventListener('install', e => {
   // GitHub Pages가 파일을 잠시 그대로 쓰라고 해도 새로 받도록 사본을 쓰지 않고 요청한다
@@ -28,12 +28,14 @@ self.addEventListener('fetch', e => {
     })));
     return;
   }
-  if (!url.pathname.startsWith(new URL('./', location).pathname)) return;
+  // 세 앱이 함께 쓰는 메뉴 파일은 note/에 있어도 이 앱의 사본으로 열 수 있게 한다.
+  const sharedPlaces = req.destination === 'script' && url.pathname === new URL('../note/places.js', location).pathname;
+  if (!sharedPlaces && !url.pathname.startsWith(new URL('./', location).pathname)) return;
   // GitHub Pages가 파일을 10분 동안 그대로 쓰라고 해도, 서버에 바뀌었는지 늘 물어본다(바뀌지 않았으면 확인만 하고 끝난다).
   //  화면 주소 요청(navigate)에는 옵션을 붙일 수 없어서 주소로 새 요청을 만든다 (코이데와 같다)
   e.respondWith(fetch(new Request(req.url, { cache: 'no-cache', credentials: 'same-origin' })).then(res => {
     if (res.ok) { const copy = res.clone(); caches.open(CACHE).then(c => c.put(req, copy)); }
     return res;
   // 실패하면 남겨 둔 사본. 사본이 없을 때 화면 주소만 첫 화면으로 대신하고, 나머지는 실패 그대로 돌려준다
-  }).catch(() => caches.match(req, { ignoreSearch: true }).then(r => r || (req.mode === 'navigate' ? caches.match('./') : Response.error()))));
+  }).catch(() => caches.match(req, { ignoreSearch: true, ...(sharedPlaces ? { cacheName: CACHE } : {}) }).then(r => r || (req.mode === 'navigate' ? caches.match('./') : Response.error()))));
 });
