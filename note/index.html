@@ -15,7 +15,7 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Gowun+Batang:wght@400;700&family=IBM+Plex+Sans+KR:wght@400;500;600;700&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Gowun+Batang:wght@400;700&family=IBM+Plex+Sans+KR:wght@400;500;600&display=swap">
 <script src="config.js"></script>
 <script>
 // 저장된 화면 설정을 그림이 그려지기 전에 먼저 입힌다(밝은 화면이 잠깐 번쩍이지 않게). 읽을 수 없으면 기기 설정을 따른다
@@ -180,7 +180,7 @@ body.tabs-off .stickbar { bottom: env(safe-area-inset-bottom, 0px); }
 .place-btn { position: relative; display: inline-flex; align-items: center; gap: 6px; height: 36px; padding: 0 10px; border: 1px solid var(--line); border-radius: 999px; background: var(--surface-2); color: var(--ink); font: 600 .8125rem var(--f-body); white-space: nowrap; }
 .place-btn::after { content: ''; position: absolute; inset: -4px 0; }
 .role-tag { display: inline-block; font-size: .93em; padding: .15em .6em; border-radius: 999px; background: var(--surface); color: var(--ink-2); border: 1px solid var(--line); }
-.place-row { display: flex; align-items: center; justify-content: space-between; width: 100%; gap: 8px; min-height: 44px; padding: 10px 6px; border: 0; border-radius: 10px; background: none; color: var(--ink); font: 500 .875rem var(--f-body); text-align: left; }
+.place-row { display: flex; align-items: center; justify-content: space-between; width: 100%; gap: 8px; min-height: 44px; padding: 10px 6px; border: 0; border-radius: 10px; background: none; color: var(--ink); font: 500 .875rem var(--f-body); text-align: left; text-decoration: none; }
 .place-row .role-tag { margin-left: 6px; }
 .place-row .place-copy { display: flex; flex-direction: column; gap: 2px; }
 .place-row:hover, .place-row:focus-visible { background: var(--surface-2); }
@@ -188,11 +188,20 @@ body.tabs-off .stickbar { bottom: env(safe-area-inset-bottom, 0px); }
 .place-row.on:hover { background: none; }
 /* 함께하는 곳 메뉴는 코이데처럼 이름은 왼쪽, 작은 글은 오른쪽, 지금 보는 곳은 굵게(2026-11-14) */
 #placeMenu .place-copy { flex-direction: row; justify-content: space-between; align-items: center; gap: .6em; width: 100%; }
-#placeMenu .place-copy .sm { font-size: .8125rem; color: var(--ink-2); text-align: right; }
-#placeMenu .place-copy > span:first-child { flex: none; white-space: nowrap; }   /* 곳 이름은 한 줄로 두고, 길면 오른쪽 작은 글이 줄을 바꾼다 */
+#placeMenu .place-copy .sm { font-size: .82em; color: var(--ink-2); text-align: right; }
+#placeMenu .place-copy > span:first-child { flex: none; white-space: nowrap; max-width: 100%; overflow: hidden; text-overflow: ellipsis; }   /* 곳 이름은 한 줄로 두고, 길면 오른쪽 작은 글이 줄을 바꾼다 */
 #placeMenu .place-row.on .place-copy > span:first-child { font-weight: 700; }
+/* 크기 · 굵기 · 여백은 코이데 노트의 값을 그대로 쓴다(pray-for app/note.html의 .menu · .mlabel · .mitem · .mdiv). 밑줄은 없다(2026-11-14) */
+#placeMenu { padding: .5em; }
+#placeMenu:not([hidden]) { display: flex; flex-direction: column; gap: .1em; }
+#placeMenu .mlabel { font-size: .72em; font-weight: 600; margin: .6em .7em .3em; }
+#placeMenu .place-row { gap: .6em; font: inherit; font-size: .9em; padding: .55em .7em; cursor: pointer; }
+#placeMenu .place-row.on { cursor: default; }
+#placeMenu .place-row[aria-disabled="true"] { cursor: default; opacity: .7; }
+#placeMenu .place-row[aria-disabled="true"]:hover { background: none; }
+#placeMenu .mdiv { margin: .35em .3em; }
 #setMenu .set-row { padding-left: 6px; }
-#setMenu > .mlabel:first-child { font-size: .96875rem; font-weight: 700; color: var(--ink); }
+#setMenu > .mlabel:first-child { font-size: .97rem; font-weight: 600; color: var(--ink); }
 #setMenu { max-height: calc(100dvh - 74px); overflow-y: auto; }
 @media (max-width: 999px) {
   .topbar { height: 52px; transition: transform .22s ease; }
@@ -320,17 +329,24 @@ body.tabs-off .stickbar { bottom: env(safe-area-inset-bottom, 0px); }
 .wr-row .a { color: var(--accent); }
 
 /* 더보기(M8, T13)와 세부 화면 */
-.more-grid { display: grid; grid-template-columns: minmax(0, 1fr); gap: 16px; align-items: start; }
+.more-grid { display: grid; grid-template-columns: minmax(0, 1fr); gap: 0 16px; align-items: start; }
 @media (min-width: 1000px) { .more-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
-.gl { font-size: .8125rem; color: var(--ink-2); margin: 20px 4px 8px; }
-.more-grid > div:first-child > .gl:first-child { margin-top: 20px; }
-.gc { background: var(--surface); border: 1px solid var(--line); border-radius: 16px; padding: 0 16px; }
-.gr { display: flex; align-items: center; gap: 12px; width: 100%; min-height: 64px; padding: 12px 0; border: 0; border-top: 1px solid var(--line); background: none; text-align: left; font: inherit; color: var(--ink); text-decoration: none; }
+/* 크기 · 굵기 · 여백은 코이데 노트 더보기의 값을 그대로 쓴다(pray-for app/note.html의 .more-h · .card.mrows · .mrow · .mrow small · .mrow-end · .tag, 2026-11-14) */
+.gl { font-size: .8em; font-weight: 600; color: var(--ink-2); margin: 24px 4px 8px; line-height: 1.2; letter-spacing: .02em; }
+.gc { background: var(--surface); border: 1px solid var(--line); border-radius: 16px; padding: 4px 1em; margin-bottom: 12px; }
+.more-grid > div > .gc:last-child { margin-bottom: 0; }   /* 칸의 마지막 카드: 다음 묶음 제목의 위 여백(24px)만 남긴다 */
+.gr { display: flex; justify-content: space-between; align-items: center; gap: 10px; width: 100%; padding: .8em 0; border: 0; border-top: 1px solid var(--line); background: none; text-align: left; font: inherit; color: var(--ink); text-decoration: none; cursor: pointer; }
 .gr:first-child { border-top: 0; }
+.gr[aria-disabled="true"] { cursor: default; }
 .gr .gt { flex: 1; min-width: 0; }
-.gr b { display: block; font-size: .96875rem; font-weight: 700; }
-.gr .gd { display: block; font-size: .84375rem; color: var(--ink-2); margin-top: 2px; }
-.gr .ch { flex: 0 0 auto; color: var(--ink-2); font-size: 1.25rem; }
+.gr b { font-weight: 700; }
+.gr b.mhead { font-size: .97rem; font-weight: 600; }   /* 화면 설정 제목: 톱니 메뉴의 제목과 같은 크기 · 굵기 */
+.gr .gd { display: block; font-size: .8em; color: var(--ink-2); }
+.gr .ch { flex: 0 0 auto; color: var(--ink-2); }
+.gr-end { display: flex; align-items: center; gap: .5em; flex: none; color: var(--ink-2); }
+/* 내 공동체 줄의 이름표: 모임장(옅게), 신청 수 */
+.gtag { display: inline-block; font-size: .76em; font-weight: 600; color: var(--accent); background: var(--accent-soft); border-radius: 999px; padding: .1em .65em; }
+.gtag.off { color: var(--ink-2); background: var(--surface-2); }
 .gr.open { border-bottom: 1px solid var(--line); }   /* 화면 설정을 펼치면 머리줄 아래 구분선 */
 .gr.off b { color: var(--ink-2); font-weight: 500; }
 .logout { display: block; margin: 20px auto 0; min-height: 44px; padding: 0 16px; background: none; border: 0; color: var(--ink-2); font: 500 .9375rem var(--f-body); }
@@ -1438,7 +1454,7 @@ function viewConsent() {
     <div class="sm lead">${esc(ob.name)}</div>
     <h1 class="ob-h tight">내 기록은 이렇게 지켜요</h1>
     <div style="margin-top:6px">${keepRows()}</div>
-    <div class="sm" style="margin-top:14px;line-height:1.6">처음에는 이 기기에만 저장해요. 더보기 › 동기화를 켜면 잠가서 맡겨요.</div>
+    <div class="sm" style="margin-top:14px;line-height:1.6">처음에는 이 기기에만 저장해요. 더보기 › 계정과 동기화에서 동기화를 켜면 잠가서 맡겨요.</div>
     <button class="btn big" type="button" data-act="agree" style="margin-top:20px">동의하고 시작하기</button>
   </div>`;
 }
@@ -1579,17 +1595,108 @@ function displayEx(id = 'dispEx') {
     <div class="set-row"><span><b>큰 글씨</b></span><button class="switch" type="button" role="switch" aria-checked="false" aria-label="큰 글씨" data-act="big"><span></span></button></div>
   </div>`;
 }
+// ── 내 공동체(더보기와 함께하는 곳 메뉴. 코이데 노트 방식) ──
+// 로그인해 있으면 공동체 서버(supabase/002_didako_community.sql의 didako_cm_mine)에 내 공동체 목록을 묻는다. 묻기만 하고, 질문과 묵상 기록은 보내지 않는다.
+// 마지막에 받은 목록(공동체 이름 · 역할 · 사람 수 · 끝나는 날 · 신청 수)은 이 기기에 남겨 두었다가 인터넷이 없을 때 보인다(didako-note-circles). 로그아웃하면 지운다.
+// 데모(설정이 비었거나 ?demo)에서는 공동체 데모가 이 브라우저에 둔 목록(didako-cm-groups)을 읽고, 없으면 공동체 데모와 같은 지어낸 예시를 보인다
+const CIRCLE_K = 'didako-note-circles', CIRCLE_MAX = 3;
+const CIRCLE_DEMO_Q = new URLSearchParams(location.search).has('demo');
+const CIRCLE_REAL = !!CFG.SUPABASE_URL && !!CFG.SUPABASE_KEY && !CIRCLE_DEMO_Q;
+const CIRCLES = { list: [], places: CIRCLE_MAX, open: true, session: false, loaded: false, loading: false, at: 0, h: '' };
+// 서버나 기기에서 온 한 줄을 화면이 쓰는 모양으로(글은 문자열, 수는 숫자로만 받는다. 화면에 넣을 때는 esc()를 거친다)
+const circleRow = r => ({ id: String(r.id || ''), name: String(r.name || ''), role: r.role === '모임장' ? '모임장' : '회원', status: r.status === '요청' ? '요청' : '함께',
+  n: Number(r.n) > 0 ? Math.floor(Number(r.n)) : 0, endsOn: /^\d{4}-\d{2}-\d{2}/.test(r.endsOn || '') ? String(r.endsOn).slice(0, 10) : '', state: String(r.state || '열림'),
+  eraseOn: /^\d{4}-\d{2}-\d{2}/.test(r.eraseOn || '') ? String(r.eraseOn).slice(0, 10) : '', asks: Number(r.asks) > 0 ? Math.floor(Number(r.asks)) : 0 });
+const circleRows = v => (Array.isArray(v) ? v : []).filter(r => r && r.id && r.name).map(circleRow);
+const circleLive = () => CIRCLES.list.filter(c => !['끝남', '끝맺음', '닫음'].includes(c.state)).length;   // 끝나거나 닫힌 공동체는 자리를 차지하지 않는다
+function circlesDemo() {
+  const v = readJson('didako-cm-groups'), has = Array.isArray(v.list) && v.list.some(g => g && g.id && g.name);
+  const list = has ? v.list.filter(g => g && g.id && g.name).slice(0, CIRCLE_MAX).map(g => ({ id: g.id, name: g.name, role: g.role === 'leader' ? '모임장' : '회원', status: g.wait ? '요청' : '함께',
+      n: 1 + (Array.isArray(g.members) ? g.members.filter(n => n !== g.leader).length : 0), endsOn: g.ends, asks: g.role === 'leader' && Array.isArray(g.pending) ? g.pending.length : 0 }))
+    : [{ id: 'g1', name: '금요 말씀 모임', role: '모임장', n: 5, asks: 2 }, { id: 'g2', name: '새벽 창세기 모임', role: '회원', n: 4 }];
+  CIRCLES.list = circleRows(list); CIRCLES.session = true; CIRCLES.open = true; CIRCLES.places = Math.max(0, CIRCLE_MAX - circleLive());
+}
+// 처음 그릴 때: 실제 서버면 마지막에 받은 목록부터 보이고(인터넷이 없어도), 데모면 바로 읽는다
+if (CIRCLE_REAL) { const c = readJson(CIRCLE_K); if (ls.get('didako-note-sb') && Array.isArray(c.list)) { CIRCLES.list = circleRows(c.list); CIRCLES.places = Number.isInteger(c.places) ? c.places : CIRCLE_MAX; CIRCLES.open = c.open !== false; CIRCLES.h = String(c.h || ''); CIRCLES.session = true; CIRCLES.cached = true; } }
+else circlesDemo();
+const circleForget = () => { ls.del(CIRCLE_K); Object.assign(CIRCLES, { list: [], places: CIRCLE_MAX, open: true, session: false, loaded: false, at: 0, h: '', cached: false }); };
+async function circleCall(token, name, args) {
+  const ctl = new AbortController(), stop = setTimeout(() => ctl.abort(), 20000);
+  try {
+    const res = await fetch(SB_URL() + '/rest/v1/rpc/' + name, { method: 'POST', signal: ctl.signal, body: JSON.stringify(args || {}), headers: { apikey: CFG.SUPABASE_KEY, Authorization: 'Bearer ' + token, 'Content-Type': 'application/json' } });
+    if (!res.ok) throw { code: 'bad' };
+    return await res.json();
+  } finally { clearTimeout(stop); }
+}
+// 내 공동체 목록을 새로 받는다. force가 아니면 1분 안에는 다시 묻지 않는다. 못 받으면(인터넷 없음 · 서버 답 없음) 마지막에 받은 목록을 그대로 둔다
+async function loadCircles(force) {
+  if (CIRCLES.loading || (!force && CIRCLES.loaded && Date.now() - CIRCLES.at < 60000)) return;
+  CIRCLES.loading = true;
+  const before = JSON.stringify([CIRCLES.list, CIRCLES.places, CIRCLES.open, CIRCLES.session, CIRCLES.loaded]);
+  try {
+    if (!CIRCLE_REAL) circlesDemo();
+    else {
+      const s = ls.get('didako-note-sb') ? await sbSession() : null;
+      if (!s) circleForget();
+      else {
+        let h = ''; try { h = await sbHash(s.user.id); } catch (_) { /* 계정 비교 없이 받는다 */ }
+        if (CIRCLES.h && h && CIRCLES.h !== h) circleForget();   // 다른 계정의 목록은 보이지 않는다
+        const m = await circleCall(s.access_token, 'didako_cm_mine') || {};
+        const list = circleRows(m.list);
+        // 신청 수는 내가 모임장인 열린 공동체에서만 따로 묻는다(목록 답에는 없다). 못 받으면 0으로 둔다
+        await Promise.all(list.filter(c => c.role === '모임장' && c.status === '함께' && c.state === '열림').map(async c => {
+          try { const i = await circleCall(s.access_token, 'didako_cm_info', { p_id: c.id }); c.asks = i && Array.isArray(i.asks) ? i.asks.length : 0; } catch (_) { /* 신청 수 없이 보인다 */ }
+        }));
+        Object.assign(CIRCLES, { list, places: Number.isInteger(m.places) ? m.places : CIRCLE_MAX, open: m.open !== false, session: true, h, cached: false });
+        ls.set(CIRCLE_K, JSON.stringify({ h, list, places: CIRCLES.places, open: CIRCLES.open }));
+      }
+    }
+  } catch (_) { /* 마지막에 받은 목록 그대로 */ }
+  finally {
+    CIRCLES.loading = false; CIRCLES.loaded = true; CIRCLES.at = Date.now();
+    if (JSON.stringify([CIRCLES.list, CIRCLES.places, CIRCLES.open, CIRCLES.session, true]) !== before) { paintPlaces(); if (routeKey() === 'more') render(false, true); }
+  }
+}
+const circleUrl = id => '../community/' + (CIRCLE_DEMO_Q ? '?demo&c=' : '?c=') + encodeURIComponent(id);
+const circleMakeUrl = () => '../community/' + (CIRCLE_DEMO_Q ? '?demo' : '') + '#start/new';
+const circleDate = day => { const m = /^\d{4}-(\d{2})-(\d{2})/.exec(day || ''); return m ? `${Number(m[1])}월 ${Number(m[2])}일` : ''; };
+// 함께하는 곳 메뉴(위쪽 이름표): 내 공동체가 있으면 하나씩, 없으면 디다코 공동체 입구 한 줄
+function paintPlaces() {
+  const C = CIRCLES, make = C.session && C.open && C.places > 0, own = C.open && (C.list.length > 0 || make);
+  $('#placeMenu').innerHTML = didakoPlaces.html({ cur: 'note', circleMake: own && make,
+    circles: own ? C.list.map(c => ({ id: c.id, name: c.name, wait: c.status === '요청', off: c.status === '요청' || c.state === '닫음', state: c.state, endsOn: c.endsOn, asks: c.role === '모임장' ? c.asks : 0 })) : undefined,
+    attr: (k, id) => k === 'circle' ? `href="${esc(circleUrl(id))}"` : k === 'circleMake' ? `href="${esc(circleMakeUrl())}"` : k === 'circleOne' ? 'href="../community/"' : k === 'church' ? 'href="../app/"' : '' });
+}
+// 더보기 첫째 카드: 내 공동체마다 한 줄, 맨 아래 만들기 줄(코이데 노트의 공동체 카드와 같은 규칙)
+function circleCard() {
+  if (!CIRCLES.loading && (!CIRCLES.loaded || Date.now() - CIRCLES.at > 60000)) queueMicrotask(() => loadCircles());
+  const C = CIRCLES, end = '<span class="ch" aria-hidden="true">›</span>';
+  const one = (name, small, href) => href ? `<a class="gr" href="${esc(href)}"><span class="gt"><b>${name}</b><span class="gd">${small}</span></span>${end}</a>`
+    : `<div class="gr" aria-disabled="true"><span class="gt"><b>${name}</b><span class="gd">${small}</span></span></div>`;
+  if (!C.open) return `<div class="gc">${one('디다코 공동체', '작은 모임에서 말씀을 함께 읽어요.', '../community/')}</div>`;
+  if (CIRCLE_REAL && !C.session && !C.loaded && ls.get('didako-note-sb')) return `<div class="gc">${one('디다코 공동체', '불러오는 중이에요…', '')}</div>`;
+  const rows = C.list.map(c => {
+    const off = c.status === '요청' || c.state === '닫음', ended = c.state === '끝남' || c.state === '끝맺음';
+    const small = c.state === '닫음' ? '닫힌 공동체예요' : ended ? (c.eraseOn ? circleDate(c.eraseOn) + '에 지워져요' : '끝난 공동체예요')
+      : c.status === '요청' ? '모임장의 승인을 기다려요' : [c.n ? c.n + '명' : '', c.endsOn ? circleDate(c.endsOn) + '까지' : ''].filter(Boolean).join(', ');
+    const body = `<span class="gt"><b>${esc(c.name)}${c.role === '모임장' ? ' <span class="gtag off">모임장</span>' : ''}</b><span class="gd">${small}</span></span>`;
+    const asks = c.asks && c.role === '모임장' ? `<span class="gtag">신청 ${c.asks}</span>` : '';
+    return off ? `<div class="gr" aria-disabled="true">${body}</div>` : `<a class="gr" href="${esc(circleUrl(c.id))}">${body}<span class="gr-end">${asks}${end}</span></a>`;
+  }).join('');
+  const make = !C.session ? one('디다코 공동체 만들기', '함께 말씀을 읽을 사람을 초대해요', '../community/')
+    : C.places > 0 ? one('디다코 공동체 만들기', '함께 말씀을 읽을 사람을 초대해요', circleMakeUrl()) : one('디다코 공동체 만들기', '세 곳이 다 찼어요', '');
+  return `<div class="gc" id="my-circles">${rows}${make}</div>`;
+}
 function viewMore() {
   const on = D.sync === 'on';
-  const places = `<div class="gl">함께하는 곳</div><div class="gc">
-      <button class="gr" type="button" data-act="koinonia"><span class="gt"><b>디다코 공동체</b><span class="gd">작은 모임에서 말씀을 함께 읽어요.</span></span><span class="ch" aria-hidden="true">›</span></button>
+  const places = `<div class="gl">함께하는 곳</div>${circleCard()}<div class="gc">
       <button class="gr" type="button" data-act="community"><span class="gt"><b>디다코 교회</b><span class="gd">교회 코드가 있으면 우리 교회와 함께 말씀을 나눠요</span></span><span class="ch" aria-hidden="true">›</span></button>
     </div>`;
   const account = `<div class="gl">계정과 동기화</div><div class="gc">
-      <a class="gr" href="#/more/sync"><span class="gt"><b>동기화</b><span class="gd">${on ? `연결됨 · 마지막으로 맡긴 때 ${syncLine()}` : '켜면 기기를 바꿔도 기록이 이어져요'}</span></span>${on ? '<span class="chip">켜짐</span>' : ''}<span class="ch" aria-hidden="true">›</span></a>
+      <a class="gr" href="#/more/sync"><span class="gt"><b>계정과 동기화</b><span class="gd">${on ? `동기화 켜짐${syncLine() ? ' · ' + syncLine() : ''}` : '켜면 기기를 바꿔도 기록이 이어져요'}</span></span><span class="ch" aria-hidden="true">›</span></a>
     </div>`;
   const set1 = `<div class="gl">앱 설정</div><div class="gc">
-      <button class="gr${dispOpen ? ' open' : ''}" type="button" data-act="disp" aria-expanded="${dispOpen}" aria-controls="dispEx"><span class="gt"><b>화면 설정</b><span class="gd">화면 모드 · 색 테마 · 디자인 · 큰 글씨</span></span>${dispOpen ? CHEV_DOWN_S : '<span class="ch" aria-hidden="true">›</span>'}</button>
+      <button class="gr${dispOpen ? ' open' : ''}" type="button" data-act="disp" aria-expanded="${dispOpen}" aria-controls="dispEx"><span class="gt"><b class="mhead">화면 설정</b><span class="gd">화면 모드 · 색 테마 · 디자인 · 큰 글씨</span></span>${dispOpen ? CHEV_DOWN_S : '<span class="ch" aria-hidden="true">›</span>'}</button>
       ${dispOpen ? displayEx() : ''}
       <button class="gr" type="button" data-act="a2hs"><span class="gt"><b>홈 화면에 앱처럼 두기</b><span class="gd">아이콘을 눌러 바로 열 수 있게 해요</span></span><span class="ch" aria-hidden="true">›</span></button>
     </div>`;
@@ -1600,7 +1707,7 @@ function viewMore() {
     </div><button class="logout" type="button" data-act="logout">이 기기에서 로그아웃</button>`;
   return `<div class="col more">${pageHead('', '더보기')}
     ${LIVE && !sbMode() && ls.get('didako-church-name') ? `<div class="sm" style="margin:-4px 0 12px">${esc((ls.get('didako-church-name') || '') + (ls.get('didako-church-kind') === 'test' ? ' · 테스트' : ''))}</div>` : ''}
-    <div class="more-grid" style="margin-top:4px"><div>${places}${account}</div><div>${set1}${app1}</div></div></div>`;
+    <div class="more-grid"><div>${places}${account}</div><div>${set1}${app1}</div></div></div>`;
 }
 const back = `<a class="bk" href="#/more">${CHEV_L}더보기</a>`;
 const colWrap = inner => `<div class="col">${inner}</div>`;
@@ -3181,7 +3288,7 @@ const BADGES = [
   { k: 'q-found', name: '알게 된 질문', when: '품고 있던 질문이 처음 알게 된 질문이 되었어요', how: '품고 있던 질문에 ! 발견을 이어 봐요.', go: '#/mine', kind: 'try' },
   { k: 'm-map', name: '말씀 지도에서', when: '말씀 지도에서 처음 남겼어요', how: '말씀 지도에서 장소를 골라 생각을 남겨 봐요.', go: 'map.html', kind: 'try' },
   { k: 'a-style', name: '내 화면', when: '화면 설정을 바꿨어요', how: '더보기 › 화면 설정에서 색이나 글씨를 바꿔 봐요.', go: '#/more', kind: 'try' },
-  { k: 'a-sync', name: '이어 두기', when: '동기화를 켰어요', how: '더보기 › 동기화를 켜 봐요.', go: '#/more/sync', kind: 'try' },
+  { k: 'a-sync', name: '이어 두기', when: '동기화를 켰어요', how: '더보기 › 계정과 동기화에서 동기화를 켜 봐요.', go: '#/more/sync', kind: 'try' },
   { k: 'a-home', name: '홈 화면에', when: '홈 화면에 둔 디다코 노트로 열었어요', how: '홈 화면에 디다코 노트를 두고 그 아이콘으로 열어 봐요.', go: '#/more', kind: 'try' },
   { k: 'm-year', name: '노트와 함께 1년', when: '디다코 노트와 함께한 지 1년이 되었어요', how: '디다코 노트를 처음 연 날부터 1년이 되면 생겨요.', go: '', kind: 'mark' }
 ];
@@ -4064,7 +4171,7 @@ const acts = {
   'connect-sheet'() {
     formSheet('비밀 문구 넣기', '맡겨 둔 기록을 다시 열려면, 정해 둔 비밀 문구를 넣어 주세요.', pwIn('pwConn', '비밀 문구 (6글자 넘게)', '비밀 문구', 'current-password'), '', '연결하기', 'connect-go');
   },
-  'place-menu'() { const m = $('#placeMenu'), open = m.hidden; closeMenus(); m.hidden = !open; $('#placeBtn').setAttribute('aria-expanded', String(open)); },
+  'place-menu'() { const m = $('#placeMenu'), open = m.hidden; closeMenus(); m.hidden = !open; $('#placeBtn').setAttribute('aria-expanded', String(open)); if (open) loadCircles(); },
   'set-menu'() { const m = $('#setMenu'), open = m.hidden; closeMenus(); m.hidden = !open; $('#setBtn').setAttribute('aria-expanded', String(open)); },
   gear() { const p = $('#gearPanel'), open = p.hidden; closeMenus(); p.hidden = !open; $('#gearBtn').setAttribute('aria-expanded', String(open)); },
   'demo-reset'() { resetAll(); },
@@ -4094,6 +4201,7 @@ function resetAll() {
   ls.del(K.vine); VN = normalizeVine({});
   ls.del(K.badges); B = { seen: [] };
   ls.del(K.session); ls.del(K.demo); ls.del(K.notes); ls.del(OPEN_K); me = null; D.start = ''; D.date = ''; D.sync = 'off'; D.syncAt = 0;
+  if (CIRCLE_REAL) { circleForget(); paintPlaces(); }
   N = { qs: [], fs: [], ex: [], cur: [], wk: [] }; W = newDraft('', 'q'); mineFilter = 'all'; searchQ = ''; P = { fid: '', sel: '' }; undoSnap = null; trailOpen.clear(); hideOpening(true);
   X = { id: '', step: 0, frame: 0, open3: false, panel: true, dirty: false }; WK = { max: 0, view: 0 }; pendingSwap = null; startBack = 'explore'; srchBack = 'mine';
   ob.kakao = ob.church = false; ob.name = ''; dispOpen = false; fb.text = ''; fb.named = false; fb.kind = '이랬으면';
@@ -4742,6 +4850,7 @@ if (LIVE) {
     ['didako-token', 'didako-uid', 'didako-hub-token'].forEach(k => ls.del(k));
     // 새 길 로그인도 함께 끊는다(예전 길 기기가 새 보관함에 쓰던 로그인 포함). 기기의 기록은 남는다
     if (SB_CFG) { ls.del(SBH); ls.del(SB_RESUME); if (ls.get(SB_STORE)) await sbSignOut(); }
+    if (CIRCLE_REAL) { circleForget(); paintPlaces(); }   // 내 공동체 목록 사본도 지운다
     sbRelogin = false; me = null; words = []; ob.kakao = ob.church = false; ob.name = ''; closeSheet(true); go('start');
   };
   // 동기화가 꺼진 채 더보기·동기화 화면에 들어오면 맡긴 기록이 있는지 미리 물어 둔다. [켜기]를 누를 때 이 답을 쓴다(60초 지나면 다시 묻는다, S-68)
@@ -4860,7 +4969,8 @@ window.addEventListener('pageshow', e => { if (e.persisted && !new URLSearchPara
 
 // ── 시작 ──
 $('#vineDemo').hidden = LIVE;
-$('#placeMenu').innerHTML = didakoPlaces.html({ cur: 'note', attr: k => k === 'circleOne' ? 'href="../community/"' : k === 'church' ? 'href="../app/"' : '' });
+paintPlaces();
+if (!CIRCLE_REAL || ls.get('didako-note-sb')) setTimeout(() => loadCircles(), 1500);   // 내 공동체 목록은 첫 화면을 그린 뒤에 묻는다
 $('#setMenu').innerHTML = '<p class="mlabel">화면 설정</p>' + displayEx('topDispEx') + (LIVE ? '' : '<div class="mdiv"></div><button class="place-row" type="button" data-act="gear"><span class="sm">시안 보기 설정(데모에만 있어요)</span></button>');
 if (!LIVE) saveBadges();
 applySettings();

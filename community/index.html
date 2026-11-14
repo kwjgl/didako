@@ -1467,17 +1467,32 @@ const cmSeed = () => ({ cur: 'g1', list: [
 // 초대 링크로 들어올 때 데모가 보여 주는 모임(어떤 링크든 이 모임으로 친다)
 const CM_JOIN = { name: '수요 마가복음 모임', leader: '김도윤', book: 'mark-1', no: 1 };
 let CM = null;
+// 디다코 노트의 더보기 · 함께하는 곳 메뉴에서 공동체 하나를 골라 오면(?c=공동체 번호) 그 공동체를 연다. 주소의 칸은 읽고 바로 지운다
+let cmWant = (() => {
+  const q = new URLSearchParams(location.search), c = q.get('c'); if (c == null) return '';
+  q.delete('c'); const rest = q.toString().replace(/=(&|$)/g, '$1');
+  try { history.replaceState(null, '', location.pathname + (rest ? '?' + rest : '') + location.hash); } catch (e) { /* 주소를 못 고쳐도 연다 */ }
+  return c;
+})();
+const cmCame = !!cmWant;
+// 골라 온 공동체가 내가 들어가 있는 곳이면 지금 연 공동체로 삼는다(이름표에서 바꿀 때와 같이 나눔하기에서 고른 과와 책갈피를 지운다)
+function cmTake() {
+  if (!cmWant || !cmIn().some(g => g.id === cmWant)) return;
+  if (CM.cur !== cmWant) { CM.cur = cmWant; cmSave(); ls.del(K.shareLesson); ls.del(K.bookmark); }
+  cmWant = '';
+}
 function cmLoad() {
   // 실제 서버: 예시 모임을 만들지 않고, 기기에 남긴 마지막 답의 사본으로 먼저 그린다(인터넷이 없어도 읽을 수 있게)
   if (SB) {
     const h = ls.get(SBH), v = h ? readJson(SB_CACHE + h) : {};
     CM = { cur: typeof v.cur === 'string' ? v.cur : '', list: Array.isArray(v.list) ? v.list.filter(g => g && g.id && g.name) : [], open: v.open !== false, places: Number.isInteger(v.places) ? v.places : CM_MAX };
-    return;
+    cmTake(); return;
   }
   const v = readJson(CM_KEY);
   CM = Array.isArray(v.list) && v.list.length ? v : cmSeed();
   CM.list = CM.list.filter(g => g && g.id && g.name).slice(0, CM_MAX);
   if (!CM.list.length) CM = cmSeed();
+  cmTake();
 }
 const cmSave = () => { if (SB) { const h = ls.get(SBH); return h ? ls.set(SB_CACHE + h, JSON.stringify(CM)) : false; } return ls.set(CM_KEY, JSON.stringify(CM)); };
 const cmIn = () => CM.list.filter(g => !g.wait && g.state !== '닫음');   // 들어가 있는 공동체(승인을 기다리는 곳과 운영자가 닫은 곳은 뺀다. 데모에는 닫은 곳이 없다)
@@ -1510,6 +1525,7 @@ function cmApply() {
   D.role = g.role === 'leader' ? 'leader' : 'member';
 }
 cmLoad(); cmApply();
+if (!LIVE && !SB && cmCame && !D.entered) { D.entered = true; saveDemo(); }   // 데모: 노트에서 공동체를 골라 왔으면 첫 접속 화면을 건너뛴다
 
 const STYLE_ATTR = { basic: null, neu: 'neu', skeu: 'skeu', glass: 'glass' };
 function applySettings() {
@@ -4885,7 +4901,8 @@ function sbRefresh(force) {
       const old = id => CM.list.find(g => g.id === String(id));
       let list = rows.map(r => DidakoCm.toGroup(r, null, old(r.id)));
       const open = list.filter(g => !g.wait && g.state !== '닫음');
-      const cur = open.some(g => g.id === CM.cur) ? CM.cur : open[0] ? open[0].id : '';
+      const want = cmWant && open.some(g => g.id === cmWant) ? cmWant : ''; cmWant = '';   // 노트에서 골라 온 공동체(기기에 남은 목록에 없던 새 공동체일 때)
+      const cur = want || (open.some(g => g.id === CM.cur) ? CM.cur : open[0] ? open[0].id : '');
       if (cur) {
         try {
           const info = await DidakoCm.info(cur);
