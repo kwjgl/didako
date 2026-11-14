@@ -281,7 +281,7 @@ window.DIDAKO_DEMO = {
       {
         "d": "월",
         "ref": "로마서 14장 7~9절",
-        "url": "https://www.bskorea.or.kr/bible/korbibReadpage.php?version=GAE&book=rom&chap=14&sec=7",
+        "url": "https://bible.bskorea.or.kr/bible/NKRV,KCT/ROM.14.7",
         "ask": "우리가 살아도 죽어도 누구의 것이라고 하나요?",
         "choices": ["우리 자신의 것","주의 것","세상의 것"],
         "answer": 1,
@@ -290,7 +290,7 @@ window.DIDAKO_DEMO = {
       {
         "d": "화",
         "ref": "고린도전서 6장 19~20절",
-        "url": "https://www.bskorea.or.kr/bible/korbibReadpage.php?version=GAE&book=1co&chap=6&sec=19",
+        "url": "https://bible.bskorea.or.kr/bible/NKRV,KCT/1CO.6.19",
         "ask": "우리 몸을 무엇이라고 부르나요?",
         "choices": ["흙으로 빚은 그릇","우리의 장막","성령의 전"],
         "answer": 2,
@@ -299,7 +299,7 @@ window.DIDAKO_DEMO = {
       {
         "d": "수",
         "ref": "베드로전서 1장 18~19절",
-        "url": "https://www.bskorea.or.kr/bible/korbibReadpage.php?version=GAE&book=1pe&chap=1&sec=18",
+        "url": "https://bible.bskorea.or.kr/bible/NKRV,KCT/1PE.1.18",
         "ask": "나를 무엇으로 사셨다고 말하나요?",
         "choices": ["은과 금","그리스도의 보배로운 피","우리의 착한 행실"],
         "answer": 1,
@@ -308,7 +308,7 @@ window.DIDAKO_DEMO = {
       {
         "d": "목",
         "ref": "요한복음 10장 27~29절",
-        "url": "https://www.bskorea.or.kr/bible/korbibReadpage.php?version=GAE&book=jhn&chap=10&sec=27",
+        "url": "https://bible.bskorea.or.kr/bible/NKRV,KCT/JHN.10.27",
         "ask": "아무도 빼앗을 수 없는 까닭을 무엇이라고 말하나요?",
         "choices": ["아버지께서 만물보다 크시기 때문에","양들이 스스로 강하기 때문에","우리가 늘 깨어 있기 때문에"],
         "answer": 0,
@@ -317,7 +317,7 @@ window.DIDAKO_DEMO = {
       {
         "d": "금",
         "ref": "마태복음 10장 29~31절",
-        "url": "https://www.bskorea.or.kr/bible/korbibReadpage.php?version=GAE&book=mat&chap=10&sec=29",
+        "url": "https://bible.bskorea.or.kr/bible/NKRV,KCT/MAT.10.29",
         "ask": "참새와 머리털 이야기로 예수님은 무엇을 말씀하시나요?",
         "choices": ["작은 일은 마음 쓰지 말라","두려워하지 말라, 너희는 귀하다","새보다 부지런히 일하라"],
         "answer": 1,
@@ -343,7 +343,7 @@ window.DIDAKO_DEMO = {
       {
         "d": "월",
         "ref": "마태복음 22장 37~40절",
-        "url": "https://www.bskorea.or.kr/bible/korbibReadpage.php?version=GAE&book=mat&chap=22&sec=37",
+        "url": "https://bible.bskorea.or.kr/bible/NKRV,KCT/MAT.22.37",
         "ask": "율법과 선지자가 무엇에 달려 있다고 하나요?",
         "choices": ["모세의 다섯 책","열 가지 제사","하나님 사랑과 이웃 사랑, 두 계명"],
         "answer": 2,
@@ -352,7 +352,7 @@ window.DIDAKO_DEMO = {
       {
         "d": "화",
         "ref": "신명기 6장 4~5절",
-        "url": "https://www.bskorea.or.kr/bible/korbibReadpage.php?version=GAE&book=deu&chap=6&sec=4",
+        "url": "https://bible.bskorea.or.kr/bible/NKRV,KCT/DEU.6.4",
         "ask": "무엇을 다하여 하나님을 사랑하라고 하나요?",
         "choices": ["마음과 뜻과 힘","재물과 시간","말과 노래"],
         "answer": 0,
@@ -361,7 +361,7 @@ window.DIDAKO_DEMO = {
       {
         "d": "수",
         "ref": "레위기 19장 17~18절",
-        "url": "https://www.bskorea.or.kr/bible/korbibReadpage.php?version=GAE&book=lev&chap=19&sec=17",
+        "url": "https://bible.bskorea.or.kr/bible/NKRV,KCT/LEV.19.17",
         "ask": "이웃 사랑을 말하기 바로 앞에 무엇을 하지 말라고 하나요?",
         "choices": ["이웃의 밭에 들어가지 말라","원수를 갚거나 원망하지 말라","안식일에 일하지 말라"],
         "answer": 1,
@@ -370,7 +370,7 @@ window.DIDAKO_DEMO = {
       {
         "d": "목",
         "ref": "로마서 3장 10~12절",
-        "url": "https://www.bskorea.or.kr/bible/korbibReadpage.php?version=GAE&book=rom&chap=3&sec=10",
+        "url": "https://bible.bskorea.or.kr/bible/NKRV,KCT/ROM.3.10",
         "ask": "선을 행하는 사람이 얼마나 있다고 하나요?",
         "choices": ["믿는 사람 모두","절반쯤","하나도 없다"],
         "answer": 2,
@@ -379,7 +379,7 @@ window.DIDAKO_DEMO = {
       {
         "d": "금",
         "ref": "로마서 7장 18~25절",
-        "url": "https://www.bskorea.or.kr/bible/korbibReadpage.php?version=GAE&book=rom&chap=7&sec=18",
+        "url": "https://bible.bskorea.or.kr/bible/NKRV,KCT/ROM.7.18",
         "ask": "괴로워하던 바울은 마지막에 누구에게 감사하나요?",
         "choices": ["자기를 가르친 선생에게","예수 그리스도로 말미암아 하나님께","함께한 교회 사람들에게"],
         "answer": 1,
@@ -405,7 +405,7 @@ window.DIDAKO_DEMO = {
       {
         "d": "월",
         "ref": "창세기 1장 26~28절",
-        "url": "https://www.bskorea.or.kr/bible/korbibReadpage.php?version=GAE&book=gen&chap=1&sec=26",
+        "url": "https://bible.bskorea.or.kr/bible/NKRV,KCT/GEN.1.26",
         "ask": "하나님은 사람을 누구의 형상대로 지으셨나요?",
         "choices": [
           "천사의 형상대로",
@@ -418,7 +418,7 @@ window.DIDAKO_DEMO = {
       {
         "d": "화",
         "ref": "로마서 5장 12~14절",
-        "url": "https://www.bskorea.or.kr/bible/korbibReadpage.php?version=GAE&book=rom&chap=5&sec=12",
+        "url": "https://bible.bskorea.or.kr/bible/NKRV,KCT/ROM.5.12",
         "ask": "한 사람으로 말미암아 세상에 무엇이 들어왔나요?",
         "choices": [
           "죄가 들어왔어요",
@@ -431,7 +431,7 @@ window.DIDAKO_DEMO = {
       {
         "d": "수",
         "ref": "창세기 3장 6~8절",
-        "url": "https://www.bskorea.or.kr/bible/korbibReadpage.php?version=GAE&book=gen&chap=3&sec=6",
+        "url": "https://bible.bskorea.or.kr/bible/NKRV,KCT/GEN.3.6",
         "ask": "두 사람이 열매를 먹은 뒤 무엇을 알게 되었나요?",
         "choices": [
           "길을 잃은 것을",
@@ -444,7 +444,7 @@ window.DIDAKO_DEMO = {
       {
         "d": "목",
         "ref": "창세기 3장 16~19절",
-        "url": "https://www.bskorea.or.kr/bible/korbibReadpage.php?version=GAE&book=gen&chap=3&sec=16",
+        "url": "https://bible.bskorea.or.kr/bible/NKRV,KCT/GEN.3.16",
         "ask": "사람은 결국 어디로 돌아간다고 하나요?",
         "choices": [
           "하늘로 돌아가요",
@@ -457,7 +457,7 @@ window.DIDAKO_DEMO = {
       {
         "d": "금",
         "ref": "로마서 3장 13~14절",
-        "url": "https://www.bskorea.or.kr/bible/korbibReadpage.php?version=GAE&book=rom&chap=3&sec=13",
+        "url": "https://bible.bskorea.or.kr/bible/NKRV,KCT/ROM.3.13",
         "ask": "바울은 사람의 목구멍을 무엇이라고 하나요?",
         "choices": [
           "깨끗한 샘",
@@ -487,7 +487,7 @@ window.DIDAKO_DEMO = {
       {
         "d": "월",
         "ref": "출애굽기 34장 6~7절",
-        "url": "https://www.bskorea.or.kr/bible/korbibReadpage.php?version=GAE&book=exo&chap=34&sec=6",
+        "url": "https://bible.bskorea.or.kr/bible/NKRV,KCT/EXO.34.6",
         "ask": "하나님은 어떤 성품이 풍성하다고 말씀하시나요?",
         "choices": [
           "분노와 두려움이",
@@ -500,7 +500,7 @@ window.DIDAKO_DEMO = {
       {
         "d": "화",
         "ref": "로마서 3장 25~26절",
-        "url": "https://www.bskorea.or.kr/bible/korbibReadpage.php?version=GAE&book=rom&chap=3&sec=25",
+        "url": "https://bible.bskorea.or.kr/bible/NKRV,KCT/ROM.3.25",
         "ask": "하나님은 예수님을 믿는 사람을 어떻게 하시나요?",
         "choices": [
           "잊어버리세요",
@@ -513,7 +513,7 @@ window.DIDAKO_DEMO = {
       {
         "d": "수",
         "ref": "에스겔 18장 20~23절",
-        "url": "https://www.bskorea.or.kr/bible/korbibReadpage.php?version=GAE&book=ezk&chap=18&sec=20",
+        "url": "https://bible.bskorea.or.kr/bible/NKRV,KCT/EZK.18.20",
         "ask": "하나님은 악인이 돌이키면 무엇을 바라신다고 하나요?",
         "choices": [
           "그가 사는 것을",
@@ -526,7 +526,7 @@ window.DIDAKO_DEMO = {
       {
         "d": "목",
         "ref": "신명기 32장 3~4절",
-        "url": "https://www.bskorea.or.kr/bible/korbibReadpage.php?version=GAE&book=deu&chap=32&sec=3",
+        "url": "https://bible.bskorea.or.kr/bible/NKRV,KCT/DEU.32.3",
         "ask": "모세는 하나님의 모든 길이 어떠하다고 하나요?",
         "choices": [
           "변한다고 해요",
@@ -539,7 +539,7 @@ window.DIDAKO_DEMO = {
       {
         "d": "금",
         "ref": "시편 103편 8~10절",
-        "url": "https://www.bskorea.or.kr/bible/korbibReadpage.php?version=GAE&book=psa&chap=103&sec=8",
+        "url": "https://bible.bskorea.or.kr/bible/NKRV,KCT/PSA.103.8",
         "ask": "하나님은 우리 죄를 따라 어떻게 하지 않으시나요?",
         "choices": [
           "기억하지 않으세요",
@@ -569,7 +569,7 @@ window.DIDAKO_DEMO = {
       {
         "d": "월",
         "ref": "시편 49편 7~9절",
-        "url": "https://www.bskorea.or.kr/bible/korbibReadpage.php?version=GAE&book=psa&chap=49&sec=7",
+        "url": "https://bible.bskorea.or.kr/bible/NKRV,KCT/PSA.49.7",
         "ask": "사람이 자기 형제를 위해 하나님께 무엇을 드릴 수 없나요?",
         "choices": [
           "속전을 드릴 수 없어요",
@@ -582,7 +582,7 @@ window.DIDAKO_DEMO = {
       {
         "d": "화",
         "ref": "로마서 3장 23~24절",
-        "url": "https://www.bskorea.or.kr/bible/korbibReadpage.php?version=GAE&book=rom&chap=3&sec=23",
+        "url": "https://bible.bskorea.or.kr/bible/NKRV,KCT/ROM.3.23",
         "ask": "모든 사람이 무엇을 범하였다고 하나요?",
         "choices": [
           "약속을 범했어요",
@@ -595,7 +595,7 @@ window.DIDAKO_DEMO = {
       {
         "d": "수",
         "ref": "히브리서 9장 27~28절",
-        "url": "https://www.bskorea.or.kr/bible/korbibReadpage.php?version=GAE&book=heb&chap=9&sec=27",
+        "url": "https://bible.bskorea.or.kr/bible/NKRV,KCT/HEB.9.27",
         "ask": "사람에게 한 번 정해진 것은 무엇인가요?",
         "choices": [
           "태어나는 일이에요",
@@ -608,7 +608,7 @@ window.DIDAKO_DEMO = {
       {
         "d": "목",
         "ref": "시편 130편 3~4절",
-        "url": "https://www.bskorea.or.kr/bible/korbibReadpage.php?version=GAE&book=psa&chap=130&sec=3",
+        "url": "https://bible.bskorea.or.kr/bible/NKRV,KCT/PSA.130.3",
         "ask": "주님께 무엇이 있다고 시인은 말하나요?",
         "choices": [
           "사유하심이 있어요",
@@ -621,7 +621,7 @@ window.DIDAKO_DEMO = {
       {
         "d": "금",
         "ref": "이사야 53장 5~6절",
-        "url": "https://www.bskorea.or.kr/bible/korbibReadpage.php?version=GAE&book=isa&chap=53&sec=5",
+        "url": "https://bible.bskorea.or.kr/bible/NKRV,KCT/ISA.53.5",
         "ask": "우리는 모두 무엇처럼 그릇 행했다고 하나요?",
         "choices": [
           "새처럼",
@@ -651,7 +651,7 @@ window.DIDAKO_DEMO = {
       {
         "d": "월",
         "ref": "디모데전서 2장 5~6절",
-        "url": "https://www.bskorea.or.kr/bible/korbibReadpage.php?version=GAE&book=1ti&chap=2&sec=5",
+        "url": "https://bible.bskorea.or.kr/bible/NKRV,KCT/1TI.2.5",
         "ask": "하나님과 사람 사이에 계신 중보자는 몇 분인가요?",
         "choices": [
           "여러 분이에요",
@@ -664,7 +664,7 @@ window.DIDAKO_DEMO = {
       {
         "d": "화",
         "ref": "히브리서 2장 14~15절",
-        "url": "https://www.bskorea.or.kr/bible/korbibReadpage.php?version=GAE&book=heb&chap=2&sec=14",
+        "url": "https://bible.bskorea.or.kr/bible/NKRV,KCT/HEB.2.14",
         "ask": "예수님은 무엇을 통해 죽음의 세력을 멸하셨나요?",
         "choices": [
           "가르침을 통해",
@@ -677,7 +677,7 @@ window.DIDAKO_DEMO = {
       {
         "d": "수",
         "ref": "빌립보서 2장 6~8절",
-        "url": "https://www.bskorea.or.kr/bible/korbibReadpage.php?version=GAE&book=php&chap=2&sec=6",
+        "url": "https://bible.bskorea.or.kr/bible/NKRV,KCT/PHP.2.6",
         "ask": "예수님은 어떤 모습으로 나타나셨다고 하나요?",
         "choices": [
           "사람의 모양으로",
@@ -690,7 +690,7 @@ window.DIDAKO_DEMO = {
       {
         "d": "목",
         "ref": "히브리서 7장 25~27절",
-        "url": "https://www.bskorea.or.kr/bible/korbibReadpage.php?version=GAE&book=heb&chap=7&sec=25",
+        "url": "https://bible.bskorea.or.kr/bible/NKRV,KCT/HEB.7.25",
         "ask": "예수님은 사람들을 위해 항상 무엇을 하시나요?",
         "choices": [
           "판결하세요",
@@ -703,7 +703,7 @@ window.DIDAKO_DEMO = {
       {
         "d": "금",
         "ref": "요한복음 20장 30~31절",
-        "url": "https://www.bskorea.or.kr/bible/korbibReadpage.php?version=GAE&book=jhn&chap=20&sec=30",
+        "url": "https://bible.bskorea.or.kr/bible/NKRV,KCT/JHN.20.30",
         "ask": "이 글을 기록한 목적은 예수님을 누구로 믿게 하려는 건가요?",
         "choices": [
           "선지자 중 하나로",
@@ -733,7 +733,7 @@ window.DIDAKO_DEMO = {
       {
         "d": "월",
         "ref": "에베소서 2장 8~9절",
-        "url": "https://www.bskorea.or.kr/bible/korbibReadpage.php?version=GAE&book=eph&chap=2&sec=8",
+        "url": "https://bible.bskorea.or.kr/bible/NKRV,KCT/EPH.2.8",
         "ask": "구원은 행위에서 난 것이 아니라 무엇이라고 하나요?",
         "choices": [
           "선물이라고 해요",
@@ -746,7 +746,7 @@ window.DIDAKO_DEMO = {
       {
         "d": "화",
         "ref": "히브리서 11장 1~3절",
-        "url": "https://www.bskorea.or.kr/bible/korbibReadpage.php?version=GAE&book=heb&chap=11&sec=1",
+        "url": "https://bible.bskorea.or.kr/bible/NKRV,KCT/HEB.11.1",
         "ask": "믿음은 보이지 않는 것의 무엇이라고 하나요?",
         "choices": [
           "그림이라고 해요",
@@ -759,7 +759,7 @@ window.DIDAKO_DEMO = {
       {
         "d": "수",
         "ref": "로마서 10장 9~10절",
-        "url": "https://www.bskorea.or.kr/bible/korbibReadpage.php?version=GAE&book=rom&chap=10&sec=9",
+        "url": "https://bible.bskorea.or.kr/bible/NKRV,KCT/ROM.10.9",
         "ask": "입으로 예수님을 누구라고 시인하라고 하나요?",
         "choices": [
           "선생님이라고",
@@ -772,7 +772,7 @@ window.DIDAKO_DEMO = {
       {
         "d": "목",
         "ref": "요한복음 3장 16~18절",
-        "url": "https://www.bskorea.or.kr/bible/korbibReadpage.php?version=GAE&book=jhn&chap=3&sec=16",
+        "url": "https://bible.bskorea.or.kr/bible/NKRV,KCT/JHN.3.16",
         "ask": "하나님은 세상을 얼마나 사랑하셨다고 하나요?",
         "choices": [
           "독생자를 주실 만큼",
@@ -785,7 +785,7 @@ window.DIDAKO_DEMO = {
       {
         "d": "금",
         "ref": "고린도전서 12장 3~4절",
-        "url": "https://www.bskorea.or.kr/bible/korbibReadpage.php?version=GAE&book=1co&chap=12&sec=3",
+        "url": "https://bible.bskorea.or.kr/bible/NKRV,KCT/1CO.12.3",
         "ask": "예수님을 주님이라 말하게 하시는 분은 누구인가요?",
         "choices": [
           "바울이에요",
@@ -815,7 +815,7 @@ window.DIDAKO_DEMO = {
       {
         "d": "월",
         "ref": "신명기 6장 4~5절",
-        "url": "https://www.bskorea.or.kr/bible/korbibReadpage.php?version=GAE&book=deu&chap=6&sec=4",
+        "url": "https://bible.bskorea.or.kr/bible/NKRV,KCT/DEU.6.4",
         "ask": "이스라엘에게 하나님이 몇 분이시라고 말하나요?",
         "choices": [
           "두 분이세요",
@@ -828,7 +828,7 @@ window.DIDAKO_DEMO = {
       {
         "d": "화",
         "ref": "마태복음 28장 18~20절",
-        "url": "https://www.bskorea.or.kr/bible/korbibReadpage.php?version=GAE&book=mat&chap=28&sec=18",
+        "url": "https://bible.bskorea.or.kr/bible/NKRV,KCT/MAT.28.18",
         "ask": "예수님은 누구의 이름으로 세례를 베풀라고 하나요?",
         "choices": [
           "아버지와 아들과 성령의",
@@ -841,7 +841,7 @@ window.DIDAKO_DEMO = {
       {
         "d": "수",
         "ref": "고린도후서 13장 11~13절",
-        "url": "https://www.bskorea.or.kr/bible/korbibReadpage.php?version=GAE&book=2co&chap=13&sec=11",
+        "url": "https://bible.bskorea.or.kr/bible/NKRV,KCT/2CO.13.11",
         "ask": "마지막 축복에서 성령님께 속한 무엇을 말하나요?",
         "choices": [
           "능력을",
@@ -854,7 +854,7 @@ window.DIDAKO_DEMO = {
       {
         "d": "목",
         "ref": "에베소서 4장 4~6절",
-        "url": "https://www.bskorea.or.kr/bible/korbibReadpage.php?version=GAE&book=eph&chap=4&sec=4",
+        "url": "https://bible.bskorea.or.kr/bible/NKRV,KCT/EPH.4.4",
         "ask": "바울은 하나님 아버지가 몇 분이시라고 하나요?",
         "choices": [
           "여러 분이시라고",
@@ -867,7 +867,7 @@ window.DIDAKO_DEMO = {
       {
         "d": "금",
         "ref": "요한복음 14장 25~26절",
-        "url": "https://www.bskorea.or.kr/bible/korbibReadpage.php?version=GAE&book=jhn&chap=14&sec=25",
+        "url": "https://bible.bskorea.or.kr/bible/NKRV,KCT/JHN.14.25",
         "ask": "예수님은 보혜사 성령께서 무엇을 가르치신다고 하나요?",
         "choices": [
           "앞날만",
@@ -897,7 +897,7 @@ window.DIDAKO_DEMO = {
       {
         "d": "월",
         "ref": "시편 121편 1~2절",
-        "url": "https://www.bskorea.or.kr/bible/korbibReadpage.php?version=GAE&book=psa&chap=121&sec=1",
+        "url": "https://bible.bskorea.or.kr/bible/NKRV,KCT/PSA.121.1",
         "ask": "시인은 자신의 도움이 어디에서 온다고 하나요?",
         "choices": [
           "높은 산에서",
@@ -910,7 +910,7 @@ window.DIDAKO_DEMO = {
       {
         "d": "화",
         "ref": "로마서 8장 15~16절",
-        "url": "https://www.bskorea.or.kr/bible/korbibReadpage.php?version=GAE&book=rom&chap=8&sec=15",
+        "url": "https://bible.bskorea.or.kr/bible/NKRV,KCT/ROM.8.15",
         "ask": "우리는 하나님을 어떻게 부른다고 하나요?",
         "choices": [
           "아빠 아버지라고",
@@ -923,7 +923,7 @@ window.DIDAKO_DEMO = {
       {
         "d": "수",
         "ref": "창세기 1장 1~3절",
-        "url": "https://www.bskorea.or.kr/bible/korbibReadpage.php?version=GAE&book=gen&chap=1&sec=1",
+        "url": "https://bible.bskorea.or.kr/bible/NKRV,KCT/GEN.1.1",
         "ask": "태초에 하나님이 무엇을 창조하셨나요?",
         "choices": [
           "해와 달만",
@@ -936,7 +936,7 @@ window.DIDAKO_DEMO = {
       {
         "d": "목",
         "ref": "마태복음 6장 25~26절",
-        "url": "https://www.bskorea.or.kr/bible/korbibReadpage.php?version=GAE&book=mat&chap=6&sec=25",
+        "url": "https://bible.bskorea.or.kr/bible/NKRV,KCT/MAT.6.25",
         "ask": "하늘의 새를 먹이시는 분은 누구인가요?",
         "choices": [
           "사람들이에요",
@@ -949,7 +949,7 @@ window.DIDAKO_DEMO = {
       {
         "d": "금",
         "ref": "로마서 8장 28~30절",
-        "url": "https://www.bskorea.or.kr/bible/korbibReadpage.php?version=GAE&book=rom&chap=8&sec=28",
+        "url": "https://bible.bskorea.or.kr/bible/NKRV,KCT/ROM.8.28",
         "ask": "하나님을 사랑하는 사람에게 모든 것이 합력해 이루는 것은 무엇인가요?",
         "choices": [
           "선을 이루어요",
@@ -979,7 +979,7 @@ window.DIDAKO_DEMO = {
       {
         "d": "월",
         "ref": "마태복음 10장 29~31절",
-        "url": "https://www.bskorea.or.kr/bible/korbibReadpage.php?version=GAE&book=mat&chap=10&sec=29",
+        "url": "https://bible.bskorea.or.kr/bible/NKRV,KCT/MAT.10.29",
         "ask": "예수님은 우리의 무엇까지 다 세셨다고 하나요?",
         "choices": [
           "발자국까지",
@@ -992,7 +992,7 @@ window.DIDAKO_DEMO = {
       {
         "d": "화",
         "ref": "로마서 8장 38~39절",
-        "url": "https://www.bskorea.or.kr/bible/korbibReadpage.php?version=GAE&book=rom&chap=8&sec=38",
+        "url": "https://bible.bskorea.or.kr/bible/NKRV,KCT/ROM.8.38",
         "ask": "무엇이 우리를 하나님의 사랑에서 끊을 수 있나요?",
         "choices": [
           "죽음만 가능해요",
@@ -1005,7 +1005,7 @@ window.DIDAKO_DEMO = {
       {
         "d": "수",
         "ref": "사도행전 17장 24~26절",
-        "url": "https://www.bskorea.or.kr/bible/korbibReadpage.php?version=GAE&book=act&chap=17&sec=24",
+        "url": "https://bible.bskorea.or.kr/bible/NKRV,KCT/ACT.17.24",
         "ask": "세상과 그 안의 모든 것을 지으신 분은 누구인가요?",
         "choices": [
           "하나님이세요",
@@ -1018,7 +1018,7 @@ window.DIDAKO_DEMO = {
       {
         "d": "목",
         "ref": "야고보서 1장 16~17절",
-        "url": "https://www.bskorea.or.kr/bible/korbibReadpage.php?version=GAE&book=jas&chap=1&sec=16",
+        "url": "https://bible.bskorea.or.kr/bible/NKRV,KCT/JAS.1.16",
         "ask": "각양 좋은 은사와 온전한 선물은 어디에서 오나요?",
         "choices": [
           "땅 아래에서",
@@ -1031,7 +1031,7 @@ window.DIDAKO_DEMO = {
       {
         "d": "금",
         "ref": "시편 145편 15~16절",
-        "url": "https://www.bskorea.or.kr/bible/korbibReadpage.php?version=GAE&book=psa&chap=145&sec=15",
+        "url": "https://bible.bskorea.or.kr/bible/NKRV,KCT/PSA.145.15",
         "ask": "시인은 하나님이 손을 펴서 무엇을 채우신다고 하나요?",
         "choices": [
           "산과 바다를",
@@ -1061,7 +1061,7 @@ window.DIDAKO_DEMO = {
       {
         "d": "월",
         "ref": "마태복음 1장 20~21절",
-        "url": "https://www.bskorea.or.kr/bible/korbibReadpage.php?version=GAE&book=mat&chap=1&sec=20",
+        "url": "https://bible.bskorea.or.kr/bible/NKRV,KCT/MAT.1.20",
         "ask": "아들의 이름을 예수라 하라는 까닭은 무엇인가요?",
         "choices": [
           "백성을 죄에서 구원하시므로",
@@ -1074,7 +1074,7 @@ window.DIDAKO_DEMO = {
       {
         "d": "화",
         "ref": "사도행전 4장 10~12절",
-        "url": "https://www.bskorea.or.kr/bible/korbibReadpage.php?version=GAE&book=act&chap=4&sec=10",
+        "url": "https://bible.bskorea.or.kr/bible/NKRV,KCT/ACT.4.10",
         "ask": "우리가 구원받을 다른 이름이 있다고 하나요?",
         "choices": [
           "많이 있다고 해요",
@@ -1087,7 +1087,7 @@ window.DIDAKO_DEMO = {
       {
         "d": "수",
         "ref": "누가복음 2장 10~11절",
-        "url": "https://www.bskorea.or.kr/bible/korbibReadpage.php?version=GAE&book=luk&chap=2&sec=10",
+        "url": "https://bible.bskorea.or.kr/bible/NKRV,KCT/LUK.2.10",
         "ask": "천사가 태어난 아기를 누구라고 알리나요?",
         "choices": [
           "새 제사장이라고",
@@ -1100,7 +1100,7 @@ window.DIDAKO_DEMO = {
       {
         "d": "목",
         "ref": "로마서 10장 12~13절",
-        "url": "https://www.bskorea.or.kr/bible/korbibReadpage.php?version=GAE&book=rom&chap=10&sec=12",
+        "url": "https://bible.bskorea.or.kr/bible/NKRV,KCT/ROM.10.12",
         "ask": "누구의 이름을 부르는 사람이 구원을 받나요?",
         "choices": [
           "주의 이름을",
@@ -1113,7 +1113,7 @@ window.DIDAKO_DEMO = {
       {
         "d": "금",
         "ref": "요한일서 4장 14~15절",
-        "url": "https://www.bskorea.or.kr/bible/korbibReadpage.php?version=GAE&book=1jn&chap=4&sec=14",
+        "url": "https://bible.bskorea.or.kr/bible/NKRV,KCT/1JN.4.14",
         "ask": "아버지는 아들을 세상의 누구로 보내셨나요?",
         "choices": [
           "심판관으로",
@@ -1144,7 +1144,7 @@ window.DIDAKO_DEMO = {
       {
         "d": "월",
         "ref": "사도행전 10장 37~38절",
-        "url": "https://www.bskorea.or.kr/bible/korbibReadpage.php?version=GAE&book=act&chap=10&sec=37",
+        "url": "https://bible.bskorea.or.kr/bible/NKRV,KCT/ACT.10.37",
         "ask": "하나님은 예수님께 무엇과 능력을 부으셨나요?",
         "choices": [
           "지혜를",
@@ -1157,7 +1157,7 @@ window.DIDAKO_DEMO = {
       {
         "d": "화",
         "ref": "히브리서 4장 14~16절",
-        "url": "https://www.bskorea.or.kr/bible/korbibReadpage.php?version=GAE&book=heb&chap=4&sec=14",
+        "url": "https://bible.bskorea.or.kr/bible/NKRV,KCT/HEB.4.14",
         "ask": "우리에게 계신 큰 대제사장은 누구인가요?",
         "choices": [
           "하나님의 아들 예수님",
@@ -1170,7 +1170,7 @@ window.DIDAKO_DEMO = {
       {
         "d": "수",
         "ref": "누가복음 4장 18~19절",
-        "url": "https://www.bskorea.or.kr/bible/korbibReadpage.php?version=GAE&book=luk&chap=4&sec=18",
+        "url": "https://bible.bskorea.or.kr/bible/NKRV,KCT/LUK.4.18",
         "ask": "예수님은 누구에게 복음을 전하도록 기름 부음 받으셨나요?",
         "choices": [
           "부자에게",
@@ -1183,7 +1183,7 @@ window.DIDAKO_DEMO = {
       {
         "d": "목",
         "ref": "히브리서 9장 11~12절",
-        "url": "https://www.bskorea.or.kr/bible/korbibReadpage.php?version=GAE&book=heb&chap=9&sec=11",
+        "url": "https://bible.bskorea.or.kr/bible/NKRV,KCT/HEB.9.11",
         "ask": "그리스도는 무엇으로 영원한 속죄를 이루셨나요?",
         "choices": [
           "양의 피로",
@@ -1196,7 +1196,7 @@ window.DIDAKO_DEMO = {
       {
         "d": "금",
         "ref": "골로새서 1장 13~14절",
-        "url": "https://www.bskorea.or.kr/bible/korbibReadpage.php?version=GAE&book=col&chap=1&sec=13",
+        "url": "https://bible.bskorea.or.kr/bible/NKRV,KCT/COL.1.13",
         "ask": "우리는 그 아들 안에서 무엇을 얻는다고 하나요?",
         "choices": [
           "속량과 죄 사함을",
@@ -1226,7 +1226,7 @@ window.DIDAKO_DEMO = {
       {
         "d": "월",
         "ref": "요한복음 1장 12~14절",
-        "url": "https://www.bskorea.or.kr/bible/korbibReadpage.php?version=GAE&book=jhn&chap=1&sec=12",
+        "url": "https://bible.bskorea.or.kr/bible/NKRV,KCT/JHN.1.12",
         "ask": "예수님의 이름을 믿는 사람에게 어떤 권세를 주셨나요?",
         "choices": [
           "왕이 되는 권세",
@@ -1239,7 +1239,7 @@ window.DIDAKO_DEMO = {
       {
         "d": "화",
         "ref": "베드로전서 1장 18~19절",
-        "url": "https://www.bskorea.or.kr/bible/korbibReadpage.php?version=GAE&book=1pe&chap=1&sec=18",
+        "url": "https://bible.bskorea.or.kr/bible/NKRV,KCT/1PE.1.18",
         "ask": "우리는 무엇으로 대속함을 받았다고 하나요?",
         "choices": [
           "은과 금으로",
@@ -1252,7 +1252,7 @@ window.DIDAKO_DEMO = {
       {
         "d": "수",
         "ref": "갈라디아서 4장 4~7절",
-        "url": "https://www.bskorea.or.kr/bible/korbibReadpage.php?version=GAE&book=gal&chap=4&sec=4",
+        "url": "https://bible.bskorea.or.kr/bible/NKRV,KCT/GAL.4.4",
         "ask": "하나님이 아들의 영을 보내셔서 무엇이라고 부르게 하시나요?",
         "choices": [
           "아빠 아버지라고",
@@ -1265,7 +1265,7 @@ window.DIDAKO_DEMO = {
       {
         "d": "목",
         "ref": "요한일서 3장 1~2절",
-        "url": "https://www.bskorea.or.kr/bible/korbibReadpage.php?version=GAE&book=1jn&chap=3&sec=1",
+        "url": "https://bible.bskorea.or.kr/bible/NKRV,KCT/1JN.3.1",
         "ask": "아버지께서 우리를 무엇이라 일컬어지게 하셨나요?",
         "choices": [
           "주의 종이라고",
@@ -1278,7 +1278,7 @@ window.DIDAKO_DEMO = {
       {
         "d": "금",
         "ref": "요한계시록 5장 9~10절",
-        "url": "https://www.bskorea.or.kr/bible/korbibReadpage.php?version=GAE&book=rev&chap=5&sec=9",
+        "url": "https://bible.bskorea.or.kr/bible/NKRV,KCT/REV.5.9",
         "ask": "어린양은 자기 피로 사람들을 누구께 사셨나요?",
         "choices": [
           "천사에게",
@@ -1309,7 +1309,7 @@ window.DIDAKO_DEMO = {
       {
         "d": "월",
         "ref": "누가복음 1장 34~36절",
-        "url": "https://www.bskorea.or.kr/bible/korbibReadpage.php?version=GAE&book=luk&chap=1&sec=34",
+        "url": "https://bible.bskorea.or.kr/bible/NKRV,KCT/LUK.1.34",
         "ask": "천사는 마리아에게 누구의 능력이 덮으리라고 말하나요?",
         "choices": [
           "지극히 높으신 이의 능력",
@@ -1322,7 +1322,7 @@ window.DIDAKO_DEMO = {
       {
         "d": "화",
         "ref": "요한복음 1장 12~14절",
-        "url": "https://www.bskorea.or.kr/bible/korbibReadpage.php?version=GAE&book=jhn&chap=1&sec=12",
+        "url": "https://bible.bskorea.or.kr/bible/NKRV,KCT/JHN.1.12",
         "ask": "말씀이 무엇이 되어 우리 가운데 거하셨다고 하나요?",
         "choices": [
           "천사가 되어",
@@ -1335,7 +1335,7 @@ window.DIDAKO_DEMO = {
       {
         "d": "수",
         "ref": "마태복음 1장 18~21절",
-        "url": "https://www.bskorea.or.kr/bible/korbibReadpage.php?version=GAE&book=mat&chap=1&sec=18",
+        "url": "https://bible.bskorea.or.kr/bible/NKRV,KCT/MAT.1.18",
         "ask": "마리아가 잉태한 아기는 누구로 말미암았다고 하나요?",
         "choices": [
           "요셉으로 말미암아",
@@ -1348,7 +1348,7 @@ window.DIDAKO_DEMO = {
       {
         "d": "목",
         "ref": "히브리서 2장 14~17절",
-        "url": "https://www.bskorea.or.kr/bible/korbibReadpage.php?version=GAE&book=heb&chap=2&sec=14",
+        "url": "https://bible.bskorea.or.kr/bible/NKRV,KCT/HEB.2.14",
         "ask": "예수님은 모든 일에서 누구와 같이 되셨다고 하나요?",
         "choices": [
           "형제들과 같이",
@@ -1361,7 +1361,7 @@ window.DIDAKO_DEMO = {
       {
         "d": "금",
         "ref": "히브리서 4장 14~16절",
-        "url": "https://www.bskorea.or.kr/bible/korbibReadpage.php?version=GAE&book=heb&chap=4&sec=14",
+        "url": "https://bible.bskorea.or.kr/bible/NKRV,KCT/HEB.4.14",
         "ask": "예수님에게 없으신 것은 무엇이라고 하나요?",
         "choices": [
           "연약함이 없어요",
@@ -1391,7 +1391,7 @@ window.DIDAKO_DEMO = {
       {
         "d": "월",
         "ref": "이사야 53장 4~5절",
-        "url": "https://www.bskorea.or.kr/bible/korbibReadpage.php?version=GAE&book=isa&chap=53&sec=4",
+        "url": "https://bible.bskorea.or.kr/bible/NKRV,KCT/ISA.53.4",
         "ask": "그가 찔린 것은 누구의 허물 때문이라고 하나요?",
         "choices": [
           "그 자신의 허물",
@@ -1404,7 +1404,7 @@ window.DIDAKO_DEMO = {
       {
         "d": "화",
         "ref": "베드로전서 3장 17~18절",
-        "url": "https://www.bskorea.or.kr/bible/korbibReadpage.php?version=GAE&book=1pe&chap=3&sec=17",
+        "url": "https://bible.bskorea.or.kr/bible/NKRV,KCT/1PE.3.17",
         "ask": "그리스도는 죄를 위하여 몇 번 죽으셨다고 하나요?",
         "choices": [
           "단번에",
@@ -1417,7 +1417,7 @@ window.DIDAKO_DEMO = {
       {
         "d": "수",
         "ref": "이사야 53장 6~8절",
-        "url": "https://www.bskorea.or.kr/bible/korbibReadpage.php?version=GAE&book=isa&chap=53&sec=6",
+        "url": "https://bible.bskorea.or.kr/bible/NKRV,KCT/ISA.53.6",
         "ask": "우리의 죄악을 누구에게 담당시키셨다고 하나요?",
         "choices": [
           "우리 각자에게",
@@ -1430,7 +1430,7 @@ window.DIDAKO_DEMO = {
       {
         "d": "목",
         "ref": "베드로전서 2장 21~24절",
-        "url": "https://www.bskorea.or.kr/bible/korbibReadpage.php?version=GAE&book=1pe&chap=2&sec=21",
+        "url": "https://bible.bskorea.or.kr/bible/NKRV,KCT/1PE.2.21",
         "ask": "예수님은 누구를 위해 고난을 받으셨다고 하나요?",
         "choices": [
           "천사들을 위해",
@@ -1443,7 +1443,7 @@ window.DIDAKO_DEMO = {
       {
         "d": "금",
         "ref": "마태복음 27장 22~26절",
-        "url": "https://www.bskorea.or.kr/bible/korbibReadpage.php?version=GAE&book=mat&chap=27&sec=22",
+        "url": "https://bible.bskorea.or.kr/bible/NKRV,KCT/MAT.27.22",
         "ask": "빌라도가 무리에게 놓아준 사람은 누구인가요?",
         "choices": [
           "바라바",
@@ -1474,7 +1474,7 @@ window.DIDAKO_DEMO = {
       {
         "d": "월",
         "ref": "갈라디아서 3장 13~14절",
-        "url": "https://www.bskorea.or.kr/bible/korbibReadpage.php?version=GAE&book=gal&chap=3&sec=13",
+        "url": "https://bible.bskorea.or.kr/bible/NKRV,KCT/GAL.3.13",
         "ask": "그리스도는 우리를 위해 무엇이 되셨다고 하나요?",
         "choices": [
           "왕이 되셨어요",
@@ -1487,7 +1487,7 @@ window.DIDAKO_DEMO = {
       {
         "d": "화",
         "ref": "로마서 6장 4~6절",
-        "url": "https://www.bskorea.or.kr/bible/korbibReadpage.php?version=GAE&book=rom&chap=6&sec=4",
+        "url": "https://bible.bskorea.or.kr/bible/NKRV,KCT/ROM.6.4",
         "ask": "그리스도와 함께 십자가에 못 박힌 것은 무엇인가요?",
         "choices": [
           "우리의 옛 사람이에요",
@@ -1500,7 +1500,7 @@ window.DIDAKO_DEMO = {
       {
         "d": "수",
         "ref": "빌립보서 1장 20~23절",
-        "url": "https://www.bskorea.or.kr/bible/korbibReadpage.php?version=GAE&book=php&chap=1&sec=20",
+        "url": "https://bible.bskorea.or.kr/bible/NKRV,KCT/PHP.1.20",
         "ask": "바울은 죽는 것도 무엇이라고 말하나요?",
         "choices": [
           "슬픔이라고",
@@ -1513,7 +1513,7 @@ window.DIDAKO_DEMO = {
       {
         "d": "목",
         "ref": "히브리서 2장 14~15절",
-        "url": "https://www.bskorea.or.kr/bible/korbibReadpage.php?version=GAE&book=heb&chap=2&sec=14",
+        "url": "https://bible.bskorea.or.kr/bible/NKRV,KCT/HEB.2.14",
         "ask": "예수님은 죽음을 통해 누구를 멸하셨다고 하나요?",
         "choices": [
           "모든 사람을",
@@ -1526,7 +1526,7 @@ window.DIDAKO_DEMO = {
       {
         "d": "금",
         "ref": "요한복음 19장 16~19절",
-        "url": "https://www.bskorea.or.kr/bible/korbibReadpage.php?version=GAE&book=jhn&chap=19&sec=16",
+        "url": "https://bible.bskorea.or.kr/bible/NKRV,KCT/JHN.19.16",
         "ask": "예수님이 십자가를 지시고 가신 곳의 이름은 무엇인가요?",
         "choices": [
           "골고다",
@@ -1557,7 +1557,7 @@ window.DIDAKO_DEMO = {
       {
         "d": "월",
         "ref": "로마서 4장 23~25절",
-        "url": "https://www.bskorea.or.kr/bible/korbibReadpage.php?version=GAE&book=rom&chap=4&sec=23",
+        "url": "https://bible.bskorea.or.kr/bible/NKRV,KCT/ROM.4.23",
         "ask": "예수님은 무엇을 위해 살아나셨다고 하나요?",
         "choices": [
           "우리의 위로를 위해",
@@ -1570,7 +1570,7 @@ window.DIDAKO_DEMO = {
       {
         "d": "화",
         "ref": "로마서 6장 3~5절",
-        "url": "https://www.bskorea.or.kr/bible/korbibReadpage.php?version=GAE&book=rom&chap=6&sec=3",
+        "url": "https://bible.bskorea.or.kr/bible/NKRV,KCT/ROM.6.3",
         "ask": "그리스도께서 살아나신 것처럼 우리도 어떻게 행하게 되나요?",
         "choices": [
           "새 생명 가운데",
@@ -1583,7 +1583,7 @@ window.DIDAKO_DEMO = {
       {
         "d": "수",
         "ref": "고린도전서 15장 20~23절",
-        "url": "https://www.bskorea.or.kr/bible/korbibReadpage.php?version=GAE&book=1co&chap=15&sec=20",
+        "url": "https://bible.bskorea.or.kr/bible/NKRV,KCT/1CO.15.20",
         "ask": "잠자는 자들의 첫 열매가 되신 분은 누구인가요?",
         "choices": [
           "아담이에요",
@@ -1596,7 +1596,7 @@ window.DIDAKO_DEMO = {
       {
         "d": "목",
         "ref": "베드로전서 1장 3~5절",
-        "url": "https://www.bskorea.or.kr/bible/korbibReadpage.php?version=GAE&book=1pe&chap=1&sec=3",
+        "url": "https://bible.bskorea.or.kr/bible/NKRV,KCT/1PE.1.3",
         "ask": "예수님의 부활을 통해 우리를 다시 낳아 주신 소망은 무엇인가요?",
         "choices": [
           "사라지는 소망",
@@ -1609,7 +1609,7 @@ window.DIDAKO_DEMO = {
       {
         "d": "금",
         "ref": "고린도전서 15장 54~57절",
-        "url": "https://www.bskorea.or.kr/bible/korbibReadpage.php?version=GAE&book=1co&chap=15&sec=54",
+        "url": "https://bible.bskorea.or.kr/bible/NKRV,KCT/1CO.15.54",
         "ask": "바울은 죽음에 대한 승리를 주시는 분이 누구라고 하나요?",
         "choices": [
           "하나님이세요",
@@ -1640,7 +1640,7 @@ window.DIDAKO_DEMO = {
       {
         "d": "월",
         "ref": "사도행전 1장 8~9절",
-        "url": "https://www.bskorea.or.kr/bible/korbibReadpage.php?version=GAE&book=act&chap=1&sec=8",
+        "url": "https://bible.bskorea.or.kr/bible/NKRV,KCT/ACT.1.8",
         "ask": "예수님이 올라가실 때 무엇이 그분을 가렸나요?",
         "choices": [
           "빛이",
@@ -1653,7 +1653,7 @@ window.DIDAKO_DEMO = {
       {
         "d": "화",
         "ref": "로마서 8장 33~34절",
-        "url": "https://www.bskorea.or.kr/bible/korbibReadpage.php?version=GAE&book=rom&chap=8&sec=33",
+        "url": "https://bible.bskorea.or.kr/bible/NKRV,KCT/ROM.8.33",
         "ask": "예수님은 하나님 오른편에서 우리를 위해 무엇을 하시나요?",
         "choices": [
           "재판하세요",
@@ -1666,7 +1666,7 @@ window.DIDAKO_DEMO = {
       {
         "d": "수",
         "ref": "요한복음 14장 1~3절",
-        "url": "https://www.bskorea.or.kr/bible/korbibReadpage.php?version=GAE&book=jhn&chap=14&sec=1",
+        "url": "https://bible.bskorea.or.kr/bible/NKRV,KCT/JHN.14.1",
         "ask": "예수님은 제자들을 위해 무엇을 예비하러 가신다고 하나요?",
         "choices": [
           "거처를",
@@ -1679,7 +1679,7 @@ window.DIDAKO_DEMO = {
       {
         "d": "목",
         "ref": "골로새서 3장 1~4절",
-        "url": "https://www.bskorea.or.kr/bible/korbibReadpage.php?version=GAE&book=col&chap=3&sec=1",
+        "url": "https://bible.bskorea.or.kr/bible/NKRV,KCT/COL.3.1",
         "ask": "그리스도가 계시는 곳은 어디라고 하나요?",
         "choices": [
           "땅 아래",
@@ -1692,7 +1692,7 @@ window.DIDAKO_DEMO = {
       {
         "d": "금",
         "ref": "요한복음 16장 5~7절",
-        "url": "https://www.bskorea.or.kr/bible/korbibReadpage.php?version=GAE&book=jhn&chap=16&sec=5",
+        "url": "https://bible.bskorea.or.kr/bible/NKRV,KCT/JHN.16.5",
         "ask": "예수님은 떠나시면 누구를 보내겠다고 하나요?",
         "choices": [
           "새 왕을",
@@ -1723,7 +1723,7 @@ window.DIDAKO_DEMO = {
       {
         "d": "월",
         "ref": "에베소서 1장 20~23절",
-        "url": "https://www.bskorea.or.kr/bible/korbibReadpage.php?version=GAE&book=eph&chap=1&sec=20",
+        "url": "https://bible.bskorea.or.kr/bible/NKRV,KCT/EPH.1.20",
         "ask": "하나님은 그리스도를 교회의 무엇으로 삼으셨나요?",
         "choices": [
           "머리로",
@@ -1736,7 +1736,7 @@ window.DIDAKO_DEMO = {
       {
         "d": "화",
         "ref": "사도행전 1장 10~11절",
-        "url": "https://www.bskorea.or.kr/bible/korbibReadpage.php?version=GAE&book=act&chap=1&sec=10",
+        "url": "https://bible.bskorea.or.kr/bible/NKRV,KCT/ACT.1.10",
         "ask": "천사들은 예수님이 어떻게 다시 오신다고 하나요?",
         "choices": [
           "전혀 다르게",
@@ -1749,7 +1749,7 @@ window.DIDAKO_DEMO = {
       {
         "d": "수",
         "ref": "데살로니가전서 4장 16~18절",
-        "url": "https://www.bskorea.or.kr/bible/korbibReadpage.php?version=GAE&book=1th&chap=4&sec=16",
+        "url": "https://bible.bskorea.or.kr/bible/NKRV,KCT/1TH.4.16",
         "ask": "주께서 하늘에서 내려오실 때 무엇이 울린다고 하나요?",
         "choices": [
           "피리 소리가",
@@ -1762,7 +1762,7 @@ window.DIDAKO_DEMO = {
       {
         "d": "목",
         "ref": "마태복음 25장 31~33절",
-        "url": "https://www.bskorea.or.kr/bible/korbibReadpage.php?version=GAE&book=mat&chap=25&sec=31",
+        "url": "https://bible.bskorea.or.kr/bible/NKRV,KCT/MAT.25.31",
         "ask": "인자가 영광으로 올 때 앉을 자리는 어디인가요?",
         "choices": [
           "영광의 보좌",
@@ -1775,7 +1775,7 @@ window.DIDAKO_DEMO = {
       {
         "d": "금",
         "ref": "디모데후서 4장 7~8절",
-        "url": "https://www.bskorea.or.kr/bible/korbibReadpage.php?version=GAE&book=2ti&chap=4&sec=7",
+        "url": "https://bible.bskorea.or.kr/bible/NKRV,KCT/2TI.4.7",
         "ask": "바울은 주의 나타나심을 사모하는 사람에게 무엇이 있다고 하나요?",
         "choices": [
           "많은 재물이",
@@ -1806,7 +1806,7 @@ window.DIDAKO_DEMO = {
       {
         "d": "월",
         "ref": "요한복음 14장 16~17절",
-        "url": "https://www.bskorea.or.kr/bible/korbibReadpage.php?version=GAE&book=jhn&chap=14&sec=16",
+        "url": "https://bible.bskorea.or.kr/bible/NKRV,KCT/JHN.14.16",
         "ask": "예수님은 아버지께 구해 누구를 보내시겠다고 하나요?",
         "choices": [
           "다른 선지자를",
@@ -1819,7 +1819,7 @@ window.DIDAKO_DEMO = {
       {
         "d": "화",
         "ref": "사도행전 5장 3~4절",
-        "url": "https://www.bskorea.or.kr/bible/korbibReadpage.php?version=GAE&book=act&chap=5&sec=3",
+        "url": "https://bible.bskorea.or.kr/bible/NKRV,KCT/ACT.5.3",
         "ask": "베드로는 아나니아가 누구를 속였다고 말하나요?",
         "choices": [
           "하나님을",
@@ -1832,7 +1832,7 @@ window.DIDAKO_DEMO = {
       {
         "d": "수",
         "ref": "고린도전서 2장 10~12절",
-        "url": "https://www.bskorea.or.kr/bible/korbibReadpage.php?version=GAE&book=1co&chap=2&sec=10",
+        "url": "https://bible.bskorea.or.kr/bible/NKRV,KCT/1CO.2.10",
         "ask": "성령은 하나님의 무엇까지 통달하신다고 하나요?",
         "choices": [
           "높은 산까지",
@@ -1845,7 +1845,7 @@ window.DIDAKO_DEMO = {
       {
         "d": "목",
         "ref": "요한복음 15장 26~27절",
-        "url": "https://www.bskorea.or.kr/bible/korbibReadpage.php?version=GAE&book=jhn&chap=15&sec=26",
+        "url": "https://bible.bskorea.or.kr/bible/NKRV,KCT/JHN.15.26",
         "ask": "예수님이 보내실 진리의 성령은 누구를 증언하시나요?",
         "choices": [
           "제자들을",
@@ -1858,7 +1858,7 @@ window.DIDAKO_DEMO = {
       {
         "d": "금",
         "ref": "로마서 8장 14~16절",
-        "url": "https://www.bskorea.or.kr/bible/korbibReadpage.php?version=GAE&book=rom&chap=8&sec=14",
+        "url": "https://bible.bskorea.or.kr/bible/NKRV,KCT/ROM.8.14",
         "ask": "하나님의 영으로 인도함 받는 사람은 누구의 아들인가요?",
         "choices": [
           "하나님의 아들이에요",
@@ -1889,7 +1889,7 @@ window.DIDAKO_DEMO = {
       {
         "d": "월",
         "ref": "요한복음 10장 27~28절",
-        "url": "https://www.bskorea.or.kr/bible/korbibReadpage.php?version=GAE&book=jhn&chap=10&sec=27",
+        "url": "https://bible.bskorea.or.kr/bible/NKRV,KCT/JHN.10.27",
         "ask": "예수님의 양들은 누구의 음성을 듣는다고 하나요?",
         "choices": [
           "낯선 사람의",
@@ -1902,7 +1902,7 @@ window.DIDAKO_DEMO = {
       {
         "d": "화",
         "ref": "고린도전서 12장 12~13절",
-        "url": "https://www.bskorea.or.kr/bible/korbibReadpage.php?version=GAE&book=1co&chap=12&sec=12",
+        "url": "https://bible.bskorea.or.kr/bible/NKRV,KCT/1CO.12.12",
         "ask": "우리는 한 성령으로 세례를 받아 무엇이 되었나요?",
         "choices": [
           "한 가정",
@@ -1915,7 +1915,7 @@ window.DIDAKO_DEMO = {
       {
         "d": "수",
         "ref": "에베소서 4장 11~13절",
-        "url": "https://www.bskorea.or.kr/bible/korbibReadpage.php?version=GAE&book=eph&chap=4&sec=11",
+        "url": "https://bible.bskorea.or.kr/bible/NKRV,KCT/EPH.4.11",
         "ask": "성도를 온전하게 하여 세우려는 것은 무엇인가요?",
         "choices": [
           "그리스도의 몸",
@@ -1928,7 +1928,7 @@ window.DIDAKO_DEMO = {
       {
         "d": "목",
         "ref": "마태복음 16장 16~18절",
-        "url": "https://www.bskorea.or.kr/bible/korbibReadpage.php?version=GAE&book=mat&chap=16&sec=16",
+        "url": "https://bible.bskorea.or.kr/bible/NKRV,KCT/MAT.16.16",
         "ask": "예수님은 무엇을 세우시겠다고 말씀하시나요?",
         "choices": [
           "새 왕궁을",
@@ -1941,7 +1941,7 @@ window.DIDAKO_DEMO = {
       {
         "d": "금",
         "ref": "고린도후서 5장 18~20절",
-        "url": "https://www.bskorea.or.kr/bible/korbibReadpage.php?version=GAE&book=2co&chap=5&sec=18",
+        "url": "https://bible.bskorea.or.kr/bible/NKRV,KCT/2CO.5.18",
         "ask": "하나님은 우리에게 어떤 직분을 주셨다고 하나요?",
         "choices": [
           "재판의 직분",
@@ -1972,7 +1972,7 @@ window.DIDAKO_DEMO = {
       {
         "d": "월",
         "ref": "요한복음 11장 24~26절",
-        "url": "https://www.bskorea.or.kr/bible/korbibReadpage.php?version=GAE&book=jhn&chap=11&sec=24",
+        "url": "https://bible.bskorea.or.kr/bible/NKRV,KCT/JHN.11.24",
         "ask": "예수님은 자신을 부활과 무엇이라고 말씀하시나요?",
         "choices": [
           "생명",
@@ -1985,7 +1985,7 @@ window.DIDAKO_DEMO = {
       {
         "d": "화",
         "ref": "고린도전서 15장 42~44절",
-        "url": "https://www.bskorea.or.kr/bible/korbibReadpage.php?version=GAE&book=1co&chap=15&sec=42",
+        "url": "https://bible.bskorea.or.kr/bible/NKRV,KCT/1CO.15.42",
         "ask": "썩을 것으로 심고 무엇으로 다시 살아난다고 하나요?",
         "choices": [
           "약한 것으로",
@@ -1998,7 +1998,7 @@ window.DIDAKO_DEMO = {
       {
         "d": "수",
         "ref": "빌립보서 3장 20~21절",
-        "url": "https://www.bskorea.or.kr/bible/korbibReadpage.php?version=GAE&book=php&chap=3&sec=20",
+        "url": "https://bible.bskorea.or.kr/bible/NKRV,KCT/PHP.3.20",
         "ask": "예수님은 우리의 낮은 몸을 무엇과 같게 바꾸시나요?",
         "choices": [
           "천사들의 몸과",
@@ -2011,7 +2011,7 @@ window.DIDAKO_DEMO = {
       {
         "d": "목",
         "ref": "고린도후서 5장 1~4절",
-        "url": "https://www.bskorea.or.kr/bible/korbibReadpage.php?version=GAE&book=2co&chap=5&sec=1",
+        "url": "https://bible.bskorea.or.kr/bible/NKRV,KCT/2CO.5.1",
         "ask": "땅에 있는 장막 집이 무너지면 무엇이 있다고 하나요?",
         "choices": [
           "하늘에 있는 영원한 집",
@@ -2024,7 +2024,7 @@ window.DIDAKO_DEMO = {
       {
         "d": "금",
         "ref": "요한계시록 21장 3~5절",
-        "url": "https://www.bskorea.or.kr/bible/korbibReadpage.php?version=GAE&book=rev&chap=21&sec=3",
+        "url": "https://bible.bskorea.or.kr/bible/NKRV,KCT/REV.21.3",
         "ask": "새 하늘과 새 땅에서 하나님이 없애시는 것은 무엇인가요?",
         "choices": [
           "별들과 달",
@@ -2054,7 +2054,7 @@ window.DIDAKO_DEMO = {
       {
         "d": "월",
         "ref": "로마서 3장 21~24절",
-        "url": "https://www.bskorea.or.kr/bible/korbibReadpage.php?version=GAE&book=rom&chap=3&sec=21",
+        "url": "https://bible.bskorea.or.kr/bible/NKRV,KCT/ROM.3.21",
         "ask": "사람들은 무엇으로 값없이 의롭다 하심을 얻나요?",
         "choices": [
           "재물로",
@@ -2067,7 +2067,7 @@ window.DIDAKO_DEMO = {
       {
         "d": "화",
         "ref": "로마서 5장 1~2절",
-        "url": "https://www.bskorea.or.kr/bible/korbibReadpage.php?version=GAE&book=rom&chap=5&sec=1",
+        "url": "https://bible.bskorea.or.kr/bible/NKRV,KCT/ROM.5.1",
         "ask": "믿음으로 의롭다 하심을 받은 우리는 무엇을 누린다고 하나요?",
         "choices": [
           "하나님과의 화평",
@@ -2080,7 +2080,7 @@ window.DIDAKO_DEMO = {
       {
         "d": "수",
         "ref": "빌립보서 3장 8~9절",
-        "url": "https://www.bskorea.or.kr/bible/korbibReadpage.php?version=GAE&book=php&chap=3&sec=8",
+        "url": "https://bible.bskorea.or.kr/bible/NKRV,KCT/PHP.3.8",
         "ask": "바울은 율법에서 난 의 대신 무엇을 원하나요?",
         "choices": [
           "사람의 의",
@@ -2093,7 +2093,7 @@ window.DIDAKO_DEMO = {
       {
         "d": "목",
         "ref": "갈라디아서 2장 15~16절",
-        "url": "https://www.bskorea.or.kr/bible/korbibReadpage.php?version=GAE&book=gal&chap=2&sec=15",
+        "url": "https://bible.bskorea.or.kr/bible/NKRV,KCT/GAL.2.15",
         "ask": "사람은 무엇으로 의롭다 함을 얻는다고 하나요?",
         "choices": [
           "율법의 행위로",
@@ -2106,7 +2106,7 @@ window.DIDAKO_DEMO = {
       {
         "d": "금",
         "ref": "로마서 4장 4~5절",
-        "url": "https://www.bskorea.or.kr/bible/korbibReadpage.php?version=GAE&book=rom&chap=4&sec=4",
+        "url": "https://bible.bskorea.or.kr/bible/NKRV,KCT/ROM.4.4",
         "ask": "일하지 않아도 믿는 사람에게 의로 여겨지는 것은 무엇인가요?",
         "choices": [
           "그의 믿음",
@@ -2137,7 +2137,7 @@ window.DIDAKO_DEMO = {
       {
         "d": "월",
         "ref": "이사야 64장 5~6절",
-        "url": "https://www.bskorea.or.kr/bible/korbibReadpage.php?version=GAE&book=isa&chap=64&sec=5",
+        "url": "https://bible.bskorea.or.kr/bible/NKRV,KCT/ISA.64.5",
         "ask": "우리의 의는 무엇 같다고 하나요?",
         "choices": [
           "깨끗한 물 같아요",
@@ -2150,7 +2150,7 @@ window.DIDAKO_DEMO = {
       {
         "d": "화",
         "ref": "에베소서 2장 8~10절",
-        "url": "https://www.bskorea.or.kr/bible/korbibReadpage.php?version=GAE&book=eph&chap=2&sec=8",
+        "url": "https://bible.bskorea.or.kr/bible/NKRV,KCT/EPH.2.8",
         "ask": "우리는 그리스도 안에서 무엇을 위해 지으심 받았나요?",
         "choices": [
           "큰 이름을 위해",
@@ -2163,7 +2163,7 @@ window.DIDAKO_DEMO = {
       {
         "d": "수",
         "ref": "요한복음 15장 4~5절",
-        "url": "https://www.bskorea.or.kr/bible/korbibReadpage.php?version=GAE&book=jhn&chap=15&sec=4",
+        "url": "https://bible.bskorea.or.kr/bible/NKRV,KCT/JHN.15.4",
         "ask": "예수님은 자신을 무엇이라고 말씀하시나요?",
         "choices": [
           "포도나무",
@@ -2176,7 +2176,7 @@ window.DIDAKO_DEMO = {
       {
         "d": "목",
         "ref": "누가복음 17장 7~10절",
-        "url": "https://www.bskorea.or.kr/bible/korbibReadpage.php?version=GAE&book=luk&chap=17&sec=7",
+        "url": "https://bible.bskorea.or.kr/bible/NKRV,KCT/LUK.17.7",
         "ask": "종은 명령받은 일을 다 한 뒤 자신을 무엇이라 말하나요?",
         "choices": [
           "큰 공로자",
@@ -2189,7 +2189,7 @@ window.DIDAKO_DEMO = {
       {
         "d": "금",
         "ref": "로마서 11장 5~6절",
-        "url": "https://www.bskorea.or.kr/bible/korbibReadpage.php?version=GAE&book=rom&chap=11&sec=5",
+        "url": "https://bible.bskorea.or.kr/bible/NKRV,KCT/ROM.11.5",
         "ask": "은혜로 된 것이면 더 이상 무엇으로 된 것이 아니라고 하나요?",
         "choices": [
           "약속으로",
@@ -2219,7 +2219,7 @@ window.DIDAKO_DEMO = {
       {
         "d": "월",
         "ref": "로마서 10장 16~17절",
-        "url": "https://www.bskorea.or.kr/bible/korbibReadpage.php?version=GAE&book=rom&chap=10&sec=16",
+        "url": "https://bible.bskorea.or.kr/bible/NKRV,KCT/ROM.10.16",
         "ask": "믿음은 무엇에서 난다고 하나요?",
         "choices": [
           "들음에서",
@@ -2232,7 +2232,7 @@ window.DIDAKO_DEMO = {
       {
         "d": "화",
         "ref": "로마서 4장 9~11절",
-        "url": "https://www.bskorea.or.kr/bible/korbibReadpage.php?version=GAE&book=rom&chap=4&sec=9",
+        "url": "https://bible.bskorea.or.kr/bible/NKRV,KCT/ROM.4.9",
         "ask": "아브라함은 할례의 표를 무엇으로 받았다고 하나요?",
         "choices": [
           "벌로 받았어요",
@@ -2245,7 +2245,7 @@ window.DIDAKO_DEMO = {
       {
         "d": "수",
         "ref": "마태복음 28장 18~20절",
-        "url": "https://www.bskorea.or.kr/bible/korbibReadpage.php?version=GAE&book=mat&chap=28&sec=18",
+        "url": "https://bible.bskorea.or.kr/bible/NKRV,KCT/MAT.28.18",
         "ask": "예수님은 제자들에게 무엇을 베풀라고 하시나요?",
         "choices": [
           "기름 부음을",
@@ -2258,7 +2258,7 @@ window.DIDAKO_DEMO = {
       {
         "d": "목",
         "ref": "고린도전서 11장 23~26절",
-        "url": "https://www.bskorea.or.kr/bible/korbibReadpage.php?version=GAE&book=1co&chap=11&sec=23",
+        "url": "https://bible.bskorea.or.kr/bible/NKRV,KCT/1CO.11.23",
         "ask": "바울은 떡을 먹고 잔을 마실 때 무엇을 전한다고 하나요?",
         "choices": [
           "주의 죽으심을",
@@ -2271,7 +2271,7 @@ window.DIDAKO_DEMO = {
       {
         "d": "금",
         "ref": "사도행전 2장 37~39절",
-        "url": "https://www.bskorea.or.kr/bible/korbibReadpage.php?version=GAE&book=act&chap=2&sec=37",
+        "url": "https://bible.bskorea.or.kr/bible/NKRV,KCT/ACT.2.37",
         "ask": "베드로는 회개한 사람에게 무엇을 받으라고 하나요?",
         "choices": [
           "새 이름을",
@@ -2302,7 +2302,7 @@ window.DIDAKO_DEMO = {
       {
         "d": "월",
         "ref": "디도서 3장 4~6절",
-        "url": "https://www.bskorea.or.kr/bible/korbibReadpage.php?version=GAE&book=tit&chap=3&sec=4",
+        "url": "https://bible.bskorea.or.kr/bible/NKRV,KCT/TIT.3.4",
         "ask": "하나님은 무엇의 씻음과 성령의 새롭게 하심으로 구원하셨나요?",
         "choices": [
           "바닷물의 씻음",
@@ -2315,7 +2315,7 @@ window.DIDAKO_DEMO = {
       {
         "d": "화",
         "ref": "로마서 6장 3~4절",
-        "url": "https://www.bskorea.or.kr/bible/korbibReadpage.php?version=GAE&book=rom&chap=6&sec=3",
+        "url": "https://bible.bskorea.or.kr/bible/NKRV,KCT/ROM.6.3",
         "ask": "우리는 세례를 통해 누구의 죽으심에 합하여졌나요?",
         "choices": [
           "그리스도의 죽으심",
@@ -2328,7 +2328,7 @@ window.DIDAKO_DEMO = {
       {
         "d": "수",
         "ref": "사도행전 22장 14~16절",
-        "url": "https://www.bskorea.or.kr/bible/korbibReadpage.php?version=GAE&book=act&chap=22&sec=14",
+        "url": "https://bible.bskorea.or.kr/bible/NKRV,KCT/ACT.22.14",
         "ask": "아나니아는 바울에게 일어나 무엇을 받으라고 하나요?",
         "choices": [
           "왕관을",
@@ -2341,7 +2341,7 @@ window.DIDAKO_DEMO = {
       {
         "d": "목",
         "ref": "갈라디아서 3장 26~28절",
-        "url": "https://www.bskorea.or.kr/bible/korbibReadpage.php?version=GAE&book=gal&chap=3&sec=26",
+        "url": "https://bible.bskorea.or.kr/bible/NKRV,KCT/GAL.3.26",
         "ask": "그리스도와 합하기 위해 세례받은 사람은 누구로 옷 입었나요?",
         "choices": [
           "모세로",
@@ -2354,7 +2354,7 @@ window.DIDAKO_DEMO = {
       {
         "d": "금",
         "ref": "베드로전서 3장 20~22절",
-        "url": "https://www.bskorea.or.kr/bible/korbibReadpage.php?version=GAE&book=1pe&chap=3&sec=20",
+        "url": "https://bible.bskorea.or.kr/bible/NKRV,KCT/1PE.3.20",
         "ask": "베드로는 세례를 무엇을 구하는 일이라고 설명하나요?",
         "choices": [
           "선한 양심",
@@ -2384,7 +2384,7 @@ window.DIDAKO_DEMO = {
       {
         "d": "월",
         "ref": "요한일서 1장 6~7절",
-        "url": "https://www.bskorea.or.kr/bible/korbibReadpage.php?version=GAE&book=1jn&chap=1&sec=6",
+        "url": "https://bible.bskorea.or.kr/bible/NKRV,KCT/1JN.1.6",
         "ask": "무엇이 우리를 모든 죄에서 깨끗하게 한다고 하나요?",
         "choices": [
           "우리의 눈물이",
@@ -2397,7 +2397,7 @@ window.DIDAKO_DEMO = {
       {
         "d": "화",
         "ref": "베드로전서 3장 20~22절",
-        "url": "https://www.bskorea.or.kr/bible/korbibReadpage.php?version=GAE&book=1pe&chap=3&sec=20",
+        "url": "https://bible.bskorea.or.kr/bible/NKRV,KCT/1PE.3.20",
         "ask": "베드로는 세례가 무엇을 씻어 내는 일이 아니라고 하나요?",
         "choices": [
           "마음의 근심을",
@@ -2410,7 +2410,7 @@ window.DIDAKO_DEMO = {
       {
         "d": "수",
         "ref": "사도행전 8장 12~13절",
-        "url": "https://www.bskorea.or.kr/bible/korbibReadpage.php?version=GAE&book=act&chap=8&sec=12",
+        "url": "https://bible.bskorea.or.kr/bible/NKRV,KCT/ACT.8.12",
         "ask": "사마리아 사람들은 누구의 이름을 믿고 세례를 받았나요?",
         "choices": [
           "예수 그리스도의",
@@ -2423,7 +2423,7 @@ window.DIDAKO_DEMO = {
       {
         "d": "목",
         "ref": "사도행전 8장 36~39절",
-        "url": "https://www.bskorea.or.kr/bible/korbibReadpage.php?version=GAE&book=act&chap=8&sec=36",
+        "url": "https://bible.bskorea.or.kr/bible/NKRV,KCT/ACT.8.36",
         "ask": "빌립과 내시는 세례를 위해 어디로 내려갔나요?",
         "choices": [
           "산으로",
@@ -2436,7 +2436,7 @@ window.DIDAKO_DEMO = {
       {
         "d": "금",
         "ref": "에베소서 5장 25~27절",
-        "url": "https://www.bskorea.or.kr/bible/korbibReadpage.php?version=GAE&book=eph&chap=5&sec=25",
+        "url": "https://bible.bskorea.or.kr/bible/NKRV,KCT/EPH.5.25",
         "ask": "그리스도는 교회를 무엇으로 깨끗하게 하셨다고 하나요?",
         "choices": [
           "기름으로",
@@ -2466,7 +2466,7 @@ window.DIDAKO_DEMO = {
       {
         "d": "월",
         "ref": "고린도전서 11장 23~26절",
-        "url": "https://www.bskorea.or.kr/bible/korbibReadpage.php?version=GAE&book=1co&chap=11&sec=23",
+        "url": "https://bible.bskorea.or.kr/bible/NKRV,KCT/1CO.11.23",
         "ask": "예수님은 떡을 먹을 때 누구를 기념하라고 하셨나요?",
         "choices": [
           "예수님을",
@@ -2479,7 +2479,7 @@ window.DIDAKO_DEMO = {
       {
         "d": "화",
         "ref": "고린도전서 10장 16~17절",
-        "url": "https://www.bskorea.or.kr/bible/korbibReadpage.php?version=GAE&book=1co&chap=10&sec=16",
+        "url": "https://bible.bskorea.or.kr/bible/NKRV,KCT/1CO.10.16",
         "ask": "많은 사람이 한 몸인 까닭을 무엇이라고 하나요?",
         "choices": [
           "한 곳에 살아서",
@@ -2492,7 +2492,7 @@ window.DIDAKO_DEMO = {
       {
         "d": "수",
         "ref": "누가복음 22장 17~20절",
-        "url": "https://www.bskorea.or.kr/bible/korbibReadpage.php?version=GAE&book=luk&chap=22&sec=17",
+        "url": "https://bible.bskorea.or.kr/bible/NKRV,KCT/LUK.22.17",
         "ask": "예수님은 떡을 주시며 누구를 위해 주는 몸이라고 하나요?",
         "choices": [
           "천사들을 위해",
@@ -2505,7 +2505,7 @@ window.DIDAKO_DEMO = {
       {
         "d": "목",
         "ref": "마태복음 26장 26~29절",
-        "url": "https://www.bskorea.or.kr/bible/korbibReadpage.php?version=GAE&book=mat&chap=26&sec=26",
+        "url": "https://bible.bskorea.or.kr/bible/NKRV,KCT/MAT.26.26",
         "ask": "예수님은 잔에 담긴 것을 무엇이라고 말씀하시나요?",
         "choices": [
           "언약의 피",
@@ -2518,7 +2518,7 @@ window.DIDAKO_DEMO = {
       {
         "d": "금",
         "ref": "누가복음 24장 28~31절",
-        "url": "https://www.bskorea.or.kr/bible/korbibReadpage.php?version=GAE&book=luk&chap=24&sec=28",
+        "url": "https://bible.bskorea.or.kr/bible/NKRV,KCT/LUK.24.28",
         "ask": "예수님이 떡을 떼어 주실 때 제자들에게 어떤 일이 일어났나요?",
         "choices": [
           "눈이 밝아졌어요",
@@ -2548,7 +2548,7 @@ window.DIDAKO_DEMO = {
       {
         "d": "월",
         "ref": "마태복음 26장 26~28절",
-        "url": "https://www.bskorea.or.kr/bible/korbibReadpage.php?version=GAE&book=mat&chap=26&sec=26",
+        "url": "https://bible.bskorea.or.kr/bible/NKRV,KCT/MAT.26.26",
         "ask": "예수님은 떡을 떼어 주시며 무엇이라고 하셨나요?",
         "choices": [
           "내 집이다",
@@ -2561,7 +2561,7 @@ window.DIDAKO_DEMO = {
       {
         "d": "화",
         "ref": "요한복음 6장 34~36절",
-        "url": "https://www.bskorea.or.kr/bible/korbibReadpage.php?version=GAE&book=jhn&chap=6&sec=34",
+        "url": "https://bible.bskorea.or.kr/bible/NKRV,KCT/JHN.6.34",
         "ask": "예수님은 자신을 어떤 떡이라고 말씀하시나요?",
         "choices": [
           "생명의 떡",
@@ -2574,7 +2574,7 @@ window.DIDAKO_DEMO = {
       {
         "d": "수",
         "ref": "마가복음 14장 22~25절",
-        "url": "https://www.bskorea.or.kr/bible/korbibReadpage.php?version=GAE&book=mrk&chap=14&sec=22",
+        "url": "https://bible.bskorea.or.kr/bible/NKRV,KCT/MRK.14.22",
         "ask": "예수님은 잔을 주신 뒤 무엇이라고 말씀하시나요?",
         "choices": [
           "내 기쁨이다",
@@ -2587,7 +2587,7 @@ window.DIDAKO_DEMO = {
       {
         "d": "목",
         "ref": "요한복음 6장 53~56절",
-        "url": "https://www.bskorea.or.kr/bible/korbibReadpage.php?version=GAE&book=jhn&chap=6&sec=53",
+        "url": "https://bible.bskorea.or.kr/bible/NKRV,KCT/JHN.6.53",
         "ask": "예수님은 자신의 살을 무엇이라고 말씀하시나요?",
         "choices": [
           "참된 양식",
@@ -2600,7 +2600,7 @@ window.DIDAKO_DEMO = {
       {
         "d": "금",
         "ref": "요한복음 6장 47~51절",
-        "url": "https://www.bskorea.or.kr/bible/korbibReadpage.php?version=GAE&book=jhn&chap=6&sec=47",
+        "url": "https://bible.bskorea.or.kr/bible/NKRV,KCT/JHN.6.47",
         "ask": "예수님은 자신이 줄 떡을 무엇이라고 말씀하시나요?",
         "choices": [
           "나의 살",
@@ -2630,7 +2630,7 @@ window.DIDAKO_DEMO = {
       {
         "d": "월",
         "ref": "히브리서 10장 8~10절",
-        "url": "https://www.bskorea.or.kr/bible/korbibReadpage.php?version=GAE&book=heb&chap=10&sec=8",
+        "url": "https://bible.bskorea.or.kr/bible/NKRV,KCT/HEB.10.8",
         "ask": "우리는 예수님의 몸을 몇 번 드리심으로 거룩함을 얻었나요?",
         "choices": [
           "여러 번",
@@ -2643,7 +2643,7 @@ window.DIDAKO_DEMO = {
       {
         "d": "화",
         "ref": "고린도전서 11장 27~29절",
-        "url": "https://www.bskorea.or.kr/bible/korbibReadpage.php?version=GAE&book=1co&chap=11&sec=27",
+        "url": "https://bible.bskorea.or.kr/bible/NKRV,KCT/1CO.11.27",
         "ask": "바울은 떡을 먹고 잔을 마시기 전에 무엇을 하라고 하나요?",
         "choices": [
           "다른 사람을 판단하라고",
@@ -2656,7 +2656,7 @@ window.DIDAKO_DEMO = {
       {
         "d": "수",
         "ref": "히브리서 10장 11~14절",
-        "url": "https://www.bskorea.or.kr/bible/korbibReadpage.php?version=GAE&book=heb&chap=10&sec=11",
+        "url": "https://bible.bskorea.or.kr/bible/NKRV,KCT/HEB.10.11",
         "ask": "예수님은 제사를 드리신 뒤 어디에 앉으셨나요?",
         "choices": [
           "하나님 오른편에",
@@ -2669,7 +2669,7 @@ window.DIDAKO_DEMO = {
       {
         "d": "목",
         "ref": "히브리서 9장 24~26절",
-        "url": "https://www.bskorea.or.kr/bible/korbibReadpage.php?version=GAE&book=heb&chap=9&sec=24",
+        "url": "https://bible.bskorea.or.kr/bible/NKRV,KCT/HEB.9.24",
         "ask": "그리스도는 자신을 제물로 드려 무엇을 없애려고 하셨나요?",
         "choices": [
           "고난을",
@@ -2682,7 +2682,7 @@ window.DIDAKO_DEMO = {
       {
         "d": "금",
         "ref": "누가복음 22장 14~16절",
-        "url": "https://www.bskorea.or.kr/bible/korbibReadpage.php?version=GAE&book=luk&chap=22&sec=14",
+        "url": "https://bible.bskorea.or.kr/bible/NKRV,KCT/LUK.22.14",
         "ask": "예수님은 고난받기 전에 제자들과 무엇을 먹기 원하셨나요?",
         "choices": [
           "아침 식사를",
@@ -2712,7 +2712,7 @@ window.DIDAKO_DEMO = {
       {
         "d": "월",
         "ref": "마태복음 16장 18~20절",
-        "url": "https://www.bskorea.or.kr/bible/korbibReadpage.php?version=GAE&book=mat&chap=16&sec=18",
+        "url": "https://bible.bskorea.or.kr/bible/NKRV,KCT/MAT.16.18",
         "ask": "예수님은 베드로에게 무엇을 주시겠다고 하나요?",
         "choices": [
           "천국 열쇠",
@@ -2725,7 +2725,7 @@ window.DIDAKO_DEMO = {
       {
         "d": "화",
         "ref": "요한복음 20장 21~23절",
-        "url": "https://www.bskorea.or.kr/bible/korbibReadpage.php?version=GAE&book=jhn&chap=20&sec=21",
+        "url": "https://bible.bskorea.or.kr/bible/NKRV,KCT/JHN.20.21",
         "ask": "예수님은 제자들에게 숨을 내쉬며 누구를 받으라고 하시나요?",
         "choices": [
           "새 왕을",
@@ -2738,7 +2738,7 @@ window.DIDAKO_DEMO = {
       {
         "d": "수",
         "ref": "마태복음 18장 15~17절",
-        "url": "https://www.bskorea.or.kr/bible/korbibReadpage.php?version=GAE&book=mat&chap=18&sec=15",
+        "url": "https://bible.bskorea.or.kr/bible/NKRV,KCT/MAT.18.15",
         "ask": "형제가 말을 듣지 않으면 마지막에는 어디에 말하라고 하나요?",
         "choices": [
           "시장에",
@@ -2751,7 +2751,7 @@ window.DIDAKO_DEMO = {
       {
         "d": "목",
         "ref": "로마서 10장 13~17절",
-        "url": "https://www.bskorea.or.kr/bible/korbibReadpage.php?version=GAE&book=rom&chap=10&sec=13",
+        "url": "https://bible.bskorea.or.kr/bible/NKRV,KCT/ROM.10.13",
         "ask": "믿음을 가지려면 먼저 무엇을 들어야 한다고 하나요?",
         "choices": [
           "그리스도의 말씀",
@@ -2764,7 +2764,7 @@ window.DIDAKO_DEMO = {
       {
         "d": "금",
         "ref": "고린도후서 2장 5~8절",
-        "url": "https://www.bskorea.or.kr/bible/korbibReadpage.php?version=GAE&book=2co&chap=2&sec=5",
+        "url": "https://bible.bskorea.or.kr/bible/NKRV,KCT/2CO.2.5",
         "ask": "바울은 그 사람에게 무엇을 나타내라고 하나요?",
         "choices": [
           "사랑을",
@@ -2794,7 +2794,7 @@ window.DIDAKO_DEMO = {
       {
         "d": "월",
         "ref": "로마서 12장 1~2절",
-        "url": "https://www.bskorea.or.kr/bible/korbibReadpage.php?version=GAE&book=rom&chap=12&sec=1",
+        "url": "https://bible.bskorea.or.kr/bible/NKRV,KCT/ROM.12.1",
         "ask": "바울은 우리 몸을 하나님께 어떤 제물로 드리라고 하나요?",
         "choices": [
           "흠 없는 짐승으로",
@@ -2807,7 +2807,7 @@ window.DIDAKO_DEMO = {
       {
         "d": "화",
         "ref": "마태복음 5장 14~16절",
-        "url": "https://www.bskorea.or.kr/bible/korbibReadpage.php?version=GAE&book=mat&chap=5&sec=14",
+        "url": "https://bible.bskorea.or.kr/bible/NKRV,KCT/MAT.5.14",
         "ask": "사람들이 우리의 착한 행실을 보고 누구께 영광을 돌리게 하나요?",
         "choices": [
           "하늘 아버지께",
@@ -2820,7 +2820,7 @@ window.DIDAKO_DEMO = {
       {
         "d": "수",
         "ref": "골로새서 3장 16~17절",
-        "url": "https://www.bskorea.or.kr/bible/korbibReadpage.php?version=GAE&book=col&chap=3&sec=16",
+        "url": "https://bible.bskorea.or.kr/bible/NKRV,KCT/COL.3.16",
         "ask": "바울은 모든 일을 누구의 이름으로 하라고 하나요?",
         "choices": [
           "모세의 이름으로",
@@ -2833,7 +2833,7 @@ window.DIDAKO_DEMO = {
       {
         "d": "목",
         "ref": "요한복음 15장 5~8절",
-        "url": "https://www.bskorea.or.kr/bible/korbibReadpage.php?version=GAE&book=jhn&chap=15&sec=5",
+        "url": "https://bible.bskorea.or.kr/bible/NKRV,KCT/JHN.15.5",
         "ask": "예수님은 제자들이 어떤 열매를 맺을 때 아버지가 영광을 받으신다고 하나요?",
         "choices": [
           "작은 열매를",
@@ -2846,7 +2846,7 @@ window.DIDAKO_DEMO = {
       {
         "d": "금",
         "ref": "베드로전서 2장 11~12절",
-        "url": "https://www.bskorea.or.kr/bible/korbibReadpage.php?version=GAE&book=1pe&chap=2&sec=11",
+        "url": "https://bible.bskorea.or.kr/bible/NKRV,KCT/1PE.2.11",
         "ask": "사람들이 우리의 선한 일을 보고 누구께 영광을 돌린다고 하나요?",
         "choices": [
           "하나님께",
@@ -2876,7 +2876,7 @@ window.DIDAKO_DEMO = {
       {
         "d": "월",
         "ref": "고린도후서 7장 9~11절",
-        "url": "https://www.bskorea.or.kr/bible/korbibReadpage.php?version=GAE&book=2co&chap=7&sec=9",
+        "url": "https://bible.bskorea.or.kr/bible/NKRV,KCT/2CO.7.9",
         "ask": "하나님의 뜻대로 하는 근심은 무엇을 이루나요?",
         "choices": [
           "큰 명예를",
@@ -2889,7 +2889,7 @@ window.DIDAKO_DEMO = {
       {
         "d": "화",
         "ref": "에베소서 4장 22~24절",
-        "url": "https://www.bskorea.or.kr/bible/korbibReadpage.php?version=GAE&book=eph&chap=4&sec=22",
+        "url": "https://bible.bskorea.or.kr/bible/NKRV,KCT/EPH.4.22",
         "ask": "바울은 무엇을 입으라고 말하나요?",
         "choices": [
           "옛사람을",
@@ -2902,7 +2902,7 @@ window.DIDAKO_DEMO = {
       {
         "d": "수",
         "ref": "로마서 6장 11~13절",
-        "url": "https://www.bskorea.or.kr/bible/korbibReadpage.php?version=GAE&book=rom&chap=6&sec=11",
+        "url": "https://bible.bskorea.or.kr/bible/NKRV,KCT/ROM.6.11",
         "ask": "바울은 우리 자신을 죄에 대해서 어떻게 여기라고 하나요?",
         "choices": [
           "죽은 자로",
@@ -2915,7 +2915,7 @@ window.DIDAKO_DEMO = {
       {
         "d": "목",
         "ref": "골로새서 3장 8~10절",
-        "url": "https://www.bskorea.or.kr/bible/korbibReadpage.php?version=GAE&book=col&chap=3&sec=8",
+        "url": "https://bible.bskorea.or.kr/bible/NKRV,KCT/COL.3.8",
         "ask": "바울은 낡은 사람을 벗고 무엇을 입었다고 하나요?",
         "choices": [
           "아름다운 옷을",
@@ -2928,7 +2928,7 @@ window.DIDAKO_DEMO = {
       {
         "d": "금",
         "ref": "시편 51편 10~12절",
-        "url": "https://www.bskorea.or.kr/bible/korbibReadpage.php?version=GAE&book=psa&chap=51&sec=10",
+        "url": "https://bible.bskorea.or.kr/bible/NKRV,KCT/PSA.51.10",
         "ask": "시인은 하나님께 무엇을 새롭게 해 달라고 구하나요?",
         "choices": [
           "새 집을",
@@ -2959,7 +2959,7 @@ window.DIDAKO_DEMO = {
       {
         "d": "월",
         "ref": "출애굽기 20장 1~3절",
-        "url": "https://www.bskorea.or.kr/bible/korbibReadpage.php?version=GAE&book=exo&chap=20&sec=1",
+        "url": "https://bible.bskorea.or.kr/bible/NKRV,KCT/EXO.20.1",
         "ask": "하나님은 자기 외에 무엇을 두지 말라고 하시나요?",
         "choices": [
           "다른 신을",
@@ -2972,7 +2972,7 @@ window.DIDAKO_DEMO = {
       {
         "d": "화",
         "ref": "신명기 6장 4~5절",
-        "url": "https://www.bskorea.or.kr/bible/korbibReadpage.php?version=GAE&book=deu&chap=6&sec=4",
+        "url": "https://bible.bskorea.or.kr/bible/NKRV,KCT/DEU.6.4",
         "ask": "하나님을 사랑할 때 무엇을 다하라고 말씀하시나요?",
         "choices": [
           "재물과 권세를",
@@ -2985,7 +2985,7 @@ window.DIDAKO_DEMO = {
       {
         "d": "수",
         "ref": "마태복음 6장 24~26절",
-        "url": "https://www.bskorea.or.kr/bible/korbibReadpage.php?version=GAE&book=mat&chap=6&sec=24",
+        "url": "https://bible.bskorea.or.kr/bible/NKRV,KCT/MAT.6.24",
         "ask": "예수님은 하나님과 무엇을 함께 섬길 수 없다고 하나요?",
         "choices": [
           "가족을",
@@ -2998,7 +2998,7 @@ window.DIDAKO_DEMO = {
       {
         "d": "목",
         "ref": "여호수아 24장 14~15절",
-        "url": "https://www.bskorea.or.kr/bible/korbibReadpage.php?version=GAE&book=jos&chap=24&sec=14",
+        "url": "https://bible.bskorea.or.kr/bible/NKRV,KCT/JOS.24.14",
         "ask": "여호수아는 자기와 자기 집이 누구를 섬기겠다고 하나요?",
         "choices": [
           "여호와를",
@@ -3011,7 +3011,7 @@ window.DIDAKO_DEMO = {
       {
         "d": "금",
         "ref": "시편 115편 4~8절",
-        "url": "https://www.bskorea.or.kr/bible/korbibReadpage.php?version=GAE&book=psa&chap=115&sec=4",
+        "url": "https://bible.bskorea.or.kr/bible/NKRV,KCT/PSA.115.4",
         "ask": "시인은 우상이 무엇으로 만들어졌다고 하나요?",
         "choices": [
           "나무와 돌로",
@@ -3042,7 +3042,7 @@ window.DIDAKO_DEMO = {
       {
         "d": "월",
         "ref": "출애굽기 20장 4~6절",
-        "url": "https://www.bskorea.or.kr/bible/korbibReadpage.php?version=GAE&book=exo&chap=20&sec=4",
+        "url": "https://bible.bskorea.or.kr/bible/NKRV,KCT/EXO.20.4",
         "ask": "하나님은 무엇을 만들지 말라고 말씀하시나요?",
         "choices": [
           "성막을",
@@ -3055,7 +3055,7 @@ window.DIDAKO_DEMO = {
       {
         "d": "화",
         "ref": "신명기 4장 15~18절",
-        "url": "https://www.bskorea.or.kr/bible/korbibReadpage.php?version=GAE&book=deu&chap=4&sec=15",
+        "url": "https://bible.bskorea.or.kr/bible/NKRV,KCT/DEU.4.15",
         "ask": "하나님이 말씀하실 때 백성은 무엇을 보지 못했나요?",
         "choices": [
           "어떤 형상도",
@@ -3068,7 +3068,7 @@ window.DIDAKO_DEMO = {
       {
         "d": "수",
         "ref": "요한복음 4장 23~24절",
-        "url": "https://www.bskorea.or.kr/bible/korbibReadpage.php?version=GAE&book=jhn&chap=4&sec=23",
+        "url": "https://bible.bskorea.or.kr/bible/NKRV,KCT/JHN.4.23",
         "ask": "예수님은 하나님이 어떤 분이라고 말씀하시나요?",
         "choices": [
           "사람이시라고",
@@ -3081,7 +3081,7 @@ window.DIDAKO_DEMO = {
       {
         "d": "목",
         "ref": "이사야 40장 18~20절",
-        "url": "https://www.bskorea.or.kr/bible/korbibReadpage.php?version=GAE&book=isa&chap=40&sec=18",
+        "url": "https://bible.bskorea.or.kr/bible/NKRV,KCT/ISA.40.18",
         "ask": "이사야는 하나님을 무엇과 같다고 여기겠느냐고 묻나요?",
         "choices": [
           "바람과",
@@ -3094,7 +3094,7 @@ window.DIDAKO_DEMO = {
       {
         "d": "금",
         "ref": "사도행전 17장 28~30절",
-        "url": "https://www.bskorea.or.kr/bible/korbibReadpage.php?version=GAE&book=act&chap=17&sec=28",
+        "url": "https://bible.bskorea.or.kr/bible/NKRV,KCT/ACT.17.28",
         "ask": "바울은 신을 무엇과 같다고 여겨서는 안 된다고 하나요?",
         "choices": [
           "금이나 은이나 돌",
@@ -3124,7 +3124,7 @@ window.DIDAKO_DEMO = {
       {
         "d": "월",
         "ref": "출애굽기 20장 7절",
-        "url": "https://www.bskorea.or.kr/bible/korbibReadpage.php?version=GAE&book=exo&chap=20&sec=7",
+        "url": "https://bible.bskorea.or.kr/bible/NKRV,KCT/EXO.20.7",
         "ask": "하나님은 자신의 이름을 어떻게 부르지 말라고 하시나요?",
         "choices": [
           "소리 높여",
@@ -3137,7 +3137,7 @@ window.DIDAKO_DEMO = {
       {
         "d": "화",
         "ref": "시편 29편 1~3절",
-        "url": "https://www.bskorea.or.kr/bible/korbibReadpage.php?version=GAE&book=psa&chap=29&sec=1",
+        "url": "https://bible.bskorea.or.kr/bible/NKRV,KCT/PSA.29.1",
         "ask": "시인은 여호와의 이름에 합당한 무엇을 돌리라고 하나요?",
         "choices": [
           "재물을",
@@ -3150,7 +3150,7 @@ window.DIDAKO_DEMO = {
       {
         "d": "수",
         "ref": "레위기 19장 11~13절",
-        "url": "https://www.bskorea.or.kr/bible/korbibReadpage.php?version=GAE&book=lev&chap=19&sec=11",
+        "url": "https://bible.bskorea.or.kr/bible/NKRV,KCT/LEV.19.11",
         "ask": "하나님은 자신의 이름으로 어떻게 맹세하지 말라고 하나요?",
         "choices": [
           "거짓으로",
@@ -3163,7 +3163,7 @@ window.DIDAKO_DEMO = {
       {
         "d": "목",
         "ref": "마태복음 6장 9~10절",
-        "url": "https://www.bskorea.or.kr/bible/korbibReadpage.php?version=GAE&book=mat&chap=6&sec=9",
+        "url": "https://bible.bskorea.or.kr/bible/NKRV,KCT/MAT.6.9",
         "ask": "예수님은 아버지의 이름이 어떻게 여겨지기를 구하라고 하시나요?",
         "choices": [
           "가볍게",
@@ -3176,7 +3176,7 @@ window.DIDAKO_DEMO = {
       {
         "d": "금",
         "ref": "시편 113편 1~3절",
-        "url": "https://www.bskorea.or.kr/bible/korbibReadpage.php?version=GAE&book=psa&chap=113&sec=1",
+        "url": "https://bible.bskorea.or.kr/bible/NKRV,KCT/PSA.113.1",
         "ask": "시인은 여호와의 이름이 언제부터 언제까지 찬양받는다고 하나요?",
         "choices": [
           "아침부터 낮까지",
@@ -3206,7 +3206,7 @@ window.DIDAKO_DEMO = {
       {
         "d": "월",
         "ref": "마태복음 5장 33~37절",
-        "url": "https://www.bskorea.or.kr/bible/korbibReadpage.php?version=GAE&book=mat&chap=5&sec=33",
+        "url": "https://bible.bskorea.or.kr/bible/NKRV,KCT/MAT.5.33",
         "ask": "예수님은 하늘로나 땅으로 무엇을 하지 말라고 하나요?",
         "choices": [
           "맹세하지 말라고",
@@ -3219,7 +3219,7 @@ window.DIDAKO_DEMO = {
       {
         "d": "화",
         "ref": "시편 15편 1~5절",
-        "url": "https://www.bskorea.or.kr/bible/korbibReadpage.php?version=GAE&book=psa&chap=15&sec=1",
+        "url": "https://bible.bskorea.or.kr/bible/NKRV,KCT/PSA.15.1",
         "ask": "시인은 해가 되더라도 무엇을 바꾸지 않는다고 하나요?",
         "choices": [
           "입은 옷을",
@@ -3232,7 +3232,7 @@ window.DIDAKO_DEMO = {
       {
         "d": "수",
         "ref": "야고보서 5장 12~13절",
-        "url": "https://www.bskorea.or.kr/bible/korbibReadpage.php?version=GAE&book=jas&chap=5&sec=12",
+        "url": "https://bible.bskorea.or.kr/bible/NKRV,KCT/JAS.5.12",
         "ask": "야고보는 정죄를 면하려면 말을 어떻게 하라고 하나요?",
         "choices": [
           "길게 하라고",
@@ -3245,7 +3245,7 @@ window.DIDAKO_DEMO = {
       {
         "d": "목",
         "ref": "잠언 12장 17~19절",
-        "url": "https://www.bskorea.or.kr/bible/korbibReadpage.php?version=GAE&book=pro&chap=12&sec=17",
+        "url": "https://bible.bskorea.or.kr/bible/NKRV,KCT/PRO.12.17",
         "ask": "잠언은 진실을 말하는 자가 무엇을 나타낸다고 하나요?",
         "choices": [
           "의를",
@@ -3258,7 +3258,7 @@ window.DIDAKO_DEMO = {
       {
         "d": "금",
         "ref": "잠언 12장 21~23절",
-        "url": "https://www.bskorea.or.kr/bible/korbibReadpage.php?version=GAE&book=pro&chap=12&sec=21",
+        "url": "https://bible.bskorea.or.kr/bible/NKRV,KCT/PRO.12.21",
         "ask": "여호와께서 기뻐하시는 사람은 누구인가요?",
         "choices": [
           "거짓을 행하는 사람",
@@ -3288,7 +3288,7 @@ window.DIDAKO_DEMO = {
       {
         "d": "월",
         "ref": "출애굽기 20장 8~11절",
-        "url": "https://www.bskorea.or.kr/bible/korbibReadpage.php?version=GAE&book=exo&chap=20&sec=8",
+        "url": "https://bible.bskorea.or.kr/bible/NKRV,KCT/EXO.20.8",
         "ask": "하나님은 무엇을 기억하여 거룩히 지키라고 하시나요?",
         "choices": [
           "수확의 날을",
@@ -3301,7 +3301,7 @@ window.DIDAKO_DEMO = {
       {
         "d": "화",
         "ref": "히브리서 10장 23~25절",
-        "url": "https://www.bskorea.or.kr/bible/korbibReadpage.php?version=GAE&book=heb&chap=10&sec=23",
+        "url": "https://bible.bskorea.or.kr/bible/NKRV,KCT/HEB.10.23",
         "ask": "히브리서는 무엇을 폐하는 습관을 따르지 말라고 하나요?",
         "choices": [
           "모이기를",
@@ -3314,7 +3314,7 @@ window.DIDAKO_DEMO = {
       {
         "d": "수",
         "ref": "마가복음 2장 25~28절",
-        "url": "https://www.bskorea.or.kr/bible/korbibReadpage.php?version=GAE&book=mrk&chap=2&sec=25",
+        "url": "https://bible.bskorea.or.kr/bible/NKRV,KCT/MRK.2.25",
         "ask": "예수님은 안식일이 누구를 위해 만들어졌다고 하나요?",
         "choices": [
           "천사를 위해",
@@ -3327,7 +3327,7 @@ window.DIDAKO_DEMO = {
       {
         "d": "목",
         "ref": "사도행전 2장 42~44절",
-        "url": "https://www.bskorea.or.kr/bible/korbibReadpage.php?version=GAE&book=act&chap=2&sec=42",
+        "url": "https://bible.bskorea.or.kr/bible/NKRV,KCT/ACT.2.42",
         "ask": "믿는 사람들은 무엇에 힘썼다고 하나요?",
         "choices": [
           "장사에",
@@ -3340,7 +3340,7 @@ window.DIDAKO_DEMO = {
       {
         "d": "금",
         "ref": "히브리서 4장 8~11절",
-        "url": "https://www.bskorea.or.kr/bible/korbibReadpage.php?version=GAE&book=heb&chap=4&sec=8",
+        "url": "https://bible.bskorea.or.kr/bible/NKRV,KCT/HEB.4.8",
         "ask": "히브리서는 하나님의 백성에게 무엇이 남아 있다고 하나요?",
         "choices": [
           "안식할 때",
@@ -3371,7 +3371,7 @@ window.DIDAKO_DEMO = {
       {
         "d": "월",
         "ref": "출애굽기 20장 12절",
-        "url": "https://www.bskorea.or.kr/bible/korbibReadpage.php?version=GAE&book=exo&chap=20&sec=12",
+        "url": "https://bible.bskorea.or.kr/bible/NKRV,KCT/EXO.20.12",
         "ask": "하나님은 누구를 공경하라고 말씀하시나요?",
         "choices": [
           "왕과 제사장을",
@@ -3384,7 +3384,7 @@ window.DIDAKO_DEMO = {
       {
         "d": "화",
         "ref": "에베소서 6장 1~3절",
-        "url": "https://www.bskorea.or.kr/bible/korbibReadpage.php?version=GAE&book=eph&chap=6&sec=1",
+        "url": "https://bible.bskorea.or.kr/bible/NKRV,KCT/EPH.6.1",
         "ask": "바울은 자녀에게 부모에게 어떻게 하라고 하나요?",
         "choices": [
           "경쟁하라고",
@@ -3397,7 +3397,7 @@ window.DIDAKO_DEMO = {
       {
         "d": "수",
         "ref": "잠언 23장 22~24절",
-        "url": "https://www.bskorea.or.kr/bible/korbibReadpage.php?version=GAE&book=pro&chap=23&sec=22",
+        "url": "https://bible.bskorea.or.kr/bible/NKRV,KCT/PRO.23.22",
         "ask": "잠언은 늙은 어머니를 어떻게 하지 말라고 하나요?",
         "choices": [
           "경히 여기지 말라고",
@@ -3410,7 +3410,7 @@ window.DIDAKO_DEMO = {
       {
         "d": "목",
         "ref": "골로새서 3장 18~21절",
-        "url": "https://www.bskorea.or.kr/bible/korbibReadpage.php?version=GAE&book=col&chap=3&sec=18",
+        "url": "https://bible.bskorea.or.kr/bible/NKRV,KCT/COL.3.18",
         "ask": "바울은 자녀들에게 누구에게 순종하라고 하나요?",
         "choices": [
           "이웃에게",
@@ -3423,7 +3423,7 @@ window.DIDAKO_DEMO = {
       {
         "d": "금",
         "ref": "잠언 1장 7~9절",
-        "url": "https://www.bskorea.or.kr/bible/korbibReadpage.php?version=GAE&book=pro&chap=1&sec=7",
+        "url": "https://bible.bskorea.or.kr/bible/NKRV,KCT/PRO.1.7",
         "ask": "잠언은 아버지의 무엇을 들으라고 말하나요?",
         "choices": [
           "재산을",
@@ -3453,7 +3453,7 @@ window.DIDAKO_DEMO = {
       {
         "d": "월",
         "ref": "출애굽기 20장 13절",
-        "url": "https://www.bskorea.or.kr/bible/korbibReadpage.php?version=GAE&book=exo&chap=20&sec=13",
+        "url": "https://bible.bskorea.or.kr/bible/NKRV,KCT/EXO.20.13",
         "ask": "하나님은 사람에게 무엇을 하지 말라고 하시나요?",
         "choices": [
           "도둑질",
@@ -3466,7 +3466,7 @@ window.DIDAKO_DEMO = {
       {
         "d": "화",
         "ref": "마태복음 5장 21~22절",
-        "url": "https://www.bskorea.or.kr/bible/korbibReadpage.php?version=GAE&book=mat&chap=5&sec=21",
+        "url": "https://bible.bskorea.or.kr/bible/NKRV,KCT/MAT.5.21",
         "ask": "예수님은 형제에게 무엇을 품는 일을 경고하시나요?",
         "choices": [
           "노여움",
@@ -3479,7 +3479,7 @@ window.DIDAKO_DEMO = {
       {
         "d": "수",
         "ref": "요한일서 3장 14~16절",
-        "url": "https://www.bskorea.or.kr/bible/korbibReadpage.php?version=GAE&book=1jn&chap=3&sec=14",
+        "url": "https://bible.bskorea.or.kr/bible/NKRV,KCT/1JN.3.14",
         "ask": "요한은 형제를 미워하는 사람을 무엇이라고 하나요?",
         "choices": [
           "가난한 사람",
@@ -3492,7 +3492,7 @@ window.DIDAKO_DEMO = {
       {
         "d": "목",
         "ref": "로마서 12장 17~19절",
-        "url": "https://www.bskorea.or.kr/bible/korbibReadpage.php?version=GAE&book=rom&chap=12&sec=17",
+        "url": "https://bible.bskorea.or.kr/bible/NKRV,KCT/ROM.12.17",
         "ask": "바울은 아무에게도 무엇으로 갚지 말라고 하나요?",
         "choices": [
           "선으로",
@@ -3505,7 +3505,7 @@ window.DIDAKO_DEMO = {
       {
         "d": "금",
         "ref": "마태복음 5장 43~45절",
-        "url": "https://www.bskorea.or.kr/bible/korbibReadpage.php?version=GAE&book=mat&chap=5&sec=43",
+        "url": "https://bible.bskorea.or.kr/bible/NKRV,KCT/MAT.5.43",
         "ask": "예수님은 원수를 위해 무엇을 하라고 하시나요?",
         "choices": [
           "기도하라고",
@@ -3536,7 +3536,7 @@ window.DIDAKO_DEMO = {
       {
         "d": "월",
         "ref": "출애굽기 20장 14절",
-        "url": "https://www.bskorea.or.kr/bible/korbibReadpage.php?version=GAE&book=exo&chap=20&sec=14",
+        "url": "https://bible.bskorea.or.kr/bible/NKRV,KCT/EXO.20.14",
         "ask": "하나님은 무엇을 하지 말라고 말씀하시나요?",
         "choices": [
           "살인",
@@ -3549,7 +3549,7 @@ window.DIDAKO_DEMO = {
       {
         "d": "화",
         "ref": "마태복음 5장 27~28절",
-        "url": "https://www.bskorea.or.kr/bible/korbibReadpage.php?version=GAE&book=mat&chap=5&sec=27",
+        "url": "https://bible.bskorea.or.kr/bible/NKRV,KCT/MAT.5.27",
         "ask": "예수님은 음욕을 품고 보는 사람이 이미 어디에서 간음했다고 하나요?",
         "choices": [
           "마음에서",
@@ -3562,7 +3562,7 @@ window.DIDAKO_DEMO = {
       {
         "d": "수",
         "ref": "데살로니가전서 4장 3~5절",
-        "url": "https://www.bskorea.or.kr/bible/korbibReadpage.php?version=GAE&book=1th&chap=4&sec=3",
+        "url": "https://bible.bskorea.or.kr/bible/NKRV,KCT/1TH.4.3",
         "ask": "바울은 무엇을 멀리하라고 하나요?",
         "choices": [
           "슬픔",
@@ -3575,7 +3575,7 @@ window.DIDAKO_DEMO = {
       {
         "d": "목",
         "ref": "고린도전서 6장 13~15절",
-        "url": "https://www.bskorea.or.kr/bible/korbibReadpage.php?version=GAE&book=1co&chap=6&sec=13",
+        "url": "https://bible.bskorea.or.kr/bible/NKRV,KCT/1CO.6.13",
         "ask": "바울은 몸이 누구를 위한다고 말하나요?",
         "choices": [
           "사람을 위해",
@@ -3588,7 +3588,7 @@ window.DIDAKO_DEMO = {
       {
         "d": "금",
         "ref": "디모데후서 2장 21~22절",
-        "url": "https://www.bskorea.or.kr/bible/korbibReadpage.php?version=GAE&book=2ti&chap=2&sec=21",
+        "url": "https://bible.bskorea.or.kr/bible/NKRV,KCT/2TI.2.21",
         "ask": "바울은 청년의 무엇을 피하라고 하나요?",
         "choices": [
           "정욕",
@@ -3618,7 +3618,7 @@ window.DIDAKO_DEMO = {
       {
         "d": "월",
         "ref": "출애굽기 20장 15절",
-        "url": "https://www.bskorea.or.kr/bible/korbibReadpage.php?version=GAE&book=exo&chap=20&sec=15",
+        "url": "https://bible.bskorea.or.kr/bible/NKRV,KCT/EXO.20.15",
         "ask": "하나님은 무엇을 하지 말라고 하시나요?",
         "choices": [
           "거짓 증언",
@@ -3631,7 +3631,7 @@ window.DIDAKO_DEMO = {
       {
         "d": "화",
         "ref": "에베소서 4장 27~29절",
-        "url": "https://www.bskorea.or.kr/bible/korbibReadpage.php?version=GAE&book=eph&chap=4&sec=27",
+        "url": "https://bible.bskorea.or.kr/bible/NKRV,KCT/EPH.4.27",
         "ask": "바울은 일해서 얻은 것으로 누구를 도우라고 하나요?",
         "choices": [
           "부유한 사람",
@@ -3644,7 +3644,7 @@ window.DIDAKO_DEMO = {
       {
         "d": "수",
         "ref": "레위기 19장 11~13절",
-        "url": "https://www.bskorea.or.kr/bible/korbibReadpage.php?version=GAE&book=lev&chap=19&sec=11",
+        "url": "https://bible.bskorea.or.kr/bible/NKRV,KCT/LEV.19.11",
         "ask": "하나님은 이웃의 것을 어떻게 하지 말라고 하시나요?",
         "choices": [
           "도둑질하지 말라고",
@@ -3657,7 +3657,7 @@ window.DIDAKO_DEMO = {
       {
         "d": "목",
         "ref": "잠언 11장 24~26절",
-        "url": "https://www.bskorea.or.kr/bible/korbibReadpage.php?version=GAE&book=pro&chap=11&sec=24",
+        "url": "https://bible.bskorea.or.kr/bible/NKRV,KCT/PRO.11.24",
         "ask": "잠언은 곡식을 내놓지 않는 사람에게 무엇이 돌아온다고 하나요?",
         "choices": [
           "칭찬이",
@@ -3670,7 +3670,7 @@ window.DIDAKO_DEMO = {
       {
         "d": "금",
         "ref": "사도행전 20장 33~35절",
-        "url": "https://www.bskorea.or.kr/bible/korbibReadpage.php?version=GAE&book=act&chap=20&sec=33",
+        "url": "https://bible.bskorea.or.kr/bible/NKRV,KCT/ACT.20.33",
         "ask": "바울은 수고하여 누구를 도와야 한다고 하나요?",
         "choices": [
           "부자를",
@@ -3700,7 +3700,7 @@ window.DIDAKO_DEMO = {
       {
         "d": "월",
         "ref": "출애굽기 20장 16절",
-        "url": "https://www.bskorea.or.kr/bible/korbibReadpage.php?version=GAE&book=exo&chap=20&sec=16",
+        "url": "https://bible.bskorea.or.kr/bible/NKRV,KCT/EXO.20.16",
         "ask": "하나님은 이웃에 대해 무엇을 하지 말라고 하시나요?",
         "choices": [
           "거짓 증언",
@@ -3713,7 +3713,7 @@ window.DIDAKO_DEMO = {
       {
         "d": "화",
         "ref": "에베소서 4장 24~26절",
-        "url": "https://www.bskorea.or.kr/bible/korbibReadpage.php?version=GAE&book=eph&chap=4&sec=24",
+        "url": "https://bible.bskorea.or.kr/bible/NKRV,KCT/EPH.4.24",
         "ask": "바울은 거짓을 버리고 이웃과 무엇을 말하라고 하나요?",
         "choices": [
           "칭찬만",
@@ -3726,7 +3726,7 @@ window.DIDAKO_DEMO = {
       {
         "d": "수",
         "ref": "잠언 12장 17~19절",
-        "url": "https://www.bskorea.or.kr/bible/korbibReadpage.php?version=GAE&book=pro&chap=12&sec=17",
+        "url": "https://bible.bskorea.or.kr/bible/NKRV,KCT/PRO.12.17",
         "ask": "잠언은 진실한 입술이 얼마나 오래 간다고 하나요?",
         "choices": [
           "잠깐 동안",
@@ -3739,7 +3739,7 @@ window.DIDAKO_DEMO = {
       {
         "d": "목",
         "ref": "야고보서 4장 10~12절",
-        "url": "https://www.bskorea.or.kr/bible/korbibReadpage.php?version=GAE&book=jas&chap=4&sec=10",
+        "url": "https://bible.bskorea.or.kr/bible/NKRV,KCT/JAS.4.10",
         "ask": "야고보는 형제끼리 무엇을 하지 말라고 하나요?",
         "choices": [
           "비방하지 말라고",
@@ -3752,7 +3752,7 @@ window.DIDAKO_DEMO = {
       {
         "d": "금",
         "ref": "스가랴 8장 16~17절",
-        "url": "https://www.bskorea.or.kr/bible/korbibReadpage.php?version=GAE&book=zec&chap=8&sec=16",
+        "url": "https://bible.bskorea.or.kr/bible/NKRV,KCT/ZEC.8.16",
         "ask": "하나님은 서로에게 어떤 말을 하라고 하시나요?",
         "choices": [
           "칭찬의 말만",
@@ -3783,7 +3783,7 @@ window.DIDAKO_DEMO = {
       {
         "d": "월",
         "ref": "출애굽기 20장 17절",
-        "url": "https://www.bskorea.or.kr/bible/korbibReadpage.php?version=GAE&book=exo&chap=20&sec=17",
+        "url": "https://bible.bskorea.or.kr/bible/NKRV,KCT/EXO.20.17",
         "ask": "하나님은 이웃의 무엇을 탐내지 말라고 하시나요?",
         "choices": [
           "나이",
@@ -3796,7 +3796,7 @@ window.DIDAKO_DEMO = {
       {
         "d": "화",
         "ref": "로마서 3장 19~21절",
-        "url": "https://www.bskorea.or.kr/bible/korbibReadpage.php?version=GAE&book=rom&chap=3&sec=19",
+        "url": "https://bible.bskorea.or.kr/bible/NKRV,KCT/ROM.3.19",
         "ask": "바울은 율법으로 무엇을 깨닫는다고 하나요?",
         "choices": [
           "죄를",
@@ -3809,7 +3809,7 @@ window.DIDAKO_DEMO = {
       {
         "d": "수",
         "ref": "로마서 7장 7~9절",
-        "url": "https://www.bskorea.or.kr/bible/korbibReadpage.php?version=GAE&book=rom&chap=7&sec=7",
+        "url": "https://bible.bskorea.or.kr/bible/NKRV,KCT/ROM.7.7",
         "ask": "바울은 무엇을 통해 죄를 알게 되었다고 하나요?",
         "choices": [
           "사람들의 말로",
@@ -3822,7 +3822,7 @@ window.DIDAKO_DEMO = {
       {
         "d": "목",
         "ref": "갈라디아서 3장 22~24절",
-        "url": "https://www.bskorea.or.kr/bible/korbibReadpage.php?version=GAE&book=gal&chap=3&sec=22",
+        "url": "https://bible.bskorea.or.kr/bible/NKRV,KCT/GAL.3.22",
         "ask": "율법은 우리를 누구께로 인도하는 초등교사라고 하나요?",
         "choices": [
           "모세께",
@@ -3835,7 +3835,7 @@ window.DIDAKO_DEMO = {
       {
         "d": "금",
         "ref": "요한일서 1장 8~10절",
-        "url": "https://www.bskorea.or.kr/bible/korbibReadpage.php?version=GAE&book=1jn&chap=1&sec=8",
+        "url": "https://bible.bskorea.or.kr/bible/NKRV,KCT/1JN.1.8",
         "ask": "죄가 없다고 말하면 자신을 어떻게 하는 것인가요?",
         "choices": [
           "속이는 것",
@@ -3866,7 +3866,7 @@ window.DIDAKO_DEMO = {
       {
         "d": "월",
         "ref": "시편 50편 14~15절",
-        "url": "https://www.bskorea.or.kr/bible/korbibReadpage.php?version=GAE&book=psa&chap=50&sec=14",
+        "url": "https://bible.bskorea.or.kr/bible/NKRV,KCT/PSA.50.14",
         "ask": "환난 날에 하나님께 무엇을 하라고 하나요?",
         "choices": [
           "숨으라고",
@@ -3879,7 +3879,7 @@ window.DIDAKO_DEMO = {
       {
         "d": "화",
         "ref": "빌립보서 4장 6~7절",
-        "url": "https://www.bskorea.or.kr/bible/korbibReadpage.php?version=GAE&book=php&chap=4&sec=6",
+        "url": "https://bible.bskorea.or.kr/bible/NKRV,KCT/PHP.4.6",
         "ask": "염려 대신 모든 일을 무엇으로 아뢰라고 하나요?",
         "choices": [
           "자랑과 침묵으로",
@@ -3892,7 +3892,7 @@ window.DIDAKO_DEMO = {
       {
         "d": "수",
         "ref": "마태복음 7장 7~8절",
-        "url": "https://www.bskorea.or.kr/bible/korbibReadpage.php?version=GAE&book=mat&chap=7&sec=7",
+        "url": "https://bible.bskorea.or.kr/bible/NKRV,KCT/MAT.7.7",
         "ask": "예수님은 구하는 사람이 어떻게 된다고 하나요?",
         "choices": [
           "받게 된다고",
@@ -3905,7 +3905,7 @@ window.DIDAKO_DEMO = {
       {
         "d": "목",
         "ref": "데살로니가전서 5장 16~18절",
-        "url": "https://www.bskorea.or.kr/bible/korbibReadpage.php?version=GAE&book=1th&chap=5&sec=16",
+        "url": "https://bible.bskorea.or.kr/bible/NKRV,KCT/1TH.5.16",
         "ask": "바울은 쉬지 말고 무엇을 하라고 하나요?",
         "choices": [
           "일하라고",
@@ -3918,7 +3918,7 @@ window.DIDAKO_DEMO = {
       {
         "d": "금",
         "ref": "요한복음 16장 23~24절",
-        "url": "https://www.bskorea.or.kr/bible/korbibReadpage.php?version=GAE&book=jhn&chap=16&sec=23",
+        "url": "https://bible.bskorea.or.kr/bible/NKRV,KCT/JHN.16.23",
         "ask": "예수님은 누구의 이름으로 구하라고 하시나요?",
         "choices": [
           "모세의 이름",
@@ -3948,7 +3948,7 @@ window.DIDAKO_DEMO = {
       {
         "d": "월",
         "ref": "누가복음 11장 1~3절",
-        "url": "https://www.bskorea.or.kr/bible/korbibReadpage.php?version=GAE&book=luk&chap=11&sec=1",
+        "url": "https://bible.bskorea.or.kr/bible/NKRV,KCT/LUK.11.1",
         "ask": "예수님은 기도를 시작할 때 하나님을 어떻게 부르라고 하나요?",
         "choices": [
           "아버지",
@@ -3961,7 +3961,7 @@ window.DIDAKO_DEMO = {
       {
         "d": "화",
         "ref": "마태복음 7장 9~11절",
-        "url": "https://www.bskorea.or.kr/bible/korbibReadpage.php?version=GAE&book=mat&chap=7&sec=9",
+        "url": "https://bible.bskorea.or.kr/bible/NKRV,KCT/MAT.7.9",
         "ask": "아들이 떡을 달라 할 때 아버지가 주지 않을 것은 무엇인가요?",
         "choices": [
           "생선",
@@ -3974,7 +3974,7 @@ window.DIDAKO_DEMO = {
       {
         "d": "수",
         "ref": "마태복음 6장 5~6절",
-        "url": "https://www.bskorea.or.kr/bible/korbibReadpage.php?version=GAE&book=mat&chap=6&sec=5",
+        "url": "https://bible.bskorea.or.kr/bible/NKRV,KCT/MAT.6.5",
         "ask": "예수님은 골방에서 누구께 기도하라고 하시나요?",
         "choices": [
           "무리에게",
@@ -3987,7 +3987,7 @@ window.DIDAKO_DEMO = {
       {
         "d": "목",
         "ref": "마태복음 6장 9절",
-        "url": "https://www.bskorea.or.kr/bible/korbibReadpage.php?version=GAE&book=mat&chap=6&sec=9",
+        "url": "https://bible.bskorea.or.kr/bible/NKRV,KCT/MAT.6.9",
         "ask": "예수님은 누구를 부르며 기도를 시작하라고 하시나요?",
         "choices": [
           "하늘에 계신 아버지",
@@ -4000,7 +4000,7 @@ window.DIDAKO_DEMO = {
       {
         "d": "금",
         "ref": "에베소서 3장 14~17절",
-        "url": "https://www.bskorea.or.kr/bible/korbibReadpage.php?version=GAE&book=eph&chap=3&sec=14",
+        "url": "https://bible.bskorea.or.kr/bible/NKRV,KCT/EPH.3.14",
         "ask": "바울은 누구 앞에 무릎을 꿇는다고 하나요?",
         "choices": [
           "왕 앞에",
@@ -4030,7 +4030,7 @@ window.DIDAKO_DEMO = {
       {
         "d": "월",
         "ref": "마태복음 6장 31~33절",
-        "url": "https://www.bskorea.or.kr/bible/korbibReadpage.php?version=GAE&book=mat&chap=6&sec=31",
+        "url": "https://bible.bskorea.or.kr/bible/NKRV,KCT/MAT.6.31",
         "ask": "예수님은 먼저 무엇을 구하라고 하시나요?",
         "choices": [
           "먹을 것",
@@ -4043,7 +4043,7 @@ window.DIDAKO_DEMO = {
       {
         "d": "화",
         "ref": "요한계시록 22장 17~21절",
-        "url": "https://www.bskorea.or.kr/bible/korbibReadpage.php?version=GAE&book=rev&chap=22&sec=17",
+        "url": "https://bible.bskorea.or.kr/bible/NKRV,KCT/REV.22.17",
         "ask": "주 예수님이 속히 오신다는 말에 어떤 대답이 이어지나요?",
         "choices": [
           "아멘 오시옵소서",
@@ -4056,7 +4056,7 @@ window.DIDAKO_DEMO = {
       {
         "d": "수",
         "ref": "마태복음 6장 10절",
-        "url": "https://www.bskorea.or.kr/bible/korbibReadpage.php?version=GAE&book=mat&chap=6&sec=10",
+        "url": "https://bible.bskorea.or.kr/bible/NKRV,KCT/MAT.6.10",
         "ask": "예수님은 무엇이 임하기를 기도하라고 하시나요?",
         "choices": [
           "큰 부요",
@@ -4069,7 +4069,7 @@ window.DIDAKO_DEMO = {
       {
         "d": "목",
         "ref": "누가복음 17장 20~21절",
-        "url": "https://www.bskorea.or.kr/bible/korbibReadpage.php?version=GAE&book=luk&chap=17&sec=20",
+        "url": "https://bible.bskorea.or.kr/bible/NKRV,KCT/LUK.17.20",
         "ask": "예수님은 하나님의 나라가 어디에 있다고 말씀하시나요?",
         "choices": [
           "바다 너머",
@@ -4082,7 +4082,7 @@ window.DIDAKO_DEMO = {
       {
         "d": "금",
         "ref": "로마서 14장 16~18절",
-        "url": "https://www.bskorea.or.kr/bible/korbibReadpage.php?version=GAE&book=rom&chap=14&sec=16",
+        "url": "https://bible.bskorea.or.kr/bible/NKRV,KCT/ROM.14.16",
         "ask": "바울은 하나님의 나라가 먹고 마시는 것이 아니라 무엇이라고 하나요?",
         "choices": [
           "의와 평강과 희락",
@@ -4112,7 +4112,7 @@ window.DIDAKO_DEMO = {
       {
         "d": "월",
         "ref": "마태복음 26장 38~39절",
-        "url": "https://www.bskorea.or.kr/bible/korbibReadpage.php?version=GAE&book=mat&chap=26&sec=38",
+        "url": "https://bible.bskorea.or.kr/bible/NKRV,KCT/MAT.26.38",
         "ask": "예수님은 자신의 원보다 무엇이 이루어지기를 기도하시나요?",
         "choices": [
           "제자들의 뜻",
@@ -4125,7 +4125,7 @@ window.DIDAKO_DEMO = {
       {
         "d": "화",
         "ref": "로마서 12장 1~2절",
-        "url": "https://www.bskorea.or.kr/bible/korbibReadpage.php?version=GAE&book=rom&chap=12&sec=1",
+        "url": "https://bible.bskorea.or.kr/bible/NKRV,KCT/ROM.12.1",
         "ask": "바울은 무엇을 분별하라고 하나요?",
         "choices": [
           "사람의 평가",
@@ -4138,7 +4138,7 @@ window.DIDAKO_DEMO = {
       {
         "d": "수",
         "ref": "마태복음 6장 10절",
-        "url": "https://www.bskorea.or.kr/bible/korbibReadpage.php?version=GAE&book=mat&chap=6&sec=10",
+        "url": "https://bible.bskorea.or.kr/bible/NKRV,KCT/MAT.6.10",
         "ask": "예수님은 하나님의 뜻이 어디에서와 같이 땅에서도 이루어지기를 구하나요?",
         "choices": [
           "하늘에서",
@@ -4151,7 +4151,7 @@ window.DIDAKO_DEMO = {
       {
         "d": "목",
         "ref": "시편 143편 8~10절",
-        "url": "https://www.bskorea.or.kr/bible/korbibReadpage.php?version=GAE&book=psa&chap=143&sec=8",
+        "url": "https://bible.bskorea.or.kr/bible/NKRV,KCT/PSA.143.8",
         "ask": "시인은 하나님께 무엇을 행하도록 가르쳐 달라고 하나요?",
         "choices": [
           "자신의 계획",
@@ -4164,7 +4164,7 @@ window.DIDAKO_DEMO = {
       {
         "d": "금",
         "ref": "누가복음 22장 41~43절",
-        "url": "https://www.bskorea.or.kr/bible/korbibReadpage.php?version=GAE&book=luk&chap=22&sec=41",
+        "url": "https://bible.bskorea.or.kr/bible/NKRV,KCT/LUK.22.41",
         "ask": "예수님은 누구의 뜻이 이루어지기를 기도하시나요?",
         "choices": [
           "무리의 뜻",
@@ -4194,7 +4194,7 @@ window.DIDAKO_DEMO = {
       {
         "d": "월",
         "ref": "마태복음 6장 11절",
-        "url": "https://www.bskorea.or.kr/bible/korbibReadpage.php?version=GAE&book=mat&chap=6&sec=11",
+        "url": "https://bible.bskorea.or.kr/bible/NKRV,KCT/MAT.6.11",
         "ask": "예수님은 무엇을 달라고 기도하라고 하시나요?",
         "choices": [
           "일용할 양식",
@@ -4207,7 +4207,7 @@ window.DIDAKO_DEMO = {
       {
         "d": "화",
         "ref": "시편 127편 1~2절",
-        "url": "https://www.bskorea.or.kr/bible/korbibReadpage.php?version=GAE&book=psa&chap=127&sec=1",
+        "url": "https://bible.bskorea.or.kr/bible/NKRV,KCT/PSA.127.1",
         "ask": "시인은 하나님이 사랑하시는 사람에게 무엇을 주신다고 하나요?",
         "choices": [
           "부요",
@@ -4220,7 +4220,7 @@ window.DIDAKO_DEMO = {
       {
         "d": "수",
         "ref": "출애굽기 16장 15~18절",
-        "url": "https://www.bskorea.or.kr/bible/korbibReadpage.php?version=GAE&book=exo&chap=16&sec=15",
+        "url": "https://bible.bskorea.or.kr/bible/NKRV,KCT/EXO.16.15",
         "ask": "광야의 백성은 무엇을 거두어 먹었나요?",
         "choices": [
           "메추라기만",
@@ -4233,7 +4233,7 @@ window.DIDAKO_DEMO = {
       {
         "d": "목",
         "ref": "잠언 30장 7~9절",
-        "url": "https://www.bskorea.or.kr/bible/korbibReadpage.php?version=GAE&book=pro&chap=30&sec=7",
+        "url": "https://bible.bskorea.or.kr/bible/NKRV,KCT/PRO.30.7",
         "ask": "잠언은 자신에게 무엇을 먹여 달라고 구하나요?",
         "choices": [
           "필요한 양식",
@@ -4246,7 +4246,7 @@ window.DIDAKO_DEMO = {
       {
         "d": "금",
         "ref": "마태복음 6장 25~27절",
-        "url": "https://www.bskorea.or.kr/bible/korbibReadpage.php?version=GAE&book=mat&chap=6&sec=25",
+        "url": "https://bible.bskorea.or.kr/bible/NKRV,KCT/MAT.6.25",
         "ask": "예수님은 목숨을 위해 무엇을 염려하지 말라고 하시나요?",
         "choices": [
           "어디로 갈까",
@@ -4276,7 +4276,7 @@ window.DIDAKO_DEMO = {
       {
         "d": "월",
         "ref": "에베소서 4장 31~32절",
-        "url": "https://www.bskorea.or.kr/bible/korbibReadpage.php?version=GAE&book=eph&chap=4&sec=31",
+        "url": "https://bible.bskorea.or.kr/bible/NKRV,KCT/EPH.4.31",
         "ask": "하나님이 용서하신 것같이 서로 무엇을 하라고 하나요?",
         "choices": [
           "책망하라고",
@@ -4289,7 +4289,7 @@ window.DIDAKO_DEMO = {
       {
         "d": "화",
         "ref": "마태복음 18장 21~22절",
-        "url": "https://www.bskorea.or.kr/bible/korbibReadpage.php?version=GAE&book=mat&chap=18&sec=21",
+        "url": "https://bible.bskorea.or.kr/bible/NKRV,KCT/MAT.18.21",
         "ask": "예수님은 몇 번까지 용서하라고 말씀하시나요?",
         "choices": [
           "일곱 번을 일흔 번까지",
@@ -4302,7 +4302,7 @@ window.DIDAKO_DEMO = {
       {
         "d": "수",
         "ref": "마태복음 6장 12절",
-        "url": "https://www.bskorea.or.kr/bible/korbibReadpage.php?version=GAE&book=mat&chap=6&sec=12",
+        "url": "https://bible.bskorea.or.kr/bible/NKRV,KCT/MAT.6.12",
         "ask": "예수님은 무엇을 용서해 달라고 기도하라고 하시나요?",
         "choices": [
           "수고를",
@@ -4315,7 +4315,7 @@ window.DIDAKO_DEMO = {
       {
         "d": "목",
         "ref": "골로새서 3장 12~14절",
-        "url": "https://www.bskorea.or.kr/bible/korbibReadpage.php?version=GAE&book=col&chap=3&sec=12",
+        "url": "https://bible.bskorea.or.kr/bible/NKRV,KCT/COL.3.12",
         "ask": "누군가에게 불만이 있을 때 서로 무엇을 하라고 하나요?",
         "choices": [
           "다투라고",
@@ -4328,7 +4328,7 @@ window.DIDAKO_DEMO = {
       {
         "d": "금",
         "ref": "시편 103편 10~12절",
-        "url": "https://www.bskorea.or.kr/bible/korbibReadpage.php?version=GAE&book=psa&chap=103&sec=10",
+        "url": "https://bible.bskorea.or.kr/bible/NKRV,KCT/PSA.103.10",
         "ask": "하나님은 우리의 죄과를 어느 방향만큼 멀리 옮기셨다고 하나요?",
         "choices": [
           "동이 서에서 먼 것만큼",
@@ -4358,7 +4358,7 @@ window.DIDAKO_DEMO = {
       {
         "d": "월",
         "ref": "마태복음 26장 40~41절",
-        "url": "https://www.bskorea.or.kr/bible/korbibReadpage.php?version=GAE&book=mat&chap=26&sec=40",
+        "url": "https://bible.bskorea.or.kr/bible/NKRV,KCT/MAT.26.40",
         "ask": "예수님은 시험에 들지 않게 무엇을 하라고 하시나요?",
         "choices": [
           "걷고 쉬라고",
@@ -4371,7 +4371,7 @@ window.DIDAKO_DEMO = {
       {
         "d": "화",
         "ref": "고린도전서 10장 12~13절",
-        "url": "https://www.bskorea.or.kr/bible/korbibReadpage.php?version=GAE&book=1co&chap=10&sec=12",
+        "url": "https://bible.bskorea.or.kr/bible/NKRV,KCT/1CO.10.12",
         "ask": "하나님은 시험 중에 무엇을 내셔서 감당하게 하시나요?",
         "choices": [
           "큰 보상을",
@@ -4384,7 +4384,7 @@ window.DIDAKO_DEMO = {
       {
         "d": "수",
         "ref": "마태복음 6장 13절",
-        "url": "https://www.bskorea.or.kr/bible/korbibReadpage.php?version=GAE&book=mat&chap=6&sec=13",
+        "url": "https://bible.bskorea.or.kr/bible/NKRV,KCT/MAT.6.13",
         "ask": "예수님은 누구에게서 구해 달라고 기도하라고 하시나요?",
         "choices": [
           "악에서",
@@ -4397,7 +4397,7 @@ window.DIDAKO_DEMO = {
       {
         "d": "목",
         "ref": "에베소서 6장 10~12절",
-        "url": "https://www.bskorea.or.kr/bible/korbibReadpage.php?version=GAE&book=eph&chap=6&sec=10",
+        "url": "https://bible.bskorea.or.kr/bible/NKRV,KCT/EPH.6.10",
         "ask": "바울은 누구 안에서 힘을 얻으라고 하나요?",
         "choices": [
           "자신 안에서",
@@ -4410,7 +4410,7 @@ window.DIDAKO_DEMO = {
       {
         "d": "금",
         "ref": "야고보서 1장 12~15절",
-        "url": "https://www.bskorea.or.kr/bible/korbibReadpage.php?version=GAE&book=jas&chap=1&sec=12",
+        "url": "https://bible.bskorea.or.kr/bible/NKRV,KCT/JAS.1.12",
         "ask": "욕심이 잉태하면 무엇을 낳는다고 하나요?",
         "choices": [
           "지혜를",
@@ -4440,7 +4440,7 @@ window.DIDAKO_DEMO = {
       {
         "d": "월",
         "ref": "로마서 11장 34~36절",
-        "url": "https://www.bskorea.or.kr/bible/korbibReadpage.php?version=GAE&book=rom&chap=11&sec=34",
+        "url": "https://bible.bskorea.or.kr/bible/NKRV,KCT/ROM.11.34",
         "ask": "바울은 누구에게 영광이 영원히 있다고 하나요?",
         "choices": [
           "하나님께",
@@ -4453,7 +4453,7 @@ window.DIDAKO_DEMO = {
       {
         "d": "화",
         "ref": "요한일서 5장 14~15절",
-        "url": "https://www.bskorea.or.kr/bible/korbibReadpage.php?version=GAE&book=1jn&chap=5&sec=14",
+        "url": "https://bible.bskorea.or.kr/bible/NKRV,KCT/1JN.5.14",
         "ask": "하나님의 뜻대로 구하면 하나님이 어떻게 하신다고 하나요?",
         "choices": [
           "외면하신다고",
@@ -4466,7 +4466,7 @@ window.DIDAKO_DEMO = {
       {
         "d": "수",
         "ref": "고린도후서 1장 18~20절",
-        "url": "https://www.bskorea.or.kr/bible/korbibReadpage.php?version=GAE&book=2co&chap=1&sec=18",
+        "url": "https://bible.bskorea.or.kr/bible/NKRV,KCT/2CO.1.18",
         "ask": "하나님의 약속은 예수님 안에서 무엇이 되었다고 하나요?",
         "choices": [
           "보류가",
@@ -4479,7 +4479,7 @@ window.DIDAKO_DEMO = {
       {
         "d": "목",
         "ref": "요한계시록 3장 13~14절",
-        "url": "https://www.bskorea.or.kr/bible/korbibReadpage.php?version=GAE&book=rev&chap=3&sec=13",
+        "url": "https://bible.bskorea.or.kr/bible/NKRV,KCT/REV.3.13",
         "ask": "라오디게아 교회에 말씀하시는 분은 자신을 무엇이라 부르시나요?",
         "choices": [
           "아멘",
@@ -4492,7 +4492,7 @@ window.DIDAKO_DEMO = {
       {
         "d": "금",
         "ref": "시편 72편 18~19절",
-        "url": "https://www.bskorea.or.kr/bible/korbibReadpage.php?version=GAE&book=psa&chap=72&sec=18",
+        "url": "https://bible.bskorea.or.kr/bible/NKRV,KCT/PSA.72.18",
         "ask": "하나님의 영광을 찬양하는 말 끝에 무엇이라고 하나요?",
         "choices": [
           "할렐루야 한 번",

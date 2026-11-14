@@ -1922,7 +1922,8 @@ const BOOKS = [['창세기', '창'], ['출애굽기', '출'], ['레위기', '레
 const BOOK_BY = new Map();
 BOOKS.forEach(([n, a]) => { BOOK_BY.set(n, n); BOOK_BY.set(a, n); });
 
-// 성경 펴기(S-80): 장절로 대한성서공회 성경 읽기(개역개정) 주소를 만든다. 본문은 가져오지 않고 길만 연다(철학 ⑥)
+// 성경 펴기(S-80): 장절로 대한성서공회 성경플랫폼(개역개정과 공동번역 개정판을 나란히) 주소를 만든다. 본문은 가져오지 않고 길만 연다(철학 ⑥)
+//  주소는 https://bible.bskorea.or.kr/bible/NKRV,KCT/책.장.절 이다. 책은 국제 표준 세 글자(GEN, SNG, EZK …)이고 옛 사이트의 jnh(요나)만 JON으로 바꾼다(2026-11-14)
 const BIBLE_CODES = 'gen exo lev num deu jos jdg rut 1sa 2sa 1ki 2ki 1ch 2ch ezr neh est job psa pro ecc sng isa jer lam ezk dan hos jol amo oba jnh mic nam hab zep hag zec mal mat mrk luk jhn act rom 1co 2co gal eph php col 1th 2th 1ti 2ti tit phm heb jas 1pe 2pe 1jn 2jn 3jn jud rev'.split(' ');
 const BIBLE_BOOKS = BOOKS.map(([name], i) => ({ name, code: BIBLE_CODES[i] })).sort((a, b) => b.name.length - a.name.length);
 function bibleUrl(ref) {
@@ -1933,7 +1934,7 @@ function bibleUrl(ref) {
   const m = /^\s*(\d+)\s*(?:([~–-])\s*\d+\s*)?(?:장|편)(?:\s*(\d+))?/.exec(text.slice(book.name.length));
   const sec = m && !m[2] && m[3] ? +m[3] : 1;
   if (!m || +m[1] < 1 || sec < 1) return '';
-  return `https://www.bskorea.or.kr/bible/korbibReadpage.php?version=GAE&book=${book.code}&chap=${+m[1]}&sec=${sec}`;
+  return `https://bible.bskorea.or.kr/bible/NKRV,KCT/${book.code === 'jnh' ? 'JON' : book.code.toUpperCase()}.${+m[1]}.${sec}`;
 }
 function bibleLinkHtml(ref) {
   const url = bibleUrl(ref); if (!url) return '';
