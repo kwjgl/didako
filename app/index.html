@@ -115,6 +115,7 @@ button, a, label, summary, select, input, [role="button"], [data-act], .brand { 
 /* 함께하는 곳 메뉴는 코이데처럼 이름은 왼쪽, 작은 글은 오른쪽, 지금 보는 곳은 굵게(2026-11-14) */
 #placeMenu .place-copy { flex-direction: row; justify-content: space-between; align-items: center; gap: .6em; width: 100%; }
 #placeMenu .place-copy .sm { font-size: .8125rem; color: var(--ink-2); text-align: right; }
+#placeMenu .place-copy > span:first-child { flex: none; white-space: nowrap; }   /* 곳 이름은 한 줄로 두고, 길면 오른쪽 작은 글이 줄을 바꾼다 */
 #placeMenu .place-row.on .place-copy > span:first-child { font-weight: 700; }
 .mitem { display: flex; justify-content: space-between; align-items: center; gap: .6em; width: 100%; text-align: left; font-size: .9em; color: var(--ink); background: none; border: 0; border-radius: 10px; padding: .55em .7em; min-height: 44px; cursor: pointer; text-decoration: none; }
 .mitem:hover { background: var(--surface-2); }

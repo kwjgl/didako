@@ -189,6 +189,7 @@ body.tabs-off .stickbar { bottom: env(safe-area-inset-bottom, 0px); }
 /* 함께하는 곳 메뉴는 코이데처럼 이름은 왼쪽, 작은 글은 오른쪽, 지금 보는 곳은 굵게(2026-11-14) */
 #placeMenu .place-copy { flex-direction: row; justify-content: space-between; align-items: center; gap: .6em; width: 100%; }
 #placeMenu .place-copy .sm { font-size: .8125rem; color: var(--ink-2); text-align: right; }
+#placeMenu .place-copy > span:first-child { flex: none; white-space: nowrap; }   /* 곳 이름은 한 줄로 두고, 길면 오른쪽 작은 글이 줄을 바꾼다 */
 #placeMenu .place-row.on .place-copy > span:first-child { font-weight: 700; }
 #setMenu .set-row { padding-left: 6px; }
 #setMenu > .mlabel:first-child { font-size: .96875rem; font-weight: 700; color: var(--ink); }
