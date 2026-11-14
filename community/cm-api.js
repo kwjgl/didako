@@ -23,7 +23,7 @@ window.DidakoCm = (() => {
     const g = {
       id: str(r.id || (i && i.id)), name: str(i ? i.name : r.name), role,
       me: str(i ? i.me : r.me), leader: str(i ? i.lead : r.lead),
-      members, mids, pending,
+      members, mids, pending, n: Number.isInteger(r.n) ? r.n : null,
       book: str(i ? i.book : r.book) || str(o.book), no: num(i ? i.no : r.no, num(o.no, 1)),
       ends: str(i ? i.endsOn : r.endsOn), church: '', invite,
       wait: str(r.status) === '요청', state, eraseOn: str(i ? i.eraseOn : r.eraseOn),

@@ -206,6 +206,12 @@ body.pop-open { overflow: hidden; }
 .more-grid .gr b.mhead { font-size: calc(var(--base) * .97); font-weight: 600; }   /* 화면 설정 제목: 톱니 메뉴의 제목과 같은 크기 · 굵기 */
 .more-grid .gr .gd { font-size: .8em; margin-top: 0; }
 .more-grid .gr .ch { font-size: 1em; }
+.cm-head { display: flex; justify-content: space-between; align-items: baseline; gap: 10px; padding: 14px 0; overflow-wrap: anywhere; }
+.cm-head small { flex: none; color: var(--ink-2); }
+.cm-request .set-btns { display: flex; gap: 6px; margin-top: .4em; }
+.gtag { display: inline-block; font-size: .76em; font-weight: 600; color: var(--accent); background: var(--accent-soft); border-radius: 999px; padding: .1em .65em; }
+.gtag.off { color: var(--ink-2); background: var(--surface-2); }
+.cm-places .gr[aria-disabled="true"] { cursor: default; }
 .gr.open { border-bottom: 1px solid var(--line); }   /* 화면 설정을 펼치면 머리줄 아래 구분선 */
 .logout { display: block; margin: 20px auto 0; min-height: 44px; padding: 0 16px; background: none; border: 0; color: var(--ink-2); font: 500 .9375rem var(--f-body); }
 .chip { display: inline-block; padding: 4px 12px; border-radius: 999px; background: var(--accent-soft); color: var(--accent-deep); font-size: .8125rem; font-weight: 500; }
@@ -304,6 +310,15 @@ main.wrap { padding-top: 14px; padding-bottom: calc(110px + env(safe-area-inset-
 .walk-hero img { display: block; width: 100%; aspect-ratio: 4 / 3; object-fit: cover; }
 .walk-hero-body { padding: 16px; }
 .walk-hero-body .lesson-title { margin: .6em 0; }
+@media (max-width: 639px) {
+  .walk-hero { padding: 16px; }
+  .walk-hero img { float: left; width: 88px; aspect-ratio: 1; border-radius: 12px; margin-right: 14px; }
+  .walk-hero-body { padding: 0; }
+  .walk-hero .walk-head, .walk-hero .lesson-title { margin-left: 102px; }
+  .walk-hero .lesson-title { margin-top: .3em !important; margin-bottom: .3em; }
+  .walk-hero .walk-refs { clear: both; }
+  .walk-hero .btn { display: flex; clear: both; }
+}
 /* 이번 주의 질문 머리: 이름표는 제목보다 작고 본문 작은 글보다 크게, 주·묶음은 알약으로 */
 .walk-head { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 8px; }
 .walk-kicker { font-size: .9375rem; font-weight: 700; color: var(--accent); margin-right: 2px; }
@@ -345,6 +360,22 @@ main.wrap { padding-top: 14px; padding-bottom: calc(110px + env(safe-area-inset-
 .walk-choice:disabled { cursor: default; }
 .walk-msg { margin: 10px 0 0; font-size: .875rem; color: var(--ink-2); line-height: 1.5; word-break: keep-all; }
 .walk-msg.ok { color: var(--accent); font-weight: 600; }
+.walk-found { margin-top: 16px; padding-top: 12px; border-top: 1px solid var(--line); }
+.walk-found .mlabel { margin: 0 0 8px; }
+.found-chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.found-chip { width: 12em; max-width: 100%; gap: .4em; white-space: normal; overflow-wrap: anywhere; }
+.found-chip .ic { flex: none; width: 1em; height: 1em; }
+.found-chip.empty { border: 1px dashed var(--ink-2); background: transparent; }
+.found-chip.lamp-now { animation: found-rise .5s ease-out both; }
+@keyframes found-rise {
+  from { transform: translateY(5px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+@media (prefers-reduced-motion: reduce) { .found-chip.lamp-now { animation: none; } }
+.walk-found .quiet-link { display: inline-flex; align-items: center; margin-top: 6px; }
+.found-week-head { display: flex; justify-content: space-between; align-items: center; gap: 8px; }
+.found-week-head .ic { flex: none; color: var(--warn); }
+.found-week .found-chips { margin-top: 10px; }
 p.walk-today { margin: 0; }
 .week-top .card { margin: 12px 0 0; }
 .week-grid { display: grid; gap: 14px; align-items: start; margin-top: 12px; }
@@ -1622,7 +1653,7 @@ function closeMenu() { const m = $('#settings'); m.hidden = true; $('#gearBtn').
 // ── 화면 이름표 ──
 // 이름표와 어느 탭이 켜지는지는 여기에 모아 둔다. 아직 만들지 않은 화면은 차분한 안내 한 장으로 연다(막다른 길이 없게 이번 주로 가는 링크를 둔다)
 const PLACE = {
-  wq: ['이번 주의 질문', 'week'], read: ['펼치기', 'week'], share: ['나눔하기', 'share'], shelf: ['책장', 'shelf'], record: ['내 기록', 'record'], records: ['모든 기록', 'record'], gallery: ['올해의 그림', 'record'], more: ['더보기', 'more'],
+  wq: ['이번 주의 질문', 'week'], read: ['펼치기', 'week'], share: ['나눔하기', 'share'], shelf: ['책장', 'shelf'], record: ['내 기록', 'record'], records: ['모든 기록', 'record'], found: ['찾은 말씀', 'record'], gallery: ['올해의 그림', 'record'], more: ['더보기', 'more'],
   church: ['우리 공동체', 'more'], prep: ['진행 준비', 'share'], prepprint: ['모임장용 인쇄', 'share'], manage: ['교재 관리', 'more'], about: ['디다코 소개', 'more'], feedback: ['의견 보내기', 'more']
 };
 const VIEWS = ['start', 'week'].concat(Object.keys(PLACE));
@@ -1678,6 +1709,21 @@ function sbWeekNo() {
 const walkWeek = () => SB ? (DATA.weekWalk.find(w => w.n === sbWeekNo()) || DATA.weekWalk.find(w => w.n === 1) || DATA.weekWalk[0]) : DATA.weekWalk.find(w => w.n === D.walk) || DATA.weekWalk[0];
 const walkToday = () => SB ? ['금', '월', '화', '수', '목', '금', '금'][new Date().getDay()] : '목'; // 데모 오늘(DATA.today)은 목요일
 function walkRedraw() { const y = window.scrollY; route(false); window.scrollTo(0, y); }
+const walkFoundChip = (day, newlyLit = false) => `<span class="walk-ref found-chip${newlyLit ? ' lamp-now' : ''}">${ic('lamp-lit')}<span>${esc(day.where)}</span></span>`;
+function walkFoundWeek(w, read, today) {
+  const visible = w.days.slice(0, w.days.findIndex(day => day.d === today) + 1);
+  const found = day => read[w.n + '-' + day.d] === true;
+  const chips = visible.some(found) ? `<div class="found-chips">${visible.map(day => found(day)
+    ? walkFoundChip(day, lampNow === w.n + '-' + day.d)
+    : '<span class="walk-ref found-chip empty" aria-hidden="true"></span>').join('')}</div>`
+    : '<p class="hint">정답을 찾으면 그 말씀이 여기에 꽂혀요.</p>';
+  return `<div class="walk-found">
+      <h2 class="mlabel">이번 주에 찾은 말씀</h2>
+      ${chips}
+      ${w.days.every(found) ? '<p class="hint">이번 주 말씀을 다 찾았어요.</p>' : ''}
+      <a class="quiet-link" href="#found">찾은 말씀 모아 보기 ›</a>
+    </div>`;
+}
 function weekView() {
   const w = walkWeek(), today = walkToday(), selected = walkDay || today;
   const day = w.days.find(x => x.d === selected) || w.days[3];
@@ -1690,6 +1736,7 @@ function weekView() {
     const newlyLit = lampNow === w.n + '-' + x.d;
     return `<button class="walk-day${chosen ? ' chosen' : ''}${isToday ? ' today' : ''}${future ? ' future' : ''}${newlyLit && checked ? ' lamp-now' : ''}" type="button" data-act="walk-day" data-d="${x.d}" aria-pressed="${chosen}" aria-label="${walkNames[x.d]}${checked ? ', 찾았어요' : ''}"${future ? ' aria-disabled="true"' : ''}><span>${x.d}</span>${checked && !future ? ic('lamp-lit', 'lamp on') : ''}</button>`;
   }).join('');
+  const found = walkFoundWeek(w, read, today);
   lampNow = '';
   return `<p class="eyebrow top-eyebrow">${esc(groupName())}</p>
     <div class="page-top"><h1>이번 주</h1></div>
@@ -1714,6 +1761,7 @@ function weekView() {
         return `<button class="walk-choice${st}" type="button" data-act="walk-pick" data-i="${i}"${solved ? ' disabled' : ''}><span class="no">${i + 1}</span><span>${esc(c)}</span>${solved && i === day.answer ? ic('check') : ''}</button>`;
       }).join('')}</div>
       ${solved ? `<p class="walk-msg ok">맞아요! ${esc(day.where)}에 있어요.</p>` : wrong >= 0 ? `<p class="walk-msg">본문을 다시 펴 볼까요? 몇 번이든 다시 골라도 돼요.</p>` : ''}
+      ${found}
     </section>
     <p class="fine">말씀과 물음은 교역자 확인 전 예시예요.</p></div></div>`;
 }
@@ -2442,28 +2490,58 @@ let dispOpen = false;
 // 우리 공동체의 사람과 신청(지금 연 공동체의 것을 바로 고치고 이 기기에 남긴다)
 const myRoom = () => { const g = cmCur(); return { members: g.members, pending: g.pending }; };
 function moreView() {
-  const room = LIVE ? null : DATA.rooms.mine;
   const chevron = '<span class="ch" aria-hidden="true">›</span>';
-  const jobRow = (title, desc, target, tag) => `<a class="gr" href="${target}"><span class="gt"><b>${title}</b><span class="gd">${desc}</span></span><span class="role-tag ${!tag && D.role === 'leader' ? 'leader' : 'admin'}">${esc(tag || roleName())}</span>${chevron}</a>`;
-  let jobs = '';
-  // 실제 서버(SB)에서는 교재 관리를 아직 열지 않는다(모임장이 쓴 교재의 서버 저장은 2단계-2)
-  if (D.role === 'leader') jobs = jobRow('우리 공동체', '함께하는 사람 · 들어오기 승인 · 초대 링크', '#church') + (SB ? '' : jobRow('교재 관리', '이 공동체에서 쓸 교재를 써요', '#manage'));
+  const rowText = (title, desc) => `<span class="gt"><b>${title}</b>${desc ? `<span class="gd">${desc}</span>` : ''}</span>`;
+  const linkRow = (title, desc, target) => `<a class="gr" href="${target}">${rowText(title, desc)}${chevron}</a>`;
+  const note = linkRow('디다코 노트', '혼자 묵상하는 노트', '../note/');
+  const church = linkRow('디다코 교회', '교회 코드가 있으면 우리 교회와 함께 말씀을 나눠요', '../app/');
+  let community, places, liveJobs = '';
+  if (LIVE) {
+    community = liveRoomCard();
+    places = `<div class="gc">${note}${linkRow('내 공동체', '공동체 바꾸기 · 만들기 · 초대 링크로 들어오기', '#start/list')}${church}</div>`;
+    if (D.role === 'leader') {
+      liveJobs = `<div class="gl">맡은 일</div><div class="gc">${[
+        ['우리 공동체', '함께하는 사람 · 들어오기 승인 · 초대 링크', '#church'],
+        ['교재 관리', '이 공동체에서 쓸 교재를 써요', '#manage']
+      ].map(([title, desc, target]) => `<a class="gr" href="${target}">${rowText(title, desc)}<span class="role-tag leader">${esc(roleName())}</span>${chevron}</a>`).join('')}</div>`;
+    }
+  } else {
+    const g = cmCur(), n = cmCount(g), leader = g.role === 'leader';
+    const shut = SB && g.canWrite === false, off = shut ? ' disabled' : '';
+    const end = cmEndText(g.ends);
+    const inviteText = '초대 링크 보내기', inviteDesc = '복사해서 카톡으로 보내요';
+    const past = !g.invite || Date.now() > g.invite.made + CM_DAYS * 86400000;
+    community = `<div class="gl">이 공동체</div><div class="gc">
+      <div class="cm-head"><b>${esc(g.name)}</b><small>${n}명</small></div>
+      ${leader ? myRoom().pending.map((p, i) => `<div class="gr cm-request"><div class="gt"><b>${esc(p.name)} 님이 함께하고 싶어 해요</b>
+        <div class="set-btns"><button class="btn ghost small" type="button" data-act="room-reject" data-i="${i}" aria-label="${esc(p.name)} 거절"${off}>거절</button><button class="btn small" type="button" data-act="room-approve" data-i="${i}" aria-label="${esc(p.name)} 승인"${off}>승인</button></div></div></div>`).join('') : ''}
+      <button class="gr" type="button" data-act="cm-people">${rowText(`지체 ${n}명`)}${chevron}</button>
+      ${leader ? (past ? linkRow(inviteText, inviteDesc, '#church') : `<button class="gr" type="button" data-act="cm-invite-copy"${shut || n >= CM_PEOPLE ? ' disabled' : ''}>${rowText(inviteText, inviteDesc)}${chevron}</button>`) : ''}
+      ${leader && !SB ? linkRow('교재 관리', '이 공동체에서 쓸 교재를 써요', '#manage') : ''}
+      ${leader ? linkRow('공동체 관리', '함께하는 사람 · 들어오기 승인 · 초대 링크', '#church') : ''}
+      ${end ? `<p class="hint">이 공동체는 ${end} 열려 있어요.</p>` : ''}
+    </div>`;
+    const offRow = body => `<div class="gr" aria-disabled="true">${body}</div>`;
+    const circles = CM.list.map(c => {
+      const title = esc(c.name) + (c.role === 'leader' ? ' <span class="gtag off">모임장</span>' : '');
+      if (c.id === g.id) return offRow(rowText(title, '지금 보는 곳'));
+      if (c.wait) return offRow(rowText(title, '모임장의 승인을 기다려요'));
+      const count = SB ? c.n : cmCount(c);
+      const date = cmEndText(c.ends).replace(/^\d{4}년 /, '');
+      const desc = [Number.isInteger(count) ? `${count}명` : '', date].filter(Boolean).join(', ');
+      return `<button class="gr" type="button" data-act="cm-open" data-v="${esc(c.id)}">${rowText(title, desc)}${chevron}</button>`;
+    }).join('');
+    const makeTitle = '디다코 공동체 만들기';
+    const makeOff = SB && CM.open === false ? '디다코 공동체는 아직 열리지 않았어요' : cmFull() ? '세 곳이 다 찼어요' : '';
+    const make = makeOff ? offRow(rowText(makeTitle, makeOff)) : linkRow(makeTitle, '함께 말씀을 읽을 사람을 초대해요', '#start/new');
+    places = `<div class="gc">${note}</div><div class="gc cm-places">${circles}${make}</div><div class="gc">${church}</div>`;
+  }
   return `<div class="page-top"><h1>더보기</h1></div>
     <div class="more-grid"><div>
-      ${LIVE ? liveRoomCard() : `<div class="gc" style="margin:14px 0;padding-top:14px;padding-bottom:14px">
-        <b>우리 공동체</b><p>${esc(room.name)}</p>
-        <p class="mlabel">모임장</p><div class="kids"><span class="kid lead">${esc(room.leader)}</span></div>
-        <p class="mlabel">함께하는 사람</p><div class="kids">${myRoom().members.filter(n => n !== room.leader).map(n => `<span class="kid">${esc(n)}${n === cmCur().me ? '(나)' : ''}</span>`).join('')}</div>
-        <p class="hint">이름만 보여요. 서로 얼마나 썼는지는 보이지 않아요.</p>
-        ${cmEndText(cmCur().ends) ? `<p class="hint">이 공동체는 ${cmEndText(cmCur().ends)} 열려 있어요.</p>` : ''}
-      </div>`}
-      <div class="gl">함께하는 곳</div><div class="gc">
-        <a class="gr" href="../note/"><span class="gt"><b>디다코 노트</b><span class="gd">혼자 묵상하는 노트</span></span>${chevron}</a>
-        <a class="gr" href="#start/list"><span class="gt"><b>내 공동체</b><span class="gd">공동체 바꾸기 · 만들기 · 초대 링크로 들어오기</span></span>${chevron}</a>
-        <a class="gr" href="../app/"><span class="gt"><b>디다코 교회</b><span class="gd">교회 코드가 있으면 우리 교회와 함께 말씀을 나눠요</span></span>${chevron}</a>
-      </div>
+      ${community}
+      <div class="gl">함께하는 곳</div>${places}
     </div><div>
-      ${jobs ? `<div class="gl">맡은 일</div><div class="gc">${jobs}</div>` : ''}
+      ${liveJobs}
       <div class="gl">앱 설정</div><div class="gc">
         <button class="gr${dispOpen ? ' open' : ''}" type="button" data-act="disp" aria-expanded="${dispOpen}" aria-controls="dispEx"><span class="gt"><b class="mhead">화면 설정</b><span class="gd">화면 모드 · 색 테마 · 디자인 · 큰 글씨</span></span>${dispOpen ? ic('chev', 'ch') : chevron}</button>
         ${dispOpen ? `<div id="dispEx" style="padding:4px 0 14px">${displayControls()}</div>` : ''}
@@ -2507,7 +2585,7 @@ function aboutView() {
       <div class="about-names"><div class="about-name"><b>디다케</b><span class="greek">διδαχή</span><span class="soft">가르침</span></div><span aria-hidden="true">+</span><div class="about-name"><b>코이노니아</b><span class="greek">κοινωνία</span><span class="soft">교제</span></div></div>
       <p>디다코는 '가르침'을 뜻하는 디다케(διδαχή, didachē)와 '교제'를 뜻하는 코이노니아(κοινωνία, koinōnia)에서 영감을 얻은 이름이에요.</p><p class="hint" style="margin-top:10px">사도행전 2:42</p></section>
     <section class="card about-card"><h2>세 겹 책갈피 이야기</h2><p>전도서 4장의 세 겹으로 꼰 줄은 쉽게 끊어지지 않는다는 말씀을 떠올려요. 디다코의 로고는 그렇게 꼰 세 가닥이 책갈피가 된 모양이에요. 세 가닥은 성부·성자·성령이에요.</p></section>
-    <section class="card about-card"><h2>보상 대신 흔적</h2><p>디다코에는 점수나 상이 없어요. 대신 흔적이 남아요. 다 읽은 교재는 교재 목록에 남고, 교재가 끝나면 그동안 남긴 한 문장이 한 장에 모여요. 이번 주의 질문을 끝까지 펴 본 주의 그림은 내 기록의 올해의 그림에 한 장씩 담겨요. 몇 개인지는 세지 않아요.</p></section>
+    <section class="card about-card"><h2>보상 대신 흔적</h2><p>디다코에는 점수나 상이 없어요. 대신 흔적이 남아요. 다 읽은 교재는 교재 목록에 남고, 교재가 끝나면 그동안 남긴 한 문장이 한 장에 모여요. 이번 주의 질문을 끝까지 펴 본 주의 그림은 내 기록의 올해의 그림에 한 장씩 담겨요. 이번 주 문답에서 찾은 말씀은 내 기록의 찾은 말씀에 모여요. 몇 개인지는 세지 않아요.</p></section>
     <section class="card about-card"><h2>디다코는 말씀을 이렇게 이해해요</h2>
       ${steps.map(([title,desc,label,target],i)=>`<div class="about-step"><span class="step-no">${i+1}.</span><div><b>${title}</b><p>${desc}</p><a href="${target}">${label}</a></div></div>`).join('')}
     </section></div>`;
@@ -4031,6 +4109,7 @@ function recordView(arg) {
   return `<div class="record-wrap">
     <div class="record-top"><h1>내 기록</h1>
       <a class="icon-btn" href="#records" aria-label="모든 기록"><svg class="ic" aria-hidden="true"><use href="#i-list"/></svg></a>
+      <a class="icon-btn" href="#found" aria-label="찾은 말씀">${ic('lamp-lit')}</a>
       <a class="icon-btn" href="#gallery" aria-label="올해의 그림">${ic('gallery')}</a></div>
     ${keepCard()}
     <div id="recBody">${reportHtml()}</div>
@@ -4041,6 +4120,28 @@ function recordsView() {
     <a class="back-link" href="#record">${ic('back')}<span>내 기록</span></a>
     <div class="record-top"><h1>모든 기록</h1></div>
     ${listHtml()}
+  </div>`;
+}
+function foundView() {
+  const read = readJson(K.walkRead);
+  const cards = DATA.weekWalk.slice().sort((a, b) => b.n - a.n).map(w => {
+    const days = w.days.filter(day => read[w.n + '-' + day.d] === true);
+    if (!days.length) return '';
+    return `<section class="card found-week">
+      <div class="found-week-head"><h2>${w.n}주 · ${esc(w.group)}</h2>${days.length === w.days.length ? ic('lamp-lit') : ''}</div>
+      <p class="hint">${esc(w.q)}</p>
+      <div class="found-chips">${days.map(day => walkFoundChip(day)).join('')}</div>
+    </section>`;
+  }).join('');
+  return `<div class="record-wrap">
+    <a class="back-link" href="#record">${ic('back')}<span>내 기록</span></a>
+    <div class="record-top"><h1>찾은 말씀</h1></div>
+    <p class="soft">이번 주 문답에서 찾은 말씀이 이 기기에 모여요.</p>
+    ${cards || `<section class="card calm">
+      <h2 class="calm-t">아직 찾은 말씀이 없어요</h2>
+      <p class="soft" style="margin:0">이번 주 화면에서 오늘의 말씀 문답을 풀어 보세요.</p>
+      <a class="btn ghost" href="#week">이번 주로</a>
+    </section>`}
   </div>`;
 }
 // 올해의 그림은 완료 표시를 읽기만 한다. 예시 채우기는 화면에만 적용한다.
@@ -4134,7 +4235,7 @@ function route(moved) {
   $('#topbar').classList.toggle('bare', start);
   $('#topnav').hidden = start; $('#tabs').hidden = start;
   document.body.dataset.view = v;
-  $('#view').innerHTML = start ? startView(arg) : v === 'week' ? weekView() : v === 'wq' ? wqView() : v === 'read' ? readView() : v === 'share' ? shareView() : v === 'shelf' ? shelfView(arg) : v === 'record' ? recordView(arg) : v === 'records' ? recordsView() : v === 'gallery' ? galleryView() : v === 'more' ? moreView() : v === 'about' ? aboutView() : v === 'feedback' ? feedbackView() : v === 'prep' ? prepView() : v === 'prepprint' ? prepPrintView() : v === 'church' ? churchView() : v === 'manage' && !SB ? manageView(arg) : placeView(v);
+  $('#view').innerHTML = start ? startView(arg) : v === 'week' ? weekView() : v === 'wq' ? wqView() : v === 'read' ? readView() : v === 'share' ? shareView() : v === 'shelf' ? shelfView(arg) : v === 'record' ? recordView(arg) : v === 'records' ? recordsView() : v === 'found' ? foundView() : v === 'gallery' ? galleryView() : v === 'more' ? moreView() : v === 'about' ? aboutView() : v === 'feedback' ? feedbackView() : v === 'prep' ? prepView() : v === 'prepprint' ? prepPrintView() : v === 'church' ? churchView() : v === 'manage' && !SB ? manageView(arg) : placeView(v);
   reuseImgs($('#view'));
   const tab = start ? '' : v === 'week' ? 'week' : PLACE[v][1];
   $$('[data-tab]').forEach(a => { const on = a.dataset.tab === tab; a.classList.toggle('on', on); on ? a.setAttribute('aria-current', 'page') : a.removeAttribute('aria-current'); });
@@ -4204,6 +4305,14 @@ const acts = {
   },
   'cm-join-demo'() { if (cmFull()) { toast(`한 사람은 ${CM_MAX}곳까지 함께할 수 있어요`); return; } location.hash = '#start/join'; },
   'cm-cancel'() { CM.list = CM.list.filter(g => !g.wait); cmSave(); route(false); toast('들어오기 신청을 취소했어요'); },
+  'cm-people'() {
+    const { leader } = DATA.rooms.mine, { me } = cmCur();
+    const name = n => `${esc(n)}${n === me ? '(나)' : ''}`;
+    openSheet(sheetHead('지체') + `<div>${name(leader)} <span class="kid lead">모임장</span></div>
+      ${myRoom().members.filter(n => n !== leader).map(n => `<div>${name(n)}</div>`).join('')}
+      <p class="hint">이름만 보여요. 서로 얼마나 썼는지는 보이지 않아요.</p>
+      <button class="btn ghost wide" type="button" data-act="pop-close">알겠어요</button>`);
+  },
   'cm-invite-new'() { const g = cmCur(); if (!g || g.role !== 'leader') return; g.invite = cmInvite(); cmSave(); roomRedraw(); toast('새 링크를 만들었어요. 전에 보낸 링크는 쓸 수 없어요'); },
   'cm-invite-copy'() {
     const g = cmCur(); if (!g || g.role !== 'leader') return;
