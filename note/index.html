@@ -97,7 +97,9 @@ a { color: inherit; }
 .sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
 .sf { font-family: var(--f-display); }
 .sm { font-size: .875rem; color: var(--ink-2); }
-.emo { font-size: .8em; margin-left: 8px; vertical-align: 1px; }
+/* 탭 제목 옆 그림(코이데와 같게): 글자색과 크기를 따라가며, 그림만 따로 줄바꿈하지 않게 한다. */
+.h-ic { display:inline-flex; width:1.1em; height:1.1em; align-items:center; justify-content:center; vertical-align:-.16em; flex:none; color:inherit; }
+.h-ic svg { display:block; width:100%; height:100%; overflow:visible; }
 .ic { width: 22px; height: 22px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; flex: none; }
 
 /* 공통 부품: 이름은 GBS 앱·코이데와 같게 두어 디자인 스타일(design-styles.css)이 그대로 먹는다 */
@@ -1501,7 +1503,13 @@ function qCard(q, hold = false, holdHref = '#/today/write') {
 // 말씀 지도 입구 카드: 장소가 없는 날에도 늘 보인다(지난 질문 아래, 넓은 화면은 내 질문에 품기 아래)
 const mapCard = () => `<div class="past-h">말씀 지도</div><a class="card map-row" href="map.html"><img src="img/map/world.webp" alt="" width="64" height="48" decoding="async" loading="lazy"><span class="mr-t">성경 이야기가 일어난 곳</span><span class="mr-go" aria-hidden="true">›</span></a>`;   // 지난 질문과 같은 모양(S-52)
 // 탭 첫 화면 제목 줄 한 가지(오늘의 질문·탐구하기·남기기·내 기록·더보기). emo가 비면 이모지 없이 쓴다
-const pageHead = (emo, title, right) => `<div class="page-top"><h1 class="h1">${title}${emo ? `<span class="emo" aria-hidden="true">${emo}</span>` : ''}</h1>${right || ''}</div>`;
+const HEAD_ICON = {
+  bubble: '<span class="h-ic" aria-hidden="true"><svg viewBox="0 0 64 64" fill="none"><path d="M20 46C11 46 5 39.8 5 32.5c0-6.4 4.6-12 11.1-13.1C18.3 11.2 26 6 34 8.1c5.4-5.6 14.6-3.8 17.8 3.4 6.9.7 11.1 6.6 9.7 13.3 2.9 6.8-.9 14.1-8.1 16-2.4 7-10 10.1-16.8 6.8-4.5 2.4-10.1 2-13.9-1.3-3.4 1.8-7.3 2.4-11.2 1.7Z" stroke="currentColor" stroke-width="4.2" stroke-linecap="round" stroke-linejoin="round"/><circle cx="16" cy="52" r="4.3" stroke="currentColor" stroke-width="3.8"/><circle cx="7" cy="60" r="1.6" fill="currentColor"/></svg></span>',
+  glass: '<span class="h-ic" aria-hidden="true"><svg viewBox="0 0 64 64" fill="none"><circle cx="39" cy="25" r="20" stroke="currentColor" stroke-width="4.8"/><path d="M23.9 40.1 7.2 56.8a4.2 4.2 0 0 0 5.9 5.9l16.7-16.7" stroke="currentColor" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/></svg></span>',
+  hand: '<span class="h-ic" aria-hidden="true"><svg viewBox="0 0 64 64" fill="none"><path d="M20 48 43 8a4 4 0 0 1 7-1l3 2a4 4 0 0 1 1 6L29 54l-11 7 2-13Z" stroke="currentColor" stroke-width="3.8" stroke-linejoin="round"/><path d="m46 12 7 5M20 48l9 6M20 48l-2 13 11-7" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"/><path d="M10 37c-2-3-1-6 1-8 3-3 6-3 9-2l8 4 5-8c2-3 5-4 7-2 3 2 3 5 1 8l-4 7c4-1 7 0 9 3 2 3 1 6-2 8l-9 7c-3 2-6 3-10 2l-11-4-5-9c-1-3-1-5 1-6Z" stroke="currentColor" stroke-width="3.8" stroke-linejoin="round" stroke-linecap="round"/><path d="m14 35 10 5M16 43l9 4M34 37l-6 8M7 52l9 8 8-5" stroke="currentColor" stroke-width="3.1" stroke-linecap="round" stroke-linejoin="round"/></svg></span>',
+  cabinet: '<span class="h-ic" aria-hidden="true"><svg viewBox="0 0 64 64" fill="none"><rect x="6" y="4" width="52" height="56" rx="5" stroke="currentColor" stroke-width="4.2"/><path d="M6 23h52M6 42h52" stroke="currentColor" stroke-width="4.2"/><path d="M25 12v5h14v-5M25 31v5h14v-5M25 50v5h14v-5" stroke="currentColor" stroke-width="3.6" stroke-linecap="round" stroke-linejoin="round"/></svg></span>'
+};
+const pageHead = (ic, title, right) => `<div class="page-top"><h1 class="h1">${title}${ic ? ` ${HEAD_ICON[ic]}` : ''}</h1>${right || ''}</div>`;
 // 지난 질문 한 줄: 누르면 그 질문이 펴진다. on은 지금 펴 둔 줄
 const pastCard = (p, on) => `<button class="pcard card${on ? ' on' : ''}" type="button" data-act="past-item" data-d="${p.date}"${on ? ' aria-current="true"' : ''}><div class="d">${dLine(p.d)}${p.rel ? ' · ' + p.rel : ''}</div><div class="pq">${esc(p.q)}</div><div class="sm">${esc(p.ref)} · ${esc(p.asker)}</div></button>`;
 // 넓은 화면 왼쪽의 지난 질문 목록: 어제부터 7일, 맨 아래에 모두 보기 링크. on은 지금 펴 둔 날, more는 링크가 가는 곳
@@ -1516,7 +1524,7 @@ function viewToday() {
     return `<div class="t8">
       ${pastSide('', '')}
       <div class="t8-main"><div class="t8-in">
-        ${pageHead('💭', '오늘의 질문', `<div class="sm">${dateLine(demoDate())}</div>`)}
+        ${pageHead('bubble', '오늘의 질문', `<div class="sm">${dateLine(demoDate())}</div>`)}
         ${qCard(q, true)}
         ${mapCard()}
       </div></div>
@@ -1525,7 +1533,7 @@ function viewToday() {
   const two = pastItems(2).map(p => `<button type="button" data-act="past-item" data-d="${p.date}"><div class="pq">${esc(p.q)}</div><div class="sm">${esc(p.ref)} · ${p.rel}</div></button>`).join('');
   const pastBox = `<div class="card past2">${two || `<div class="sm past-none">${PAST_NONE}</div>`}<div class="past-more wk-links"><a class="tx" href="#/today/past">지난 질문 모두 보기</a><a class="tx" href="#/today/all">모든 질문 ›</a></div></div>`;   // 첫날에도 모든 질문은 열 수 있다(S-63)
   return `<div class="col">
-    ${pageHead('💭', '오늘의 질문', `<div class="sm">${dateLine(demoDate())}</div>`)}
+    ${pageHead('bubble', '오늘의 질문', `<div class="sm">${dateLine(demoDate())}</div>`)}
     ${qCard(q, true)}
     <div class="past-h">지난 질문</div>
     ${pastBox}
@@ -1542,7 +1550,7 @@ function viewPast(ym) {
     return `<div class="t8">
       ${pastSide('', '')}
       <div class="t8-main"><div class="t8-in">
-        ${pageHead('💭', '지난 질문', '<a class="tx" href="#/today" style="padding:0">오늘의 질문 ›</a>')}
+        ${pageHead('bubble', '지난 질문', '<a class="tx" href="#/today" style="padding:0">오늘의 질문 ›</a>')}
         ${nav}${cards}
       </div></div>
     </div>`;
@@ -1562,14 +1570,14 @@ function viewDay(ds) {
     return `<div class="t8">
       ${pastSide(ds, ds.slice(0, 7))}
       <div class="t8-main"><div class="t8-in">
-        ${pageHead('💭', '지난 질문', right)}
+        ${pageHead('bubble', '지난 질문', right)}
         ${qCard(q, true, holdHref)}
       </div></div>
     </div>`;
   }
   return `<div class="col">
     <div class="back-row"><a class="tx" href="#/today/past/${ds.slice(0, 7)}" style="padding-left:0">← 지난 질문</a></div>
-    ${pageHead('💭', '지난 질문', `<div class="sm">${dateLine(d)}</div>`)}
+    ${pageHead('bubble', '지난 질문', `<div class="sm">${dateLine(d)}</div>`)}
     ${qCard(q, true, holdHref)}
   </div>`;
 }
@@ -1580,15 +1588,15 @@ function viewAll(season) {
   const today = questionOn(demoDN()), wide = isWide();
   const chips = `<div class="chips" role="group" aria-label="절기 고르기">${Object.entries(SEASON_NAMES).map(([key, name]) => `<button class="flt${key === season ? ' on' : ''}" type="button" aria-pressed="${key === season}" data-act="all-season" data-season="${key}">${name}</button>`).join('')}</div>`;
   const rows = Q.today[season].map((q, i) => `<button class="pcard card" type="button" data-act="all-question" data-season="${season}" data-item="${i + 1}"><div class="d">${esc(q.label)}${questionKey(q) === questionKey(today) ? ' · 오늘' : ''}</div><div class="pq">${esc(q.q)}</div><div class="sm">${esc(q.ref)} · ${esc(q.asker)}</div></button>`).join('');
-  if (wide) return `<div class="t8">${pastSide('', '')}<div class="t8-main"><div class="t8-in">${pageHead('💭', '모든 질문', '<a class="tx" href="#/today" style="padding:0">← 오늘의 질문</a>')}${chips}${rows}</div></div></div>`;
+  if (wide) return `<div class="t8">${pastSide('', '')}<div class="t8-main"><div class="t8-in">${pageHead('bubble', '모든 질문', '<a class="tx" href="#/today" style="padding:0">← 오늘의 질문</a>')}${chips}${rows}</div></div></div>`;
   return `<div class="col"><div class="back-row"><a class="tx" href="#/today" style="padding-left:0">← 오늘의 질문</a></div><h1 class="h1">모든 질문</h1>${chips}${rows}</div>`;
 }
 // viewQ는 내 기록의 질문 화면이므로 절기별 질문 화면은 따로 둔다.
 function viewTodayQ(season, item) {
   const q = qOf(season, item), back = `<a class="tx" href="#/today/all/${season}" style="padding-left:0">← 모든 질문</a>`;
   const card = qCard(q, true, `#/today/q/${season}/${item}/write`);
-  if (isWide()) return `<div class="t8">${pastSide('', '')}<div class="t8-main"><div class="t8-in">${pageHead('💭', '모든 질문', back)}${card}</div></div></div>`;
-  return `<div class="col"><div class="back-row">${back}</div>${pageHead('💭', '모든 질문')}${card}</div>`;
+  if (isWide()) return `<div class="t8">${pastSide('', '')}<div class="t8-main"><div class="t8-in">${pageHead('bubble', '모든 질문', back)}${card}</div></div></div>`;
+  return `<div class="col"><div class="back-row">${back}</div>${pageHead('bubble', '모든 질문')}${card}</div>`;
 }
 
 // ── 더보기(M8, T13) ──
@@ -2387,14 +2395,14 @@ function viewExplore() {
     ? cur.map(curCard).join('')
     : `<div class="card xcard xempty"><div class="ph">품고 있는 질문 하나를 골라 탐구를 시작해 보세요</div><a class="btn${wide ? '' : ' wide'}" href="#/mine">질문 고르기</a></div>`;
   if (wide) {
-    return wideShell(`${pageHead('🔍', '탐구하기')}
+    return wideShell(`${pageHead('glass', '탐구하기')}
       ${walkCard ? `<div class="xlb" style="margin-top:20px">질문으로 묵상하기</div>${walkCard}` : ''}
       <div class="xlb" style="margin-top:${walkCard ? 28 : 20}px">내가 탐구하는 질문</div>${curHtml}
       <div class="xlb" style="margin-top:28px">이번 주의 질문</div>${weekCard}`, { pn: false });
   }
   const rows = past.map(n => `<button class="card xrow" type="button" data-act="past-open" data-id="${n.q}"><span><span style="display:block">${esc(getQ(n.q).text)}</span><span class="sm">${n.mode === 'free' ? '자유롭게 쓰기' : '단계별로 쓰기'} · ${startLine(n)}</span></span><span class="xch" aria-hidden="true">›</span></button>`).join('');
   return `<div class="col">
-    ${pageHead('🔍', '탐구하기', `<button class="ib" type="button" aria-label="검색" data-act="srch-ex" style="margin-right:-10px">${SEARCH_IC}</button>`)}
+    ${pageHead('glass', '탐구하기', `<button class="ib" type="button" aria-label="검색" data-act="srch-ex" style="margin-right:-10px">${SEARCH_IC}</button>`)}
     ${walkCard ? `<div class="xlb" style="margin-top:14px">질문으로 묵상하기</div>${walkCard}` : ''}
     <div class="xlb"${walkCard ? '' : ' style="margin-top:14px"'}>내가 탐구하는 질문</div>${curHtml}
     <div class="xlb">이번 주의 질문</div>${weekCard}
@@ -3189,7 +3197,7 @@ function viewWrite() {
       ${strip}
       <div class="wr2" style="margin-top:${todayMode ? 12 : 0}px">
         <div class="wr2-main">
-          ${pageHead('✍️', '남기기', seg)}
+          ${pageHead('hand', '남기기', seg)}
           <div class="card wr2-card">
             <textarea class="wr2-ta" id="wrTa" placeholder="${ph}" aria-label="${isQ ? '질문' : '발견'}">${esc(W.text)}</textarea>
             <div class="okl" id="wrOk" aria-live="polite">${okLine()}</div>
@@ -3207,7 +3215,7 @@ function viewWrite() {
       </div></div>`;
   }
   return `<div class="col">
-    ${pageHead('✍️', '남기기')}
+    ${pageHead('hand', '남기기')}
     ${strip}${note && !todayMode ? tnoteHtml(note, Boolean(W.text.trim())) : ''}
     ${seg}
     <textarea class="field wr-ta" id="wrTa" rows="6" placeholder="${ph}" aria-label="${isQ ? '질문' : '발견'}">${esc(W.text)}</textarea>
@@ -3584,7 +3592,7 @@ function viewWeeks() {
 function viewMine(sel) {
   const all = wallItems();
   if (!all.length && mineFilter !== 'x') {   // 질문도 남겨 둔 ! 발견도 없다(M12)
-    return `<div class="col more">${pageHead('🗂️', '내 기록', mineTools(false))}
+    return `<div class="col more">${pageHead('cabinet', '내 기록', mineTools(false))}
       <div class="empty"><div class="sm">아직 모아 둔 것이 없어요. 말씀을 읽다 궁금한 것이 생기면 + 남기기에서 남겨 두세요.</div>
       <a class="btn wide" href="#/write">남기기로 가기</a></div></div>`;
   }
@@ -3596,7 +3604,7 @@ function viewMine(sel) {
   else { const cols = [[], []]; items.forEach((it, i) => cols[i % 2].push(card(it))); wall = `<div class="wall">${cols.map(c => `<div class="wcol">${c.join('')}</div>`).join('')}</div>`; }
   const panel = wide && selQ ? `<aside class="qpanel" aria-label="질문 펴기"><div style="display:flex;justify-content:flex-end;margin-right:-12px">${trashButton('q', selQ.id)}${selQ.state === 'found' ? `<button class="ib" type="button" aria-label="이 질문 더 보기" data-act="q-more" data-id="${selQ.id}">${DOTS_IC(24)}</button>` : ''}<a class="ib" href="#/mine" aria-label="닫기">${X_IC}</a></div>${qBody(selQ)}</aside>` : '';
   return `<div class="col more">
-    ${pageHead('🗂️', '내 기록', mineTools())}
+    ${pageHead('cabinet', '내 기록', mineTools())}
     <div class="chips" role="group" aria-label="걸러 보기">${FILTERS.map(([v, l]) => `<button class="flt${mineFilter === v ? ' on' : ''}" type="button" aria-pressed="${mineFilter === v}" data-act="mine-filter" data-v="${v}">${l}</button>`).join('')}</div>
     ${wall}</div>${panel}`;
 }

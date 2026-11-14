@@ -138,6 +138,9 @@ button, a, label, summary, select, input, [role="button"], [data-act], .brand { 
 @media (max-width: 420px) { .brand-name { display: none; } }
 @media (prefers-reduced-motion: reduce) { .topbar, .tabs { transition: none; } }
 h1 { font-family: var(--f-display); font-size: 1.65em; line-height: 1.3; margin: .3em 0 .2em; }
+/* 탭 제목 옆 그림(코이데와 같게): 글자색과 크기를 따라가며, 그림만 따로 줄바꿈하지 않게 한다. */
+.h-ic { display:inline-flex; width:1.1em; height:1.1em; align-items:center; justify-content:center; vertical-align:-.16em; flex:none; color:inherit; }
+.h-ic svg { display:block; width:100%; height:100%; overflow:visible; }
 h2 { font-size: 1.05em; margin: 0; }
 .eyebrow { font-size: .8em; color: var(--ink-2); margin: 1em 0 0; }
 .top-eyebrow { margin: 0 0 2px; }   /* 코이데처럼 큰 제목 위에 둔다(교회·사랑방·부서 같은 회색 글) */
@@ -1479,6 +1482,12 @@ const ls = {
 };
 const readJson = k => { try { const v = JSON.parse(ls.get(k) || 'null'); return v && typeof v === 'object' ? v : {}; } catch (e) { return {}; } };
 // 책장 머리의 돋보기(디다코 노트의 SEARCH_IC와 같은 그림)
+const HEAD_ICON = {
+  bubble: '<span class="h-ic" aria-hidden="true"><svg viewBox="0 0 64 64" fill="none"><path d="M20 46C11 46 5 39.8 5 32.5c0-6.4 4.6-12 11.1-13.1C18.3 11.2 26 6 34 8.1c5.4-5.6 14.6-3.8 17.8 3.4 6.9.7 11.1 6.6 9.7 13.3 2.9 6.8-.9 14.1-8.1 16-2.4 7-10 10.1-16.8 6.8-4.5 2.4-10.1 2-13.9-1.3-3.4 1.8-7.3 2.4-11.2 1.7Z" stroke="currentColor" stroke-width="4.2" stroke-linecap="round" stroke-linejoin="round"/><circle cx="16" cy="52" r="4.3" stroke="currentColor" stroke-width="3.8"/><circle cx="7" cy="60" r="1.6" fill="currentColor"/></svg></span>',
+  glass: '<span class="h-ic" aria-hidden="true"><svg viewBox="0 0 64 64" fill="none"><circle cx="39" cy="25" r="20" stroke="currentColor" stroke-width="4.8"/><path d="M23.9 40.1 7.2 56.8a4.2 4.2 0 0 0 5.9 5.9l16.7-16.7" stroke="currentColor" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/></svg></span>',
+  hand: '<span class="h-ic" aria-hidden="true"><svg viewBox="0 0 64 64" fill="none"><path d="M20 48 43 8a4 4 0 0 1 7-1l3 2a4 4 0 0 1 1 6L29 54l-11 7 2-13Z" stroke="currentColor" stroke-width="3.8" stroke-linejoin="round"/><path d="m46 12 7 5M20 48l9 6M20 48l-2 13 11-7" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"/><path d="M10 37c-2-3-1-6 1-8 3-3 6-3 9-2l8 4 5-8c2-3 5-4 7-2 3 2 3 5 1 8l-4 7c4-1 7 0 9 3 2 3 1 6-2 8l-9 7c-3 2-6 3-10 2l-11-4-5-9c-1-3-1-5 1-6Z" stroke="currentColor" stroke-width="3.8" stroke-linejoin="round" stroke-linecap="round"/><path d="m14 35 10 5M16 43l9 4M34 37l-6 8M7 52l9 8 8-5" stroke="currentColor" stroke-width="3.1" stroke-linecap="round" stroke-linejoin="round"/></svg></span>',
+  cabinet: '<span class="h-ic" aria-hidden="true"><svg viewBox="0 0 64 64" fill="none"><rect x="6" y="4" width="52" height="56" rx="5" stroke="currentColor" stroke-width="4.2"/><path d="M6 23h52M6 42h52" stroke="currentColor" stroke-width="4.2"/><path d="M25 12v5h14v-5M25 31v5h14v-5M25 50v5h14v-5" stroke="currentColor" stroke-width="3.6" stroke-linecap="round" stroke-linejoin="round"/></svg></span>'
+};
 const SEARCH_IC = '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><circle cx="11" cy="11" r="6.5"/><path d="M16 16l4 4"/></svg>';
 const ic = (n, c) => `<svg class="ic ${c || ''}" aria-hidden="true"><use href="#i-${n}"/></svg>`;
 const root = document.documentElement;
@@ -1870,7 +1879,7 @@ function weekView() {
   lampNow = '';
   hiddenNow = '';
   return `<p class="eyebrow top-eyebrow">${esc(groupName())}</p>
-    <div class="page-top"><h1>이번 주</h1></div>
+    <div class="page-top"><h1>이번 주 ${HEAD_ICON.bubble}</h1></div>
     <div class="week-grid"><div class="col">
     <section class="card walk-hero">
       <img src="${w.img}" alt="${esc(w.alt)}">
@@ -3728,7 +3737,7 @@ function shareView() {
   G = readyGuide(); if (!G) return noGuideView('나눔하기');
   const L = thisLesson();
   return `<p class="eyebrow top-eyebrow">${esc(groupName())} · 이번 주</p>
-  <div class="page-top"><h1>나눔하기</h1></div>
+  <div class="page-top"><h1>나눔하기 ${HEAD_ICON.hand}</h1></div>
   ${D.role === 'pastor' ? statusCard() : ''}
   <div class="start-grid">
     <section class="card today" aria-labelledby="lessonTitle">
@@ -4119,7 +4128,7 @@ function shelfView(arg) {
   if (b) return bookPage(b);
   return `<div class="shelf-wrap shelf-home">
     <p class="eyebrow top-eyebrow">${esc(groupName())}</p>
-    <div class="sh-top"><h1>책장</h1>${D.noBooks ? '' : `<button class="icon-btn" type="button" aria-label="검색" aria-expanded="false" aria-controls="shelfSearch" data-act="shelf-search">${SEARCH_IC}</button>`}</div>
+    <div class="sh-top"><h1>책장 ${HEAD_ICON.glass}</h1>${D.noBooks ? '' : `<button class="icon-btn" type="button" aria-label="검색" aria-expanded="false" aria-controls="shelfSearch" data-act="shelf-search">${SEARCH_IC}</button>`}</div>
     ${D.noBooks ? browseHtml() : `
       <div class="search" id="shelfSearch" hidden>${ic('search')}<input class="field" id="shelfQ" type="search" placeholder="제목이나 본문으로 찾기" aria-label="책장 검색" autocomplete="off"></div><div id="shelfResults" hidden></div>
       <h2 class="xlb" style="margin:20px 0 12px">지금 읽는 책</h2>
@@ -4262,7 +4271,7 @@ function recordView(arg) {
   const e = arg ? recById(arg) : null;
   if (e) return detailHtml(e);
   return `<div class="record-wrap">
-    <div class="record-top"><h1>내 기록</h1>
+    <div class="record-top"><h1>내 기록 ${HEAD_ICON.cabinet}</h1>
       <a class="icon-btn" href="#records" aria-label="모든 기록"><svg class="ic" aria-hidden="true"><use href="#i-list"/></svg></a>
       <a class="icon-btn" href="#found" aria-label="찾은 말씀">${ic('lamp-lit')}</a>
       <a class="icon-btn" href="#gallery" aria-label="올해의 그림">${ic('gallery')}</a></div>
