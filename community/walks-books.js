@@ -34,7 +34,7 @@
       };
     });
     return {
-      id: w.id, title: w.title, period: '', closed: false, kind: '자유 모임', cover: { motif: cover[0], color: cover[1] }, coverName: w.book,
+      id: w.id, title: w.title, group: 'walk', period: '', closed: false, kind: '자유 모임', cover: { motif: cover[0], color: cover[1] }, coverName: w.book,
       range: w.book + (part ? ' ' + part + '부' : ''),
       lessons: w.eps.map(ep => ({ no: ep.n, name: ep.title, ref: ep.ref, date: '', state: !now ? 'upcoming' : ep.n < now ? 'past' : ep.n === now ? 'now' : 'upcoming', body: '' }))
     };

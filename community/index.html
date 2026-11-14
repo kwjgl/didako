@@ -312,7 +312,7 @@ main.wrap { padding-top: 14px; padding-bottom: calc(110px + env(safe-area-inset-
 .walk-hero-body .lesson-title { margin: .6em 0; }
 @media (max-width: 639px) {
   .walk-hero { padding: 16px; }
-  .walk-hero img { float: left; width: 88px; aspect-ratio: 1; border-radius: 12px; margin-right: 14px; }
+  .walk-hero img { float: left; width: 88px; aspect-ratio: 1; border-radius: 12px; margin-right: 14px; margin-bottom: 12px; }
   .walk-hero-body { padding: 0; }
   .walk-hero .walk-head, .walk-hero .lesson-title { margin-left: 102px; }
   .walk-hero .lesson-title { margin-top: .3em !important; margin-bottom: .3em; }
@@ -363,9 +363,9 @@ main.wrap { padding-top: 14px; padding-bottom: calc(110px + env(safe-area-inset-
 .walk-found { margin-top: 16px; padding-top: 12px; border-top: 1px solid var(--line); }
 .walk-found .mlabel { margin: 0 0 8px; }
 .found-chips { display: flex; flex-wrap: wrap; gap: 6px; }
-.found-chip { width: 12em; max-width: 100%; gap: .4em; white-space: normal; overflow-wrap: anywhere; }
+.found-chip { min-width: 7.5em; max-width: 100%; gap: .4em; white-space: nowrap; }
 .found-chip .ic { flex: none; width: 1em; height: 1em; }
-.found-chip.empty { border: 1px dashed var(--ink-2); background: transparent; }
+.found-chip.empty { width: 7.5em; border: 1px dashed var(--ink-2); background: transparent; }
 .found-chip.lamp-now { animation: found-rise .5s ease-out both; }
 @keyframes found-rise {
   from { transform: translateY(5px); opacity: 0; }
@@ -1021,6 +1021,22 @@ body.sharing { overflow: hidden; }
 .sh-actions { grid-column: 2; display: flex; flex-wrap: wrap; gap: 6px; }
 .sh-actions .btn { min-height: 36px; padding: 0 .8em; font-size: .88em; border-radius: 10px; }
 /* 교재 목록: 한 칸에 책 표지와 두 줄까지의 제목 */
+.sh-group-head { display: flex; justify-content: space-between; align-items: center; gap: 8px; }
+.sh-group-head .xlb { margin: 32px 0 12px; }
+.sh-group-head .quiet-link { min-height: 44px; margin: 20px 0 0; white-space: nowrap; }
+.sh-group > .hint { margin: 0 0 12px; }
+@media (width < 640px) {
+  .sh-group:not(.open) .sh-books > :nth-child(n+4),
+  .sh-group:not(:has(.sh-books > :nth-child(4))) .sh-group-head .quiet-link { display: none; }
+}
+@media (640px <= width < 1000px) {
+  .sh-group:not(.open) .sh-books > :nth-child(n+5),
+  .sh-group:not(:has(.sh-books > :nth-child(5))) .sh-group-head .quiet-link { display: none; }
+}
+@media (width >= 1000px) {
+  .sh-group:not(.open) .sh-books > :nth-child(n+7),
+  .sh-group:not(:has(.sh-books > :nth-child(7))) .sh-group-head .quiet-link { display: none; }
+}
 .sh-books { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); column-gap: 14px; row-gap: 18px; }
 .sh-book { display: flex; flex-direction: column; align-items: flex-start; gap: 5px; min-width: 0; padding: 0; border: 0; background: none; color: var(--ink); font-family: var(--f-body); text-align: left; cursor: pointer; }
 .sh-book-title { display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; overflow: hidden; font-size: calc(var(--base) * .875); font-weight: 700; line-height: 1.4; overflow-wrap: anywhere; margin-top: 3px; }
@@ -1709,7 +1725,21 @@ function sbWeekNo() {
 const walkWeek = () => SB ? (DATA.weekWalk.find(w => w.n === sbWeekNo()) || DATA.weekWalk.find(w => w.n === 1) || DATA.weekWalk[0]) : DATA.weekWalk.find(w => w.n === D.walk) || DATA.weekWalk[0];
 const walkToday = () => SB ? ['금', '월', '화', '수', '목', '금', '금'][new Date().getDay()] : '목'; // 데모 오늘(DATA.today)은 목요일
 function walkRedraw() { const y = window.scrollY; route(false); window.scrollTo(0, y); }
-const walkFoundChip = (day, newlyLit = false) => `<span class="walk-ref found-chip${newlyLit ? ' lamp-now' : ''}">${ic('lamp-lit')}<span>${esc(day.where)}</span></span>`;
+// 찾은 말씀 칩의 줄임말: 디다코 노트(note/index.html BOOKS)의 66권 개역 줄임말을 그대로 옮겼다
+const WALK_ABBR = [['창세기', '창'], ['출애굽기', '출'], ['레위기', '레'], ['민수기', '민'], ['신명기', '신'], ['여호수아', '수'], ['사사기', '삿'], ['룻기', '룻'], ['사무엘상', '삼상'], ['사무엘하', '삼하'], ['열왕기상', '왕상'], ['열왕기하', '왕하'], ['역대상', '대상'], ['역대하', '대하'], ['에스라', '스'], ['느헤미야', '느'], ['에스더', '에'], ['욥기', '욥'], ['시편', '시'], ['잠언', '잠'], ['전도서', '전'], ['아가', '아'], ['이사야', '사'], ['예레미야', '렘'], ['예레미야애가', '애'], ['에스겔', '겔'], ['다니엘', '단'], ['호세아', '호'], ['요엘', '욜'], ['아모스', '암'], ['오바댜', '옵'], ['요나', '욘'], ['미가', '미'], ['나훔', '나'], ['하박국', '합'], ['스바냐', '습'], ['학개', '학'], ['스가랴', '슥'], ['말라기', '말'],
+  ['마태복음', '마'], ['마가복음', '막'], ['누가복음', '눅'], ['요한복음', '요'], ['사도행전', '행'], ['로마서', '롬'], ['고린도전서', '고전'], ['고린도후서', '고후'], ['갈라디아서', '갈'], ['에베소서', '엡'], ['빌립보서', '빌'], ['골로새서', '골'], ['데살로니가전서', '살전'], ['데살로니가후서', '살후'], ['디모데전서', '딤전'], ['디모데후서', '딤후'], ['디도서', '딛'], ['빌레몬서', '몬'], ['히브리서', '히'], ['야고보서', '약'], ['베드로전서', '벧전'], ['베드로후서', '벧후'], ['요한일서', '요일'], ['요한이서', '요이'], ['요한삼서', '요삼'], ['유다서', '유'], ['요한계시록', '계']];
+const walkAbbrByLength = WALK_ABBR.slice().sort(([a], [b]) => b.length - a.length);
+function walkShort(where) {
+  const book = walkAbbrByLength.find(([name]) => where.startsWith(name));
+  if (!book) return where;
+  const match = /^\s+(\d+)(?:장|편)\s+(\d+)(?:\s*~\s*(\d+))?절(?:\s*~\s*(\d+)절?)?$/.exec(where.slice(book[0].length));
+  if (!match) return where;
+  const [, chapter, verse, before, after] = match;
+  if (before && after) return where;
+  const end = before || after;
+  return `${book[1]} ${chapter}:${verse}${end ? '~' + end : ''}`;
+}
+const walkFoundChip = (day, newlyLit = false) => `<span class="walk-ref found-chip${newlyLit ? ' lamp-now' : ''}" role="img" aria-label="${esc(day.where)}">${ic('lamp-lit')}<span>${esc(walkShort(day.where))}</span></span>`;
 function walkFoundWeek(w, read, today) {
   const visible = w.days.slice(0, w.days.findIndex(day => day.d === today) + 1);
   const found = day => read[w.n + '-' + day.d] === true;
@@ -3897,12 +3927,36 @@ function coverHtml(b) {
 }
 // 교재 목록: 책 표지 아래에 이름과 기간, 열린 교재 알약을 둔다
 const shelfBookHtml = b => `<button class="sh-book" type="button" data-act="open-book" data-book="${b.id}" title="${esc(bTitle(b))}" aria-label="${esc(bTitle(b))} ${esc(b.period)} 책 열기">${bookCover(b, 'list')}<span class="sh-book-title">${esc(bTitle(b))}</span><span class="sh-book-period">${esc(b.period)}</span>${cmMine(b) ? '<span class="walk-tag">모임장이 쓴 교재</span>' : ''}</button>`;
+let shelfOpen = {};
+function shelfGroup(b) {
+  if (cmMine(b)) return 'own';
+  return b.group === 'walk' ? 'walk' : 'didako';
+}
 function browseHtml() {
   if (D.noBooks) {
     return `<section class="card empty" aria-labelledby="emT">${ic('shelf')}<h2 id="emT">아직 책장에 꽂힌 책이 없어요</h2>
       <p class="soft" style="margin:0">모임장이 책을 고르면 이곳에 책이 놓여요.</p></section>`;
   }
-  return `<h2 class="xlb" style="margin:32px 0 12px">교재 목록</h2><div class="sh-books">${pastBooks().map(shelfBookHtml).join('')}</div>`;
+  const groups = [
+    ['own', '우리 공동체 교재', '모임장이 이 공동체에서 쓴 교재예요.'],
+    ['walk', '질문으로 묵상하기', '디다코 노트의 연재예요. 혼자서도, 함께도 걸어요.'],
+    ['didako', '디다코 교재', '디다코가 함께 읽으려고 낸 교재예요.']
+  ];
+  const books = { own: [], walk: [], didako: [] };
+  pastBooks().forEach(b => books[shelfGroup(b)].push(b));
+  return groups.map(([key, name, hint]) => {
+    const list = books[key], open = shelfOpen[key] === true;
+    if (!list.length && (key !== 'own' || D.role !== 'leader' || SB)) return '';
+    const label = open ? '접기' : '모두 보기';
+    return `<section class="sh-group${open ? ' open' : ''}" aria-labelledby="sh-title-${key}">
+      <div class="sh-group-head"><h2 class="xlb" id="sh-title-${key}">${name}</h2>
+        ${list.length > 3 ? `<button class="quiet-link" type="button" data-act="shelf-more" data-g="${key}" aria-expanded="${open}" aria-controls="sh-books-${key}" aria-label="${name} ${label}">${open ? label : label + ' ›'}</button>` : ''}
+      </div>
+      <p class="hint">${hint}</p>
+      ${list.length ? `<div class="sh-books" id="sh-books-${key}">${list.map(shelfBookHtml).join('')}</div>` : `
+        <p class="hint">교재 관리에서 이 공동체만의 교재를 쓸 수 있어요.</p><a class="quiet-link" href="#manage">교재 관리 ›</a>`}
+    </section>`;
+  }).join('');
 }
 // 검색(제목·본문): 책 제목과 과 제목·장절·풀이를 훑는다. 내 기록은 훑지 않는다
 function searchHtml(q) {
@@ -4345,6 +4399,14 @@ const acts = {
   'read-go'(e, el) { readResume = el.dataset.resume === '1'; readFrom = el.dataset.from || ''; if (location.hash === '#read') route(true); else location.hash = '#read'; },
   // 책장
   'open-book'(e, el) { shelfLesson = el.dataset.lesson || ''; location.hash = '#book-' + el.dataset.book; },
+  'shelf-more'(e, el) {
+    const key = el.dataset.g, y = window.scrollY, browse = $('#shelfBrowse');
+    shelfOpen[key] = !shelfOpen[key];
+    browse.innerHTML = browseHtml();
+    reuseImgs(browse);
+    window.scrollTo(0, y);
+    $(`[data-act="shelf-more"][data-g="${key}"]`, browse)?.focus({ preventScroll: true });
+  },
   // 지금 읽는 책은 공동체의 책이다. 모임장만 바꾸고, 바꾸면 첫 과부터 읽는다
   'book-pick'(e, el) {
     const g = cmCur(), b = bookById(el.dataset.book); if (D.role !== 'leader' || !b) return;
