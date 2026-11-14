@@ -348,6 +348,26 @@ main.wrap { padding-top: 14px; padding-bottom: calc(110px + env(safe-area-inset-
   100% { transform: scale(1); opacity: 1; }
 }
 @media (prefers-reduced-motion: reduce) { .walk-day.lamp-now .ic.lamp.on { animation: none; } }
+
+/* 숨은 그림(2026-11-14, D-36): 그림 위의 종이 칸을 하나씩 걷는다. */
+.hidden-head { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-bottom: 10px; }
+.hidden-head .mlabel { margin: 0; }   /* 이번 주에 찾은 말씀 제목과 같은 왼쪽 줄에 맞춘다 */
+.hidden-range { font-size: .8125rem; color: var(--ink-2); }
+.hidden-board { position: relative; width: 100%; aspect-ratio: 13 / 6; overflow: hidden; border-radius: 12px; background: var(--surface-2); }
+.hidden-board img { position: absolute; inset: 0; width: 100%; height: 100%; display: block; object-fit: cover; }
+/* 덮개는 직소 퍼즐 조각이다. 아직 닫힌 조각만 그리고, 열린 자리는 그림이 보인다(조각의 귀가 서로 맞물린다) */
+.hidden-grid { position: absolute; inset: 0; width: 100%; height: 100%; display: block; filter: drop-shadow(0 1px 1.5px rgba(0, 0, 0, .14)); }
+.hidden-piece { fill: var(--surface-2); stroke: var(--line-strong); stroke-width: 1; vector-effect: non-scaling-stroke; stroke-linejoin: round; }
+.hidden-piece.now { animation: hidden-reveal .7s ease-out both; }
+@keyframes hidden-reveal {
+  from { opacity: 1; }
+  to { opacity: 0; }
+}
+@media (prefers-reduced-motion: reduce) { .hidden-piece.now { display: none; } }
+.hidden-gallery { display: grid; gap: 16px; margin-top: 14px; }
+.hidden-gallery .card { margin: 0; }   /* 카드 바깥 여백 없이 격자 간격만 쓴다 */
+.hidden-gallery-title { margin-top: 28px; }
+.hidden-caption { margin: 10px 0 0; }
 .walk-choices { display: grid; gap: 8px; }
 .walk-choice { display: flex; align-items: center; gap: 10px; width: 100%; min-height: 48px; padding: 8px 14px; border: 1px solid var(--line); border-radius: 12px; background: var(--surface); color: var(--ink); font: inherit; font-size: .9375rem; text-align: left; line-height: 1.45; word-break: keep-all; cursor: pointer; }
 .walk-choice .no { flex: 0 0 24px; width: 24px; height: 24px; border-radius: 50%; display: grid; place-items: center; background: var(--surface-2); color: var(--ink-2); font-size: .78rem; font-weight: 700; }
@@ -1411,6 +1431,7 @@ button.gallery-cell { display: block; width: 100%; padding: 0; cursor: pointer; 
 <script src="demo-data.js"></script>
 <script src="book-gospel.js"></script>
 <script src="book-prophets.js"></script>
+<script src="book-trinity.js"></script>
 <script src="../note/places.js"></script>
 <script src="../note/walks-data.js"></script>
 <script src="walks-books.js"></script>
@@ -1712,7 +1733,7 @@ function statusCard() {
   </section>`;
 }
 // 이번 주의 질문: 고른 날과 고백 열기 상태는 화면에서만 기억한다
-let walkDay = '', walkWrong = {}, lampNow = '';   // 오답과 방금 켠 등불은 화면에서만 기억한다
+let walkDay = '', walkWrong = {}, lampNow = '', hiddenNow = '';   // 오답과 방금 켠 등불·숨은 그림은 화면에서만 기억한다
 const walkNames = { 월: '월요일', 화: '화요일', 수: '수요일', 목: '목요일', 금: '금요일' };
 // 실제 서버(SB): 요일은 진짜 오늘(토·일은 금요일로 본다). 주는 올해 주 번호(note/index.html의 weekNo처럼 그 해 첫 주일부터 센다)의 자료가 있으면 그 주, 없으면 1주
 function sbWeekNo() {
@@ -1739,6 +1760,70 @@ function walkShort(where) {
   const end = before || after;
   return `${book[1]} ${chapter}:${verse}${end ? '~' + end : ''}`;
 }
+// 숨은 그림(2026-11-14, D-36): 13주마다 한 장(가로:세로 13:6). 퀴즈 정답을 찾은 날과 이번 주의 질문을 끝까지 펴 본 주마다 한 칸씩 열린다.
+// 그림 원본은 art/hidden-pictures/, 앱 파일은 note/img/hidden/(교회·공동체가 함께 읽는다)
+const HIDDEN = [
+  { from: 1, to: 13, title: '빛이 있으라', img: '../note/img/hidden/hidden-1.webp' },
+  { from: 14, to: 26, title: '홍해 가운데 난 길', img: '../note/img/hidden/hidden-2.webp' },
+  { from: 27, to: 39, title: '선한 목자의 초장', img: '../note/img/hidden/hidden-3.webp' },
+  { from: 40, to: 52, title: '불꽃 같은 혀', img: '../note/img/hidden/hidden-4.webp' }
+];
+const HIDDEN_COLS = 13, HIDDEN_ROWS = 6, HIDDEN_CELLS = 78;
+const hiddenOrder = Array.from({ length: HIDDEN_CELLS }, (_, i) => (i * 29) % 78);
+function hiddenOpen(h) {
+  const read = readJson(K.walkRead), done = readJson(K.walkDone);
+  let count = 0;
+  for (let n = h.from; n <= h.to; n++) {
+    for (const d of ['월', '화', '수', '목', '금']) if (read[n + '-' + d] === true) count++;
+    if (done[n] === true) count++;
+  }
+  return Math.min(HIDDEN_CELLS, count);
+}
+// 퍼즐 조각 모양: 한 칸은 100×100(그림판 1300×600). 이웃한 두 칸이 나누는 변마다 귀가 어느 쪽으로 볼록한지 정해 두고(늘 같은 모양),
+// 바깥 테두리 변은 곧게 둔다. 귀는 변을 따라 0.34~0.66 자리에 있고 칸 크기의 0.3만큼 이웃 칸으로 들어간다
+const HIDDEN_TAB = [[.34, 0], [.40, 0, .42, .06, .38, .12], [.33, .20, .40, .30, .50, .30], [.60, .30, .67, .20, .62, .12], [.58, .06, .60, 0, .66, 0]];
+function hiddenSign(a, b, kind) {   // 1이면 오른쪽·아래 칸으로 볼록, -1이면 반대
+  let x = (Math.imul(a + 1, 374761393) + Math.imul(b + 1, 668265263) + Math.imul(kind, 1442695041)) | 0;
+  x = Math.imul(x ^ (x >>> 13), 1274126177);
+  return (x ^ (x >>> 16)) & 4 ? 1 : -1;
+}
+function hiddenEdge(ax, ay, bx, by, s) {
+  if (!s) return `L${bx},${by}`;
+  const ux = (bx - ax) / 100, uy = (by - ay) / 100, nx = uy * s * 100, ny = -ux * s * 100;   // 변 방향과 바깥쪽(시계 방향으로 돌 때 왼손 반대편)
+  const p = (u, v) => `${Math.round((ax + u * (bx - ax) + v * nx) * 10) / 10},${Math.round((ay + u * (by - ay) + v * ny) * 10) / 10}`;
+  return HIDDEN_TAB.map(t => t.length === 2 ? `L${p(t[0], t[1])}` : `C${p(t[0], t[1])} ${p(t[2], t[3])} ${p(t[4], t[5])}`).join('') + `L${bx},${by}`;
+}
+const HIDDEN_PIECES = Array.from({ length: HIDDEN_CELLS }, (_, i) => {
+  const c = i % HIDDEN_COLS, r = Math.floor(i / HIDDEN_COLS), x = c * 100, y = r * 100;
+  return `M${x},${y}` + hiddenEdge(x, y, x + 100, y, r === 0 ? 0 : -hiddenSign(c, r, 2))
+    + hiddenEdge(x + 100, y, x + 100, y + 100, c === HIDDEN_COLS - 1 ? 0 : hiddenSign(c + 1, r, 1))
+    + hiddenEdge(x + 100, y + 100, x, y + 100, r === HIDDEN_ROWS - 1 ? 0 : hiddenSign(c, r + 1, 2))
+    + hiddenEdge(x, y + 100, x, y, c === 0 ? 0 : -hiddenSign(c, r, 1)) + 'Z';
+});
+function hiddenBoard(h, future = false) {
+  const opened = future ? 0 : hiddenOpen(h);
+  const visible = new Set(hiddenOrder.slice(0, opened));
+  const complete = !future && opened === HIDDEN_CELLS;
+  // 닫힌 조각만 그린다. 방금 연 조각은 한 번 그려서 서서히 사라지게 한다
+  const pieces = HIDDEN_PIECES.map((d, i) => !visible.has(i) ? `<path class="hidden-piece" d="${d}"/>`
+    : hiddenNow === h.from + ':' + i ? `<path class="hidden-piece now" d="${d}"/>` : '').join('');
+  return `<div class="hidden-board" role="img" aria-label="${complete ? '숨은 그림 「' + esc(h.title) + '」' : '숨은 그림, 조금씩 열리는 중'}">
+    ${future ? '' : `<img src="${h.img}" alt="" loading="lazy">`}
+    <svg class="hidden-grid" viewBox="0 0 1300 600" preserveAspectRatio="none" aria-hidden="true" focusable="false">${pieces}</svg>
+  </div>`;
+}
+function hiddenWeekCard(h) {
+  const open = hiddenOpen(h);
+  const hint = open === 0 ? '퀴즈 정답을 찾은 날마다 한 칸씩 열려요.'
+    : open === HIDDEN_CELLS ? `「${esc(h.title)}」 그림이 다 열렸어요.`
+    : '정답을 찾은 날과 이번 주의 질문을 끝까지 펴 본 주마다 한 칸씩 열려요.';
+  return `<section class="card">
+    <div class="hidden-head"><h2 class="mlabel">숨은 그림</h2><span class="hidden-range">${h.from}~${h.to}주</span></div>
+    ${hiddenBoard(h)}
+    <p class="hint hidden-caption">${hint}</p>
+  </section>`;
+}
+
 const walkFoundChip = (day, newlyLit = false) => `<span class="walk-ref found-chip${newlyLit ? ' lamp-now' : ''}" role="img" aria-label="${esc(day.where)}">${ic('lamp-lit')}<span>${esc(walkShort(day.where))}</span></span>`;
 function walkFoundWeek(w, read, today) {
   const visible = w.days.slice(0, w.days.findIndex(day => day.d === today) + 1);
@@ -1767,7 +1852,10 @@ function weekView() {
     return `<button class="walk-day${chosen ? ' chosen' : ''}${isToday ? ' today' : ''}${future ? ' future' : ''}${newlyLit && checked ? ' lamp-now' : ''}" type="button" data-act="walk-day" data-d="${x.d}" aria-pressed="${chosen}" aria-label="${walkNames[x.d]}${checked ? ', 찾았어요' : ''}"${future ? ' aria-disabled="true"' : ''}><span>${x.d}</span>${checked && !future ? ic('lamp-lit', 'lamp on') : ''}</button>`;
   }).join('');
   const found = walkFoundWeek(w, read, today);
+  const hidden = HIDDEN.find(h => w.n >= h.from && w.n <= h.to);
+  const hiddenCard = hidden ? hiddenWeekCard(hidden) : '';
   lampNow = '';
+  hiddenNow = '';
   return `<p class="eyebrow top-eyebrow">${esc(groupName())}</p>
     <div class="page-top"><h1>이번 주</h1></div>
     <div class="week-grid"><div class="col">
@@ -1793,6 +1881,7 @@ function weekView() {
       ${solved ? `<p class="walk-msg ok">맞아요! ${esc(day.where)}에 있어요.</p>` : wrong >= 0 ? `<p class="walk-msg">본문을 다시 펴 볼까요? 몇 번이든 다시 골라도 돼요.</p>` : ''}
       ${found}
     </section>
+    ${hiddenCard}
     <p class="fine">말씀과 물음은 교역자 확인 전 예시예요.</p></div></div>`;
 }
 
@@ -4214,6 +4303,12 @@ function galleryView() {
     <h1>올해의 그림</h1><p class="eyebrow" style="margin-top:0">2026년</p>
     ${Array.from({ length: 52 }, (_, i) => i + 1).some(collected) ? '' : '<p class="soft">이번 주의 질문을 끝까지 펴 보면 그 주의 그림이 여기에 담겨요.</p>'}
     <div class="gallery-grid">${tiles}</div>
+    <h2 class="hidden-gallery-title">숨은 그림</h2>
+    <div class="hidden-gallery">${HIDDEN.map(h => {
+      const w = walkWeek().n, past = h.to < w, future = h.from > w;
+      const caption = past ? `${h.from}~${h.to}주 · 「${esc(h.title)}」` : future ? `${h.from}~${h.to}주 · 곧 열려요` : `${h.from}~${h.to}주 · 지금 여는 그림`;
+      return `<section class="card">${hiddenBoard(h, future)}<p class="hint hidden-caption">${caption}</p></section>`;
+    }).join('')}</div>
   </div>`;
 }
 // 다시 그리되 보던 자리를 지킨다
@@ -4315,7 +4410,7 @@ function rerender() {
 // ── 눌림 처리 ──
 const acts = {
   'wq-open'() { WQ = { max: 0, view: 0 }; wqOpenPending = true; location.hash = '#wq'; },
-  'wq-next'() { const w = walkWeek(), ta = $('#wqTa'), md = $('#wqMed'); if (ta) { const thoughts = readJson(K.walkThought); thoughts[w.n] = ta.value; ls.set(K.walkThought, JSON.stringify(thoughts)); } if (md) { const meds = readJson(K.walkMeditate); meds[w.n] = md.value; ls.set(K.walkMeditate, JSON.stringify(meds)); } WQ.view = Math.min(4, WQ.view + 1); WQ.max = Math.max(WQ.max, WQ.view); if (WQ.view === 4) { const done = readJson(K.walkDone); done[w.n] = true; ls.set(K.walkDone, JSON.stringify(done)); } route(false); window.scrollTo(0, 0); const head = $('#xHead'); if (head) head.focus({ preventScroll: true }); },
+  'wq-next'() { const w = walkWeek(), ta = $('#wqTa'), md = $('#wqMed'); if (ta) { const thoughts = readJson(K.walkThought); thoughts[w.n] = ta.value; ls.set(K.walkThought, JSON.stringify(thoughts)); } if (md) { const meds = readJson(K.walkMeditate); meds[w.n] = md.value; ls.set(K.walkMeditate, JSON.stringify(meds)); } WQ.view = Math.min(4, WQ.view + 1); WQ.max = Math.max(WQ.max, WQ.view); if (WQ.view === 4) { const done = readJson(K.walkDone); if (done[w.n] !== true) { const h = HIDDEN.find(x => w.n >= x.from && w.n <= x.to); if (h && hiddenOpen(h) < HIDDEN_CELLS) hiddenNow = h.from + ':' + hiddenOrder[hiddenOpen(h)]; } done[w.n] = true; ls.set(K.walkDone, JSON.stringify(done)); } route(false); window.scrollTo(0, 0); const head = $('#xHead'); if (head) head.focus({ preventScroll: true }); },
   'wq-view'(e, el) { WQ.view = Math.min(WQ.max, Math.max(0, Number(el.dataset.i))); route(false); window.scrollTo(0, 0); const head = $('#xHead'); if (head) head.focus({ preventScroll: true }); },
   'wq-pray'() { toast('데모라 넘어가지 않아요'); },
   'gallery-open'(e, el) {
@@ -4326,7 +4421,7 @@ const acts = {
     openSheet(`<h2 id="popT">올해의 그림</h2><img class="gallery-preview" src="${src}" alt="${esc(w ? w.alt : n + '주 그림')}"><p class="soft">${n}주</p>${w ? `<p class="lesson-title">${esc(w.q)}</p>` : ''}${n === D.walk ? '<button class="btn wide" type="button" data-act="wq-open">다시 펴 보기</button>' : ''}<button class="btn ghost wide" type="button" data-act="pop-close" data-focus>닫기</button>`);
   },
 
-  'walk-pick'(e, el) { const w = walkWeek(), d = walkDay || walkToday(), day = w.days.find(x => x.d === d), key = w.n + '-' + d, i = Number(el.dataset.i); if (i === day.answer) { const saved = readJson(K.walkRead); if (saved[key] !== true) lampNow = key; saved[key] = true; ls.set(K.walkRead, JSON.stringify(saved)); delete walkWrong[key]; } else walkWrong[key] = i; walkRedraw(); },
+  'walk-pick'(e, el) { const w = walkWeek(), d = walkDay || walkToday(), day = w.days.find(x => x.d === d), key = w.n + '-' + d, i = Number(el.dataset.i); if (i === day.answer) { const saved = readJson(K.walkRead); if (saved[key] !== true) { lampNow = key; const h = HIDDEN.find(x => w.n >= x.from && w.n <= x.to); if (h && hiddenOpen(h) < HIDDEN_CELLS) hiddenNow = h.from + ':' + hiddenOrder[hiddenOpen(h)]; } saved[key] = true; ls.set(K.walkRead, JSON.stringify(saved)); delete walkWrong[key]; } else walkWrong[key] = i; walkRedraw(); },
   'walk-day'(e, el) { const days = ['월', '화', '수', '목', '금'], d = el.dataset.d; if (days.indexOf(d) > days.indexOf(walkToday())) { toast(walkNames[d] + '에 열려요'); return; } walkDay = d; walkRedraw(); },
   disp() { dispOpen = !dispOpen; rerender(); },
   a2hs() { a2hsSheet(); },

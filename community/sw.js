@@ -4,8 +4,8 @@
  * 아래 CACHE 번호는 남겨 둔 사본의 이름표다. 번호를 올리면 예전 사본을 지운다(AGENTS.md 서비스워커 캐시).
  * 같은 주소의 파일만 다룬다. 글꼴, Supabase 서버 같은 다른 주소의 요청은 건드리지 않는다.
  */
-const CACHE = 'didako-cm-v13';
-const SHELL = ['./', 'index.html', 'config.js', 'design-styles.css', 'covers.js', 'demo-data.js', 'book-gospel.js', 'book-prophets.js', 'walks-books.js', 'sb.js', 'cm-api.js', '../note/places.js', 'manifest.webmanifest', 'icons/icon-192.png', 'icons/icon-512.png', 'icons/icon-maskable-512.png', 'icons/apple-touch-icon.png', 'icons/favicon-32.png'];
+const CACHE = 'didako-cm-v16';
+const SHELL = ['./', 'index.html', 'config.js', 'design-styles.css', 'covers.js', 'demo-data.js', 'book-gospel.js', 'book-prophets.js', 'book-trinity.js', 'walks-books.js', 'sb.js', 'cm-api.js', '../note/places.js', 'manifest.webmanifest', 'icons/icon-192.png', 'icons/icon-512.png', 'icons/icon-maskable-512.png', 'icons/apple-touch-icon.png', 'icons/favicon-32.png'];
 
 self.addEventListener('install', e => {
   // GitHub Pages가 파일을 잠시 그대로 쓰라고 해도 새로 받도록 사본을 쓰지 않고 요청한다

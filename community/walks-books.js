@@ -4,7 +4,7 @@
 // 표지는 교회 방식(무늬 + 색, 세 겹 끈)이고 연재 표지 그림(cover)은 쓰지 않는다(결정 기록 2026-11-12 교재 쓰기 줄).
 (function () {
   const D = window.DIDAKO_DEMO, W = window.WALKS || [];
-  const BASIC = ['gospel', 'prophets'];
+  const BASIC = ['gospel', 'prophets', 'trinity'];
   // 연재마다 표지 무늬와 색(covers.js의 기본 묶음에서 고른다). 목록에 없는 연재는 세 겹 끈·종이색
   const COVER = {
     habakkuk: ['lattice', 'ink'], 'genesis-1': ['leaf', 'green'], 'genesis-2': ['star', 'blue'], 'genesis-3': ['wave', 'paper'], 'genesis-4': ['cord', 'amber'],
