@@ -11,7 +11,7 @@
 <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-title" content="디다코 노트">
+<meta name="apple-mobile-web-app-title" content="디다코">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -278,6 +278,9 @@ body.tabs-off .stickbar { bottom: env(safe-area-inset-bottom, 0px); }
 .ob .btn.big { margin-top: 16px; }
 .ob-demo { margin-top: auto; padding: 24px 0 28px; text-align: center; font-size: .8125rem; color: var(--ink-2); }
 .ob-mark { width: 72px; height: 72px; border-radius: 36px; background: var(--accent); color: var(--on-accent); font: 700 2.5rem/72px var(--f-display); text-align: center; margin: 0 auto; }
+/* 첫 접속의 로고: 상단 바와 같은 디다코 로고(세 겹 책갈피)를 크게 */
+.ob-mark.logo { display: grid; place-items: center; }
+.ob-mark.logo .mk { width: 44px; height: 44px; --s1: var(--on-accent); --s2: color-mix(in srgb, var(--on-accent) 72%, var(--accent)); --s3: color-mix(in srgb, var(--on-accent) 48%, var(--accent)); --cord-bg: var(--accent); }
 .kv { display: flex; gap: 14px; border: 1px solid var(--line); border-radius: 14px; padding: 12px 14px; margin-top: 10px; background: var(--surface); }
 .kv b { flex: 0 0 72px; color: var(--accent); font-size: .9375rem; }
 .kv span { flex: 1; min-width: 0; font-size: .9375rem; line-height: 1.6; }
@@ -1417,8 +1420,8 @@ const STEPS = n => `<div class="steps" aria-hidden="true">${[1, 2, 3].map(i => `
 function viewStart() {
   return `<div class="ob">
     <div style="margin-top:150px;text-align:center">
-      <div class="ob-mark" aria-hidden="true">?</div>
-      <h1 class="sf" style="font-size:2rem;font-weight:700;margin:16px 0 0">디다코 노트</h1>
+      <div class="ob-mark logo" aria-hidden="true"><svg class="mk" viewBox="0 0 16 16"><use href="#i-didako"/></svg></div>
+      <h1 class="sf" style="font-size:2rem;font-weight:700;margin:16px 0 0">디다코</h1>
       <div class="sm" style="margin-top:8px;line-height:1.6">말씀 앞에서 묻고,<br>품고, 알게 되는 곳이에요</div>
     </div>
     <div style="margin-top:auto;margin-bottom:56px;display:flex;flex-direction:column;gap:12px">

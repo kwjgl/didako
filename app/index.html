@@ -104,7 +104,6 @@ button, a, label, summary, select, input, [role="button"], [data-act], .brand { 
 .icon-btn[aria-expanded="true"] { background: var(--surface-2); }
 .menu { position: absolute; top: calc(100% + 6px); right: max(16px, env(safe-area-inset-right, 0px)); width: min(300px, calc(100vw - 32px)); background: var(--surface); border: 1px solid var(--line); border-radius: 16px; box-shadow: 0 16px 40px -12px var(--shadow); padding: .5em; display: flex; flex-direction: column; gap: .1em; z-index: 25; }
 .mlabel { font-size: .72em; font-weight: 600; color: var(--ink-2); margin: .6em .7em .3em; }
-#placeMenu .mlabel { font-size: .75rem; margin: 6px; }
 .place-row { display: flex; align-items: center; justify-content: space-between; width: 100%; gap: 8px; min-height: 44px; padding: 10px 6px; border: 0; border-radius: 10px; background: none; color: var(--ink); font: 500 .875rem var(--f-body); text-align: left; text-decoration: none; cursor: pointer; }
 .place-row .role-tag { margin-left: 6px; }
 .place-row:hover, .place-row:focus-visible { background: var(--surface-2); }
@@ -114,8 +113,13 @@ button, a, label, summary, select, input, [role="button"], [data-act], .brand { 
 .place-row.on:hover { background: none; }
 /* 함께하는 곳 메뉴는 코이데처럼 이름은 왼쪽, 작은 글은 오른쪽, 지금 보는 곳은 굵게(2026-11-14) */
 #placeMenu .place-copy { flex-direction: row; justify-content: space-between; align-items: center; gap: .6em; width: 100%; }
-#placeMenu .place-copy .sm { font-size: .8125rem; color: var(--ink-2); text-align: right; }
-#placeMenu .place-copy > span:first-child { flex: none; white-space: nowrap; }   /* 곳 이름은 한 줄로 두고, 길면 오른쪽 작은 글이 줄을 바꾼다 */
+#placeMenu .place-copy .sm { font-size: .82em; color: var(--ink-2); text-align: right; }
+#placeMenu .place-copy > span:first-child { flex: none; white-space: nowrap; max-width: 100%; overflow: hidden; text-overflow: ellipsis; }   /* 곳 이름은 한 줄로 두고, 길면 오른쪽 작은 글이 줄을 바꾼다 */
+/* 크기 · 굵기 · 여백은 코이데 노트의 값을 그대로 쓴다(pray-for app/note.html의 .mlabel · .mitem. 디다코 노트와 같다, 2026-11-14) */
+#placeMenu .mlabel { font-size: .72em; margin: .6em .7em .3em; }
+#placeMenu .place-row { gap: .6em; font: inherit; font-size: .9em; padding: .55em .7em; }
+#placeMenu .place-row[aria-disabled="true"] { cursor: default; opacity: .7; }
+#placeMenu .place-row[aria-disabled="true"]:hover { background: none; }
 #placeMenu .place-row.on .place-copy > span:first-child { font-weight: 700; }
 .mitem { display: flex; justify-content: space-between; align-items: center; gap: .6em; width: 100%; text-align: left; font-size: .9em; color: var(--ink); background: none; border: 0; border-radius: 10px; padding: .55em .7em; min-height: 44px; cursor: pointer; text-decoration: none; }
 .mitem:hover { background: var(--surface-2); }
@@ -180,7 +184,6 @@ body.pop-open { overflow: hidden; }
 .more-grid { display: grid; grid-template-columns: minmax(0, 1fr); gap: 16px; align-items: start; }
 @media (min-width: 1000px) { .more-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
 .gl { font-size: .8125rem; color: var(--ink-2); margin: 20px 4px 8px; }
-.more-grid > div:first-child > .gl:first-child { margin-top: 20px; }
 .mg-edit { display: grid; gap: 16px; align-items: start; }
 @media (min-width: 1000px) { .mg-edit { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); } .mg-edit-tabs { display: none; } .mg-edit > [hidden] { display: block !important; } }
 .mg-cover { flex: 0 0 40px; width: 40px; }
@@ -192,6 +195,17 @@ body.pop-open { overflow: hidden; }
 .gr b { display: block; font-size: .96875rem; font-weight: 700; }
 .gr .gd { display: block; font-size: .84375rem; color: var(--ink-2); margin-top: 2px; }
 .gr .ch { flex: 0 0 auto; color: var(--ink-2); font-size: 1.25rem; }
+/* 더보기 화면만: 크기 · 굵기 · 여백은 코이데 노트 더보기의 값을 그대로 쓴다(pray-for app/note.html의 .more-h · .card.mrows · .mrow · .mrow small. 디다코 노트와 같다, 2026-11-14).
+   교재 관리 같은 다른 화면의 줄 목록(.gc · .gr)은 그대로 둔다 */
+.more-grid { gap: 0 16px; }
+.more-grid .gl { font-size: .8em; font-weight: 600; margin: 24px 4px 8px; line-height: 1.2; letter-spacing: .02em; }
+.more-grid .gc { padding: 4px 1em; margin-bottom: 12px; }
+.more-grid > div > .gc:last-child { margin-bottom: 0; }   /* 칸의 마지막 카드: 다음 묶음 제목의 위 여백(24px)만 남긴다 */
+.more-grid .gr { justify-content: space-between; gap: 10px; min-height: 0; padding: .8em 0; cursor: pointer; }
+.more-grid .gr b { display: inline; font-size: 1em; }
+.more-grid .gr b.mhead { font-size: calc(var(--base) * .97); font-weight: 600; }   /* 화면 설정 제목: 톱니 메뉴의 제목과 같은 크기 · 굵기 */
+.more-grid .gr .gd { font-size: .8em; margin-top: 0; }
+.more-grid .gr .ch { font-size: 1em; }
 .gr.open { border-bottom: 1px solid var(--line); }   /* 화면 설정을 펼치면 머리줄 아래 구분선 */
 .logout { display: block; margin: 20px auto 0; min-height: 44px; padding: 0 16px; background: none; border: 0; color: var(--ink-2); font: 500 .9375rem var(--f-body); }
 .chip { display: inline-block; padding: 4px 12px; border-radius: 999px; background: var(--accent-soft); color: var(--accent-deep); font-size: .8125rem; font-weight: 500; }
@@ -2304,7 +2318,7 @@ function moreView() {
     </div><div>
       ${jobs ? `<div class="gl">맡은 일</div><div class="gc">${jobs}</div>` : ''}
       <div class="gl">앱 설정</div><div class="gc">
-        <button class="gr${dispOpen ? ' open' : ''}" type="button" data-act="disp" aria-expanded="${dispOpen}" aria-controls="dispEx"><span class="gt"><b>화면 설정</b><span class="gd">화면 모드 · 색 테마 · 디자인 · 큰 글씨</span></span>${dispOpen ? ic('chev', 'ch') : chevron}</button>
+        <button class="gr${dispOpen ? ' open' : ''}" type="button" data-act="disp" aria-expanded="${dispOpen}" aria-controls="dispEx"><span class="gt"><b class="mhead">화면 설정</b><span class="gd">화면 모드 · 색 테마 · 디자인 · 큰 글씨</span></span>${dispOpen ? ic('chev', 'ch') : chevron}</button>
         ${dispOpen ? `<div id="dispEx" style="padding:4px 0 14px">${displayControls()}</div>` : ''}
         <button class="gr" type="button" data-act="a2hs"><span class="gt"><b>홈 화면에 앱처럼 두기</b><span class="gd">아이콘을 눌러 바로 열 수 있게 해요</span></span>${chevron}</button>
       </div>
