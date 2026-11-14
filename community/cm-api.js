@@ -1,5 +1,5 @@
 // 디다코 공동체 서버(Supabase)의 답을 지금 화면(데모)이 쓰는 자료 모양으로 바꾸는 얇은 층(코이데 koinonia-api.js 방식).
-// 화면(DOM)은 건드리지 않는다. 서버 함수는 supabase/002_didako_community.sql에 있다.
+// 화면(DOM)은 건드리지 않는다. 서버 함수는 supabase/002_didako_community.sql과 003_didako_community_care.sql에 있다.
 // 서버에서 온 글(공동체 이름, 사람 이름)은 남이 쓴 글이다. 여기서는 모양만 지키고(문자열·숫자), 화면에 넣을 때 esc()를 거친다.
 window.DidakoCm = (() => {
   const str = v => (v == null ? '' : String(v));
@@ -42,6 +42,10 @@ window.DidakoCm = (() => {
     remove: (id, memberId) => rpc('didako_cm_remove', { p_id: str(id), p_member: str(memberId) }),
     renew: id => rpc('didako_cm_renew', { p_id: str(id) }),
     now: (id, book, no) => rpc('didako_cm_now', { p_id: str(id), p_book: str(book), p_no: num(no, 1) }),
-    leave: id => rpc('didako_cm_leave', { p_id: str(id) })
+    leave: id => rpc('didako_cm_leave', { p_id: str(id) }),
+    handoff: (id, memberId) => rpc('didako_cm_handoff', { p_id: str(id), p_member: str(memberId) }),
+    end: id => rpc('didako_cm_end', { p_id: str(id) }),
+    rename: (id, name) => rpc('didako_cm_rename', { p_id: str(id), p_name: str(name) }),
+    report: (id, reason, note) => rpc('didako_cm_report', { p_id: str(id), p_reason: str(reason), p_note: str(note) })
   };
 })();

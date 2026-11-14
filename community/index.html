@@ -152,6 +152,8 @@ h2 { font-size: 1.05em; margin: 0; }
 .btn.ghost { background: transparent; color: var(--accent); }
 .btn.small { min-height: 36px; padding: 0 .8em; font-size: .88em; border-radius: 10px; }
 .btn.wide { width: 100%; }
+.btn.danger { background: var(--warn); border-color: var(--warn); color: var(--on-accent); }   /* 끝맺기·나가기처럼 되돌리기 어려운 단추(코이데 .btn.danger와 같다) */
+.cm-pick { display: grid; gap: 8px; margin: .6em 0; }
 .btn:disabled { opacity: .5; cursor: default; }
 .field { width: 100%; min-height: 44px; padding: .5em .75em; border-radius: 10px; border: 1px solid var(--line-strong); background: var(--surface); }
 /* 날짜 칸: 아이폰은 날짜 칸을 따로 그려서 폭이 달라지고 시트가 옆으로 밀렸다. 다른 칸과 같은 폭으로 묶는다(D-16) */
@@ -1561,6 +1563,7 @@ loadState();
 // 규칙(결정 기록 2026-11-12 공동체 층 줄): 한 사람은 3곳까지, 한 공동체는 12명까지, 들어오는 길은 모임장이 보내는 초대 링크뿐, 초대 링크는 7일.
 // church(교회 소속)는 나중에 교회 층과 이을 빈칸이다. 지금은 늘 비어 있고 화면에 보이지 않는다
 const CM_MAX = 3, CM_PEOPLE = 12, CM_DAYS = 7, CM_KEY = 'didako-cm-groups', CM_BOOKS = 'didako-cm-books';
+const CM_REASONS = ['교재나 글이 맞지 않아요', '괴롭히거나 불편해요', '광고·홍보', '그 밖'];   // 서버(didako_cm_report)의 신고 이유 4가지와 같다
 const CM_ENDS = [['0', '정하지 않음'], ['1', '1개월'], ['3', '3개월'], ['6', '6개월'], ['12', '12개월']];
 const cmCode = () => Array.from({ length: 6 }, () => 'ABCDEFGHJKMNPQRSTUVWXYZ23456789'[Math.floor(Math.random() * 31)]).join('');
 const cmInvite = () => ({ code: cmCode(), made: Date.now() });
@@ -1602,8 +1605,22 @@ const cmSave = () => { if (SB) { const h = ls.get(SBH); return h ? ls.set(SB_CAC
 const cmIn = () => CM.list.filter(g => !g.wait && g.state !== '닫음');   // 들어가 있는 공동체(승인을 기다리는 곳과 운영자가 닫은 곳은 뺀다. 데모에는 닫은 곳이 없다)
 const cmCur = () => cmIn().find(g => g.id === CM.cur) || cmIn()[0] || null;
 const cmCount = g => 1 + g.members.filter(n => n !== g.leader).length;   // 모임장까지 센 사람 수
-// 이름표 글: 승인 기다림 · 모임장 · 회원. 실제 서버에서는 끝난 곳(끝나는 날 지남·끝맺음)은 "끝남", 운영자가 닫은 곳은 "닫힘"
-const cmTagText = g => g.wait ? '승인 기다림' : SB && g.state === '닫음' ? '닫힘' : SB && (g.state === '끝남' || g.state === '끝맺음') ? '끝남' : g.role === 'leader' ? '모임장' : '회원';
+// 모임장이고 읽기만 상태가 아닌 지금 공동체(모임장 일을 하기 전에 거른다). 아니면 null
+const cmLeader = () => { const g = cmCur(); return g && g.role === 'leader' && g.canWrite !== false ? g : null; };
+// 공동체를 나간 뒤에는 내 공동체 목록으로, 모임장을 넘긴 뒤에는 더보기로 간다(주소가 바뀌며 알림이 지워지지 않게 이동한 뒤에 보인다)
+const cmGo = (hash, msg) => { if (location.hash === hash) { route(true); toast(msg); } else { window.addEventListener('hashchange', () => toast(msg), { once: true }); location.hash = hash; } };
+const cmGoList = msg => cmGo('#start/list', msg), cmGoMore = msg => cmGo('#more', msg);
+// 이름 바꾸기 칸 검사(데모·실제 서버 같이): 앞뒤·연속 공백을 정리하고 1~20자, 내가 함께하는 다른 공동체와 같은 이름은 막는다
+function cmRenameCheck() {
+  const g = cmLeader(), box = $('#cmRename'), msg = t => { const m = $('#cmRenameMsg'); if (m) m.textContent = t; };
+  if (!g || !box) return null;
+  const name = box.value.replace(/\s+/g, ' ').trim();
+  if (name.length < 1 || name.length > 20) { msg('이름은 1~20자로 적어 주세요.'); box.focus(); return null; }
+  if (CM.list.some(x => x.id !== g.id && x.name === name)) { msg('같은 이름의 공동체에 이미 함께하고 있어요.'); return null; }
+  msg(''); return { g, name };
+}
+// 이름표 글: 승인 기다림 · 모임장 · 회원. 끝난 곳(끝나는 날 지남·끝맺음)은 "끝남", 운영자가 닫은 곳은 "닫힘"
+const cmTagText = g => g.wait ? '승인 기다림' : g.state === '닫음' ? '닫힘' : (g.state === '끝남' || g.state === '끝맺음') ? '끝남' : g.role === 'leader' ? '모임장' : '회원';
 const cmUntil = g => { const d = new Date(g.invite.made + CM_DAYS * 86400000); return `${d.getMonth() + 1}월 ${d.getDate()}일`; };
 const cmLink = g => new URL('./?join=' + g.invite.code, location.href).href;
 const cmEndText = iso => { const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(iso || ''); return m ? `${m[1]}년 ${Number(m[2])}월 ${Number(m[3])}일까지` : ''; };
@@ -2647,7 +2664,7 @@ function moreView() {
     }
   } else {
     const g = cmCur(), n = cmCount(g), leader = g.role === 'leader';
-    const shut = SB && g.canWrite === false, off = shut ? ' disabled' : '';
+    const shut = g.canWrite === false, off = shut ? ' disabled' : '';
     const end = cmEndText(g.ends);
     const inviteText = '초대 링크 보내기', inviteDesc = '복사해서 카톡으로 보내요';
     const past = !g.invite || Date.now() > g.invite.made + CM_DAYS * 86400000;
@@ -2660,6 +2677,8 @@ function moreView() {
       ${leader && !SB ? linkRow('교재 관리', '이 공동체에서 쓸 교재를 써요', '#manage') : ''}
       ${leader ? linkRow('공동체 관리', '함께하는 사람 · 들어오기 승인 · 초대 링크', '#church') : ''}
       ${end ? `<p class="hint">이 공동체는 ${end} 열려 있어요.</p>` : ''}
+      ${g.state === '닫음' ? '' : `<button class="gr" type="button" data-act="cm-report">${rowText('신고하기')}${chevron}</button>`}
+      <button class="gr" type="button" data-act="cm-leave">${rowText('<span class="warn-text">공동체에서 나가기</span>')}${chevron}</button>
     </div>`;
     const offRow = body => `<div class="gr" aria-disabled="true">${body}</div>`;
     const circles = CM.list.map(c => {
@@ -3275,7 +3294,7 @@ function churchView() {
   if (!g.invite && !SB) { g.invite = cmInvite(); cmSave(); }   // 실제 서버는 초대 링크를 서버가 만든다
   const past = !g.invite || Date.now() > g.invite.made + CM_DAYS * 86400000;
   // 실제 서버: 끝난 공동체(끝나는 날 지남·끝맺음)는 읽기만 한다. 단추를 잠그고 지워지는 날을 알린다
-  const shut = SB && g.canWrite === false, off = shut ? ' disabled' : '';
+  const shut = g.canWrite === false, off = shut ? ' disabled' : '';
   const eraseM = /^\d{4}-(\d{2})-(\d{2})/.exec(g.eraseOn || '');
   return `<a class="back-link" href="#more">${ic('back')}<span>더보기</span></a>
     <p class="eyebrow top-eyebrow">${esc(room.name)} · 모임장</p><div class="page-top"><h1>우리 공동체</h1></div>${shut ? `
@@ -3296,6 +3315,17 @@ function churchView() {
       <div class="gl">함께하는 사람 · ${CM_PEOPLE}명까지</div><div class="gc">
         <div class="gr"><span class="gt"><b>${esc(room.leader)}</b></span><span class="kid lead">모임장</span></div>
         ${members.map((name, i) => name === room.leader ? '' : `<div class="gr"><span class="gt"><b>${esc(name)}</b><span class="gd">함께하는 중</span></span><button class="btn ghost small" type="button" data-act="room-dc" data-i="${i}" aria-label="${esc(name)} 내보내기"${off}>내보내기</button></div>`).join('')}
+      </div>
+      <div class="gl">공동체 관리</div><div class="gc" style="padding-top:14px;padding-bottom:14px">
+        <label class="f" for="cmRename" style="margin-top:0">공동체 이름</label>
+        <input class="field" id="cmRename" maxlength="20" autocomplete="off" value="${esc(g.name)}"${off}>
+        <div class="set-btns" style="margin-top:10px"><button class="btn small" type="button" data-act="cm-rename-do"${off}>이름 바꾸기</button></div>
+        <p class="msg" id="cmRenameMsg" role="alert" style="margin:6px 0 0;min-height:0"></p>
+      </div>${members.some(name => name !== g.me && name !== room.leader) ? `
+      <div class="gc"><button class="gr" type="button" data-act="cm-handoff"${off}><span class="gt"><b>모임장 넘기기</b><span class="gd">함께하는 사람에게 모임장을 맡겨요</span></span><span class="ch" aria-hidden="true">›</span></button></div>` : ''}
+      <div class="gc" style="padding-top:14px;padding-bottom:14px">
+        <button class="btn danger wide" type="button" data-act="cm-end"${off}>공동체 끝맺기</button>
+        <p class="hint">끝맺으면 30일 동안 읽기만 할 수 있고, 그 뒤 공동체가 지워져요.</p>
       </div>
     </div></div>
     <p class="soft">${ic('lock')} 이름만 보여요. 각자의 생각과 기록은 그 사람 기기에만 있어서 모임장도 볼 수 없어요.</p>`;
@@ -4384,7 +4414,7 @@ function route(moved) {
   if (!LIVE && v === 'start' && (arg === 'new' || (arg === 'join' && !SB)) && cmFull()) arg = 'list';   // 실제 서버의 초대 링크는 서버가 세 곳 제한 글을 알려 준다
   // 실제 서버(SB): 들어온 뒤의 빈 첫 화면은 내 공동체 목록. 공동체가 없으면(0곳) 내 공동체 목록에서 만들거나 초대 링크로 들어온다
   if (SB && D.entered && v === 'start' && !arg) arg = 'list';
-  if (SB && D.entered && v !== 'start' && !cmCur()) { v = 'start'; arg = 'list'; }
+  if (!LIVE && D.entered && v !== 'start' && !cmCur()) { v = 'start'; arg = 'list'; }   // 모두 나갔거나 공동체가 없으면(실제 서버 0곳, 데모에서 모두 나감) 내 공동체 목록으로
   if (SB && v === 'start' && arg === 'join' && !sbJoinToken()) arg = 'list';
   if (SB && v === 'start' && arg === 'new' && CM.open === false) arg = 'list';
   if (LIVE && v !== 'start' && canSetup() && LV.me && !LV.me.ops && ls.get(LK.tok)) { v = 'start'; arg = 'setup'; }
@@ -4482,6 +4512,64 @@ const acts = {
       ${myRoom().members.filter(n => n !== leader).map(n => `<div>${name(n)}</div>`).join('')}
       <p class="hint">이름만 보여요. 서로 얼마나 썼는지는 보이지 않아요.</p>
       <button class="btn ghost wide" type="button" data-act="pop-close">알겠어요</button>`);
+  },
+  // 신고·나가기(더보기 이 공동체 카드)와 공동체 관리(이름 바꾸기·모임장 넘기기·끝맺기). 시트는 데모와 실제 서버가 같이 쓰고, 끝내는 동작(-do)만 실제 서버(SB)가 아래에서 바꾼다
+  'cm-report'() {
+    const g = cmCur(); if (!g || g.state === '닫음') return;
+    openSheet(sheetHead('신고하기') + `<label class="f" for="cmRepReason">신고 이유</label>
+      <select class="field" id="cmRepReason">${CM_REASONS.map(x => `<option value="${x}">${x}</option>`).join('')}</select>
+      <label class="f" for="cmRepNote">짧은 글 (선택)</label>
+      <textarea class="field" id="cmRepNote" maxlength="200" rows="4"></textarea>
+      <p class="hint">신고한 사람은 알려지지 않아요.</p>
+      <div class="set-btns"><button class="btn ghost" type="button" data-act="pop-close">취소</button><button class="btn" type="button" data-act="cm-report-do">보내기</button></div>`);
+  },
+  'cm-report-do'() { closeSheet(); toast('데모에서는 신고를 보내지 않아요'); },
+  'cm-leave'() {
+    const g = cmCur(); if (!g) return;
+    const next = g.members.find(n => n !== g.me && n !== g.leader);
+    const only = cmCount(g) <= 1;
+    openSheet(sheetHead('공동체에서 나가기') + `<p><b>${esc(g.name)}</b>에서 나갈까요?</p>
+      ${only ? '<p>마지막 한 사람이라, 나가면 공동체가 지워져요.</p>' : g.role === 'leader' ? `<p>${next ? `가장 먼저 들어온 ${esc(next)} 님이` : '가장 먼저 들어온 지체가'} 모임장을 이어받아요.</p>` : ''}
+      <p class="hint">내 기기에 남긴 기록은 그대로예요.</p>
+      <div class="set-btns"><button class="btn ghost" type="button" data-act="pop-close" data-focus>그만두기</button><button class="btn danger" type="button" data-act="cm-leave-do">나가기</button></div>`);
+  },
+  'cm-leave-do'() {
+    const g = cmCur(); if (!g) return;
+    CM.list = CM.list.filter(x => x.id !== g.id);
+    CM.cur = (cmIn()[0] || {}).id || ''; cmSave(); ls.del(K.shareLesson); ls.del(K.bookmark);
+    closeSheet(); cmGoList(cmCount(g) <= 1 ? '공동체에서 나왔어요. 공동체가 지워졌어요' : '공동체에서 나왔어요');
+  },
+  'cm-rename-do'() {
+    const r = cmRenameCheck(); if (!r) return;
+    r.g.name = r.name; cmSave(); roomRedraw(); toast('이름을 바꿨어요');
+  },
+  'cm-handoff'() {
+    const g = cmLeader(); if (!g) return;
+    const names = g.members.map((n, i) => [n, i]).filter(([n]) => n !== g.me && n !== g.leader);
+    if (!names.length) return;
+    openSheet(sheetHead('모임장 넘기기') + `<p>모임장을 넘겨줄 사람을 골라 주세요.</p>
+      <div class="cm-pick">${names.map(([n, i]) => `<button class="btn ghost wide" type="button" data-act="cm-handoff-ask" data-i="${i}">${esc(n)}</button>`).join('')}</div>
+      <button class="btn ghost wide" type="button" data-act="pop-close" data-focus>그만두기</button>`);
+  },
+  'cm-handoff-ask'(e, el) {
+    const g = cmLeader(), name = g && g.members[Number(el.dataset.i)]; if (!name || name === g.me || name === g.leader) return;
+    openSheet(sheetHead('모임장 넘기기') + `<p><b>${esc(name)}</b> 님이 모임장이 되고, 나는 회원이 돼요. 넘길까요?</p>
+      <div class="set-btns"><button class="btn ghost" type="button" data-act="pop-close" data-focus>그만두기</button><button class="btn" type="button" data-act="cm-handoff-do" data-i="${esc(el.dataset.i)}">넘기기</button></div>`);
+  },
+  'cm-handoff-do'(e, el) {
+    const g = cmLeader(), name = g && g.members[Number(el.dataset.i)]; if (!name || name === g.me || name === g.leader) return;
+    g.members = [g.me].concat(g.members.filter(n => n !== name)); g.leader = name; g.role = 'member'; g.invite = null; cmSave();
+    closeSheet(); cmGoMore(`${name} 님에게 모임장을 넘겼어요`);
+  },
+  'cm-end'() {
+    if (!cmLeader()) return;
+    openSheet(sheetHead('공동체 끝맺기') + `<p>공동체를 끝맺을까요?</p><p>끝맺으면 30일 동안 읽기만 할 수 있고, 그 뒤 공동체가 지워져요.</p>
+      <div class="set-btns"><button class="btn ghost" type="button" data-act="pop-close" data-focus>그만두기</button><button class="btn danger" type="button" data-act="cm-end-do">끝맺기</button></div>`);
+  },
+  'cm-end-do'() {
+    const g = cmLeader(); if (!g) return;
+    g.state = '끝맺음'; g.canWrite = false; g.eraseOn = isoOf(new Date(Date.now() + 30 * 86400000)); cmSave();
+    closeSheet(); roomRedraw(); toast('공동체를 끝맺었어요');
   },
   'cm-invite-new'() { const g = cmCur(); if (!g || g.role !== 'leader') return; g.invite = cmInvite(); cmSave(); roomRedraw(); toast('새 링크를 만들었어요. 전에 보낸 링크는 쓸 수 없어요'); },
   'cm-invite-copy'() {
@@ -5354,6 +5442,34 @@ if (SB) {
       const g = sbLeaderOk(), p = g && g.pending[Number(el.dataset.i)]; if (!p || D.role !== 'leader') return;
       await DidakoCm.decide(g.id, p.id, false);
       await sbRefresh(true); roomRedraw(); toast(`${p.name} 님의 신청을 거절했어요`);
+    }),
+    'cm-report-do': sbAct(async () => {
+      const g = cmCur(); if (!g || g.state === '닫음') return;
+      await DidakoCm.report(g.id, $('#cmRepReason').value, $('#cmRepNote').value);
+      closeSheet(); toast('신고를 받았어요. 운영자가 살펴볼게요');
+    }),
+    'cm-leave-do': sbAct(async () => {
+      const g = cmCur(); if (!g) return;
+      const r = await DidakoCm.leave(g.id) || {};
+      closeSheet(); if (CM.cur === g.id) CM.cur = ''; ls.del(K.shareLesson); ls.del(K.bookmark);
+      await sbRefresh(true);
+      cmGoList(r.gone ? '공동체에서 나왔어요. 공동체가 지워졌어요' : '공동체에서 나왔어요');
+    }),
+    'cm-rename-do': sbAct(async () => {
+      const r = cmRenameCheck(); if (!r) return;
+      await DidakoCm.rename(r.g.id, r.name);
+      await sbRefresh(true); roomRedraw(); toast('이름을 바꿨어요');
+    }),
+    'cm-handoff-do': sbAct(async (e, el) => {
+      const g = sbLeaderOk(), i = Number(el.dataset.i), name = g && g.members[i], mid = g && g.mids && g.mids[i];
+      if (!name || !mid || name === g.me || name === g.leader) return;
+      await DidakoCm.handoff(g.id, mid);
+      closeSheet(); await sbRefresh(true); cmGoMore(`${name} 님에게 모임장을 넘겼어요`);
+    }),
+    'cm-end-do': sbAct(async () => {
+      const g = sbLeaderOk(); if (!g) return;
+      await DidakoCm.end(g.id);
+      closeSheet(); await sbRefresh(true); roomRedraw(); toast('공동체를 끝맺었어요');
     }),
     'room-dc'(e, el) { if (!sbLeaderOk()) return; demoActs['room-dc'](e, el); },
     'room-dc-do': sbAct(async (e, el) => {
