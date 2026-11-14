@@ -24,7 +24,7 @@ try {
   if (d.mode === 'light' || d.mode === 'dark') r.setAttribute('data-mode', d.mode);
   if (d.accent !== 'green') r.setAttribute('data-accent', ['amber', 'blue', 'rose', 'ink', 'paper'].includes(d.accent) ? d.accent : 'paper');   // 기본은 종이(S-83). 초록은 속성 없이 :root 값
   if (['neu', 'skeu', 'glass'].includes(d.style)) r.setAttribute('data-style', d.style);
-  if (d.big === true) r.setAttribute('data-big', '');
+  if (d.big === true || d.big === 1) r.setAttribute('data-big', ''); else if (d.big === 2) r.setAttribute('data-big', '2');
 } catch (e) {}
 </script>
 <style>
@@ -57,9 +57,10 @@ try {
   --leader: #B6A8EA; --leader-soft: #2A2442; --private: #252E2B;
   --warn: #E2A563; --warn-soft: #3A2C1B; --shadow: rgba(0, 0, 0, .5); --neu-hi: rgba(255, 255, 255, .06); --neu-lo: rgba(0, 0, 0, .6);
   --accent-deep: #7CC2B7; --wood: #7A5636; color-scheme: dark; }
-/* 글씨: 휴대폰·태블릿 16px, PC 15px. 큰 글씨 모드는 약 1.2배 (글씨 크기는 rem, 칸 크기는 px) */
+/* 글씨: 휴대폰·태블릿 16px, PC 15px. 큰 글씨는 크게 약 1.2배, 아주 크게 약 1.4배(코이데와 같다) (글씨 크기는 rem, 칸 크기는 px) */
 :root[data-big] { --base: 19px; }
-@media (min-width: 1000px) { :root[data-big] { --base: 18px; } }
+:root[data-big="2"] { --base: 22px; }
+@media (min-width: 1000px) { :root[data-big] { --base: 18px; } :root[data-big="2"] { --base: 20px; } }
 /* 색 테마(초록은 위 기본값). GBS 앱·시안의 THEMES와 같은 값: 밝은 화면 / 어두운 화면 */
 :root[data-accent="amber"] { --page:#EDE8E0;--surface:#F9F5EE;--surface-2:#ECE5DA;--ink:#2A221B;--ink-2:#6E6155;--line:#E0D6C8;--line-strong:#C9B9A3;--accent:#A9561B;--accent-mid:#E2B07F;--accent-soft:#F6E3CF;--on-accent:#FFFFFF;--private:#EFE8DE; }
 @media (prefers-color-scheme: dark) { :root[data-accent="amber"]:not([data-mode="light"]) { --page:#1A1612;--surface:#231E19;--surface-2:#2B241E;--ink:#EEE6DC;--ink-2:#AE9F8E;--line:#3A3129;--line-strong:#5A4D41;--accent:#E9A066;--accent-mid:#8A5A32;--accent-soft:#3A2818;--on-accent:#1E140C;--private:#2E2721; } }
@@ -990,6 +991,12 @@ body.fs .xw-top { padding-right: 52px; }   /* 시안 보기 설정(톱니)이 �
 /* 클래식(S-81): 광택 버튼은 진한 버튼만. 바탕이 옅은 버튼(ol·lt·alt)은 종이 버튼으로 두고 제 글자색을 지킨다 */
 :root[data-style="skeu"] .btn:not(.ghost):is(.ol, .lt, .alt) { background-image: linear-gradient(180deg, rgba(255,255,255,.3), rgba(255,255,255,0) 60%, rgba(0,0,0,.06)); background-color: var(--surface); border: 1px solid color-mix(in srgb, var(--line-strong) 85%, #000 10%); box-shadow: inset 0 1px 0 rgba(255,255,255,.7), 0 1px 2px rgba(0,0,0,.15); text-shadow: none; }
 :root[data-style="skeu"] .btn:not(.ghost).lt { background-color: var(--accent-soft); }
+/* 아주 크게일 때 좁은 화면의 상단 바 공간 확보 */
+@media (max-width: 430px) {
+  :root[data-big="2"] .topbar .brand > span:last-child { display: none; }
+  :root[data-big="2"] .topbar-in { gap: .4em; }
+  :root[data-big="2"] .place-btn { padding-inline: .5em; gap: .3em; }
+}
 </style>
 <link rel="stylesheet" href="design-styles.css">
 <!-- 시작 화면이 뜨기 전에는 바탕을 단색으로(바탕 무늬가 잠깐 비치지 않게). splash.js가 닫을 때 푼다(S-34) -->
@@ -1121,17 +1128,17 @@ const pick = (v, list, d) => (list.includes(v) ? v : d);
 
 // ── 화면 설정(화면 모드·색 테마·디자인·큰 글씨): GBS 앱과 같은 값, 기억 자리만 따로 ──
 const MODES = ['auto', 'light', 'dark'], ACCENTS = ['green', 'amber', 'blue', 'rose', 'ink', 'paper'], STYLES = ['basic', 'neu', 'skeu', 'glass'];
-const S = { mode: 'auto', accent: 'paper', style: 'basic', big: false };
+const S = { mode: 'auto', accent: 'paper', style: 'basic', big: 0 };
 const root = document.documentElement;
 (function loadDisplay() {
   const a = readJson(K.display);
-  S.mode = pick(a.mode, MODES, 'auto'); S.accent = pick(a.accent, ACCENTS, 'paper'); S.style = pick(a.style, STYLES, 'basic'); S.big = a.big === true;
+  S.mode = pick(a.mode, MODES, 'auto'); S.accent = pick(a.accent, ACCENTS, 'paper'); S.style = pick(a.style, STYLES, 'basic'); S.big = a.big === true ? 1 : [1, 2].includes(a.big) ? a.big : 0;
 })();
 function applySettings() {
   S.mode === 'auto' ? root.removeAttribute('data-mode') : root.setAttribute('data-mode', S.mode);
   S.accent === 'green' ? root.removeAttribute('data-accent') : root.setAttribute('data-accent', S.accent);
   S.style === 'basic' ? root.removeAttribute('data-style') : root.setAttribute('data-style', S.style);
-  S.big ? root.setAttribute('data-big', '') : root.removeAttribute('data-big');
+  S.big ? root.setAttribute('data-big', S.big === 2 ? '2' : '') : root.removeAttribute('data-big');
 }
 const saveDisplay = () => ls.set(K.display, JSON.stringify(S));
 
@@ -1595,7 +1602,8 @@ function displayEx(id = 'dispEx') {
     <div class="seg" role="radiogroup" aria-label="화면 모드">${RADIO('mode', MODE_OPTS)}</div>
     <div class="cdw" role="radiogroup" aria-label="색 테마">${SWATCHES.map(([v, c, n]) => `<button class="cd" type="button" role="radio" aria-checked="false" aria-label="${n}" data-set="accent:${v}"><i style="background:${c}"></i></button>`).join('')}</div>
     <div class="seg" role="radiogroup" aria-label="디자인 스타일">${RADIO('style', STYLE_OPTS)}</div>
-    <div class="set-row"><span><b>큰 글씨</b></span><button class="switch" type="button" role="switch" aria-checked="false" aria-label="큰 글씨" data-act="big"><span></span></button></div>
+    <div class="set-row"><span><b>큰 글씨</b></span></div>
+    <div class="seg" role="radiogroup" aria-label="큰 글씨">${RADIO('big', [['0', '보통'], ['1', '크게'], ['2', '아주 크게']])}</div>
   </div>`;
 }
 // ── 내 공동체(더보기와 함께하는 곳 메뉴. 코이데 노트 방식) ──
@@ -3895,7 +3903,6 @@ function paintSettings() {
     const [k, v] = b.dataset.set.split(':'), on = String(S[k]) === v;
     b.setAttribute('aria-checked', String(on)); b.classList.toggle('on', on);
   });
-  $$('[data-act="big"]').forEach(b => { b.setAttribute('aria-checked', String(S.big)); b.classList.toggle('on', S.big); });
   const gd = $('#gearDate'), gi = $('#gearInfo');   // 데모의 오늘과 그날의 절기·번호(데모에만 보이는 표시)
   if (gd && gd.value !== dnStr(demoDN())) gd.value = dnStr(demoDN());
   const gs = $('#gearStart'); if (gs) gs.value = D.start || dnStr(demoDN() - 30);
@@ -4126,7 +4133,6 @@ const acts = {
   'pick-go'() { if (!P.sel) return; const q = P.sel; pairUp(P.fid, q); goPaired(q); },
   'need-sync'() { toast('동기화를 먼저 켜 주세요'); },
   disp() { dispOpen = !dispOpen; render(); const b = $('[data-act="disp"]'); if (b) b.focus({ preventScroll: true }); },
-  big() { S.big = !S.big; earnBadge('a-style'); saveDisplay(); applySettings(); paintSettings(); },
   a2hs() { a2hsSheet(); },
   a2hsos(e, el) { a2hsOs = el.dataset.v; a2hsSheet(); },
   logout() { confirmSheet('로그아웃할까요?', '다시 들어올 때는 카카오로 로그인해요. 맡긴 기록은 비밀 문구로 다시 열 수 있어요.', '그만두기', '로그아웃', 'logout-go'); },
@@ -4222,7 +4228,7 @@ document.addEventListener('click', e => {
   if (set) {
     const [k, v] = set.dataset.set.split(':');
     if (String(S[k]) !== v) earnBadge('a-style');
-    S[k] = v; saveDisplay(); applySettings(); paintSettings(); return;
+    S[k] = k === 'big' ? Number(v) : v; saveDisplay(); applySettings(); paintSettings(); return;
   }
   const el = e.target.closest('[data-act]');
   if (el && acts[el.dataset.act]) { acts[el.dataset.act](e, el); return; }
