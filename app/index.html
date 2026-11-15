@@ -222,6 +222,12 @@ body.pop-open { overflow: hidden; }
   :root[data-big="2"] .brand-name { display: none; }
   :root[data-big="2"] .badge-btn { padding-left: .7em; gap: .3em; }
 }
+/* 아주 좁은 휴대폰(320px)에서도 상단 바가 옆으로 밀리지 않게: 이름표의 이름은 모자라면 말줄임(…)으로 줄이고, 역할 알약·[데모]·설정 톱니는 줄이지 않는다. 360px 아래에서만 칸 사이를 조금 좁힌다 */
+.topbar .badge-btn { min-width: 0; flex: 0 1 auto; }
+.badge-btn .badge-name { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.badge-btn .role-tag, .topbar .demo-tag { flex: none; }
+/* 359px 아래(보통 글씨)에서는 큰 글씨 때처럼 로고 옆 "디다코" 글자를 숨긴다. 로고 그림은 그대로 두어 누르면 이번 주로 간다 */
+@media (max-width: 359px) { .topbar .wrap { gap: .3em; } .topbar .brand-name { display: none; } }
 </style>
 <link rel="stylesheet" href="design-styles.css">
 <style>
@@ -1535,7 +1541,7 @@ const groupName = () => LIVE ? liveGroupName() : (isTop() ? DATA.church.dept : D
 // 실제 모드에서는 서버가 알려 준 직분(목사님·전도사님, 리더·코리더)을 그대로 보인다
 const roleName = () => LIVE && LV.me && LV.me.role && (D.role === 'pastor' || D.role === 'leader') ? LV.me.role : ROLES.find(x => x[0] === D.role)[1];
 function paintBadge() {
-  $('#badge').innerHTML = `${esc(groupName())} <span class="role-tag${D.role === 'leader' ? ' leader' : isTop() ? ' admin' : ''}">${esc(roleName())}</span>`;
+  $('#badge').innerHTML = `<span class="badge-name">${esc(groupName())}</span><span class="role-tag${D.role === 'leader' ? ' leader' : isTop() ? ' admin' : ''}">${esc(roleName())}</span>`;
   $('#placeMenu').innerHTML = didakoPlaces.html({ cur: 'church', attr: k => k === 'note' ? 'href="../note/"' : k === 'circleOne' ? 'href="../community/"' : '' });
 }
 

@@ -240,6 +240,12 @@ body.pop-open { overflow: hidden; }
   :root[data-big="2"] .brand-name { display: none; }
   :root[data-big="2"] .badge-btn { padding-left: .7em; gap: .3em; }
 }
+/* 아주 좁은 휴대폰(320px)에서도 상단 바가 옆으로 밀리지 않게: 이름표의 이름은 모자라면 말줄임(…)으로 줄이고, 역할 알약·[데모]·설정 톱니는 줄이지 않는다. 360px 아래에서만 칸 사이를 조금 좁힌다 */
+.topbar .badge-btn { min-width: 0; flex: 0 1 auto; }
+.badge-btn .badge-name { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.badge-btn .role-tag, .topbar .demo-tag { flex: none; }
+/* 359px 아래(보통 글씨)에서는 큰 글씨 때처럼 로고 옆 "디다코" 글자를 숨긴다. 로고 그림은 그대로 두어 누르면 이번 주로 간다 */
+@media (max-width: 359px) { .topbar .wrap { gap: .3em; } .topbar .brand-name { display: none; } }
 </style>
 <link rel="stylesheet" href="design-styles.css">
 <style>
@@ -1706,7 +1712,7 @@ const roleName = () => LIVE && LV.me && LV.me.role && (D.role === 'pastor' || D.
 function paintBadge() {
   // 이름표는 코이데 공동체처럼 "디다코 공동체 + 역할"이다. 어느 공동체인지는 함께하는 곳 메뉴의 "지금 보는 곳"과 화면 머리가 알린다
   const cur = cmCur();
-  $('#badge').innerHTML = cur ? `디다코 공동체<span class="role-tag${cur.role === 'leader' ? ' leader' : ''}">${cmTagText(cur)}</span>` : '디다코 공동체';
+  $('#badge').innerHTML = cur ? `<span class="badge-name">디다코 공동체</span><span class="role-tag${cur.role === 'leader' ? ' leader' : ''}">${cmTagText(cur)}</span>` : '<span class="badge-name">디다코 공동체</span>';
   $('#placeMenu').innerHTML = didakoPlaces.html({ cur: cur ? cur.id : '', circles: CM.list.map(g => ({ id: g.id, name: g.name, wait: !!g.wait })),
     circleMake: !cmFull() && !(SB && CM.open === false),
     attr: (k, id) => k === 'note' ? 'href="../note/"' : k === 'church' ? 'href="../app/"' : k === 'circleMake' ? 'href="#start/new"' : `data-act="place-room" data-v="${esc(id)}"` });
