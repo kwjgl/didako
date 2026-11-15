@@ -4,7 +4,7 @@
  * 아래 CACHE 번호는 남겨 둔 사본의 이름표다. 번호를 올리면 예전 사본을 지운다(AGENTS.md 서비스워커 캐시).
  * 같은 주소의 파일만 다룬다. 글꼴, Supabase 서버 같은 다른 주소의 요청은 건드리지 않는다.
  */
-const CACHE = 'didako-cm-v35';
+const CACHE = 'didako-cm-v36';
 const SHELL = ['./', 'index.html', 'config.js', 'design-styles.css', 'covers.js', 'demo-data.js', 'book-gospel.js', 'book-prophets.js', 'book-trinity.js', 'walks-books.js', 'sb.js', 'cm-api.js', '../note/places.js', 'manifest.webmanifest', 'icons/icon-192.png', 'icons/icon-512.png', 'icons/icon-maskable-512.png', 'icons/apple-touch-icon.png', 'icons/favicon-32.png'];
 
 self.addEventListener('install', e => {
@@ -18,6 +18,8 @@ self.addEventListener('activate', e => {
 self.addEventListener('fetch', e => {
   const req = e.request, url = new URL(req.url);
   if (req.method !== 'GET' || url.origin !== location.origin) return;
+  // 영상은 건드리지 않는다: 새 요청으로 바꾸면 Range 헤더가 사라져 사파리가 재생하지 못하고, 부분 응답(206)은 caches.put도 안 된다. 브라우저가 직접 받게 둔다(첫 화면 영상, 코이데와 같다)
+  if (/\.(mp4|webm|mov)$/i.test(url.pathname) || req.headers.has('range')) return;
   // 그림(표지, 이번 주의 질문 그림 등)은 남겨 둔 사본을 바로 보이고, 새 그림은 뒤에서 받아 바꿔 둔다.
   //  화면을 다시 그릴 때마다 서버에 물어보느라 그림이 비었다가 들어오는(반짝이는) 것을 막는다(2026-11-10). note/ 그림도 같은 주소라 함께 다룬다
   if (req.destination === 'image') {
