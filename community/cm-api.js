@@ -1,5 +1,5 @@
 // 디다코 공동체 서버(Supabase)의 답을 지금 화면(데모)이 쓰는 자료 모양으로 바꾸는 얇은 층(코이데 koinonia-api.js 방식).
-// 화면(DOM)은 건드리지 않는다. 서버 함수는 supabase/002_didako_community.sql·003_didako_community_care.sql·004_didako_community_book.sql에 있다.
+// 화면(DOM)은 건드리지 않는다. 서버 함수는 supabase/002_didako_community.sql·003_didako_community_care.sql·004_didako_community_book.sql·005_didako_base_book.sql에 있다.
 // 서버에서 온 글(공동체 이름, 사람 이름, 모임장이 쓴 교재)은 남이 쓴 글이다. 여기서는 모양만 지키고(문자열·숫자), 화면에 넣을 때 esc()를 거친다.
 window.DidakoCm = (() => {
   const str = v => (v == null ? '' : String(v));
@@ -79,8 +79,16 @@ window.DidakoCm = (() => {
     });
     return out;
   }
+  // 서버의 디다코 교재 목록(앱 관리자가 쓴 교재 + 숨김 표시) → { books: [화면 교재…](새 교재가 앞), guides: { '교재id:과번호': 질문 자료 }, hidden: [숨긴 교재 id…] }.
+  // data가 있는 줄은 모임장 교재와 같은 방법으로 바꾸고 디다코 교재 표시(group, baseOwn)를 붙인다. data 없이 숨김만 있는 줄(앱에 들어 있는 교재)은 hidden에만 들어간다
+  function toBase(rows) {
+    const out = toOwn(list(rows).filter(row => isObj(row) && isObj(row.data)));
+    out.books.forEach(b => { b.group = 'didako'; b.baseOwn = true; });
+    out.hidden = list(rows).filter(row => isObj(row) && row.hidden === true && /^[a-z0-9][a-z0-9-]{0,63}$/.test(str(row.id))).map(row => str(row.id));
+    return out;
+  }
   return {
-    toGroup, toOwn, toOwnBook,
+    toGroup, toOwn, toOwnBook, toBase,
     mine: () => rpc('didako_cm_mine', {}),
     info: id => rpc('didako_cm_info', { p_id: str(id) }),
     create: ({ name, me, months, book, no }) => rpc('didako_cm_create', { p_name: str(name), p_person: str(me), p_months: months ? num(months, null) : null, p_book: str(book), p_no: num(no, 1) }),
@@ -97,6 +105,11 @@ window.DidakoCm = (() => {
     books: id => rpc('didako_cm_books', { p_id: str(id) }),
     bookSave: (id, bookId, data) => rpc('didako_cm_book_save', { p_id: str(id), p_book: str(bookId), p_data: data }),
     bookDel: (id, bookId) => rpc('didako_cm_book_del', { p_id: str(id), p_book: str(bookId) }),
+    baseMe: () => rpc('didako_base_me', {}),
+    baseList: () => rpc('didako_base_list', {}),
+    baseSave: (bookId, data) => rpc('didako_base_save', { p_book: str(bookId), p_data: data }),
+    baseHide: (bookId, on) => rpc('didako_base_hide', { p_book: str(bookId), p_on: on === true }),
+    baseDelete: bookId => rpc('didako_base_delete', { p_book: str(bookId) }),
     report: (id, reason, note) => rpc('didako_cm_report', { p_id: str(id), p_reason: str(reason), p_note: str(note) })
   };
 })();
