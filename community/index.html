@@ -157,6 +157,7 @@ h2 { font-size: 1.05em; margin: 0; }
 .cm-manage { display: grid; gap: 14px; margin: .2em 0 0; }   /* 공동체 관리 시트: 단추가 세로로 한 줄씩 꽉 차게(코이데 kc-panel과 같다) */
 .cm-manage .link { align-self: center; }
 .cm-rename { display: flex; gap: .4em; }
+.cm-close { display: flex; justify-content: center; margin-top: .6em; }   /* 시트 맨 아래 [닫기] 글 단추(코이데 kc-panel의 link 닫기) */
 .cm-rename .field { flex: 1; min-width: 0; }
 .btn:disabled { opacity: .5; cursor: default; }
 .gr-off { opacity: .5; cursor: default; }   /* 잠긴 줄(교재 5권·지금 읽는 책): 잠긴 단추와 같은 흐림 */
@@ -223,6 +224,10 @@ body.pop-open { overflow: hidden; }
 .gtag { display: inline-block; font-size: .76em; font-weight: 600; color: var(--accent); background: var(--accent-soft); border-radius: 999px; padding: .1em .65em; }
 .gtag.off { color: var(--ink-2); background: var(--surface-2); }
 .cm-places .gr[aria-disabled="true"] { cursor: default; }
+/* 이 공동체 카드 맨 아래: 신고하기·나가기 아이콘 두 개가 한 줄(코이데 .kc-foot · .kc-ib와 같다) */
+.cm-foot { display: flex; justify-content: flex-end; gap: 6px; padding: .9em 0 .4em; border-top: 1px solid var(--line); }
+.cm-foot .icon-btn { width: 44px; height: 44px; color: var(--ink-2); }
+.cm-foot .icon-btn.danger { color: var(--warn); }
 .gr.open { border-bottom: 1px solid var(--line); }   /* 화면 설정을 펼치면 머리줄 아래 구분선 */
 .logout { display: block; margin: 20px auto 0; min-height: 44px; padding: 0 16px; background: none; border: 0; color: var(--ink-2); font: 500 .9375rem var(--f-body); }
 .chip { display: inline-block; padding: 4px 12px; border-radius: 999px; background: var(--accent-soft); color: var(--accent-deep); font-size: .8125rem; font-weight: 500; }
@@ -1407,6 +1412,8 @@ button.gallery-cell { display: block; width: 100%; padding: 0; cursor: pointer; 
     <symbol id="i-chev" viewBox="0 0 24 24"><path d="M7 10l5 5 5-5"/></symbol>
     <symbol id="i-back" viewBox="0 0 24 24"><path d="M14.5 6l-6 6 6 6"/></symbol>
     <symbol id="i-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><path d="M12 7.5V12l3 2"/></symbol>
+    <symbol id="i-flag" viewBox="0 0 16 16"><path d="M4 14V2.5"/><path d="M4 3h8l-1.8 2.8L12 8.5H4"/></symbol>
+    <symbol id="i-leave" viewBox="0 0 16 16"><path d="M6.5 2.5h-3a1 1 0 0 0-1 1v9a1 1 0 0 0 1 1h3"/><path d="M6 8h7.5M11 5.5L13.5 8 11 10.5"/></symbol>
     <symbol id="i-x" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></symbol>
     <symbol id="i-up" viewBox="0 0 24 24"><path d="M12 19V5M6 11l6-6 6 6"/></symbol>
     <symbol id="i-down" viewBox="0 0 24 24"><path d="M12 5v14M6 13l6 6 6-6"/></symbol>
@@ -2721,8 +2728,7 @@ function moreView() {
       ${leader ? (shut ? `<div class="gr" aria-disabled="true">${rowText('교재 관리', cmEnded() ? '끝난 공동체는 읽기만 해요' : '지금은 읽기만 해요')}</div>` : linkRow('교재 관리', '이 공동체에서 쓸 교재를 써요', '#manage')) : ''}
       ${leader ? (shut ? `<div class="gr" aria-disabled="true">${rowText('공동체 관리', cmEnded() ? '끝난 공동체는 읽기만 해요' : '지금은 읽기만 해요')}</div>` : `<button class="gr" type="button" data-act="cm-manage">${rowText('공동체 관리', '이름, 모임장, 끝맺기')}${chevron}</button>`) : ''}
       ${end ? `<p class="hint">이 공동체는 ${end} 열려 있어요.</p>` : ''}
-      ${g.state === '닫음' ? '' : `<button class="gr" type="button" data-act="cm-report">${rowText('신고하기')}${chevron}</button>`}
-      <button class="gr" type="button" data-act="cm-leave">${rowText('<span class="warn-text">공동체에서 나가기</span>')}${chevron}</button>
+      <div class="cm-foot">${g.state === '닫음' ? '' : `<button class="icon-btn" type="button" data-act="cm-report" aria-label="신고하기" title="신고하기">${ic('flag')}</button>`}<button class="icon-btn danger" type="button" data-act="cm-leave" aria-label="공동체에서 나가기" title="공동체에서 나가기">${ic('leave')}</button></div>
     </div>`;
     const offRow = body => `<div class="gr" aria-disabled="true">${body}</div>`;
     const circles = CM.list.map(c => {
@@ -2895,7 +2901,7 @@ function ppBlocksHtml(src, o) {
     const qs = st.qs.map((q, qi) => ({ q, key: si + '-' + qi, no: qNo(st, qi) })).filter(x => ppHas(x.q.t));
     qs.forEach(({ q, key, no }, i) => {
       const vs = Array.isArray(q.vs) ? q.vs.filter(ppHas) : [];
-      const help = vs.length ? `<p class="pp-help">관련 구절 ${vs.map(esc).join(' · ')}</p>` : '';
+      const help = vs.length ? `<p class="pp-help">관련 구절 ${vs.map(esc).join(', ')}</p>` : '';
       if (isRead(q)) {
         const parts = mdBlocks(q.t);
         parts.forEach((part, pi) => {
@@ -2955,14 +2961,14 @@ const ppOptsHtml = () => `<section class="card"><p class="opt-name">대상</p><d
 // 과 하나의 인쇄용 보기(#mx-교재.과)
 function mgPrintView(b, L) {
   return `<a class="back-link" href="#me-${b.id}.${L.no}">${ic('back')}<span>제${L.no}과 편집</span></a>
-    <p class="eyebrow top-eyebrow">${esc(b.title)} · 제${L.no}과${L.name ? ' ' + esc(L.name) : ''}</p><div class="page-top"><h1>인쇄용 보기</h1></div>
+    <p class="eyebrow top-eyebrow mg-pills">${mgChips([b.title, `제${L.no}과${L.name ? ' ' + L.name : ''}`])}</p><div class="page-top"><h1>인쇄용 보기</h1></div>
     <div class="pp-layout"><aside class="pp-side">${ppOptsHtml()}${ppBar('pp-word')}</aside>
     <div class="pp-main"><div class="print-area" id="ppArea"></div></div></div>`;
 }
 // 교재 전체 인쇄용 보기(#mxb-교재): 1쪽 차례, 2쪽부터 과마다 새 쪽
 function mgBookPrintView(b) {
   return `<a class="back-link" href="#mb-${b.id}">${ic('back')}<span>${esc(b.title)}</span></a>
-    <p class="eyebrow top-eyebrow">${esc(b.kind)} · ${esc(b.period)}</p><div class="page-top"><h1>인쇄용 보기</h1></div>
+    <p class="eyebrow top-eyebrow mg-pills">${mgChips([b.kind, b.period])}</p><div class="page-top"><h1>인쇄용 보기</h1></div>
     <div class="pp-layout"><aside class="pp-side">${ppOptsHtml()}${ppBar('pp-word-book')}</aside>
     <div class="pp-main"><div class="print-area" id="ppArea"></div></div></div>`;
 }
@@ -3085,12 +3091,12 @@ function wordLessonXml(src, o, brk) {
           else if (block.type === 'table') [block.head, ...block.rows].forEach((row, ix) =>
             ps.push(wPara(mdRuns(row.join(' · '), ix === 0 ? { b: true } : {}), { after: 80 })));
         });
-        if (vs.length) ps.push(wPara(wRun('관련 구절 ' + vs.join(' · '), { c: W_GRAY, sz: 19 }), { keep: true }));
+        if (vs.length) ps.push(wPara(wRun('관련 구절 ' + vs.join(', '), { c: W_GRAY, sz: 19 }), { keep: true }));
         return;
       }
       ps.push(wPara(wRun(`${no}.`, { b: true }) + wTab + wRun(q.t, { f: W_SERIF, b: true, sz: 22 }), { keep: true, before: 40, left: 400, hang: 400 }));
       if (ppHas(q.sub)) ps.push(wPara(wRun(q.sub, { c: W_GRAY, sz: 19 }), { left: 400, keep: true }));
-      if (vs.length) ps.push(wPara(wRun(`관련 구절 ${vs.join(' · ')}`, { c: W_GRAY, sz: 19 }), { left: 400, keep: true }));
+      if (vs.length) ps.push(wPara(wRun(`관련 구절 ${vs.join(', ')}`, { c: W_GRAY, sz: 19 }), { left: 400, keep: true }));
       if (o.leader && ppHas(q.lead)) ps.push(wPara(wRun('해설  ', { b: true, c: W_LEAD, sz: 19 }) + wRun(q.lead, { c: W_LEAD, sz: 19 }), { left: 400, keep: true, before: 40 }));
       ps.push(wordUnder(o, key));
     });
@@ -3201,7 +3207,7 @@ function mgForm(b) {
   openSheet(sheetHead(b ? '교재 정보 편집' : '새 교재 만들기') + `<div class="keep-form">
     <div><label for="mgKind">종류</label><select class="field" id="mgKind">${options(kinds.map(k => [k, k]), b && b.kind)}</select></div>
     <div><label for="mgTitle">제목</label><input class="field" id="mgTitle" maxlength="40" value="${esc(b ? b.title : '')}"><p class="hint" id="mgTitleHint" hidden>교재 제목을 적어 주세요</p></div>
-    <div><label for="mgCoverName">표지 이름 <span class="hint">선택 · 10자까지</span></label><input class="field" id="mgCoverName" maxlength="10" value="${esc(b ? b.coverName || '' : '')}" placeholder="예: 요한복음"><p class="hint">표지 위쪽에 보여요. 비워 두면 그림만 보여요.</p></div>
+    <div><label for="mgCoverName">표지 이름 <span class="hint">선택, 10자까지</span></label><input class="field" id="mgCoverName" maxlength="10" value="${esc(b ? b.coverName || '' : '')}" placeholder="예: 요한복음"><p class="hint">표지 위쪽에 보여요. 비워 두면 그림만 보여요.</p></div>
     <div><label for="mgGroup">표지 묶음</label><select class="field" id="mgGroup">${options(COVERS.groups.map(g => [g.id, g.name]), group.id)}</select></div>
     <div><label for="mgMotif">상징</label><select class="field" id="mgMotif">${options(group.items.map(i => [i.id, i.name]), cover.motif)}</select></div>
     <div><label for="mgColor">색</label><select class="field" id="mgColor">${options(COVERS.colors.map(c => [c[0], c[2]]), cover.color)}</select></div>
@@ -3255,7 +3261,7 @@ const isRead = q => q && q.kind === 'read';
 const qNo = (st, qi) => st.qs.slice(0, qi).filter(q => !isRead(q)).length + 1;
 const stageQuestions = st => st.qs.filter(q => !isRead(q));
 const stageCaption = st => stageQuestions(st).length ? '질문 ' + stageQuestions(st).length + '개' : st.qs.some(isRead) ? '읽을 글' : '질문 0개';
-const readLabel = q => '읽을 글 · ' + (String(q.h || '').trim() || mdPlain(String(q.t || '').split('\n')[0]));
+const readLabel = q => '<span class="walk-tag">읽을 글</span> ' + esc(String(q.h || '').trim() || mdPlain(String(q.t || '').split('\n')[0]));   // 알약 + 제목(HTML)
 const mgQuestionId = () => 'q' + Date.now().toString(36) + (++mgQSerial);
 function mgGuide(b, L) {
   const key = b.id + ':' + L.no;
@@ -3290,7 +3296,7 @@ function mgWriteHtml(b, L, g) {
     return `<div><label for="${id}">${label}</label>${opts.ta ? `<textarea ${attrs} rows="${opts.rows || 3}">${esc(value || '')}</textarea>` : `<input ${attrs} type="${opts.type || 'text'}" value="${esc(value || '')}">`}${opts.hint ? `<p class="hint" data-mg-hint="${opts.hint}"${mgTouched.has(opts.hint) && !String(value || '').trim() ? '' : ' hidden'}>${name === 'name' ? '과 제목을 적어 주세요' : '질문을 적어 주세요'}</p>` : ''}</div>`;
   };
   return `<section class="card"><p class="opt-name">기본 정보</p><div class="keep-form">
-      ${field('name', '과 제목', L.name, { hint: key + ':name' })}${field('date', '날짜', mgDateInput(L.date, L), { type: 'date' })}${field('ref', '본문 장절', L.ref, { placeholder: '예: 요한복음 15:1~8 · 비워 둘 수 있어요' })}${field('intro', '소개', L.intro, { ta: true })}
+      ${field('name', '과 제목', L.name, { hint: key + ':name' })}${field('date', '날짜', mgDateInput(L.date, L), { type: 'date' })}${field('ref', '본문 장절', L.ref, { placeholder: '예: 요한복음 15:1~8' })}${field('intro', '소개', L.intro, { ta: true })}
     </div></section>
     ${g.stages.map((st, si) => `<section class="card" data-mg-stage="${si}"><div class="keep-form mg-stage-row">${field('stage-name', '단계 이름', st.name, { id: 'mge-stage-' + si, si })}${g.stages.length > 1 ? `<button class="btn ghost small mg-stage-del" type="button" data-act="mg-stage-del" data-si="${si}" aria-label="${esc(st.name)} 단계 삭제" title="단계 삭제">${ic('trash')}</button>` : ''}</div>
       ${st.qs.map((q, qi) => `<div class="gr" data-mg-question="${q.id}"><div class="gt"><p class="q-eyebrow mg-pills"><span class="walk-tag" data-mg-stage-label="${si}">${esc(st.name || '단계')}</span><span class="walk-tag">${isRead(q) ? '읽을 글' : qNo(st, qi)}</span></p><div class="keep-form">
@@ -3318,7 +3324,7 @@ function mgPvHtml(b, L, g) {
   const leader = mgPvMode === 'leader';
   return `<section class="card today"><p class="lesson-book">${esc(b.title)} <span class="hint">${esc(b.period)}</span></p><h2 class="lesson-title">제${L.no}과 ${esc(L.name || '(제목을 적어 주세요)')}</h2>${L.ref ? `<span class="passage-chip">${esc(L.ref)}</span>` : ''}${L.intro ? `<p class="fine">${esc(L.intro)}</p>` : ''}</section>
     ${leader && g.guide ? `<section class="card"><p class="opt-name">전체 진행 안내</p><div class="pn lead"><p class="lab">모임장</p><p class="t">${esc(g.guide)}</p></div></section>` : ''}
-    ${g.stages.filter(st => st.qs.length).map(st => `<section class="stage-sec"><h2 class="stage-h">${esc(st.name)}</h2>${st.qs.map((q, qi) => isRead(q) ? readHtml(st, q) : `<article class="card qcard"><div class="q-meta"><span class="q-eyebrow">${esc(st.name)} · ${qNo(st, qi)}</span></div><h3 class="q-t">${esc(q.t)}</h3>${q.sub || (q.vs && q.vs.length) ? helpHtml(q) : ''}${leader ? mgPvLead(q) : ''}</article>`).join('')}</section>`).join('')}
+    ${g.stages.filter(st => st.qs.length).map(st => `<section class="stage-sec"><h2 class="stage-h">${esc(st.name)}</h2>${st.qs.map((q, qi) => isRead(q) ? readHtml(st, q) : `<article class="card qcard"><div class="q-meta"><span class="q-eyebrow mg-pills">${mgChips([st.name, qNo(st, qi)])}</span></div><h3 class="q-t">${esc(q.t)}</h3>${q.sub || (q.vs && q.vs.length) ? helpHtml(q) : ''}${leader ? mgPvLead(q) : ''}</article>`).join('')}</section>`).join('')}
     ${g.triple.length ? `<section class="card deep"><p class="eyebrow">깊이 묵상하기</p><h2 class="d-lead">오늘 말씀에서 삼위일체 하나님을 묵상해요.</h2>${g.triple.map(t => `<div class="tri-item"><span class="who">${esc(t.who)}</span><h3 class="q-t">${esc(t.t)}</h3></div>`).join('')}</section>` : ''}
     ${L.wrap ? `<section class="card"><p class="opt-name">마무리 적용·기도 안내</p><p class="t">${esc(L.wrap)}</p></section>` : ''}`;
 }
@@ -3646,7 +3652,7 @@ function mdPlain(text) {
 }
 
 function readHtml(st, q) {
-  return `<article class="card qcard rcard" id="q-${q.id}"><div class="q-meta"><span class="q-eyebrow">${esc(st.name)} · 읽을 글</span></div>
+  return `<article class="card qcard rcard" id="q-${q.id}"><div class="q-meta"><span class="q-eyebrow mg-pills">${mgChips([st.name, '읽을 글'])}</span></div>
     ${String(q.h || '').trim() ? `<h3 class="q-t">${esc(q.h)}</h3>` : ''}
     <div class="r-t md">${mdHtml(q.t)}</div>
     ${Array.isArray(q.vs) && q.vs.length ? `<div class="verse-row"><span class="lab">관련 구절</span>${q.vs.map(verseChip).join('')}</div>` : ''}
@@ -3654,7 +3660,7 @@ function readHtml(st, q) {
 }
 function qHtml(st, qi, q) {
   return `<article class="card qcard" id="q-${q.id}" data-qid="${q.id}" aria-labelledby="qt-${q.id}">
-    <div class="q-meta"><span class="q-eyebrow">${esc(st.name)} · ${qNo(st, qi)}</span><span class="bm" hidden>${mkIc()}책갈피</span></div>
+    <div class="q-meta"><span class="q-eyebrow mg-pills">${mgChips([st.name, qNo(st, qi)])}</span><span class="bm" hidden>${mkIc()}책갈피</span></div>
     <h3 class="q-t" id="qt-${q.id}">${esc(q.t)}</h3>
     ${helpHtml(q)}${isLead() && !readAsMember ? leadHtml(q) : ''}
     <div class="ans" data-ans="${q.id}"></div></article>`;
@@ -3684,7 +3690,7 @@ function tocHtml() {
   let h = '';
   G.stages.forEach(st => {
     h += `<p class="toc-grp">${esc(st.name)}</p>`;
-    st.qs.forEach((q, i) => { h += `<button type="button" class="toc-q" data-act="goto" data-to="q-${q.id}"${isRead(q) ? '' : ` data-id="${q.id}"`}><span class="tn">${isRead(q) ? '' : qNo(st, i)}</span><span class="tt">${esc(isRead(q) ? readLabel(q) : q.t)}</span>${isRead(q) ? '<span></span>' : `<span class="tb" role="img" aria-label="책갈피">${mkIc()}</span>`}</button>`; });
+    st.qs.forEach((q, i) => { h += `<button type="button" class="toc-q" data-act="goto" data-to="q-${q.id}"${isRead(q) ? '' : ` data-id="${q.id}"`}><span class="tn">${isRead(q) ? '' : qNo(st, i)}</span><span class="tt">${(isRead(q) ? readLabel(q) : esc(q.t))}</span>${isRead(q) ? '<span></span>' : `<span class="tb" role="img" aria-label="책갈피">${mkIc()}</span>`}</button>`; });
   });
   if (D.readTriple && G.triple.length) h += `<p class="toc-grp">깊이 묵상하기</p><button type="button" class="toc-q" data-act="goto" data-to="deep"><span class="tn"></span><span class="tt">아버지 · 아들 · 성령</span><span></span></button>`;
   h += `<p class="toc-grp">마무리</p><button type="button" class="toc-q" data-act="goto" data-to="wrapup"><span class="tn"></span><span class="tt">모임에 가지 못했다면</span><span></span></button>`;
@@ -3699,7 +3705,7 @@ function prepView() {
   G = readyGuide(); if (!G) return noGuideView('진행 준비');
   const L = thisLesson(), memos = readMemo();
   const memo = key => `<div class="pn memo"><label class="lab" for="pm-${key}">${ic('lock')}내 진행 메모</label><textarea class="field" id="pm-${key}" data-memo-key="${key}" rows="2" maxlength="1000" placeholder="진행하며 기억할 것">${esc(memos[key] || '')}</textarea></div>`;
-  const toc = G.stages.map(st => `<p class="toc-grp">${esc(st.name)}</p>${st.qs.map((q, i) => `<button type="button" class="toc-q" data-act="goto" data-to="p-${q.id}"><span class="tn">${isRead(q) ? '' : qNo(st, i)}</span><span class="tt">${esc(isRead(q) ? readLabel(q) : q.t)}</span><span></span></button>`).join('')}`).join('')
+  const toc = G.stages.map(st => `<p class="toc-grp">${esc(st.name)}</p>${st.qs.map((q, i) => `<button type="button" class="toc-q" data-act="goto" data-to="p-${q.id}"><span class="tn">${isRead(q) ? '' : qNo(st, i)}</span><span class="tt">${(isRead(q) ? readLabel(q) : esc(q.t))}</span><span></span></button>`).join('')}`).join('')
     + (G.triple.length ? `<p class="toc-grp">깊이 묵상하기</p><button type="button" class="toc-q" data-act="goto" data-to="p-deep"><span class="tn"></span><span class="tt">아버지 · 아들 · 성령</span><span></span></button>` : '');
   return `<div class="read-wrap">
     <a class="back-link" href="#share">${ic('back')}<span>나눔하기</span></a>
@@ -3718,7 +3724,7 @@ function prepView() {
       </section>
       <div class="rg-body">
         ${G.stages.map((st, si) => `<section class="stage-sec"><h2 class="stage-h">${esc(st.name)}</h2>${st.qs.map((q, qi) => isRead(q) ? readHtml(st, q).replace(`id="q-${q.id}"`, `id="p-${q.id}"`) : `<article class="card qcard" id="p-${q.id}" aria-labelledby="pt-${q.id}">
-          <div class="q-meta"><span class="q-eyebrow">${esc(st.name)} · ${qNo(st, qi)}</span></div>
+          <div class="q-meta"><span class="q-eyebrow mg-pills">${mgChips([st.name, qNo(st, qi)])}</span></div>
           <h3 class="q-t" id="pt-${q.id}">${esc(q.t)}</h3>${helpHtml(q)}${memo(si + '-' + qi)}</article>`).join('')}</section>`).join('')}
         ${G.triple.length ? `<section class="card deep" id="p-deep" aria-labelledby="prepDeepT"><p class="eyebrow" style="margin:0">깊이 묵상하기</p><h2 class="d-lead" id="prepDeepT">오늘 말씀에서 삼위일체 하나님을 묵상해요.</h2>
           ${G.triple.map(t => `<div class="tri-item"><div class="q-meta"><span class="who">${esc(t.who)}</span></div><h3 class="q-t">${esc(t.t)}</h3>${memo(t.id)}</div>`).join('')}</section>` : ''}
@@ -3957,6 +3963,7 @@ stage.addEventListener('keydown', () => { undim(); armDim(); });
 function shareOpenSheet(html) {
   clearTimeout(dimT); shareSheet = true; openSheet(html); $('#popSheet').classList.add('sh');
 }
+const careHead = title => `<div class="sheet-h"><h3 id="popT">${title}</h3></div>`;   // 공동체 돌봄 시트의 머리: 코이데처럼 X 없이 제목만, 맨 아래 [닫기]·[취소]로 닫는다
 const sheetHead = title => `<div class="sheet-h"><h3 id="popT">${title}</h3><button class="sheet-x" type="button" data-act="pop-close" data-focus aria-label="닫기">${ic('x')}</button></div>`;
 const bookmarkSvg = () => '<svg class="done-mark" role="img" aria-label="세 겹 책갈피"><use href="#i-didako-cm-tall"/></svg>';
 function topHtml(s) {
@@ -4631,27 +4638,27 @@ const acts = {
   'cm-people'() {
     const { leader } = DATA.rooms.mine, { me } = cmCur();
     const name = n => `${esc(n)}${n === me ? '(나)' : ''}`;
-    openSheet(sheetHead('지체') + `<div>${name(leader)} <span class="kid lead">모임장</span></div>
+    openSheet(careHead(`지체 ${cmCount(cmCur())}명`) + `<div>${name(leader)} <span class="kid lead">모임장</span></div>
       ${myRoom().members.filter(n => n !== leader).map(n => `<div>${name(n)}</div>`).join('')}
       <p class="hint">이름만 보여요. 서로 얼마나 썼는지는 보이지 않아요.</p>
-      <button class="btn ghost wide" type="button" data-act="pop-close">알겠어요</button>`);
+      <div class="cm-close"><button class="link" type="button" data-act="pop-close" data-focus>닫기</button></div>`);
   },
   // 신고·나가기(더보기 이 공동체 카드)와 공동체 관리(이름 바꾸기·모임장 넘기기·끝맺기). 시트는 데모와 실제 서버가 같이 쓰고, 끝내는 동작(-do)만 실제 서버(SB)가 아래에서 바꾼다
   'cm-report'() {
     const g = cmCur(); if (!g || g.state === '닫음') return;
-    openSheet(sheetHead('신고하기') + `<label class="f" for="cmRepReason">신고 이유</label>
+    openSheet(careHead('신고하기') + `<label class="f" for="cmRepReason">신고 이유</label>
       <select class="field" id="cmRepReason">${CM_REASONS.map(x => `<option value="${x}">${x}</option>`).join('')}</select>
       <label class="f" for="cmRepNote">짧은 글 (선택)</label>
       <textarea class="field" id="cmRepNote" maxlength="200" rows="4"></textarea>
       <p class="hint">신고한 사람은 알려지지 않아요.</p>
-      <div class="set-btns"><button class="btn ghost" type="button" data-act="pop-close">취소</button><button class="btn" type="button" data-act="cm-report-do">보내기</button></div>`);
+      <div class="set-btns"><button class="btn" type="button" data-act="cm-report-do">보내기</button><button class="btn ghost" type="button" data-act="pop-close" data-focus>취소</button></div>`);
   },
   'cm-report-do'() { closeSheet(); toast('데모에서는 신고를 보내지 않아요'); },
   'cm-leave'() {
     const g = cmCur(); if (!g) return;
     const next = g.members.find(n => n !== g.me && n !== g.leader);
     const only = cmCount(g) <= 1;
-    openSheet(sheetHead('공동체에서 나가기') + `<p><b>${esc(g.name)}</b>에서 나갈까요?</p>
+    openSheet(careHead('공동체에서 나가기') + `<p><b>${esc(g.name)}</b>에서 나갈까요?</p>
       ${only ? '<p>마지막 한 사람이라, 나가면 공동체가 지워져요.</p>' : g.role === 'leader' ? `<p>${next ? `가장 먼저 들어온 ${esc(next)} 님이` : '가장 먼저 들어온 지체가'} 모임장을 이어받아요.</p>` : ''}
       <p class="hint">내 기기에 남긴 기록은 그대로예요.</p>
       <div class="set-btns"><button class="btn ghost" type="button" data-act="pop-close" data-focus>그만두기</button><button class="btn danger" type="button" data-act="cm-leave-do">나가기</button></div>`);
@@ -4666,13 +4673,13 @@ const acts = {
   'cm-manage'() {
     const g = cmLeader(); if (!g) return;
     const hand = g.members.some(n => n !== g.me && n !== g.leader);
-    openSheet(sheetHead('공동체 관리') + `<div class="cm-manage">
-      <div><div class="cm-rename"><input class="field" id="cmRename" maxlength="20" autocomplete="off" value="${esc(g.name)}" aria-label="공동체 이름"><button class="btn small" type="button" data-act="cm-rename-do">이름 바꾸기</button></div>
+    openSheet(careHead('공동체 관리') + `<div class="cm-manage">
+      <div><form class="cm-rename" data-cmrename><input class="field" id="cmRename" maxlength="20" autocomplete="off" value="${esc(g.name)}" aria-label="공동체 이름"><button class="btn small" type="submit">이름 바꾸기</button></form>
         <p class="msg" id="cmRenameMsg" role="alert" style="margin:6px 0 0;min-height:0"></p></div>
       ${hand ? '<button class="btn ghost" type="button" data-act="cm-handoff">모임장 넘기기</button>' : ''}
       <button class="btn ghost" type="button" data-act="cm-invite-new">새 초대 링크 만들기</button>
       <button class="btn danger" type="button" data-act="cm-end">공동체 끝맺기</button>
-      <button class="link" type="button" data-act="pop-close">닫기</button>
+      <button class="link" type="button" data-act="pop-close" data-focus>닫기</button>
     </div>`);
   },
   'cm-rename-do'() {
@@ -4683,13 +4690,12 @@ const acts = {
     const g = cmLeader(); if (!g) return;
     const names = g.members.map((n, i) => [n, i]).filter(([n]) => n !== g.me && n !== g.leader);
     if (!names.length) return;
-    openSheet(sheetHead('모임장 넘기기') + `<p>모임장을 넘겨줄 사람을 골라 주세요.</p>
-      <div class="cm-pick">${names.map(([n, i]) => `<button class="btn ghost wide" type="button" data-act="cm-handoff-ask" data-i="${i}">${esc(n)}</button>`).join('')}</div>
-      <button class="btn ghost wide" type="button" data-act="pop-close" data-focus>그만두기</button>`);
+    openSheet(careHead('모임장 넘기기') + `<div class="cm-pick">${names.map(([n, i]) => `<button class="btn ghost wide" type="button" data-act="cm-handoff-ask" data-i="${i}">${esc(n)}</button>`).join('')}</div>
+      <div class="cm-close"><button class="link" type="button" data-act="pop-close" data-focus>닫기</button></div>`);
   },
   'cm-handoff-ask'(e, el) {
     const g = cmLeader(), name = g && g.members[Number(el.dataset.i)]; if (!name || name === g.me || name === g.leader) return;
-    openSheet(sheetHead('모임장 넘기기') + `<p><b>${esc(name)}</b> 님이 모임장이 되고, 나는 회원이 돼요. 넘길까요?</p>
+    openSheet(careHead('모임장 넘기기') + `<p><b>${esc(name)}</b> 님이 모임장이 되고 나는 회원이 돼요. 넘길까요?</p>
       <div class="set-btns"><button class="btn ghost" type="button" data-act="pop-close" data-focus>그만두기</button><button class="btn" type="button" data-act="cm-handoff-do" data-i="${esc(el.dataset.i)}">넘기기</button></div>`);
   },
   'cm-handoff-do'(e, el) {
@@ -4699,7 +4705,7 @@ const acts = {
   },
   'cm-end'() {
     if (!cmLeader()) return;
-    openSheet(sheetHead('공동체 끝맺기') + `<p>공동체를 끝맺을까요?</p><p>끝맺으면 30일 동안 읽기만 할 수 있고, 그 뒤 공동체가 지워져요.</p>
+    openSheet(careHead('공동체 끝맺기') + `<p>공동체를 끝맺을까요?</p><p>끝맺으면 30일 동안 읽기만 할 수 있고, 그 뒤 공동체가 지워져요.</p>
       <div class="set-btns"><button class="btn ghost" type="button" data-act="pop-close" data-focus>그만두기</button><button class="btn danger" type="button" data-act="cm-end-do">끝맺기</button></div>`);
   },
   'cm-end-do'() {
@@ -4707,7 +4713,13 @@ const acts = {
     g.state = '끝맺음'; g.canWrite = false; g.eraseOn = isoOf(new Date(Date.now() + 30 * 86400000)); cmSave();
     closeSheet(); roomRedraw(); toast('공동체를 끝맺었어요');
   },
-  'cm-invite-new'() { const g = cmCur(); if (!g || g.role !== 'leader') return; g.invite = cmInvite(); cmSave(); cmSheetOff(); roomRedraw(); toast('새 링크를 만들었어요. 전에 보낸 링크는 쓸 수 없어요'); },
+  // 새 초대 링크 만들기는 코이데처럼 한 번 더 묻는다(코이데는 confirm 창, 디다코는 확인 시트)
+  'cm-invite-new'() {
+    if (!cmLeader()) return;
+    openSheet(careHead('새 초대 링크 만들기') + `<p>초대 링크를 새로 만들까요? 예전 링크로는 신청할 수 없어요.</p>
+      <div class="set-btns"><button class="btn ghost" type="button" data-act="pop-close" data-focus>그만두기</button><button class="btn" type="button" data-act="cm-invite-new-do">만들기</button></div>`);
+  },
+  'cm-invite-new-do'() { const g = cmCur(); if (!g || g.role !== 'leader') return; g.invite = cmInvite(); cmSave(); cmSheetOff(); roomRedraw(); toast('새 링크를 만들었어요. 전에 보낸 링크는 쓸 수 없어요'); },
   'cm-invite-copy'() {
     const g = cmCur(); if (!g || g.role !== 'leader') return;
     const done = () => toast('초대 링크를 복사했어요'), fail = () => toast('복사하지 못했어요. 링크를 길게 눌러 복사해 주세요');
@@ -5023,7 +5035,7 @@ const acts = {
     html += `<button type="button" data-act="jump-to" data-p="${R.steps.findIndex(x => x.t === 'passage')}" class="${s.t === 'passage' ? 'here' : ''}">본문 · ${esc(thisLesson().ref)}</button>`;
     R.steps.forEach((x, p) => {
       if (x.t === 'cover') html += `<p class="grp">${esc(G.stages[x.si].name)}</p>`;
-      if (x.t === 'q' || x.t === 'read') { const q = G.stages[x.si].qs[x.qi]; html += `<button type="button" data-act="jump-to" data-p="${p}" class="${R.pos === p ? 'here' : ''}">${esc(isRead(q) ? readLabel(q) : q.t)}</button>`; }
+      if (x.t === 'q' || x.t === 'read') { const q = G.stages[x.si].qs[x.qi]; html += `<button type="button" data-act="jump-to" data-p="${p}" class="${R.pos === p ? 'here' : ''}">${(isRead(q) ? readLabel(q) : esc(q.t))}</button>`; }
     });
     html += '</div>';
     shareOpenSheet(html);
@@ -5362,6 +5374,11 @@ document.addEventListener('submit', e => {
   const all = readJson(K.recRefl); all[id] = Array.isArray(all[id]) ? all[id] : [];
   all[id].push({ date: LIVE || SB ? `${new Date().getMonth() + 1}월 ${new Date().getDate()}일` : DATA.today.replace(/\(.*$/, '').trim(), text });
   const ok = recSave(K.recRefl, all); recRedraw(); recDone(ok);
+});
+// 공동체 관리 시트의 이름 칸에서 Enter는 [이름 바꾸기]와 같다(코이데의 form submit처럼)
+document.addEventListener('submit', e => {
+  const f = e.target; if (!f || !f.hasAttribute || !f.hasAttribute('data-cmrename')) return;
+  e.preventDefault(); acts['cm-rename-do']();
 });
 // 공동체 만들기와 초대 링크로 들어오기 신청(데모: 이 기기에만 남는다)
 document.addEventListener('submit', e => {
@@ -5715,7 +5732,7 @@ if (SB) {
       for (const g of CM.list.filter(x => x.wait)) await DidakoCm.leave(g.id);
       await sbRefresh(true); route(false); toast('들어오기 신청을 취소했어요');
     }),
-    'cm-invite-new': sbAct(async () => {
+    'cm-invite-new-do': sbAct(async () => {
       const g = sbLeaderOk(); if (!g) return;
       const r = await DidakoCm.renew(g.id) || {};
       g.invite = { code: String(r.token || ''), made: (Date.parse(String(r.expires || '')) || Date.now() + CM_DAYS * 86400000) - CM_DAYS * 86400000 };

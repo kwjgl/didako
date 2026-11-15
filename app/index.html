@@ -2687,7 +2687,7 @@ function ppBlocksHtml(src, o) {
     const qs = st.qs.map((q, qi) => ({ q, key: si + '-' + qi, no: qNo(st, qi) })).filter(x => ppHas(x.q.t));
     qs.forEach(({ q, key, no }, i) => {
       const vs = Array.isArray(q.vs) ? q.vs.filter(ppHas) : [];
-      const help = vs.length ? `<p class="pp-help">관련 구절 ${vs.map(esc).join(' · ')}</p>` : '';
+      const help = vs.length ? `<p class="pp-help">관련 구절 ${vs.map(esc).join(', ')}</p>` : '';
       if (isRead(q)) {
         const parts = mdBlocks(q.t);
         parts.forEach((part, pi) => {
@@ -2747,14 +2747,14 @@ const ppOptsHtml = () => `<section class="card"><p class="opt-name">대상</p><d
 // 과 하나의 인쇄용 보기(#mx-교재.과)
 function mgPrintView(b, L) {
   return `<a class="back-link" href="#mp-${b.id}.${L.no}">${ic('back')}<span>배포</span></a>
-    <p class="eyebrow top-eyebrow">${esc(b.title)} · 제${L.no}과${L.name ? ' ' + esc(L.name) : ''}</p><div class="page-top"><h1>인쇄용 보기</h1></div>
+    <p class="eyebrow top-eyebrow mg-pills">${mgChips([b.title, `제${L.no}과${L.name ? ' ' + L.name : ''}`])}</p><div class="page-top"><h1>인쇄용 보기</h1></div>
     <div class="pp-layout"><aside class="pp-side">${ppOptsHtml()}${ppBar('pp-word')}</aside>
     <div class="pp-main"><div class="print-area" id="ppArea"></div></div></div>`;
 }
 // 교재 전체 인쇄용 보기(#mxb-교재): 1쪽 차례, 2쪽부터 과마다 새 쪽
 function mgBookPrintView(b) {
   return `<a class="back-link" href="#mb-${b.id}">${ic('back')}<span>${esc(b.title)}</span></a>
-    <p class="eyebrow top-eyebrow">${esc(b.kind)} · ${esc(b.period)}</p><div class="page-top"><h1>인쇄용 보기</h1></div>
+    <p class="eyebrow top-eyebrow mg-pills">${mgChips([b.kind, b.period])}</p><div class="page-top"><h1>인쇄용 보기</h1></div>
     <div class="pp-layout"><aside class="pp-side">${ppOptsHtml()}${ppBar('pp-word-book')}</aside>
     <div class="pp-main"><div class="print-area" id="ppArea"></div></div></div>`;
 }
@@ -2877,12 +2877,12 @@ function wordLessonXml(src, o, brk) {
           else if (block.type === 'table') [block.head, ...block.rows].forEach((row, ix) =>
             ps.push(wPara(mdRuns(row.join(' · '), ix === 0 ? { b: true } : {}), { after: 80 })));
         });
-        if (vs.length) ps.push(wPara(wRun('관련 구절 ' + vs.join(' · '), { c: W_GRAY, sz: 19 }), { keep: true }));
+        if (vs.length) ps.push(wPara(wRun('관련 구절 ' + vs.join(', '), { c: W_GRAY, sz: 19 }), { keep: true }));
         return;
       }
       ps.push(wPara(wRun(`${no}.`, { b: true }) + wTab + wRun(q.t, { f: W_SERIF, b: true, sz: 22 }), { keep: true, before: 40, left: 400, hang: 400 }));
       if (ppHas(q.sub)) ps.push(wPara(wRun(q.sub, { c: W_GRAY, sz: 19 }), { left: 400, keep: true }));
-      if (vs.length) ps.push(wPara(wRun(`관련 구절 ${vs.join(' · ')}`, { c: W_GRAY, sz: 19 }), { left: 400, keep: true }));
+      if (vs.length) ps.push(wPara(wRun(`관련 구절 ${vs.join(', ')}`, { c: W_GRAY, sz: 19 }), { left: 400, keep: true }));
       if (o.leader && ppHas(q.lead)) ps.push(wPara(wRun('해설  ', { b: true, c: W_LEAD, sz: 19 }) + wRun(q.lead, { c: W_LEAD, sz: 19 }), { left: 400, keep: true, before: 40 }));
       ps.push(wordUnder(o, key));
     });
@@ -2991,7 +2991,7 @@ function mgForm(b) {
   openSheet(sheetHead(b ? '교재 정보 편집' : '새 교재 만들기') + `<div class="keep-form">
     <div><label for="mgKind">종류</label><select class="field" id="mgKind">${options(kinds.map(k => [k, k]), b && b.kind)}</select></div>
     <div><label for="mgTitle">제목</label><input class="field" id="mgTitle" maxlength="40" value="${esc(b ? b.title : '')}"><p class="hint" id="mgTitleHint" hidden>교재 제목을 적어 주세요</p></div>
-    <div><label for="mgCoverName">표지 이름 <span class="hint">선택 · 10자까지</span></label><input class="field" id="mgCoverName" maxlength="10" value="${esc(b ? b.coverName || '' : '')}" placeholder="예: 요한복음"><p class="hint">표지 위쪽에 보여요. 비워 두면 그림만 보여요.</p></div>
+    <div><label for="mgCoverName">표지 이름 <span class="hint">선택, 10자까지</span></label><input class="field" id="mgCoverName" maxlength="10" value="${esc(b ? b.coverName || '' : '')}" placeholder="예: 요한복음"><p class="hint">표지 위쪽에 보여요. 비워 두면 그림만 보여요.</p></div>
     <div><label for="mgGroup">표지 묶음</label><select class="field" id="mgGroup">${options(COVERS.groups.map(g => [g.id, g.name]), group.id)}</select></div>
     <div><label for="mgMotif">상징</label><select class="field" id="mgMotif">${options(group.items.map(i => [i.id, i.name]), cover.motif)}</select></div>
     <div><label for="mgColor">색</label><select class="field" id="mgColor">${options(COVERS.colors.map(c => [c[0], c[2]]), cover.color)}</select></div>
@@ -3014,7 +3014,7 @@ const isRead = q => q && q.kind === 'read';
 const qNo = (st, qi) => st.qs.slice(0, qi).filter(q => !isRead(q)).length + 1;
 const stageQuestions = st => st.qs.filter(q => !isRead(q));
 const stageCaption = st => stageQuestions(st).length ? '질문 ' + stageQuestions(st).length + '개' : st.qs.some(isRead) ? '읽을 글' : '질문 0개';
-const readLabel = q => '읽을 글 · ' + (String(q.h || '').trim() || mdPlain(String(q.t || '').split('\n')[0]));
+const readLabel = q => '<span class="walk-tag">읽을 글</span> ' + esc(String(q.h || '').trim() || mdPlain(String(q.t || '').split('\n')[0]));   // 알약 + 제목(HTML)
 const mgQuestionId = () => 'q' + Date.now().toString(36) + (++mgQSerial);
 function mgGuide(b, L) {
   const key = b.id + ':' + L.no;
@@ -3048,7 +3048,7 @@ function mgWriteHtml(b, L, g) {
     return `<div><label for="${id}">${label}</label>${opts.ta ? `<textarea ${attrs} rows="${opts.rows || 3}">${esc(value || '')}</textarea>` : `<input ${attrs} type="${opts.type || 'text'}" value="${esc(value || '')}">`}${opts.hint ? `<p class="hint" data-mg-hint="${opts.hint}"${mgTouched.has(opts.hint) && !String(value || '').trim() ? '' : ' hidden'}>${name === 'name' ? '과 제목을 적어 주세요' : '질문을 적어 주세요'}</p>` : ''}</div>`;
   };
   return `<section class="card"><p class="opt-name">기본 정보</p><div class="keep-form">
-      ${field('name', '과 제목', L.name, { hint: key + ':name' })}${field('date', '날짜', mgDateInput(L.date, L), { type: 'date' })}${field('ref', '본문 장절', L.ref, { placeholder: '예: 요한복음 15:1~8 · 비워 둘 수 있어요' })}${field('intro', '소개', L.intro, { ta: true })}
+      ${field('name', '과 제목', L.name, { hint: key + ':name' })}${field('date', '날짜', mgDateInput(L.date, L), { type: 'date' })}${field('ref', '본문 장절', L.ref, { placeholder: '예: 요한복음 15:1~8' })}${field('intro', '소개', L.intro, { ta: true })}
     </div></section>
     <section class="card"><div class="keep-form">${field('guide', '전체 진행 안내 <span class="hint">리더에게만 보여요</span>', g.guide, { ta: true })}</div></section>
     ${g.stages.map((st, si) => `<section class="card" data-mg-stage="${si}"><div class="keep-form mg-stage-row">${field('stage-name', '단계 이름', st.name, { id: 'mge-stage-' + si, si })}${g.stages.length > 1 ? `<button class="btn ghost small mg-stage-del" type="button" data-act="mg-stage-del" data-si="${si}" aria-label="${esc(st.name)} 단계 삭제" title="단계 삭제">${ic('trash')}</button>` : ''}</div>
@@ -3081,7 +3081,7 @@ function mgPvHtml(b, L, g) {
   const leader = mgPvMode === 'leader';
   return `<section class="card today"><p class="lesson-book">${esc(b.title)} <span class="hint">${esc(b.period)}</span></p><h2 class="lesson-title">제${L.no}과 ${esc(L.name || '(제목을 적어 주세요)')}</h2>${L.ref ? `<span class="passage-chip">${esc(L.ref)}</span>` : ''}${L.intro ? `<p class="fine">${esc(L.intro)}</p>` : ''}</section>
     ${leader && g.guide ? `<section class="card"><p class="opt-name">전체 진행 안내</p><div class="pn lead"><p class="lab">리더·목사님</p><p class="t">${esc(g.guide)}</p></div></section>` : ''}
-    ${g.stages.filter(st => st.qs.length).map(st => `<section class="stage-sec"><h2 class="stage-h">${esc(st.name)}</h2>${st.qs.map((q, qi) => isRead(q) ? readHtml(st, q) : `<article class="card qcard"><div class="q-meta"><span class="q-eyebrow">${esc(st.name)} · ${qNo(st, qi)}</span></div><h3 class="q-t">${esc(q.t)}</h3>${q.sub || (q.vs && q.vs.length) ? helpHtml(q) : ''}${leader ? mgPvLead(q) : ''}</article>`).join('')}</section>`).join('')}
+    ${g.stages.filter(st => st.qs.length).map(st => `<section class="stage-sec"><h2 class="stage-h">${esc(st.name)}</h2>${st.qs.map((q, qi) => isRead(q) ? readHtml(st, q) : `<article class="card qcard"><div class="q-meta"><span class="q-eyebrow mg-pills">${mgChips([st.name, qNo(st, qi)])}</span></div><h3 class="q-t">${esc(q.t)}</h3>${q.sub || (q.vs && q.vs.length) ? helpHtml(q) : ''}${leader ? mgPvLead(q) : ''}</article>`).join('')}</section>`).join('')}
     ${g.triple.length ? `<section class="card deep"><p class="eyebrow">깊이 묵상하기</p><h2 class="d-lead">오늘 말씀에서 삼위일체 하나님을 묵상해요.</h2>${g.triple.map(t => `<div class="tri-item"><span class="who">${esc(t.who)}</span><h3 class="q-t">${esc(t.t)}</h3></div>`).join('')}</section>` : ''}
     ${L.wrap ? `<section class="card"><p class="opt-name">마무리 적용·기도 안내</p><p class="t">${esc(L.wrap)}</p></section>` : ''}`;
 }
@@ -4114,7 +4114,7 @@ function mdPlain(text) {
 }
 
 function readHtml(st, q) {
-  return `<article class="card qcard rcard" id="q-${q.id}"><div class="q-meta"><span class="q-eyebrow">${esc(st.name)} · 읽을 글</span></div>
+  return `<article class="card qcard rcard" id="q-${q.id}"><div class="q-meta"><span class="q-eyebrow mg-pills">${mgChips([st.name, '읽을 글'])}</span></div>
     ${String(q.h || '').trim() ? `<h3 class="q-t">${esc(q.h)}</h3>` : ''}
     <div class="r-t md">${mdHtml(q.t)}</div>
     ${Array.isArray(q.vs) && q.vs.length ? `<div class="verse-row"><span class="lab">관련 구절</span>${q.vs.map(verseChip).join('')}</div>` : ''}
@@ -4122,7 +4122,7 @@ function readHtml(st, q) {
 }
 function qHtml(st, qi, q) {
   return `<article class="card qcard" id="q-${q.id}" data-qid="${q.id}" aria-labelledby="qt-${q.id}">
-    <div class="q-meta"><span class="q-eyebrow">${esc(st.name)} · ${qNo(st, qi)}</span><span class="bm" hidden>${mkIc()}책갈피</span></div>
+    <div class="q-meta"><span class="q-eyebrow mg-pills">${mgChips([st.name, qNo(st, qi)])}</span><span class="bm" hidden>${mkIc()}책갈피</span></div>
     <h3 class="q-t" id="qt-${q.id}">${esc(q.t)}</h3>
     ${helpHtml(q)}${isLead() && !readAsMember ? leadHtml(q) : ''}
     <div class="ans" data-ans="${q.id}"></div></article>`;
@@ -4152,7 +4152,7 @@ function tocHtml() {
   let h = '';
   G.stages.forEach(st => {
     h += `<p class="toc-grp">${esc(st.name)}</p>`;
-    st.qs.forEach((q, i) => { h += `<button type="button" class="toc-q" data-act="goto" data-to="q-${q.id}"${isRead(q) ? '' : ` data-id="${q.id}"`}><span class="tn">${isRead(q) ? '' : qNo(st, i)}</span><span class="tt">${esc(isRead(q) ? readLabel(q) : q.t)}</span>${isRead(q) ? '<span></span>' : `<span class="tb" role="img" aria-label="책갈피">${mkIc()}</span>`}</button>`; });
+    st.qs.forEach((q, i) => { h += `<button type="button" class="toc-q" data-act="goto" data-to="q-${q.id}"${isRead(q) ? '' : ` data-id="${q.id}"`}><span class="tn">${isRead(q) ? '' : qNo(st, i)}</span><span class="tt">${(isRead(q) ? readLabel(q) : esc(q.t))}</span>${isRead(q) ? '<span></span>' : `<span class="tb" role="img" aria-label="책갈피">${mkIc()}</span>`}</button>`; });
   });
   if (D.readTriple && G.triple.length) h += `<p class="toc-grp">깊이 묵상하기</p><button type="button" class="toc-q" data-act="goto" data-to="deep"><span class="tn"></span><span class="tt">아버지 · 아들 · 성령</span><span></span></button>`;
   h += `<p class="toc-grp">마무리</p><button type="button" class="toc-q" data-act="goto" data-to="wrapup"><span class="tn"></span><span class="tt">모임에 가지 못했다면</span><span></span></button>`;
@@ -4167,7 +4167,7 @@ function prepView() {
   G = readyGuide(); if (!G) return noGuideView('진행 준비');
   const L = thisLesson(), memos = readMemo();
   const memo = key => `<div class="pn memo"><label class="lab" for="pm-${key}">${ic('lock')}내 진행 메모</label><textarea class="field" id="pm-${key}" data-memo-key="${key}" rows="2" maxlength="1000" placeholder="진행하며 기억할 것">${esc(memos[key] || '')}</textarea></div>`;
-  const toc = G.stages.map(st => `<p class="toc-grp">${esc(st.name)}</p>${st.qs.map((q, i) => `<button type="button" class="toc-q" data-act="goto" data-to="p-${q.id}"><span class="tn">${isRead(q) ? '' : qNo(st, i)}</span><span class="tt">${esc(isRead(q) ? readLabel(q) : q.t)}</span><span></span></button>`).join('')}`).join('')
+  const toc = G.stages.map(st => `<p class="toc-grp">${esc(st.name)}</p>${st.qs.map((q, i) => `<button type="button" class="toc-q" data-act="goto" data-to="p-${q.id}"><span class="tn">${isRead(q) ? '' : qNo(st, i)}</span><span class="tt">${(isRead(q) ? readLabel(q) : esc(q.t))}</span><span></span></button>`).join('')}`).join('')
     + (G.triple.length ? `<p class="toc-grp">깊이 묵상하기</p><button type="button" class="toc-q" data-act="goto" data-to="p-deep"><span class="tn"></span><span class="tt">아버지 · 아들 · 성령</span><span></span></button>` : '');
   return `<div class="read-wrap">
     <a class="back-link" href="#share">${ic('back')}<span>나눔하기</span></a>
@@ -4187,7 +4187,7 @@ function prepView() {
       </section>
       <div class="rg-body">
         ${G.stages.map((st, si) => `<section class="stage-sec"><h2 class="stage-h">${esc(st.name)}</h2>${st.qs.map((q, qi) => isRead(q) ? readHtml(st, q).replace(`id="q-${q.id}"`, `id="p-${q.id}"`) : `<article class="card qcard" id="p-${q.id}" aria-labelledby="pt-${q.id}">
-          <div class="q-meta"><span class="q-eyebrow">${esc(st.name)} · ${qNo(st, qi)}</span></div>
+          <div class="q-meta"><span class="q-eyebrow mg-pills">${mgChips([st.name, qNo(st, qi)])}</span></div>
           <h3 class="q-t" id="pt-${q.id}">${esc(q.t)}</h3>${helpHtml(q)}${leadHtml(q)}${memo(si + '-' + qi)}</article>`).join('')}</section>`).join('')}
         ${G.triple.length ? `<section class="card deep" id="p-deep" aria-labelledby="prepDeepT"><p class="eyebrow" style="margin:0">깊이 묵상하기</p><h2 class="d-lead" id="prepDeepT">오늘 말씀에서 삼위일체 하나님을 묵상해요.</h2>
           ${G.triple.map(t => `<div class="tri-item"><div class="q-meta"><span class="who">${esc(t.who)}</span></div><h3 class="q-t">${esc(t.t)}</h3>${memo(t.id)}</div>`).join('')}</section>` : ''}
@@ -5446,7 +5446,7 @@ const acts = {
     html += `<button type="button" data-act="jump-to" data-p="${R.steps.findIndex(x => x.t === 'passage')}" class="${s.t === 'passage' ? 'here' : ''}">본문 · ${esc(thisLesson().ref)}</button>`;
     R.steps.forEach((x, p) => {
       if (x.t === 'cover') html += `<p class="grp">${esc(G.stages[x.si].name)}</p>`;
-      if (x.t === 'q' || x.t === 'read') { const q = G.stages[x.si].qs[x.qi]; html += `<button type="button" data-act="jump-to" data-p="${p}" class="${R.pos === p ? 'here' : ''}">${esc(isRead(q) ? readLabel(q) : q.t)}</button>`; }
+      if (x.t === 'q' || x.t === 'read') { const q = G.stages[x.si].qs[x.qi]; html += `<button type="button" data-act="jump-to" data-p="${p}" class="${R.pos === p ? 'here' : ''}">${(isRead(q) ? readLabel(q) : esc(q.t))}</button>`; }
     });
     html += '</div>';
     shareOpenSheet(html);
