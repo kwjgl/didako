@@ -313,16 +313,12 @@ main.wrap { padding-top: 14px; padding-bottom: calc(110px + env(safe-area-inset-
 .walk-hero { padding: 0; overflow: hidden; }
 .walk-hero img { display: block; width: 100%; aspect-ratio: 4 / 3; object-fit: cover; }
 .walk-hero-body { padding: 16px; }
-.walk-hero-body .lesson-title { margin: .6em 0; }
-@media (max-width: 639px) {
-  .walk-hero { padding: 16px; }
-  .walk-hero img { float: left; width: 88px; aspect-ratio: 1; border-radius: 12px; margin-right: 14px; margin-bottom: 12px; }
-  .walk-hero-body { padding: 0; }
-  .walk-hero .walk-head, .walk-hero .lesson-title { margin-left: 102px; }
-  .walk-hero .lesson-title { margin-top: .3em !important; margin-bottom: .3em; }
-  .walk-hero .walk-refs { clear: both; }
-  .walk-hero .btn { display: flex; clear: both; }
-}
+.walk-hero-body .lesson-title { margin: 0 0 .6em; }
+@media (max-width: 639px) { .walk-hero img { aspect-ratio: 16 / 9; } }   /* 휴대폰은 그림을 맨 위에 가로로 크게 둔다(2026-11-15). 질문이 길어도 줄이 맞는다 */
+/* 이번 주 세 카드(이번 주의 질문·오늘의 말씀·숨은 그림)의 머리줄: 왼쪽 주황 제목, 오른쪽 딸린 것 */
+.wk-head { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 6px 8px; margin: 0 0 12px; }
+.wk-head .walk-kicker { margin: 0; }
+.wk-aside { display: flex; flex-wrap: wrap; align-items: center; justify-content: flex-end; gap: 6px; margin-left: auto; }
 /* 이번 주의 질문 머리: 이름표는 제목보다 작고 본문 작은 글보다 크게, 주·묶음은 알약으로 */
 .walk-head { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 8px; }
 .walk-kicker { font-size: .9375rem; font-weight: 700; color: var(--accent); margin-right: 2px; }
@@ -330,15 +326,14 @@ main.wrap { padding-top: 14px; padding-bottom: calc(110px + env(safe-area-inset-
 .walk-tag.on { background: var(--accent); border-color: var(--accent); color: var(--on-accent); }
 .walk-refs { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; margin-top: 2px; }
 .walk-ref { display: inline-flex; align-items: center; min-height: 28px; padding: 0 .8em; border-radius: 999px; background: var(--accent-soft); color: var(--accent); font-size: .8125rem; font-weight: 600; white-space: nowrap; }
-.walk-today { font-size: .9375rem; color: var(--ink); font-weight: 600; }
 .walk-scripture .quiet-link { display: inline-flex; align-items: center; margin: 0; }
 .walk-ask { margin: .2em 0 1em; font-size: 1rem; line-height: 1.6; color: var(--ink); word-break: keep-all; }
-.walk-scripture { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; margin: .7em 0; }
+.walk-scripture { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; margin: 0 0 .7em; }
 .read-scripture { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; }
 .read-scripture .quiet-link { display: inline-flex; align-items: center; margin: 0; }
 /* 말씀에서 찾아보기 문답(철학 ⑪ 2026-11-10): 맞으면 본문 위치를 알려 주고, 틀리면 다시 펴 보게 한다. 점수·맞힌 수·틀린 기록은 없다 */
-.walk-days { display: flex; gap: 6px; margin: 0 0 10px; }
-.walk-day { position: relative; display: grid; place-items: center; flex: 0 0 34px; width: 34px; height: 34px; padding: 0; border: 1px solid var(--line); border-radius: 50%; background: transparent; color: var(--ink-2); font: inherit; font-size: .8125rem; font-weight: 600; cursor: pointer; }
+.walk-days { display: flex; gap: 5px; margin: 0; }
+.walk-day { position: relative; display: grid; place-items: center; flex: 0 0 30px; width: 30px; height: 30px; padding: 0; border: 1px solid var(--line); border-radius: 50%; background: transparent; color: var(--ink-2); font: inherit; font-size: .8125rem; font-weight: 600; cursor: pointer; }
 .walk-day.today { border-color: var(--accent); }
 .walk-day.chosen { background: var(--accent); border-color: var(--accent); color: var(--on-accent); }
 .walk-day.future { opacity: .45; }
@@ -356,8 +351,6 @@ main.wrap { padding-top: 14px; padding-bottom: calc(110px + env(safe-area-inset-
 @media (prefers-reduced-motion: reduce) { .walk-day.lamp-now .ic.lamp.on { animation: none; } }
 
 /* 숨은 그림(2026-11-14, D-36): 그림 위의 종이 칸을 하나씩 걷는다. */
-.hidden-head { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-bottom: 10px; }
-.hidden-head .mlabel { margin: 0; }   /* 이번 주에 찾은 말씀 제목과 같은 왼쪽 줄에 맞춘다 */
 .hidden-range { font-size: .8125rem; color: var(--ink-2); }
 .hidden-board { position: relative; width: 100%; aspect-ratio: 13 / 6; overflow: hidden; border-radius: 12px; background: var(--surface-2); }
 .hidden-board img { position: absolute; inset: 0; width: 100%; height: 100%; display: block; object-fit: cover; }
@@ -386,8 +379,9 @@ main.wrap { padding-top: 14px; padding-bottom: calc(110px + env(safe-area-inset-
 .walk-choice:disabled { cursor: default; }
 .walk-msg { margin: 10px 0 0; font-size: .875rem; color: var(--ink-2); line-height: 1.5; word-break: keep-all; }
 .walk-msg.ok { color: var(--accent); font-weight: 600; }
-.walk-found { margin-top: 16px; padding-top: 12px; border-top: 1px solid var(--line); }
+.walk-found { margin-top: 16px; padding-top: 12px; border-top: 1px solid var(--line); }   /* 숨은 그림 카드 안: 구분선 뒤에 둔다 */
 .walk-found .mlabel { margin: 0 0 8px; }
+.walk-found.alone { margin-top: 0; padding-top: 0; border-top: 0; }   /* 숨은 그림이 없는 주: 찾은 말씀만 담은 카드 */
 .found-chips { display: flex; flex-wrap: wrap; gap: 6px; }
 .found-chip { min-width: 7.5em; max-width: 100%; gap: .4em; white-space: nowrap; }
 .found-chip .ic { flex: none; width: 1em; height: 1em; }
@@ -402,7 +396,6 @@ main.wrap { padding-top: 14px; padding-bottom: calc(110px + env(safe-area-inset-
 .found-week-head { display: flex; justify-content: space-between; align-items: center; gap: 8px; }
 .found-week-head .ic { flex: none; color: var(--warn); }
 .found-week .found-chips { margin-top: 10px; }
-p.walk-today { margin: 0; }
 .week-top .card { margin: 12px 0 0; }
 .week-grid { display: grid; gap: 14px; align-items: start; margin-top: 12px; }
 .week-grid .col { display: flex; flex-direction: column; gap: 14px; min-width: 0; }
@@ -1729,32 +1722,33 @@ function hiddenBoard(h, future = false) {
     <svg class="hidden-grid" viewBox="0 0 1300 600" preserveAspectRatio="none" aria-hidden="true" focusable="false">${pieces}</svg>
   </div>`;
 }
-function hiddenWeekCard(h) {
+function hiddenWeekCard(h, found) {
   const open = hiddenOpen(h);
   const hint = open === 0 ? '퀴즈 정답을 찾은 날마다 한 칸씩 열려요.'
     : open === HIDDEN_CELLS ? `「${esc(h.title)}」 그림이 다 열렸어요.`
     : '';
   return `<section class="card">
-    <div class="hidden-head"><h2 class="mlabel">숨은 그림</h2><span class="hidden-range">${h.from}~${h.to}주</span></div>
+    <div class="wk-head"><h2 class="walk-kicker">숨은 그림</h2><span class="wk-aside hidden-range">${h.from}~${h.to}주</span></div>
     ${hiddenBoard(h)}
     ${hint ? `<p class="hint hidden-caption">${hint}</p>` : ''}
+    ${found}
   </section>`;
 }
 
 const walkFoundChip = (day, newlyLit = false) => `<span class="walk-ref found-chip${newlyLit ? ' lamp-now' : ''}" role="img" aria-label="${esc(day.where)}">${ic('lamp-lit')}<span>${esc(walkShort(day.where))}</span></span>`;
-function walkFoundWeek(w, read, today) {
+function walkFoundWeek(w, read, today, alone) {
   const visible = w.days.slice(0, w.days.findIndex(day => day.d === today) + 1);
   const found = day => read[w.n + '-' + day.d] === true;
   const chips = visible.some(found) ? `<div class="found-chips">${visible.map(day => found(day)
     ? walkFoundChip(day, lampNow === w.n + '-' + day.d)
     : '<span class="walk-ref found-chip empty" aria-hidden="true"></span>').join('')}</div>`
     : '<p class="hint">정답을 찾으면 그 말씀이 여기에 꽂혀요.</p>';
-  return `<div class="walk-found">
-      <h2 class="mlabel">이번 주에 찾은 말씀</h2>
+  const head = alone ? '<div class="wk-head"><h2 class="walk-kicker">이번 주에 찾은 말씀</h2></div>' : '<h3 class="mlabel">이번 주에 찾은 말씀</h3>';
+  const body = `${head}
       ${chips}
       ${w.days.every(found) ? '<p class="hint">이번 주 말씀을 다 찾았어요.</p>' : ''}
-      <a class="quiet-link" href="#found">찾은 말씀 모아 보기 ›</a>
-    </div>`;
+      <a class="quiet-link" href="#found">찾은 말씀 모아 보기 ›</a>`;
+  return alone ? `<section class="card"><div class="walk-found alone">${body}</div></section>` : `<div class="walk-found">${body}</div>`;
 }
 function weekView() {
   const w = walkWeek(), today = walkToday(), selected = walkDay || today;
@@ -1768,9 +1762,9 @@ function weekView() {
     const newlyLit = lampNow === w.n + '-' + x.d;
     return `<button class="walk-day${chosen ? ' chosen' : ''}${isToday ? ' today' : ''}${future ? ' future' : ''}${newlyLit && checked ? ' lamp-now' : ''}" type="button" data-act="walk-day" data-d="${x.d}" aria-pressed="${chosen}" aria-label="${walkNames[x.d]}${checked ? ', 찾았어요' : ''}"${future ? ' aria-disabled="true"' : ''}><span>${x.d}</span>${checked && !future ? ic('lamp-lit', 'lamp on') : ''}</button>`;
   }).join('');
-  const found = walkFoundWeek(w, read, today);
   const hidden = HIDDEN.find(h => w.n >= h.from && w.n <= h.to);
-  const hiddenCard = hidden ? hiddenWeekCard(hidden) : '';
+  // 이번 주에 찾은 말씀은 숨은 그림 카드 안에 둔다. 숨은 그림이 없는 주에는 찾은 말씀만 담은 카드를 따로 둔다(2026-11-15)
+  const hiddenCard = hidden ? hiddenWeekCard(hidden, walkFoundWeek(w, read, today, false)) : walkFoundWeek(w, read, today, true);
   lampNow = '';
   hiddenNow = '';
   return `<p class="eyebrow top-eyebrow">${esc(LIVE ? (ls.get(LK.name) || '') : DATA.admin.church)}</p>
@@ -1779,7 +1773,7 @@ function weekView() {
     <section class="card walk-hero">
       <img src="${w.img}" alt="${esc(w.alt)}">
       <div class="walk-hero-body">
-        <div class="walk-head"><span class="walk-kicker">이번 주의 질문</span><span class="walk-tag">${w.n}주</span><span class="walk-tag">${esc(w.group)}</span></div>
+        <div class="wk-head"><span class="walk-kicker">이번 주의 질문</span><span class="wk-aside"><span class="walk-tag">${w.n}주</span><span class="walk-tag">${esc(w.group)}</span></span></div>
         <h2 class="lesson-title">${esc(w.q)}</h2>
         <div class="walk-refs">${w.refs.map(r => `<span class="walk-ref">${esc(r)}</span>`).join('')}</div>
         <button class="btn ghost wide" type="button" data-act="wq-open" style="margin-top:14px">${done ? '다시 펴 보기' : '단계별로 펴 보기'}</button>
@@ -1787,8 +1781,7 @@ function weekView() {
       </div>
     </section></div><div class="col">
     <section class="card">
-      <div class="walk-days" role="group" aria-label="월요일부터 금요일까지의 말씀">${days}</div>
-      <p class="walk-today">${selected === today ? '오늘 우리 교회가 함께 읽는 말씀' : walkNames[selected] + '에 함께 읽은 말씀'}</p>
+      <div class="wk-head"><h2 class="walk-kicker">오늘의 말씀${selected !== today ? `<span class="vh">, ${walkNames[selected]}에 함께 읽은 말씀</span>` : ''}</h2><div class="walk-days" role="group" aria-label="월요일부터 금요일까지의 말씀">${days}</div></div>
       <div class="walk-scripture"><span class="walk-ref">${esc(day.ref)}</span><a class="quiet-link" href="${day.url}" target="_blank" rel="noopener">성경 펴기 ›</a></div>
       <p class="walk-ask">${esc(day.ask)}</p>
       <div class="walk-choices" role="group" aria-label="답 고르기">${day.choices.map((c, i) => {
@@ -1796,7 +1789,6 @@ function weekView() {
         return `<button class="walk-choice${st}" type="button" data-act="walk-pick" data-i="${i}"${solved ? ' disabled' : ''}><span class="no">${i + 1}</span><span>${esc(c)}</span>${solved && i === day.answer ? ic('check') : ''}</button>`;
       }).join('')}</div>
       ${solved ? `<p class="walk-msg ok">맞아요! ${esc(day.where)}에 있어요.</p>` : wrong >= 0 ? `<p class="walk-msg">본문을 다시 펴 볼까요? 몇 번이든 다시 골라도 돼요.</p>` : ''}
-      ${found}
     </section>
     ${hiddenCard}</div></div>`;
 }
