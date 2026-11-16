@@ -85,6 +85,7 @@ window.DidakoCm = (() => {
     const out = toOwn(list(rows).filter(row => isObj(row) && isObj(row.data)));
     out.books.forEach(b => { b.group = 'didako'; b.baseOwn = true; });
     out.hidden = list(rows).filter(row => isObj(row) && row.hidden === true && /^[a-z0-9][a-z0-9-]{0,63}$/.test(str(row.id))).map(row => str(row.id));
+    out.removed = list(rows).filter(row => isObj(row) && row.removed === true && /^[a-z0-9][a-z0-9-]{0,63}$/.test(str(row.id))).map(row => str(row.id));
     return out;
   }
   return {
@@ -110,6 +111,7 @@ window.DidakoCm = (() => {
     baseSave: (bookId, data) => rpc('didako_base_save', { p_book: str(bookId), p_data: data }),
     baseHide: (bookId, on) => rpc('didako_base_hide', { p_book: str(bookId), p_on: on === true }),
     baseDelete: bookId => rpc('didako_base_delete', { p_book: str(bookId) }),
+    baseRevert: bookId => rpc('didako_base_revert', { p_book: str(bookId) }),
     report: (id, reason, note) => rpc('didako_cm_report', { p_id: str(id), p_reason: str(reason), p_note: str(note) })
   };
 })();

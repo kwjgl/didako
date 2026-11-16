@@ -1262,6 +1262,7 @@ button.gallery-cell { display: block; width: 100%; padding: 0; cursor: pointer; 
 .mg-pair .btn { flex: 1; min-width: 0; }
 /* 디다코 교재 만들기 목록 줄의 [고치기]·[숨기기] 묶음: 좁은 화면에서는 줄바꿈 */
 .base-btns { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 8px; flex: 0 1 auto; }
+.btn.warn-line { color: var(--warn); border-color: var(--warn); }
 .mg-pub-lbl { margin: 14px 0 6px; font-size: .84em; font-weight: 700; color: var(--ink-2); }
 .mg-pub-row { display: flex; align-items: center; gap: 6px; }
 .mg-pub-row .btn { flex: 1; min-width: 0; padding-left: .6em; padding-right: .6em; line-height: 1.3; word-break: keep-all; }
@@ -1525,8 +1526,6 @@ button.gallery-cell { display: block; width: 100%; padding: 0; cursor: pointer; 
 <script src="config.js"></script>
 <script src="covers.js"></script>
 <script src="demo-data.js"></script>
-<script src="book-gospel.js"></script>
-<script src="book-prophets.js"></script>
 <script src="book-trinity.js"></script>
 <script src="book-family.js"></script>
 <script src="../note/places.js"></script>
@@ -1549,7 +1548,7 @@ const DATA = window.DIDAKO_DEMO;
 const clone = x => JSON.parse(JSON.stringify(x));
 // 디다코 기본 교재(앱에 들어 있는 GOSPEL 새가족반과 12소예언서). 실제 모드에서는 DATA.books를 서버 교재로 바꾸니, 그 전에 복사해 둔다.
 //  교재 관리의 "디다코 기본 교재"에서 [가져오기]를 누르면 우리 교회 교재로 복제된다(서버 basicImport)
-const BASIC = LIVE ? { books: ['gospel', 'prophets'].map(id => DATA.books.find(b => b.id === id)).filter(Boolean).map(clone), guides: clone(DATA.guides) } : { books: [], guides: {} };
+const BASIC = LIVE ? { books: ['trinity', 'family'].map(id => DATA.books.find(b => b.id === id)).filter(Boolean).map(clone), guides: clone(DATA.guides) } : { books: [], guides: {} };
 
 // ── 도구 ──
 const $ = (s, r) => (r || document).querySelector(s);
@@ -1684,8 +1683,16 @@ function baseHiddenList() {
   return Array.isArray(hidden) ? hidden.filter(id => typeof id === 'string') : [];
 }
 // 실제 서버(SB)는 서버가 알려 준 숨김 목록(BASE_SB_HIDDEN)을 읽는다. 데모는 이 기기 저장, LIVE는 없다
-let BASE_SB_HIDDEN = [];
+let BASE_SB_HIDDEN = [], BASE_SB_REMOVED = [];
 const baseHidden = id => LIVE ? false : SB ? BASE_SB_HIDDEN.includes(id) : baseHiddenList().includes(id);
+// 삭제한 앱 교재는 파일에 남아 있어도 목록과 새 교재 선택에서 제외한다
+const baseRemovedList = () => { const { removed } = readJson(BASE_BOOKS_KEY); return Array.isArray(removed) ? removed.filter(id => typeof id === 'string') : []; };
+const baseRemoved = id => LIVE ? false : SB ? BASE_SB_REMOVED.includes(id) : baseRemovedList().includes(id);
+function baseSetRemoved(id, on) {
+  const removed = baseRemovedList().filter(x => x !== id);
+  if (on) removed.push(id);
+  return ls.set(BASE_BOOKS_KEY, JSON.stringify({ ...readJson(BASE_BOOKS_KEY), removed }));
+}
 // 숨김을 바꿀 때 앱 관리자가 쓴 교재(books)와 질문 자료(guides)는 그대로 둔다
 function baseSetHidden(id, on) {
   const hidden = baseHiddenList().filter(x => x !== id);
@@ -1698,8 +1705,8 @@ const BASE_SB_COPY = 'didako-base-books-sb.';
 const BASE_OWN = (() => {
   if (SB) {
     const h = ls.get(SBH), v = h ? readJson(BASE_SB_COPY + h) : {};
-    const own = Array.isArray(v.rows) ? DidakoCm.toBase(v.rows) : { books: [], guides: {}, hidden: [] };
-    BASE_SB_HIDDEN = own.hidden;
+    const own = Array.isArray(v.rows) ? DidakoCm.toBase(v.rows) : { books: [], guides: {}, hidden: [], removed: [] };
+    BASE_SB_HIDDEN = own.hidden; BASE_SB_REMOVED = own.removed;
     return { books: own.books, guides: own.guides };
   }
   const v = !LIVE ? readJson(BASE_BOOKS_KEY) : {};
@@ -1715,7 +1722,7 @@ function baseSave() {
 }
 // 책장의 바탕 책을 "앱에 들어 있는 교재 + 앱 관리자가 쓴 교재"로 다시 만들고, 연 공동체가 있으면 화면 자료를 맞춘다
 function baseSync() {
-  CM_BASE.books = FILE_BOOKS.concat(BASE_OWN.books);
+  CM_BASE.books = baseBooksData();
   CM_BASE.guides = Object.assign({}, FILE_GUIDES, BASE_OWN.guides);
   if (CM && cmCur()) cmApply();
 }
@@ -1788,7 +1795,11 @@ const cmLink = g => new URL('./?join=' + g.invite.code, location.href).href;
 const cmEndText = iso => { const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(iso || ''); return m ? `${m[1]}년 ${Number(m[2])}월 ${Number(m[3])}일까지` : ''; };
 // 책장의 바탕 책(질문으로 묵상하기 연재와 디다코 기본 교재). 모임장이 쓴 교재는 공동체마다 따로 얹는다
 const FILE_BOOKS = DATA.books.slice(), FILE_GUIDES = Object.assign({}, DATA.guides);
-const CM_BASE = { books: FILE_BOOKS.concat(BASE_OWN.books), guides: Object.assign({}, FILE_GUIDES, BASE_OWN.guides) };
+const baseAppId = id => FILE_BOOKS.some(b => b.id === id && b.group !== 'walk');
+// 앱 파일 판보다 고친 판을 우선한다. 삭제 표시는 어느 판도 보여 주지 않는다
+const baseBooksData = () => FILE_BOOKS.filter(b => !baseRemoved(b.id) && !BASE_OWN.books.some(own => own.id === b.id))
+  .concat(BASE_OWN.books.filter(b => !baseRemoved(b.id)));
+const CM_BASE = { books: baseBooksData(), guides: Object.assign({}, FILE_GUIDES, BASE_OWN.guides) };
 const baseManaged = () => CM_BASE.books.filter(b => b.group !== 'walk');
 // 모임장이 쓴 교재: 데모는 이 기기(didako-cm-books)에만 둔다. 실제 서버(SB)는 서버에서 받은 것을 공동체 id별로 두고, 마지막으로 받은 것은 기기에 사본으로 남겨 먼저 그린다
 const cmOwnAll = SB ? {} : readJson(CM_BOOKS);
@@ -2961,7 +2972,11 @@ function feedbackView() {
 const cmShut = () => { const g = cmCur(); return !!g && g.canWrite === false; };
 const cmEnded = () => { const g = cmCur(); return !!g && (g.state === '끝남' || g.state === '끝맺음'); };   // 끝난 공동체(스위치가 꺼져 읽기만인 때와 구분)
 // 앱 관리자가 디다코 교재를 쓰는 중인가(디다코 교재 만들기 화면과 교재 id가 db로 시작하는 교재 화면). 데모와 실제 서버(SB)에서 켜진다. 이때 교재 편집은 모임장 것을 빌려 쓰되 저장 자리만 BASE_OWN이다(실제 서버는 서버 표 didako_base_book)
-const mgBaseMode = () => { if (LIVE) return false; const h = parseHash(); return h.v === 'admin/books' || (h.v === 'manage' && /^(mb|me|mp|mx|mxb)-db/.test(h.arg || '')); };
+const mgBaseMode = () => {
+  if (LIVE) return false;
+  const h = parseHash(), m = /^(mb|mxb|me|mp|mx)-([\w-]+?)(?:\.\d+)?$/.exec(h.arg || '');
+  return h.v === 'admin/books' || (h.v === 'manage' && !!m && (m[2].startsWith('db') || baseAppId(m[2])));
+};
 const canManage = () => mgBaseMode() ? isAppAdmin() : D.role === 'leader' && !cmShut();
 // 한 공동체의 교재는 5권까지(복제해 만든 교재도 센다. 서버 didako_cm_book_save도 같은 숫자로 막는다). 지금 읽는 책은 지울 수 없다
 const MG_MAX = 5;
@@ -3308,31 +3323,69 @@ function mgBooksView() {
 }
 // 디다코 기본 교재(실제 모드): 앱에 들어 있는 교재를 우리 교회 교재로 복제한다. 줄 모양은 교재 목록 줄과 같다
 function mgBasicHtml() {
-  const basic = CM_BASE.books.filter(b => (['gospel', 'prophets'].includes(b.id) || b.baseOwn) && !baseHidden(b.id));
+  const basic = baseManaged().filter(b => !baseHidden(b.id));
   if (!basic.length) return '';
   return `<div class="gl">디다코 기본 교재</div><div class="gc">${basic.map(b => `<div class="gr mg-row"><span class="mg-cover">${bookCover({ ...b, id: '' }, 'list')}</span><span class="gt"><b>${esc(b.title)}</b><span class="gd mg-pills">${mgChips([b.kind, b.lessons.length + '과'])}</span></span><button class="btn ghost small" type="button" data-act="mg-basic" data-v="${esc(b.id)}" aria-label="${esc(b.title)} 가져오기"${mgFull() ? ' disabled' : ''}>가져오기</button></div>`).join('')}
     <div class="gr"><span class="gt"><span class="gd">이 공동체의 교재로 복제해서 고쳐 써요. 원래 교재는 책장에 그대로 있어요.</span></span></div></div>`;
 }
 function baseBooksView() {
-  // 새로 쓴 교재(최근 것이 앞) → 앱에 들어 있는 교재. 새로 쓴 교재는 고치기도 한다
-  const rows = baseManaged().slice().sort((a, b) => Number(!!b.baseOwn) - Number(!!a.baseOwn)).map(b => {
-    const hidden = baseHidden(b.id), action = hidden ? '보이기' : '숨기기';
+  // 새로 쓴 교재(db로 시작, 최근 것이 앞) → 앱에 들어 있는 교재(편집본 포함)
+  const rows = baseManaged().slice().sort((a, b) => Number(b.id.startsWith('db')) - Number(a.id.startsWith('db'))).map(b => {
+    const hidden = baseHidden(b.id), action = hidden ? '공개' : '숨김';
     const toggle = `<button class="btn ghost small" type="button" data-act="${hidden ? 'base-show' : 'base-hide'}" data-v="${esc(b.id)}" aria-label="${esc(b.title)} ${action}">${action}</button>`;
+    const edit = b.baseOwn ? `<a class="btn ghost small" href="#mb-${esc(b.id)}" aria-label="${esc(b.title)} 편집">편집</a>`
+      : `<button class="btn ghost small" type="button" data-act="base-edit" data-v="${esc(b.id)}" aria-label="${esc(b.title)} 편집">편집</button>`;
+    const del = `<button class="btn ghost small warn-line" type="button" data-act="base-del" data-v="${esc(b.id)}" aria-label="${esc(b.title)} 삭제">삭제</button>`;
     return `<div class="gr mg-row"><span class="mg-cover"${hidden ? ' style="opacity:.5"' : ''}>${bookCover({ ...b, id: '' }, 'list')}</span>
-      <span class="gt"><b>${esc(b.title)}</b>${b.baseOwn ? ' <span class="walk-tag">새로 쓴 교재</span>' : ''}${hidden ? ' <span class="walk-tag">숨김</span>' : ''}<span class="gd">${b.lessons.length}과</span></span>
-      ${b.baseOwn ? `<span class="base-btns"><a class="btn ghost small" href="#mb-${esc(b.id)}" aria-label="${esc(b.title)} 고치기">고치기</a>${toggle}</span>` : `<span class="base-btns"><button class="btn ghost small" type="button" data-act="base-dup" data-v="${esc(b.id)}" aria-label="${esc(b.title)} 복제">복제</button>${toggle}</span>`}</div>`;
+      <span class="gt"><b>${esc(b.title)}</b>${b.id.startsWith('db') ? ' <span class="walk-tag">새로 쓴 교재</span>' : baseAppId(b.id) && b.baseOwn ? ' <span class="walk-tag">편집함</span>' : ''}${hidden ? ' <span class="walk-tag">숨김</span>' : ''}<span class="gd">${b.lessons.length}과</span></span>
+      <span class="base-btns">${edit}${toggle}${del}</span></div>`;
   }).join('');
   return `<div class="col-n"><a class="back-link" href="#more">${ic('back')}<span>더보기</span></a>
     <h1>디다코 교재 만들기</h1>
-    <p class="hint">디다코가 내는 교재예요. 숨긴 교재는 공동체가 새로 고르는 곳에서 빠지고, 이미 읽고 있는 공동체는 그대로 읽어요. 앱에 들어 있는 교재는 복제해서 고쳐 써요.</p>
+    <p class="hint">디다코가 내는 교재예요. 숨긴 교재는 공동체가 새로 고르는 곳에서 빠지고, 이미 읽고 있는 공동체는 그대로 읽어요.</p>
     <button class="btn wide" type="button" data-act="mg-new">새 교재 쓰기</button>
     <div class="gc" style="margin-top:14px">${rows}</div></div>`;
 }
+function baseDeleteAsk(id) {
+  const b = isAppAdmin() && baseManaged().find(b => b.id === id); if (!b) return;
+  if (baseInUse(id)) { toast(MG_BASE_NOW); return; }
+  openSheet(sheetHead('교재 삭제') + `<p><b>${esc(b.title)}</b> 교재를 삭제할까요?</p><p class="hint">삭제한 교재는 되살릴 수 없어요. 필요하면 먼저 인쇄나 Word로 내려받아 두세요.</p><div class="set-btns"><button class="btn ghost" type="button" data-act="pop-close" data-focus>그만두기</button><button class="btn danger" type="button" data-act="base-del-do" data-v="${esc(id)}">삭제</button></div>`);
+}
+function baseDropOwn(id) {
+  BASE_OWN.books = BASE_OWN.books.filter(b => b.id !== id);
+  Object.keys(BASE_OWN.guides).filter(key => key.startsWith(id + ':')).forEach(key => { delete BASE_OWN.guides[key]; });
+}
+function baseDeleteGo() {
+  closeSheet();
+  if (parseHash().v === 'admin/books') { route(false); toast('교재를 삭제했어요'); }
+  else mgGo('admin/books', '교재를 삭제했어요');
+}
+function baseDeleteLocal(id) {
+  if (!isAppAdmin() || !baseManaged().some(b => b.id === id)) return;
+  if (baseInUse(id)) { closeSheet(); toast(MG_BASE_NOW); return; }
+  baseDropOwn(id);
+  if (baseAppId(id)) baseSetRemoved(id, true);
+  baseSetHidden(id, false); baseSave(); baseSync(); baseDeleteGo();
+}
+async function baseDeleteServer(id) {
+  if (!isAppAdmin() || !baseManaged().some(b => b.id === id)) return;
+  if (baseInUse(id)) { closeSheet(); toast(MG_BASE_NOW); return; }
+  await DidakoCm.baseDelete(id);
+  baseDropOwn(id);
+  if (baseAppId(id)) BASE_SB_REMOVED = BASE_SB_REMOVED.filter(x => x !== id).concat([id]);
+  BASE_SB_HIDDEN = BASE_SB_HIDDEN.filter(x => x !== id);
+  sbBookForget(BASE_CID, id); baseSync(); baseDeleteGo();
+}
+function baseRevertAsk() {
+  const b = isAppAdmin() && mgCurrent(); if (!b || !baseAppId(b.id) || !b.baseOwn) return;
+  openSheet(sheetHead('복원') + `<p><b>${esc(b.title)}</b>을 앱에 들어 있던 원래 판으로 되돌릴까요?</p><p class="hint">고친 내용은 사라져요.</p><div class="set-btns"><button class="btn ghost" type="button" data-act="pop-close" data-focus>그만두기</button><button class="btn" type="button" data-act="base-revert-do">복원</button></div>`);
+}
+function baseRevertGo() { closeSheet(); mgGo('admin/books', '원래 판으로 되돌렸어요'); }
 function baseBookVisibility(id, hidden) {
   const book = baseManaged().find(b => b.id === id);
   if (!isAppAdmin() || !book) return;
   // 새로 쓴 교재는 과를 하나 이상 쓰고(제목이 빈 과만 있으면 안 된다) 보이게 한다
-  if (!hidden && book.baseOwn && !book.lessons.some(L => String(L.name || '').trim())) { toast('과를 하나 이상 써야 보이게 할 수 있어요'); return; }
+  if (!hidden && book.baseOwn && !baseAppId(book.id) && !book.lessons.some(L => String(L.name || '').trim())) { toast('과를 하나 이상 써야 보이게 할 수 있어요'); return; }
   if (SB) return baseHideServer(id, hidden);   // 실제 서버: 서버가 받은 뒤에만 바꾼다
   if (hidden) closeSheet();
   if (!baseSetHidden(id, hidden)) { toast('이 기기에 저장하지 못했어요'); return; }
@@ -3357,7 +3410,7 @@ function mgBookView(b) {
       ${b.lessons.map(L => `<a class="gr" href="#me-${b.id}.${L.no}"><span class="gt"><b>제${L.no}과 ${esc(L.name || '(제목을 적어 주세요)')}</b><span class="gd mg-pills">${mgChips([L.date, L.ref && [L.ref, true]])}</span></span></a>`).join('') || '<div class="gr"><span class="gt"><span class="gd">아직 과가 없어요. 과를 더해 시작해요.</span></span></div>'}
     </div></div><div><div class="gc"><div class="gr"><span class="mg-cover big">${bookCover({ ...b, id: '' }, 'list')}</span><span class="gt"><b>${esc(b.title)}</b><span class="gd">${esc(b.kind)}</span></span></div><dl class="mg-info"><div><dt>출처</dt><dd><span class="mg-pills">${mgChips([base ? '디다코 교재' : '모임장이 쓴 교재', b.source])}</span></dd></div>${b.start ? `<div><dt>시작 날짜</dt><dd>${esc(mgLongDate(b.start))}</dd></div>` : ''}${b.closed && b.end ? `<div><dt>끝난 날짜</dt><dd>${esc(mgLongDate(b.end))}</dd></div>` : ''}</dl></div>${base ? `<p class="hint">${baseHidden(b.id) ? '지금은 숨겨져 있어 공동체에 보이지 않아요.' : '모든 공동체의 책장에 보여요.'}</p>` : ''}
     <div class="gc">${row('교재 정보 편집', '제목, 표지 이름, 표지, 시작 날짜', 'mg-edit')}${row('교재 통째로 복제', base ? '디다코 교재로 한 권 더 만들어요' : '이 공동체 안에 한 권 더 만들어요', 'mg-dup', mgFull())}${`<a class="gr" href="#mxb-${b.id}"><span class="gt"><b>인쇄용 보기</b><span class="gd">PDF나 Word로 내려받아요</span></span><span class="ch" aria-hidden="true">›</span></a>`}${b.closed || base ? '' : row('교재 닫기', '오늘 날짜로 끝내고 지난 교재로 옮겨요', 'mg-close')}</div>${mgFull() ? `<p class="hint">${MG_FULL}</p>` : ''}${b.closed && !base ? '<button class="quiet-link" type="button" data-act="mg-reopen">다시 열기</button>' : ''}
-    <div class="gc">${row('<span class="warn-text">교재 지우기</span>', base ? '디다코 교재에서 지워요. 되살릴 수 없어요' : '이 공동체에서 지워요. 되살릴 수 없어요', 'mg-del', mgIsNow(b))}</div>${mgIsNow(b) ? `<p class="hint">${base ? MG_BASE_NOW : MG_NOW}</p>` : ''}</div></div>`;
+    <div class="gc">${base && baseAppId(b.id) && b.baseOwn ? row('복원', '앱에 들어 있던 원래 판으로 되돌려요. 고친 내용은 사라져요', 'base-revert') : ''}${row(base ? '<span class="warn-text">교재 삭제</span>' : '<span class="warn-text">교재 지우기</span>', base ? '디다코 교재에서 삭제해요. 되살릴 수 없어요' : '이 공동체에서 지워요. 되살릴 수 없어요', 'mg-del', mgIsNow(b))}</div>${mgIsNow(b) ? `<p class="hint">${base ? MG_BASE_NOW : MG_NOW}</p>` : ''}</div></div>`;
 }
 function mgForm(b) {
   mgEditing = b ? b.id : '';
@@ -3394,12 +3447,14 @@ function mgBuildBasic(src) {
   });
   return { b, guides };
 }
-// 디다코 교재 만들기: 앱에 들어 있는 교재를 새로 쓴 디다코 교재로 복제한다(교재 id는 db로 시작, 과별 질문 자료까지). 원래 교재는 그대로 둔다
-function baseBuildDup(src) {
-  const r = mgBuildBasic(src);
-  r.b.group = 'didako'; r.b.baseOwn = true; r.b.source = `「${src.title}」에서 복제`;
-  return r;
+// 앱 교재는 ID를 바꾸지 않고 파일 판을 깊은 복사한다. 질문 ID는 개인 기록을 잇는 값이라 그대로 둔다
+function baseBuildEdit(id) {
+  const src = FILE_BOOKS.find(b => b.id === id && b.group !== 'walk'); if (!src) return null;
+  const b = clone(src), guides = {}; b.group = 'didako'; b.baseOwn = true;
+  b.lessons.forEach(L => { const key = id + ':' + L.no; if (FILE_GUIDES[key]) guides[key] = clone(FILE_GUIDES[key]); });
+  return { b, guides };
 }
+function baseEditAdopt(r) { BASE_OWN.books.unshift(r.b); Object.assign(BASE_OWN.guides, r.guides); }
 function mgBuildDup(source) {
   const id = mgId(), b = JSON.parse(JSON.stringify(source)), guides = {}; b.id = id; b.title += ' (복사본)'; b.closed = false; b.edited = true; delete b.end;
   delete b.savedAt; delete b.updatedAt;
@@ -5142,23 +5197,31 @@ const acts = {
     if (mgBaseMode()) { r.b.group = 'didako'; r.b.baseOwn = true; mgPut(r); baseSetHidden(r.b.id, true); baseSave(); baseSync(); mgGo('mb-' + r.b.id, '복제했어요. 다 쓴 뒤 보이기를 눌러요'); return; }
     mgPut(r); mgTab = 'now'; mgGo('mb-' + r.b.id, '복제했어요');
   },
-  'base-dup'(e, el) {
-    const src = isAppAdmin() && baseManaged().find(b => b.id === el.dataset.v && !b.baseOwn); if (!src) return;
-    const r = baseBuildDup(src);
-    mgPut(r); baseSetHidden(r.b.id, true); baseSave(); baseSync();
-    mgGo('mb-' + r.b.id, '복제했어요. 다 고친 뒤 원래 교재는 숨기고 이 교재를 보여 주세요');
+  'base-edit'(e, el) {
+    const id = el.dataset.v;
+    if (!isAppAdmin() || !baseAppId(id) || BASE_OWN.books.some(b => b.id === id)) return;
+    const r = baseBuildEdit(id); if (!r) return;
+    baseEditAdopt(r); baseSave(); baseSync(); location.hash = '#mb-' + id;
+  },
+  'base-del'(e, el) { baseDeleteAsk(el.dataset.v); },
+  'base-del-do'(e, el) { baseDeleteLocal(el.dataset.v); },
+  'base-revert'() { baseRevertAsk(); },
+  'base-revert-do'() {
+    const b = isAppAdmin() && mgCurrent(); if (!b || !baseAppId(b.id) || !b.baseOwn) return;
+    baseDropOwn(b.id); baseSave(); baseSync(); baseRevertGo();
   },
   // 교재 지우기: 한 번 더 묻고, 지금 읽는 책은 막는다. 지운 교재는 되살릴 수 없다
   'mg-del'() {
     const b = canManage() && mgCurrent(); if (!b) return;
-    if (mgIsNow(b)) { toast(mgBaseMode() ? MG_BASE_NOW : MG_NOW); return; }
+    if (mgBaseMode()) { baseDeleteAsk(b.id); return; }
+    if (mgIsNow(b)) { toast(MG_NOW); return; }
     openSheet(sheetHead('교재 지우기') + `<p><b>${esc(b.title)}</b> 교재를 지울까요?</p><p class="hint">지운 교재는 되살릴 수 없어요. 필요하면 먼저 인쇄나 Word로 내려받아 두세요.</p><div class="set-btns"><button class="btn ghost" type="button" data-act="pop-close" data-focus>그만두기</button><button class="btn" type="button" data-act="mg-del-do">지우기</button></div>`);
   },
   'mg-del-do'() {
     const b = canManage() && mgCurrent(); if (!b) return;
-    if (mgIsNow(b)) { closeSheet(); toast(mgBaseMode() ? MG_BASE_NOW : MG_NOW); return; }
+    if (mgBaseMode()) { baseDeleteLocal(b.id); return; }
+    if (mgIsNow(b)) { closeSheet(); toast(MG_NOW); return; }
     mgRemove(b);
-    if (mgBaseMode()) { baseSetHidden(b.id, false); baseSave(); baseSync(); closeSheet(); mgGo('admin/books', '교재를 지웠어요'); return; }
     closeSheet(); mgGo('manage', '교재를 지웠어요');
   },
   'mg-close'() {
@@ -5979,8 +6042,9 @@ const baseCopyKeys = () => { const out = []; try { for (let i = 0; i < localStor
 // 마지막으로 받은(또는 고친) 디다코 교재 목록을 기기에 사본으로 둔다(1.5MB를 넘으면 사본을 두지 않는다). 줄 차례는 오래된 것이 앞이다(toBase가 새 교재를 앞에 놓는다)
 function baseKeep() {
   const h = ls.get(SBH); if (!h) return;
-  const rows = BASE_OWN.books.slice().reverse().map(b => ({ id: b.id, updatedAt: b.updatedAt || '', hidden: BASE_SB_HIDDEN.includes(b.id), data: sbBookOut(BASE_CID, b) }));
-  BASE_SB_HIDDEN.filter(id => !BASE_OWN.books.some(b => b.id === id)).forEach(id => rows.push({ id, updatedAt: '', hidden: true, data: null }));
+  const rows = BASE_OWN.books.slice().reverse().map(b => ({ id: b.id, updatedAt: b.updatedAt || '', hidden: BASE_SB_HIDDEN.includes(b.id), removed: false, data: sbBookOut(BASE_CID, b) }));
+  BASE_SB_HIDDEN.filter(id => !BASE_OWN.books.some(b => b.id === id) && !BASE_SB_REMOVED.includes(id)).forEach(id => rows.push({ id, updatedAt: '', hidden: true, removed: false, data: null }));
+  BASE_SB_REMOVED.forEach(id => rows.push({ id, updatedAt: '', hidden: false, removed: true, data: null }));
   const txt = JSON.stringify({ rows });
   if (txt.length > 1500000 || !ls.set(BASE_SB_COPY + h, txt)) ls.del(BASE_SB_COPY + h);
 }
@@ -5988,8 +6052,8 @@ function baseKeep() {
 function baseSbReset(keep) {
   baseCopyKeys().filter(k => !keep || k !== BASE_SB_COPY + keep).forEach(k => ls.del(k));
   const v = keep ? readJson(BASE_SB_COPY + keep) : {};
-  const own = Array.isArray(v.rows) ? DidakoCm.toBase(v.rows) : { books: [], guides: {}, hidden: [] };
-  BASE_OWN.books = own.books; BASE_OWN.guides = own.guides; BASE_SB_HIDDEN = own.hidden; SB_ADMIN = false;
+  const own = Array.isArray(v.rows) ? DidakoCm.toBase(v.rows) : { books: [], guides: {}, hidden: [], removed: [] };
+  BASE_OWN.books = own.books; BASE_OWN.guides = own.guides; BASE_SB_HIDDEN = own.hidden; BASE_SB_REMOVED = own.removed; SB_ADMIN = false;
   baseSync();
 }
 // 서버에서 받은 목록으로 바꾼다. 바뀌었으면 true
@@ -6002,7 +6066,7 @@ function baseSbSet(rows) {
   BS.raw[BASE_CID] = key;
   Object.keys(BS.st).filter(k => k.startsWith(BASE_CID + ':') && BS.st[k].restored).forEach(k => { delete BS.st[k]; });
   const r = DidakoCm.toBase(rows);
-  BASE_OWN.books = r.books; BASE_OWN.guides = r.guides; BASE_SB_HIDDEN = r.hidden;
+  BASE_OWN.books = r.books; BASE_OWN.guides = r.guides; BASE_SB_HIDDEN = r.hidden; BASE_SB_REMOVED = r.removed;
   if (isAppAdmin()) sbRestoreStash(BASE_CID, true);
   baseSync(); baseKeep();
   return true;
@@ -6128,18 +6192,23 @@ if (SB) {
       mgPut(r); if (w.cid === BASE_CID) baseAdopt(r.b);
       sbBookSaved(w.cid, r.b, at); if (w.cid === BASE_CID) baseSync(); mgTab = 'now'; mgGo('mb-' + r.b.id, w.cid === BASE_CID ? '복제했어요. 다 쓴 뒤 보이기를 눌러요' : '복제했어요');
     }),
-    'base-dup': sbAct(async (e, el) => {
-      const w = sbWriter(), src = isAppAdmin() && baseManaged().find(b => b.id === el.dataset.v && !b.baseOwn); if (!w || !src || w.cid !== BASE_CID) return;
-      const r = baseBuildDup(src), at = await sbBookPut(w.cid, r.b, r.guides);
-      mgPut(r); baseAdopt(r.b); sbBookSaved(w.cid, r.b, at); baseSync();
-      mgGo('mb-' + r.b.id, '복제했어요. 다 고친 뒤 원래 교재는 숨기고 이 교재를 보여 주세요');
+    'base-edit': sbAct(async (e, el) => {
+      const id = el.dataset.v, w = sbWriter();
+      if (!w || w.cid !== BASE_CID || !isAppAdmin() || !baseAppId(id) || BASE_OWN.books.some(b => b.id === id)) return;
+      const r = baseBuildEdit(id); if (!r) return;
+      const at = await sbBookPut(BASE_CID, r.b, r.guides);
+      baseEditAdopt(r); sbBookSaved(BASE_CID, r.b, at); baseSync(); location.hash = '#mb-' + id;
+    }),
+    'base-del-do': sbAct(async (e, el) => { await baseDeleteServer(el.dataset.v); }),
+    'base-revert-do': sbAct(async () => {
+      const b = isAppAdmin() && mgCurrent(); if (!b || !baseAppId(b.id) || !b.baseOwn) return;
+      await DidakoCm.baseRevert(b.id);
+      baseDropOwn(b.id); sbBookForget(BASE_CID, b.id); baseSync(); baseRevertGo();
     }),
     'mg-del-do': sbAct(async () => {
       const w = sbWriter(), b = canManage() && mgCurrent(); if (!w || !b) return;
       if (w.cid === BASE_CID) {
-        if (mgIsNow(b)) { closeSheet(); toast(MG_BASE_NOW); return; }
-        await DidakoCm.baseDelete(b.id);   // 서버도 읽고 있는 공동체가 있으면 막는다
-        mgRemove(b); BASE_SB_HIDDEN = BASE_SB_HIDDEN.filter(x => x !== b.id); sbBookForget(w.cid, b.id); baseSync(); closeSheet(); mgGo('admin/books', '교재를 지웠어요');
+        await baseDeleteServer(b.id);
         return;
       }
       if (mgIsNow(b)) { closeSheet(); toast(MG_NOW); return; }
