@@ -3320,11 +3320,11 @@ function baseBooksView() {
     const toggle = `<button class="btn ghost small" type="button" data-act="${hidden ? 'base-show' : 'base-hide'}" data-v="${esc(b.id)}" aria-label="${esc(b.title)} ${action}">${action}</button>`;
     return `<div class="gr mg-row"><span class="mg-cover"${hidden ? ' style="opacity:.5"' : ''}>${bookCover({ ...b, id: '' }, 'list')}</span>
       <span class="gt"><b>${esc(b.title)}</b>${b.baseOwn ? ' <span class="walk-tag">새로 쓴 교재</span>' : ''}${hidden ? ' <span class="walk-tag">숨김</span>' : ''}<span class="gd">${b.lessons.length}과</span></span>
-      ${b.baseOwn ? `<span class="base-btns"><a class="btn ghost small" href="#mb-${esc(b.id)}" aria-label="${esc(b.title)} 고치기">고치기</a>${toggle}</span>` : toggle}</div>`;
+      ${b.baseOwn ? `<span class="base-btns"><a class="btn ghost small" href="#mb-${esc(b.id)}" aria-label="${esc(b.title)} 고치기">고치기</a>${toggle}</span>` : `<span class="base-btns"><button class="btn ghost small" type="button" data-act="base-dup" data-v="${esc(b.id)}" aria-label="${esc(b.title)} 복제">복제</button>${toggle}</span>`}</div>`;
   }).join('');
   return `<div class="col-n"><a class="back-link" href="#more">${ic('back')}<span>더보기</span></a>
     <h1>디다코 교재 만들기</h1>
-    <p class="hint">디다코가 내는 교재예요. 숨긴 교재는 공동체가 새로 고르는 곳에서 빠지고, 이미 읽고 있는 공동체는 그대로 읽어요.</p>
+    <p class="hint">디다코가 내는 교재예요. 숨긴 교재는 공동체가 새로 고르는 곳에서 빠지고, 이미 읽고 있는 공동체는 그대로 읽어요. 앱에 들어 있는 교재는 복제해서 고쳐 써요.</p>
     <button class="btn wide" type="button" data-act="mg-new">새 교재 쓰기</button>
     <div class="gc" style="margin-top:14px">${rows}</div></div>`;
 }
@@ -3393,6 +3393,12 @@ function mgBuildBasic(src) {
     if (guide) { const g = clone(guide); g.stages.forEach((st, si) => st.qs.forEach((q, qi) => { q.id = `${id}-${L.no}-${si}-${qi}`; })); g.triple.forEach((t, i) => { t.id = `${id}-${L.no}-tri-${i}`; }); guides[id + ':' + L.no] = g; }
   });
   return { b, guides };
+}
+// 디다코 교재 만들기: 앱에 들어 있는 교재를 새로 쓴 디다코 교재로 복제한다(교재 id는 db로 시작, 과별 질문 자료까지). 원래 교재는 그대로 둔다
+function baseBuildDup(src) {
+  const r = mgBuildBasic(src);
+  r.b.group = 'didako'; r.b.baseOwn = true; r.b.source = `「${src.title}」에서 복제`;
+  return r;
 }
 function mgBuildDup(source) {
   const id = mgId(), b = JSON.parse(JSON.stringify(source)), guides = {}; b.id = id; b.title += ' (복사본)'; b.closed = false; b.edited = true; delete b.end;
@@ -5136,6 +5142,12 @@ const acts = {
     if (mgBaseMode()) { r.b.group = 'didako'; r.b.baseOwn = true; mgPut(r); baseSetHidden(r.b.id, true); baseSave(); baseSync(); mgGo('mb-' + r.b.id, '복제했어요. 다 쓴 뒤 보이기를 눌러요'); return; }
     mgPut(r); mgTab = 'now'; mgGo('mb-' + r.b.id, '복제했어요');
   },
+  'base-dup'(e, el) {
+    const src = isAppAdmin() && baseManaged().find(b => b.id === el.dataset.v && !b.baseOwn); if (!src) return;
+    const r = baseBuildDup(src);
+    mgPut(r); baseSetHidden(r.b.id, true); baseSave(); baseSync();
+    mgGo('mb-' + r.b.id, '복제했어요. 다 고친 뒤 원래 교재는 숨기고 이 교재를 보여 주세요');
+  },
   // 교재 지우기: 한 번 더 묻고, 지금 읽는 책은 막는다. 지운 교재는 되살릴 수 없다
   'mg-del'() {
     const b = canManage() && mgCurrent(); if (!b) return;
@@ -6115,6 +6127,12 @@ if (SB) {
       const r = mgBuildDup(source), at = await sbBookPut(w.cid, r.b, r.guides);
       mgPut(r); if (w.cid === BASE_CID) baseAdopt(r.b);
       sbBookSaved(w.cid, r.b, at); if (w.cid === BASE_CID) baseSync(); mgTab = 'now'; mgGo('mb-' + r.b.id, w.cid === BASE_CID ? '복제했어요. 다 쓴 뒤 보이기를 눌러요' : '복제했어요');
+    }),
+    'base-dup': sbAct(async (e, el) => {
+      const w = sbWriter(), src = isAppAdmin() && baseManaged().find(b => b.id === el.dataset.v && !b.baseOwn); if (!w || !src || w.cid !== BASE_CID) return;
+      const r = baseBuildDup(src), at = await sbBookPut(w.cid, r.b, r.guides);
+      mgPut(r); baseAdopt(r.b); sbBookSaved(w.cid, r.b, at); baseSync();
+      mgGo('mb-' + r.b.id, '복제했어요. 다 고친 뒤 원래 교재는 숨기고 이 교재를 보여 주세요');
     }),
     'mg-del-do': sbAct(async () => {
       const w = sbWriter(), b = canManage() && mgCurrent(); if (!w || !b) return;
