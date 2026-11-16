@@ -337,7 +337,24 @@ body.tabs-off .stickbar { bottom: env(safe-area-inset-bottom, 0px); }
 .q-bg { border-top: 1px solid var(--line); margin-top: 18px; padding-top: 14px; }
 .q-bg .b { font-weight: 700; }
 .q-bg p { font-size: .875rem; line-height: 1.6; margin: 2px 0 0; }
-.q-hold { margin-top: 16px; }
+.q-actions { display: flex; gap: 6px; margin-top: 16px; }
+.q-actions > .btn { min-height: 48px; min-width: 0; padding: 0 8px; white-space: nowrap; }
+.q-actions > .btn:first-child { flex: 3 1 0; }
+.q-actions > .btn:last-child { flex: 1 1 0; }
+.q-answer { margin-top: 16px; padding: 14px 0 0; border-top: 1px solid var(--line); }
+.q-answer .q-answer-text { margin: 8px 0 6px; white-space: pre-wrap; line-height: 1.7; overflow-wrap: anywhere; }
+.q-old { margin-top: 12px; border-top: 1px solid var(--line); }
+.q-old summary { min-height: 44px; display: flex; align-items: center; color: var(--accent-deep); font-size: .875rem; font-weight: 700; cursor: pointer; }
+.q-old-entry { padding: 10px 0; border-top: 1px solid var(--line); }
+.q-old-entry p { margin: 6px 0 0; white-space: pre-wrap; line-height: 1.7; }
+.ta-year-card { padding: 14px 16px; margin-top: 8px; }
+.ta-year-card .sf { display: block; margin: 4px 0; }
+.ta-year-card .sm { display: block; }
+.ta-year-entry { padding: 10px 0; border-top: 1px solid var(--line); }
+.ta-year-entry p { margin: 5px 0 0; white-space: pre-wrap; line-height: 1.65; }
+.ta-row { display: block; text-decoration: none; padding: 14px 16px; }
+.ta-row .sf, .ta-row .sm { display: block; }
+.ta-row .ta-preview { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; white-space: pre-line; margin-top: 6px; color: var(--ink-2); line-height: 1.6; }
 .past-h { font-weight: 700; font-size: .875rem; margin: 20px 0 8px; }
 .past2 { padding: 4px 16px; }
 .past2 button { display: block; width: 100%; text-align: left; padding: 10px 0; background: none; border: 0; border-top: 1px solid var(--line); }
@@ -673,14 +690,10 @@ mark { background: var(--accent-soft); color: inherit; border-radius: 4px; paddi
 .xdt.on { background: var(--accent); border-color: var(--accent); }
 .xdt.s { width: 14px; height: 14px; font-size: 9px; line-height: 11px; }
 .xdots.s { gap: 4px; }
-.wk-meta { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
-.wk-open { display: flex; align-items: center; justify-content: flex-end; width: 100%; min-height: 44px; margin: 4px 0 -8px; padding: 0; }
 .map-row { display: flex; align-items: center; gap: 12px; padding: 10px 16px; color: var(--ink); text-decoration: none; }
 .map-row img { flex: none; width: 64px; height: 48px; object-fit: cover; border-radius: 8px; background: var(--surface-2); }
 .map-row .mr-t { flex: 1; min-width: 0; font-size: .9375rem; }
 .map-row .mr-go { flex: none; color: var(--ink-2); }
-.week-done { display: inline-flex; align-items: center; gap: 4px; }
-.week-check { display: inline-flex; align-items: center; justify-content: center; width: 20px; height: 20px; border-radius: 50%; background: var(--accent); color: var(--on-accent); }
 .xcard { padding: 14px 16px; }
 .xcard .xct { font-size: 1.1875rem; font-weight: 700; line-height: 1.35; }
 .xcard .btn { margin-top: 14px; }
@@ -688,7 +701,7 @@ mark { background: var(--accent-soft); color: inherit; border-radius: 4px; paddi
 .xrow { display: flex; align-items: center; justify-content: space-between; gap: 8px; width: 100%; min-height: 60px; margin-top: 8px; padding: 8px 16px; font: 400 .9375rem/1.4 var(--f-body); color: var(--ink); text-align: left; }
 .xrow .sm { display: block; font-size: .8125rem; }
 .xch { color: var(--ink-2); font-size: 1.25rem; }
-/* 이번 주의 질문 한 단계씩(M7b ~ M30, T4) */
+/* 탐구 노트와 질문으로 묵상하기의 단계별 화면 */
 .xhead { margin-top: 12px; padding: 14px 16px; }
 .xhead .xwq { font-size: 1.375rem; font-weight: 700; line-height: 1.4; word-break: keep-all; }
 .xfd { display: flex; align-items: center; gap: 10px; width: 100%; min-height: 52px; padding: 6px 12px; margin-top: 8px; border: 1px solid var(--line); border-radius: 12px; background: var(--surface); text-align: left; font: 400 .875rem/1.35 var(--f-body); color: var(--ink); }
@@ -711,20 +724,13 @@ mark { background: var(--accent-soft); color: inherit; border-radius: 4px; paddi
 .xgq { font-size: 1.0625rem; line-height: 1.5; margin-top: 6px; }
 .xgq.sm { font-size: .875rem; }
 .xta { min-height: 96px; font-size: 1rem; margin-top: 12px; }
-#wkTa, #waTa, #wbTa { overflow: hidden; resize: none; }
+#waTa, #wbTa { overflow: hidden; resize: none; }
 .xta.lo { min-height: 72px; }
 .xta:focus { border-color: var(--accent); box-shadow: 0 0 0 2px var(--accent-soft); outline: none; }
-.xpriv { background: var(--private); border-radius: 12px; padding: 10px 14px; margin-top: 10px; display: flex; gap: 10px; align-items: flex-start; font-size: .875rem; line-height: 1.45; }
-.xpriv svg { flex: 0 0 16px; margin-top: 3px; color: var(--ink-2); }
-.xpriv .sm { font-size: .78rem; }
 .xsg { margin-top: 14px; padding: 14px 16px; background: var(--surface); border: 1px solid var(--line); border-radius: 16px; }
 .xsg .xsq { font: 700 1.1875rem/1.4 var(--f-display); word-break: keep-all; }
 .xsg .sm { font-size: .8125rem; margin-top: 2px; }
 .xsg .btn { margin-top: 12px; }
-.xsg .xcf { border-top: 1px solid var(--line); margin-top: 10px; padding-top: 10px; }
-.xsg .xcf .xlb { margin: 0 0 4px; }
-.xsg .xcf p { margin: 0; font-size: .90625rem; line-height: 1.65; word-break: keep-all; }
-.xsg .tx.cl { display: block; margin: 6px 0 -6px auto; }
 .xvl { margin-top: 12px; padding: 4px 16px; }
 .xvl > div:not(.wk-bible) { display: flex; align-items: center; min-height: 56px; border-top: 1px solid var(--line); font: 700 1.0625rem var(--f-display); }
 .xvl > div:first-child { border-top: 0; }
@@ -777,14 +783,6 @@ details.wk-bk[open] > summary .xch { transform: rotate(90deg); }
 .wk-rest > p { margin: 4px 0 0; text-align: center; }
 .wk-next { flex: 1; display: flex; align-items: center; justify-content: center; min-height: 48px; }
 a.xrow { text-decoration: none; }   /* 연재 목록 링크도 지난 탐구의 단추 줄과 같은 모양 */
-.xfin { margin-top: 16px; text-align: center; padding: 16px 14px; border: 1.5px dashed var(--accent-mid); border-radius: 16px; }
-.xfin .xft { font: 700 1.25rem/1.4 var(--f-display); }
-.xfin .sm { margin-top: 6px; line-height: 1.5; word-break: keep-all; }
-.xmine { display: flex; align-items: center; gap: 8px; margin-top: 6px; padding: 10px 12px 10px 16px; }
-.xmine > span { flex: 1; min-width: 0; }
-.xmine .sf { font-family: var(--f-body); display: block; font-size: 1.0625rem; font-weight: 700; }
-.xmine .sm { font-size: .8125rem; }
-.xmine .tx { flex: 0 0 auto; font-size: .875rem; white-space: nowrap; }
 /* 하단 단추 줄: 휴대폰은 화면 아래에 붙고, 넓은 화면은 본문 아래에 놓인다 */
 .xact { position: fixed; left: 0; right: 0; bottom: 0; z-index: 12; background: var(--page); border-top: 1px solid var(--line); padding: 12px 0 max(16px, env(safe-area-inset-bottom, 0px)); }
 .xact-in { max-width: 640px; margin: 0 auto; padding: 0 16px; display: flex; gap: 10px; }
@@ -808,10 +806,6 @@ body.focus .tabs { display: none !important; }
 .xfr { display: inline-flex; align-items: center; min-height: 44px; padding: 0 14px; border-radius: 22px; border: 1.5px dashed var(--accent-mid); color: var(--accent-deep); font: 500 .875rem var(--f-body); background: none; }
 .xfrrow .tx { gap: 4px; font-size: .875rem; color: var(--ink-2); }
 .weeks-year { display: flex; align-items: center; justify-content: space-between; margin: 14px 0; }
-.week-trace { display: block; width: 100%; margin-top: 8px; text-align: left; color: var(--ink); }
-.week-trace > .sf { margin-top: 4px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
-.week-trace > .sm { display: block; margin-top: 4px; }
-.week-trace > .week-mine { display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
 .jn-day { display: block; margin-top: 8px; color: var(--ink); }
 .jn-day > .sm, .jn-day > .sf { display: block; margin-top: 4px; }
 .jn-part { margin-top: 12px; padding-top: 10px; border-top: 1px solid var(--line); }
@@ -1155,7 +1149,7 @@ const SB_CFG = CFG.NOTE_BACKEND === 'supabase' && !!CFG.SUPABASE_URL && !!CFG.SU
 const LIVE = (!!CFG.HUB_URL || SB_CFG) && !new URLSearchParams(location.search).has('demo');
 const DATA = window.NOTE_DATA;
 const KOIDE_PRAY_URL = 'https://koide.koinobia.com/app/note.html';   // 기도하러 갈 곳(코이데 기도 노트). 화면 글에는 '코이데'라고 쓰지 않는다(결정 기록 2026-10-26)
-const Q = window.NOTE_Q;   // 오늘의 질문 409개와 이번 주의 질문 52개(note/tools/make-data.py가 만든다)
+const Q = window.NOTE_Q;   // 오늘의 질문 409개(note/tools/make-data.py가 만든다. 이번 주의 질문 52개도 들어 있지만 노트에서는 쓰지 않는다, D-49)
 const $ = (s, el = document) => el.querySelector(s);
 const $$ = (s, el = document) => [...el.querySelectorAll(s)];
 const esc = s => String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
@@ -1222,6 +1216,11 @@ function easterDN(y) {   // 서방 교회(그레고리력) 부활절: 3월 22일
   return DN(y, mo, da);
 }
 function adventDN(y) { const c = DN(y, 12, 25), w = dowOf(c); return c - (w || 7) - 21; }   // 12월 25일 전 넷째 주일(11월 27일 ~ 12월 3일)
+// 교회력 해는 대림절 첫 주일부터 바뀐다.
+function churchYearOf(t) {
+  const y = fromDN(t).y;
+  return t >= adventDN(y) ? y : y - 1;
+}
 // 날짜 하나 → { season, n, item, label }
 //   season: 질문을 꺼내는 묶음(advent christmas epiphany lent easter after-pentecost special), n: 그 절기의 몇째 날, item: 묶음 안의 질문 번호(1부터)
 //   under: 특별한 날로 바뀐 날의 원래 절기와 날. bank: 묶음별 질문 수(대림절 28, 주현절 64, 성령강림 후 절기 206만 길이가 해마다 달라서 쓴다)
@@ -1528,10 +1527,27 @@ const keepRows = () => (sbMode() ? KEEP_ROWS_SB : KEEP_ROWS);
 
 // ── 오늘의 질문(M1, M10, T8) ──
 // 질문 카드: 그림이 있는 질문만 그림 자리를 둔다(그림은 지금 409개 모두 있다)
+// 같은 질문의 대답을 교회력 해별로 나누고, 지난 대답은 현재 해에 대답한 뒤에만 펼친다.
+const todayAnswerId = (key, year = churchYearOf(demoDN())) => `ta-${key}-${year}`;
+const TODAY_BY_KEY = new Map(Object.entries(Q.today).flatMap(([season, list]) =>
+  list.map((q, i) => [questionKey(q), { ...q, season, item: i + 1 }])));
+const thisAnswer = key => {
+  const a = N.wk.find(w => w.id === todayAnswerId(key));
+  return a && a.mine.trim() ? a : null;
+};
+function answerEntries() {
+  return N.wk.flatMap(w => {
+    const m = /^ta-(.+)-(\d{4})$/.exec(w.id), q = m && TODAY_BY_KEY.get(m[1]);
+    return q && w.mine.trim() && w.at > 0 ? [{ key: m[1], churchYear: Number(m[2]), at: w.at, mine: w.mine, q }] : [];
+  });
+}
 function qCard(q, hold = false, holdHref = '#/today/write') {
   const key = questionKey(q), place = window.Q_PLACES[key] || window.Q_WIDE[key], name = window.MAP_NAMES[place];
   const map = name ? `<a class="map-entry" href="map.html#p=${encodeURIComponent(place)}&amp;q=${encodeURIComponent(key)}"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 10c0 6-8 12-8 12S4 16 4 10a8 8 0 1 1 16 0z"/><circle cx="12" cy="10" r="2.5"/></svg><span>${esc(name)}에서 있었던 일이에요</span><span class="map-go">지도에서 보기 ›</span></a>` : '';
   const img = q.img ? `<img class="q-img" src="${q.img}" alt="${esc(q.alt)}" width="1200" height="675" decoding="async">` : '';
+  const current = thisAnswer(key), cy = churchYearOf(demoDN());
+  const older = current ? answerEntries().filter(x => x.key === key && x.churchYear < cy).sort((a, b) => b.churchYear - a.churchYear) : [];
+  const answerBox = current ? `<div class="q-answer"><div class="sm b">나의 대답</div><p class="q-answer-text">${esc(current.mine)}</p><div class="sm">${mdLine(new Date(current.at))}</div>${older.length ? `<details class="q-old wk-jot"><summary>지난 나의 대답 펼쳐 보기 ›</summary>${older.map(x => `<div class="q-old-entry"><div class="sm">${new Date(x.at).getFullYear()}년 ${mdLine(new Date(x.at))}</div><p>${esc(x.mine)}</p></div>`).join('')}</details>` : ''}</div>` : '';
   return `<article class="card q-card" aria-labelledby="qText">
     <div class="sm">${esc(q.asker)}</div>
     <h2 class="q-text" id="qText">${esc(q.q)}</h2>
@@ -1539,8 +1555,26 @@ function qCard(q, hold = false, holdHref = '#/today/write') {
     ${img}
     <div class="q-bg"><div class="sm b">이 질문의 배경</div><p>${esc(q.bg)}</p></div>
     ${map}
-    ${hold ? `<a class="btn wide q-hold" href="${esc(holdHref)}">내 질문에 품기</a>` : ''}
+    ${hold ? `${answerBox}<div class="q-actions"><button class="btn" type="button" data-act="today-answer" data-key="${esc(key)}">${current ? '대답 고치기' : '대답하기'}</button><a class="btn ol" href="${esc(holdHref)}">품기</a></div>` : ''}
   </article>`;
+}
+function openTodayAnswer(key) {
+  const q = TODAY_BY_KEY.get(key); if (!q) return;
+  const current = thisAnswer(key);
+  openSheet(`<h2>나의 대답</h2>
+    <p class="sm" style="margin:8px 0 14px;line-height:1.6">${esc(q.q)}</p>
+    <textarea class="field" id="todayAnswerText" rows="4" maxlength="1000" aria-label="나의 대답" placeholder="한 낱말이어도, 길어도 괜찮아요.">${esc(current ? current.mine : '')}</textarea>
+    <div class="ra"><button class="btn lt" type="button" data-act="sheet-x">취소</button><button class="btn" type="button" data-act="today-answer-save" data-key="${esc(key)}">저장</button></div>`);
+}
+function saveTodayAnswer(key) {
+  if (!TODAY_BY_KEY.has(key)) return;
+  const area = $('#todayAnswerText'); if (!area) return;
+  const text = area.value.slice(0, 1000), first = !thisAnswer(key) && !!text.trim();
+  setMine(todayAnswerId(key), text);
+  if (first) markStay();
+  closeSheet();
+  render();
+  toast('저장했어요');
 }
 // 말씀 지도 입구 카드: 장소가 없는 날에도 늘 보인다(지난 질문 아래, 넓은 화면은 내 질문에 품기 아래)
 const mapCard = () => `<div class="past-h">말씀 지도</div><a class="card map-row" href="map.html"><img src="img/map/world.webp" alt="" width="64" height="48" decoding="async" loading="lazy"><span class="mr-t">성경 이야기가 일어난 곳</span><span class="mr-go" aria-hidden="true">›</span></a>`;   // 지난 질문과 같은 모양(S-52)
@@ -1810,10 +1844,10 @@ function viewAbout() {
     <div class="sc"><div class="sl">기록은 이렇게 지켜요</div>${keepRows()}</div>
     <div class="sc"><div class="sl">디다코는 말씀을 이렇게 이해해요</div>
       <div class="stp"><span class="no">1</span><div class="bd"><h3>말씀은 교회에서 선포돼요.</h3><p>교회에서 선포되는 말씀을 읽고 듣는 가운데 성령께서 일하세요.</p><a class="lk" href="#/write">+ 남기기 열기 ›</a></div></div>
-      <div class="stp"><span class="no">2</span><div class="bd"><h3>성령께서 깨닫게 해 주세요.</h3><p>신앙의 여정에서 생긴 질문에 답을 주시는 분은 성령님이세요.</p><a class="lk" href="#/explore">탐구하기 › 이번 주의 질문 ›</a></div></div>
+      <div class="stp"><span class="no">2</span><div class="bd"><h3>성령께서 깨닫게 해 주세요.</h3><p>신앙의 여정에서 생긴 질문에 답을 주시는 분은 성령님이세요.</p><a class="lk" href="#/explore">탐구하기 열기 ›</a></div></div>
       <div class="stp"><span class="no">3</span><div class="bd"><h3>들은 말씀을 간직해요.</h3><p>알게 된 것을 기록함으로써 소중히 간직해요.</p><a class="lk" href="#/explore">탐구하기 열기 ›</a></div></div>
-      <div class="stp"><span class="no">4</span><div class="bd"><h3>말씀은 그리스도를 가리켜요.</h3><p>성경은 예수님에 대해 말해 주어요(요한복음 5장).</p><a class="lk" href="#/explore">탐구하기 › 이번 주의 질문 ›</a></div></div>
-      <div class="stp"><span class="no">5</span><div class="bd"><h3>말씀 앞에서는 모두 배우는 사람이에요.</h3><p>정답을 맞히는 게 아니라 말씀을 배워가는 과정이에요.</p><a class="lk" href="#/explore">탐구하기 › 이번 주의 질문 ›</a></div></div>
+      <div class="stp"><span class="no">4</span><div class="bd"><h3>말씀은 그리스도를 가리켜요.</h3><p>성경은 예수님에 대해 말해 주어요(요한복음 5장).</p><a class="lk" href="#/explore">탐구하기 열기 ›</a></div></div>
+      <div class="stp"><span class="no">5</span><div class="bd"><h3>말씀 앞에서는 모두 배우는 사람이에요.</h3><p>정답을 맞히는 게 아니라 말씀을 배워가는 과정이에요.</p><a class="lk" href="#/explore">탐구하기 열기 ›</a></div></div>
     </div>
     <div class="sc"><div class="sl">디다코가 지키는 것</div><div class="ls ac">
       <div><b>재촉하지 않아요</b><p>"풀어야 할 질문"이 아니라 "품고 있는 질문"이에요. 기한, 연속 기록, 독촉 알림이 없어요.</p></div>
@@ -1830,7 +1864,8 @@ const FAQ = [
   ['발견은 질문과 어떻게 이어져요?', '발견은 질문 하나에만 이어요. 한 질문에는 발견이 여러 개 붙을 수 있어요. 짝은 풀거나 바꿀 수 있고, 짝을 확정하는 것은 늘 내가 해요.'],
   ['탐구하기는 어떻게 해요?', '질문 하나를 한 권의 노트로 깊이 파고들어요. 단계별로 쓰기와 자유롭게 쓰기 가운데 골라 시작해요.', ['#/explore', '탐구하기 ›']],
   ['내 기록의 칩은 뭐예요?', '질문 하나가 쪽지 한 장이에요. 칩으로 전체 · 질문만 · 질문과 발견 · 발견만을 골라 봐요.', ['#/mine', '내 기록 › 쪽지 벽 ›']],
-  ['말씀을 열며는 뭐예요?', '탐구하기에서 이번 주의 질문을 펼 때와 질문으로 묵상하기에서 마치지 않은 편을 그날 처음 열 때 "말씀을 열며" 한 장이 나와요. 세 겹으로 꼰 끈 아래 "아버지께서 주신 말씀을 / 말씀이 가리키는 예수님 안에서 / 성령님이 깨닫게 해 주시기를"이 한 줄씩 나타나고, 누르면 바로 넘어가요.', ['#/explore', '탐구하기 ›']],
+  ['오늘의 질문에 대답하면 어떻게 돼요?', '대답은 나만 봐요. 쓰지 않아도 괜찮아요. 내년 이맘때 같은 질문이 다시 오면, 새 대답을 남긴 뒤 지난 대답을 펼쳐 볼 수 있어요. 지난 대답은 고쳐지지 않고 그대로 남아요.', ['#/mine/answers', '내 기록 › 나의 대답 ›']],
+  ['말씀을 열며는 뭐예요?', '질문으로 묵상하기에서 마치지 않은 편을 그날 처음 열 때 "말씀을 열며" 한 장이 나와요. 세 겹으로 꼰 끈 아래 "아버지께서 주신 말씀을 / 말씀이 가리키는 예수님 안에서 / 성령님이 깨닫게 해 주시기를"이 한 줄씩 나타나고, 누르면 바로 넘어가요.', ['#/explore', '탐구하기 ›']],
   ['묵상한 것을 다른 사람에게 보낼 수 있나요?', '한 편의 머묾 아래 공유 표시를 누르면 묵상 질문과 장절을 글로 보낼 수 있어요. 내가 쓴 묵상과 나의 해석은 체크했을 때만 함께 가요. 내 글은 잠가서 맡기기 때문에, 링크로 내 글을 보여 주는 방법은 없어요.']
 ];
 let faqOpen = new Set([0]);
@@ -1930,7 +1965,7 @@ function a2hsSheet() {
 // 탐구 노트 ex { q(질문 id), mode('steps'|'free'), start, steps[5], ok[5], since, refs[], added{s2,s3}, done[], free{doc,touched}, touched, last }
 //   steps는 단계별로 쓴 글, free는 자유롭게 쓴 글(편집기 문서). 둘은 따로 보관하고 mode가 지금 쓰는 방식이다
 //   노트 하나는 질문 하나에 한 권. 지금 탐구하는 질문은 한 번에 세 개까지라 cur에 그 질문 id들을 최근에 쓰거나 연 것부터 둔다(네 번째를 시작하면 가장 오래 쓰지 않은 것이 지난 탐구로 내려간다)
-// 이번 주의 질문에 남긴 내 생각 wk { id(주 id), mine, at, done(다 펴 본 시각, 아니면 0) }. 질문을 따라 걷기의 묵상도 id 'wa-<연재>-<번호>'로 여기에 둔다(done은 그 토막을 마친 날). 지금 걷는 연재는 'wa-cur'(mine), 고른 날은 'wa-<연재>-0'(done). 나의 해석은 'wb-<연재>-<번호>'(mine만)
+// 쓴 글 wk { id, mine, at, done }: 질문으로 묵상하기는 'wa-<연재>-<번호>'(done은 그 토막을 마친 날)·'wb-…'·'wm-…'·'wa-cur'·'wa-<연재>-0', 오늘의 질문 대답은 'ta-<질문 키>-<교회력 해>'
 // 발견 f { id, text, ref, since, at, touched, q(이어진 질문 id, 없으면 '' = 남겨 둔 ! 발견) }
 const DAY = 864e5;
 let N = { qs: [], fs: [], ex: [], cur: [], wk: [] };
@@ -2033,7 +2068,8 @@ function normalizeNotes(a) {
       id: f.id, text: f.text, ref: s(f.ref), since: ym(f.since), place: window.MAP_NAMES[f.place] ? f.place : '', at: t(f.at), touched: t(f.touched) || t(f.at), q: idOr(f.q)
     })),
     ex: [], cur: [],
-    wk: (Array.isArray(a.wk) ? a.wk : []).filter(w => w && idOk(w.id) && (s(w.mine).trim() || t(w.done) > 0 || t(w.at) > 0)).map(w => ({ id: w.id, mine: s(w.mine), at: t(w.at), done: Math.max(0, t(w.done)) }))
+    // 이번 주의 질문 내 생각(wkYYYYMMDD)은 D-49에서 없앴다. 남아 있던 것도 여기서 버린다
+    wk: (Array.isArray(a.wk) ? a.wk : []).filter(w => w && idOk(w.id) && !/^wk\d{8}$/.test(w.id) && (s(w.mine).trim() || t(w.done) > 0 || t(w.at) > 0)).map(w => ({ id: w.id, mine: s(w.mine), at: t(w.at), done: Math.max(0, t(w.done)) }))
   };
   // 탐구 노트: 질문이 있는 것만, 질문 하나에 하나
   const seen = new Set(), lst = (v, n, f) => Array.from({ length: n }, (_, i) => f(Array.isArray(v) ? v[i] : undefined));
@@ -2045,7 +2081,7 @@ function normalizeNotes(a) {
       q: e.q, mode: e.mode === 'free' ? 'free' : 'steps', start: t(e.start), steps: lst(e.steps, 5, s), ok: lst(e.ok, 5, v => v === true),
       since: ym(e.since), refs: (Array.isArray(e.refs) ? e.refs : []).filter(x => typeof x === 'string' && x).slice(0, 50),
       free: { doc: e.free ? cleanDoc(e.free.doc) : null, touched: e.free ? t(e.free.touched) : 0 },
-      added: { s2: ad.s2 && s(ad.s2.q) ? { q: ad.s2.q, ref: s(ad.s2.ref) } : null, s3: ad.s3 && idOk(ad.s3.id) && s(ad.s3.q) ? { id: ad.s3.id, q: ad.s3.q } : null },
+      added: { s2: ad.s2 && s(ad.s2.q) ? { q: ad.s2.q, ref: s(ad.s2.ref) } : null },
       done: (Array.isArray(e.done) ? e.done : []).filter(x => typeof x === 'string' && x).slice(0, 500),
       touched: t(e.touched) || t(e.start), last: Number.isInteger(e.last) && e.last >= 0 && e.last < 5 ? e.last : -1
     });
@@ -2067,11 +2103,21 @@ const getF = id => N.fs.find(f => f.id === id);
 // 예시 기록: 캔버스의 지어낸 글을 "지금 기준 n일 전"으로 채운다
 function sampleNotes() {
   const now = Date.now(), at = d => now - d * DAY, S = DATA.notes, exs = S.ex || [];
+  const today = demoDN(), ty = churchYearOf(today), key = questionKey(questionOn(today)), yesterday = questionKey(questionOn(today - 1));
+  const pastAt = (n, day = today) => {
+    const d = dnDate(day); d.setFullYear(d.getFullYear() - n); d.setHours(12, 0, 0, 0);
+    return d.getTime();
+  };
   return normalizeNotes({
     qs: S.qs.map(q => ({ id: q.id, text: q.text, ref: q.ref, at: at(q.daysAgo), touched: at(q.touchedDaysAgo), state: q.state, parent: q.parent, trail: (q.trail || []).map(x => ({ kind: x.kind, text: x.text, at: at(x.daysAgo) })) })),
     fs: S.fs.map(f => ({ id: f.id, text: f.text, at: at(f.daysAgo), touched: at(f.touchedDaysAgo), q: f.q })),
     ex: exs.map(e => ({ q: e.q, mode: e.mode, start: at(e.daysAgo), steps: e.steps, ok: e.ok, since: e.since, refs: e.refs, added: e.added, touched: at(e.touchedDaysAgo), last: e.last })),
-    cur: exs.filter(e => e.current).map(e => e.q), wk: []
+    cur: exs.filter(e => e.current).map(e => e.q),
+    wk: [
+      { id: todayAnswerId(key, ty - 2), mine: '그때는 주변 사람들의 인정이 가장 중요했던 것 같다.', at: pastAt(2), done: 0 },
+      { id: todayAnswerId(key, ty - 1), mine: '예전보다는 결과에 덜 흔들리게 되었다.', at: pastAt(1), done: 0 },
+      { id: todayAnswerId(yesterday, ty - 1), mine: '바쁘다는 핑계로 곁에 있는 사람을 잘 돌아보지 못했다.', at: pastAt(1, today - 1), done: 0 }
+    ]
   });
 }
 
@@ -2216,7 +2262,7 @@ function todayNote() {
   return list[demoDN() % list.length];   // 데모의 오늘 날짜로 고정(하루 수라 자정을 넘겨도 흔들리지 않는다)
 }
 
-// ── 말씀을 열며(GBS 앱 app/index.html과 같은 모양): 탐구하기의 이번 주의 질문에서 [펴 보기]를 누르면, 질문으로 묵상하기에서 한 편을 처음 시작하면 한 장 ──
+// ── 말씀을 열며(GBS 앱 app/index.html과 같은 모양): 질문으로 묵상하기에서 한 편을 처음 시작하면 한 장 ──
 const STRAND = ['var(--accent)', 'var(--accent-mid)', 'var(--ink-2)'];
 function braidPaths(len, amp, periods, vert, sw, ol, cols, n, sub) {
   ol = ol == null ? 3 : ol; cols = cols || STRAND; n = n || periods * 22; sub = sub || 1;
@@ -2262,7 +2308,7 @@ const openQ = id => setHash('mine/q/' + id);
 let after = null;
 function goPaired(qid) { closeSheet(true); after = () => toast('이어졌어요', { pill: true }); go('mine/q/' + qid); }
 
-// ── 탐구하기(③-1): 첫 화면, 이번 주의 질문, 탐구 시작 고르기, 단계별로 쓰기(하나씩 쓰기·모아 보기). 캔버스 M7 ~ M30, T1 ~ T6 ──
+// ── 탐구하기(③-1): 첫 화면, 탐구 시작 고르기, 단계별로 쓰기(하나씩 쓰기·모아 보기). 캔버스 M7 ~ M30, T1 ~ T6 ──
 // 자유롭게 쓰기 편집기와 내보내기(③-2)는 아래 "자유롭게 쓰기" 절에 있다
 const STEP_NAMES = ['질문 다듬기', '말씀에서 찾기', '교회의 고백에서 찾기', '기도로 묻기', '지금 내 생각'];
 const STEP_ASK = ['궁금한 게 뭐예요? 구체적으로 질문을 다듬어 봐요.', '이 질문과 관련해 떠오르는 말씀이 있나요?', '교회는 이 질문에 어떻게 고백해 왔을까요?', '이 질문을 하나님께 기도로 물어볼까요?', '지금은 어떻게 생각해요?'];
@@ -2276,7 +2322,6 @@ const EXT_IC = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stro
 // 공유 기호(W-22): 상자에서 위로 나가는 화살표
 const SHARE_IC = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 15V3"/><path d="M8 7l4-4 4 4"/><path d="M5 11v8a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-8"/></svg>';
 const SRCH_IC = s => `<svg width="${s}" height="${s}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="6.5"/><path d="M16 16l4 4"/></svg>`;
-const LOCK_IC = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg>';
 
 const getEx = qid => N.ex.find(e => e.q === qid);
 const stepDone = (n, i) => Boolean(n.steps[i].trim()) || n.ok[i];
@@ -2291,7 +2336,6 @@ function nextStep(n) {
 const startLine = n => `${mdLine(new Date(n.start))}부터`;
 const oneLine = t => t.split('\n').map(x => x.trim()).filter(Boolean).join(' · ');
 function stepSum(n, i) {   // 접힌 한 줄 요약
-  if (i === 2 && n.added.s3) return `이번 주의 질문 '${n.added.s3.q}'를 펴 봤어요`;
   const t = oneLine(n.steps[i]);
   return t || (i === 3 && n.ok[3] ? '했어요' : '');
 }
@@ -2318,27 +2362,6 @@ function refsOf(text) {
   return out;
 }
 
-// 이번 주의 질문: 데모의 오늘이 속한 주(그 주의 주일 기준)로 52개 중 하나. 1월 첫 주일이 1주다.
-// 1월 1일부터 첫 주일 전날까지는 전해의 마지막 주로 본다. 53번째 주일이 있는 해의 처리는 정하지 않았다(정하지 않음, 데모 임시: 52주를 한 번 더 보인다).
-const ymdKey = d => `${d.getFullYear()}${String(d.getMonth() + 1).padStart(2, '0')}${String(d.getDate()).padStart(2, '0')}`;
-const firstSunDN = y => { const j = DN(y, 1, 1); return j + ((7 - dowOf(j)) % 7); };
-const weekNo = sun => Math.floor((sun - firstSunDN(fromDN(sun).y)) / 7) + 1;   // sun: 그 주 주일의 하루 수
-// 이미 받은 이번 주의 질문들: 이번 주(weeksAgo 0)와 그 앞 주들(1년 안). 주일 날짜가 id가 된다
-// lastYear(작년의 내 생각)와 keys(닿는 내 질문을 찾는 데모용 낱말)는 보드 예시가 붙던 주(DATA.weeklyExtra)에만 붙는다
-let weeksMemo = { t: null, list: [] };
-function weeks() {
-  const t = demoDN(); if (weeksMemo.t === t) return weeksMemo.list;
-  const s0 = t - dowOf(t), list = [], seen = new Set();   // 같은 질문이 1년 안에 두 번 들어가면(오늘이 일요일일 때 등) 가까운 주 하나만
-  for (let i = 0; s0 - 7 * i >= t - 365; i++) {
-    const sun = s0 - 7 * i, num = weekNo(sun), w = Q.weekly[Math.min(num, 52) - 1], d = dnDate(sun);
-    if (seen.has(w.n)) continue; seen.add(w.n);
-    list.push({ ...w, ...((DATA.weeklyExtra || {})[w.n] || {}), num, weeksAgo: i, d, id: 'wk' + ymdKey(d) });
-  }
-  weeksMemo = { t, list }; return list;
-}
-const weekNow = () => weeks()[0];
-const weekLabel = w => `${dLine(w.d)} 주일${w.weeksAgo === 0 ? ' · 이번 주' : ''}`;
-const shortOf = w => w.short || (w.confess.split(/(?<=[.요])\s/)[0] || w.confess);
 const getMine = id => { const m = N.wk.find(x => x.id === id); return m ? m.mine : ''; };
 function setMine(id, text) {   // 비우면 지우지 않고 빈 글과 새 시각을 남긴다(S-61): 동기화에서 더 새로운 쪽을 따르게 해 지운 것도 다른 기기에 전해진다
   const i = N.wk.findIndex(x => x.id === id), now = Date.now();
@@ -2346,22 +2369,7 @@ function setMine(id, text) {   // 비우면 지우지 않고 빈 글과 새 시�
   else if (text.trim()) N.wk.push({ id, mine: text, at: now, done: 0 });
   saveNotes();
 }
-function markWeekDone() {
-  const id = weekNow().id, now = Date.now(), w = N.wk.find(x => x.id === id);
-  if (w) { if (!w.done) w.done = now; w.at = now; }
-  else N.wk.push({ id, mine: '', at: now, done: now });
-  markStay(); saveNotes();
-}
-// 주 id는 그 주 주일의 날짜다. 지난 해의 흔적도 같은 질문 자료에서 찾는다.
-function weekById(id) {
-  const m = /^wk(\d{4})(\d{2})(\d{2})$/.exec(id), day = m && parseYmd(`${m[1]}-${m[2]}-${m[3]}`);
-  if (!day || dowOf(day.t) !== 0) return null;
-  return Q.weekly[Math.min(weekNo(day.t), 52) - 1] || null;
-}
-// 이 질문에 닿는 내 질문 하나(짝 찾기 점수, 없으면 null). keys는 데모용 낱말
-const mineFor = w => N.qs.map(q => ({ q, s: scoreTR(w.q + ' ' + w.confess + ' ' + (w.keys || ''), w.refs[0] || '', q.text + ' ' + q.trail.map(x => x.text).join(' '), q.ref) })).filter(x => x.s > 0).sort((a, b) => b.s - a.s || b.q.touched - a.q.touched).map(x => x.q)[0] || null;
-
-// 오늘·지난 질문을 먼저 두고 나머지 409개도 모두 고른다(S-63). 이번 주의 질문은 받은 범위를 그대로 둔다.
+// 오늘·지난 질문을 먼저 두고 나머지 409개도 모두 고른다(S-63).
 function receivedToday() {
   const t = demoDN(), out = [], seen = new Set();
   for (let i = 0; t - i >= startDN(); i++) {
@@ -2379,7 +2387,6 @@ function bestOf(list, textOf, refOf, n) {
   return list.map(c => ({ c, s: scoreTR(aText, q.ref, textOf(c), refOf(c)) })).filter(x => x.s > 0).sort((a, b) => b.s - a.s).map(x => x.c)[0] || null;
 }
 const rec2 = n => bestOf(receivedToday(), c => c.q, c => c.ref, n);
-const rec3 = n => bestOf(weeks(), w => w.q + ' ' + w.confess, w => w.refs[0] || '', n);
 
 // 지금 탐구 · 지난 탐구 (지금 탐구는 한 번에 세 개까지, N.cur은 최근에 쓰거나 연 것이 앞)
 const CUR_MAX = 3;
@@ -2403,7 +2410,7 @@ function swapSheet(qid, kind) {
 }
 function createNote(qid, mode) {   // mode가 'free'이면 빈 종이로(다섯 단계 제목은 미리 놓지 않는다)
   const q = getQ(qid), now = Date.now();
-  N.ex.push({ q: qid, mode: mode === 'free' ? 'free' : 'steps', start: now, steps: ['', '', '', '', ''], ok: [false, false, false, false, false], since: q.since, refs: [], added: { s2: null, s3: null }, done: [], free: { doc: null, touched: 0 }, touched: now, last: -1 });
+  N.ex.push({ q: qid, mode: mode === 'free' ? 'free' : 'steps', start: now, steps: ['', '', '', '', ''], ok: [false, false, false, false, false], since: q.since, refs: [], added: { s2: null }, done: [], free: { doc: null, touched: 0 }, touched: now, last: -1 });
   touchCur(qid);
 }
 // 어떻게 탐구할까요?(M9s, T5)
@@ -2427,12 +2434,11 @@ function leftPanel(o) {
     return `<button class="xnote${sel ? ' sel' : ''}${isCur ? ' cu' : ''}" type="button" data-act="past-open" data-id="${q.id}"${sel ? ' aria-current="true"' : ''}><span class="t">${esc(q.text)}</span>${isCur ? (n.mode === 'free' ? `<span class="sm">자유롭게 쓰기 · ${startLine(n)}</span>` : dotsHtml(n, true, startLine(n))) : `<span class="sm">${q.state === 'found' ? '질문과 발견' : '질문만'} · ${new Date(n.start).getMonth() + 1}월</span>`}</button>`;
   };
   let h = `<button class="xsrch" type="button" data-act="srch-ex">${SRCH_IC(20)}검색</button>`;
-  if (o.week) h += `<div class="xlb2" style="margin-top:16px">이번 주의 질문</div><a class="xnote sel cu" href="#/explore/week" aria-current="page"><span class="t">${esc(weekNow().q)}</span></a>`;
-  if (cur.length) h += `<div class="xlb2" style="margin-top:${o.week ? 18 : 16}px">지금 탐구</div>${cur.map(n => item(n, true)).join('')}`;
+  if (cur.length) h += `<div class="xlb2" style="margin-top:16px">지금 탐구</div>${cur.map(n => item(n, true)).join('')}`;
   if (past.length) h += `<div class="xlb2" style="margin-top:18px">지난 탐구</div>${past.map(n => item(n, false)).join('')}`;
   return h;
 }
-// o.center: 가운데 칸이 흰 판(이번 주의 질문, 쓰는 화면)이면 true, o.top: 가운데 위쪽 줄, o.right: 오른쪽 칸
+// o.center: 가운데 칸이 흰 판(쓰는 화면)이면 true, o.top: 가운데 위쪽 줄, o.right: 오른쪽 칸
 function wideShell(main, o) {
   return `<div class="xw${o.right ? ' has-r' : ''}"><aside class="xw-l" aria-label="탐구 목록">${leftPanel(o)}</aside>
     <div class="xw-m${o.pn ? ' pn' : ''}">${o.top != null ? `<div class="xw-top">${o.top}</div>` : ''}<div class="xw-in${o.pn ? ' pn' : ''}">${main}</div></div>${o.right ? `<aside class="xw-r" aria-label="단계 목록">${o.right}</aside>` : ''}</div>`;
@@ -2440,10 +2446,7 @@ function wideShell(main, o) {
 
 // ── 탐구 첫 화면(M7, M7a, T2, T2a) ──
 function viewExplore() {
-  const wide = isWide(), wk = weekNow(), cur = curNotes(), past = pastNotes();
-  const wkMeta = `제${wk.n}주일`;   // 주일 번호만(묶음·주제 이름은 질문 글이 대신한다)
-  const done = N.wk.some(w => w.id === wk.id && w.done);
-  const weekCard = `<div class="card xcard"><div class="sm wk-meta">${wkMeta}${done ? '<span class="week-done sm"><span class="week-check">✓</span> 다 펴 봤어요</span>' : ''}</div><div class="sf xct" style="margin-top:4px">${esc(wk.q)}</div><div class="sm" style="margin-top:4px;line-height:1.5;word-break:keep-all">${wk.refs.map(esc).join(', ')}</div><button class="tx wk-open" type="button" data-act="week-open">${done ? '다시 펴 보기 ›' : '펴 보기 ›'}</button></div>`;   // 다른 카드와 같은 흰 카드(S-52)
+  const wide = isWide(), cur = curNotes(), past = pastNotes();
   const wn = walkNow(), wbtn = wide ? '' : ' wide';
   const wLinks = wn ? `<div class="wk-links" style="justify-content:flex-end"><a class="tx" href="#/explore/walks">다른 연재 고르기 ›</a></div>` : '';   // 카드를 누르면 목록으로 가므로 [전체 목록]은 뺐다(S-60)
   const wGo = wn ? `<a class="wk-stretch" href="#/explore/walk/${wn.w.id}" aria-label="${esc(walkName(wn.w))} 목록 보기"></a>` : '';   // 카드 전체를 덮는 목록 링크
@@ -2460,58 +2463,15 @@ function viewExplore() {
     return wideShell(`${pageHead('glass', '탐구하기')}
       ${walkCard ? `<div class="xlb" style="margin-top:20px">질문으로 묵상하기</div>${walkCard}` : ''}
       <div class="xlb" style="margin-top:${walkCard ? 28 : 20}px">내가 탐구하는 질문</div>${curHtml}
-      <div class="xlb" style="margin-top:28px">이번 주의 질문</div>${weekCard}`, { pn: false });
+      `, { pn: false });
   }
   const rows = past.map(n => `<button class="card xrow" type="button" data-act="past-open" data-id="${n.q}"><span><span style="display:block">${esc(getQ(n.q).text)}</span><span class="sm">${n.mode === 'free' ? '자유롭게 쓰기' : '단계별로 쓰기'} · ${startLine(n)}</span></span><span class="xch" aria-hidden="true">›</span></button>`).join('');
   return `<div class="col">
     ${pageHead('glass', '탐구하기', `<button class="ib" type="button" aria-label="검색" data-act="srch-ex" style="margin-right:-10px">${SEARCH_IC}</button>`)}
     ${walkCard ? `<div class="xlb" style="margin-top:14px">질문으로 묵상하기</div>${walkCard}` : ''}
     <div class="xlb"${walkCard ? '' : ' style="margin-top:14px"'}>내가 탐구하는 질문</div>${curHtml}
-    <div class="xlb">이번 주의 질문</div>${weekCard}
     ${past.length ? `<div class="xlb">지난 탐구</div>${rows}` : ''}
   </div>`;
-}
-
-// ── 이번 주의 질문(M7b ~ M30, T4): 말씀을 열며 뒤에 한 단계씩 ──
-// max: 여기까지 왔다 / view: 지금 펴 둔 단계(0 내 생각, 1 말씀, 2 교회의 고백, 3 마무리)
-let WK = { max: 0, view: 0 };
-function viewWeek() {
-  const wk = weekNow(), wide = isWide();
-  const head = `<div class="card xhead"><div class="xlb" style="margin:0 0 6px">이번 주의 질문</div><div class="sf xwq">${esc(wk.q)}</div></div>`
-    + (wk.img ? `<img class="q-img" src="${wk.img}" alt="${esc(wk.alt)}" width="1200" height="675" decoding="async" style="margin-top:12px">` : '');   // 정물 그림은 탐구하기 카드에서 이 화면 머리 아래로 옮겼다(S-52)
-  const fold = (i, name, sum, skipped) => `<button class="xfd${i === 0 && mine ? ' full' : ''}" type="button" data-act="week-view" data-i="${i}" aria-label="${name}, ${skipped ? '건너뛰었어요' : '답했어요'}. 누르면 다시 펴요"><i class="mk">✓</i><span class="tt"><b>${name}</b><span>${esc(i === 0 && mine ? mine : sum)}</span></span><i class="ar" aria-hidden="true">›</i></button>`;
-  const mine = getMine(wk.id);
-  const names = ['내 생각 적어보기', '함께 볼 말씀', '교회가 고백해 온 것'];
-  const sums = [mine ? oneLine(mine) : '건너뛰었어요', wk.refs.join(', '), shortOf(wk)];
-  const open = [
-    `<div class="xcur"><div class="xnm s" id="xHead" tabindex="-1">내 생각 적어보기</div>
-      <textarea class="field xta" id="wkTa" rows="4" placeholder="솔직한 생각을 적어 봐요. 떠오르는 생각이 없다면 적지 않아도 돼요." aria-label="내 생각 적어보기">${esc(mine)}</textarea>
-      ${wk.lastYear ? `<div class="xpriv">${LOCK_IC}<div><div class="sm">작년의 내 생각</div>${esc(wk.lastYear)}</div></div>` : ''}</div>`,
-    `<div class="xcur"><div class="xnm s" id="xHead" tabindex="-1">함께 볼 말씀</div><div class="xgq sm">성경을 펴서 읽어 봐요</div>
-      <div class="card xvl">${wk.refs.map(r => `<div>${esc(r)}</div>`).join('')}</div></div>`,
-    `<div class="xcur"><div class="xnm s" id="xHead" tabindex="-1">교회가 고백해 온 것</div>
-      <div class="card" style="margin-top:10px;padding:14px 16px"><div style="font-size:.90625rem;line-height:1.65;word-break:keep-all">${esc(wk.confess)}</div><div class="sm" style="margin-top:10px;font-size:.8125rem;line-height:1.5">${esc(wk.base)}</div></div></div>`
-  ];
-  let cur = WK.view <= 2 ? open[WK.view] : '';
-  let bar;
-  if (WK.view === 0) bar = '<button class="btn ol" type="button" data-act="week-next">건너뛰기</button><button class="btn k" type="button" data-act="week-next">다음 →</button>';
-  else if (WK.view === 1) bar = '<button class="btn" type="button" data-act="week-next">다음 →</button>';
-  else if (WK.view === 2) bar = '<button class="btn" type="button" data-act="week-next">마치기</button>';
-  else {
-    const m = mineFor(wk);
-    cur = `<button class="btn wide" type="button" data-act="pray" style="margin-top:16px;background:var(--accent-soft);color:var(--accent-deep)">이 질문으로 하나님께 기도하기${EXT_IC}</button>
-      <div class="xfin"><div class="xft">이번 주의 질문을 다 펴 봤어요.</div><div class="sm">오늘 적은 내 생각은 내년 이맘때<br>이 질문과 함께 다시 보여요.</div></div>
-      ${m ? `<div class="sm" style="font-size:.8125rem;margin-top:16px">이 질문과 닿는 내 질문이 있어요</div>
-        <div class="card xmine"><span><span class="sf">${esc(m.text)}</span><span class="sm">${qSub(m)}</span></span><button class="tx" type="button" data-act="bring" data-id="${m.id}">좀 더 탐구하기</button></div>`
-        : `<button class="btn lt wide" type="button" data-act="bring" style="margin-top:16px">좀 더 탐구하기</button>`}`;
-    bar = '<button class="btn" type="button" data-act="week-back">탐구하기로 돌아가기</button>';
-  }
-  let past = '';
-  for (let i = Math.min(WK.max, 2); i >= 0; i--) if (i !== WK.view) past += fold(i, names[i], sums[i], i === 0 && !mine);
-  const body = cur + (past ? `<div class="xpast">${past}</div>` : '');
-  const actBar = `<div class="xact"><div class="xact-in">${bar}</div></div>`;
-  if (wide) return wideShell(head + body + actBar, { week: true, pn: true, top: '' });
-  return `<div class="col"><div class="back-row"><a class="tx" href="#/explore"><span style="margin-left:-6px">← 탐구하기</span></a></div>${head}${body}${actBar}</div>`;
 }
 
 // ── 서가(S-42): 연재(주제 연재·권별 연재)를 골라 한 번에 한 권씩 걷는다. 완독 표시·진도 숫자는 두지 않는다 ──
@@ -2570,7 +2530,7 @@ function viewWalk(w) {
   return `<div class="col"><div class="back-row"><a class="tx" href="#/explore"><span style="margin-left:-6px">← 탐구하기</span></a></div>${body}</div>`;
 }
 
-// 한 토막(이번 주의 질문처럼 한 단계씩): 0 본문 읽기 → 1 보기 → 2 묵상(쓰는 칸) → 3 나의 해석(쓰는 칸) → 4 풀이 → 5 머묾. 본문 노트(원어·배경)는 위에 접혀 있고 언제든 편다.
+// 한 토막(한 단계씩): 0 본문 읽기 → 1 보기 → 2 묵상(쓰는 칸) → 3 나의 해석(쓰는 칸) → 4 풀이 → 5 머묾. 본문 노트(원어·배경)는 위에 접혀 있고 언제든 편다.
 // 사실(본문 노트)은 먼저, 해석(풀이)은 내 묵상과 나의 해석 뒤에 둔다(철학 ⑪). 마친 토막은 머묾까지, 묵상이나 나의 해석만 적어 둔 토막은 풀이까지 펴진 채로 연다
 let WE = { key: '', max: 0, view: 0 };
 // 본문 노트: 첫 줄은 낱말(히브리어나 그리스어) 우리말 뜻, 그 아래 풀이. 낱말 번호·나오는 절·사전 뜻·같은 낱말은 접힌 "근거"에 모은다(S-43)
@@ -2663,7 +2623,7 @@ function viewWalkRead(w, ep) {
 }
 
 // ── 단계별로 쓰기: 하나씩 쓰기와 모아 보기(M9a ~ M15, M29, T1, T6) ──
-let X = { id: '', step: 0, frame: 0, open3: false, panel: true, dirty: false };
+let X = { id: '', step: 0, frame: 0, panel: true, dirty: false };
 const curEx = () => getEx(X.id);
 function noteBar(all, wide) {
   const left = wide ? (all ? '<span></span>' : `<button class="xibt" type="button" aria-label="단계 목록 열고 닫기" aria-pressed="${X.panel}" data-act="panel" style="color:var(--ink-2);margin-left:2px">${PANEL_IC}</button>`) : '<button class="tx" type="button" data-act="note-back"><span style="margin-left:-6px">← 탐구하기</span></button>';
@@ -2694,14 +2654,7 @@ function stepBlock(n) {
     return `<div class="xcur">${stepHead(1)}${card}${taHtml(n, '장절을 적어요 (예: 시 13:1)')}<div class="xrefs" id="xRefs">${refsHtml(n)}</div>
       ${rec ? '' : '<button class="tx" type="button" data-act="find2" style="margin-top:6px;padding:0 2px">모든 질문에서 찾아보기 ›</button>'}</div>`;
   }
-  if (i === 2) {
-    const s3 = n.added.s3, w = (s3 && weeks().find(x => x.id === s3.id)) || rec3(n), open = Boolean(s3 && X.open3 && w);
-    const card = w ? `<div class="xsg"><div class="xsq">${esc(w.q)}</div>${open
-      ? `<div class="xcf"><div class="xlb">교회가 고백해 온 것</div><p>${esc(w.confess)}</p></div><button class="tx cl" type="button" data-act="s3-close">접기</button>`
-      : `<button class="btn lt wide" type="button" data-act="s3-open" data-id="${w.id}">펴 보기</button>`}</div>` : '';
-    return `<div class="xcur">${stepHead(2)}${card}${taHtml(n, w ? (open ? '' : '펴 보고 한 줄만 남겨도 돼요') : '떠오르는 고백을 적어요', open)}
-      ${w ? '' : '<button class="tx" type="button" data-act="find3" style="margin-top:6px;padding:0 2px">지난 이번 주의 질문에서 찾아보기 ›</button>'}</div>`;
-  }
+  if (i === 2) return `<div class="xcur">${stepHead(2)}${taHtml(n, '떠오르는 고백을 적어요')}</div>`;
   if (i === 3) {
     return `<div class="xcur">${stepHead(3)}<button class="btn lt wide" type="button" data-act="pray" style="margin-top:14px">이 질문으로 하나님께 기도하기${EXT_IC}</button>${taHtml(n, '어떤 생각이 들었나요?', true)}</div>`;
   }
@@ -2727,14 +2680,14 @@ function allBody(n) {
     else if (i === 1) {
       const rs = refsOf(n.steps[1]), rest = n.steps[1].split('\n').filter(l => l.trim() && !parseRef(l)).join('\n');
       b = `<div class="xvr">${rs.map(r => `<span class="xvc">${esc(r)}</span>`).join('')}${rest ? `<span class="xbody">${esc(rest)}</span>` : ''}</div>`;
-    } else if (i === 2) b = `${n.added.s3 ? `<div class="sm">이번 주의 질문 '${esc(n.added.s3.q)}'를 펴 봤어요</div>` : ''}${n.steps[2].trim() ? `<div class="xbody">${esc(n.steps[2])}</div>` : ''}`;
+    } else if (i === 2) b = n.steps[2].trim() ? `<div class="xbody">${esc(n.steps[2])}</div>` : '';
     else b = `<div class="xbody">${esc(n.steps[i].trim() ? n.steps[i] : '했어요')}</div>`;
     return `<div class="xsh${done ? '' : ' em'}"><b>${i + 1}</b>${STEP_NAMES[i]}${done ? '<span class="ck">✓</span>' : ''}</div>${b}`;
   }).join('');
 }
 function viewNote(id, all) {
   const n = getEx(id), q = getQ(id), wide = isWide();
-  if (X.id !== id) { X.id = id; X.step = nextStep(n); X.frame = 0; X.open3 = false; X.dirty = false; }
+  if (X.id !== id) { X.id = id; X.step = nextStep(n); X.frame = 0; X.dirty = false; }
   const title = `<div class="sf xnt${all ? ' all' : ''}">${esc(q.text)}</div><div style="margin:6px 0 4px">${dotsHtml(n, false, startLine(n))}</div>`;
   const bar = noteBar(all, wide);
   if (all) {
@@ -2788,13 +2741,11 @@ function addS2(n, c) {   // 닮은 오늘의 질문의 장절을 쓰는 칸에 �
   const cur = n.steps[1].replace(/\s+$/, '');
   n.steps[1] = (cur ? cur + '\n' : '') + c.ref + '\n'; n.added.s2 = { q: c.q, ref: c.ref }; X.dirty = true; saveNotes();
 }
-// 찾아보기 창(M9b0a, M90a): 오늘의 질문은 전체에서, 이번 주의 질문은 받은 범위에서 고른다(S-63).
+// 찾아보기 창(M9b0a): 오늘의 질문 전체에서 고른다(S-63).
 let PK = { kind: 2, q: '', sel: '' };
 function pkItems() {
   const needle = PK.q.trim().toLowerCase(), r = parseRef(PK.q), rt = r ? r.text.toLowerCase() : '';
-  const all = PK.kind === 2
-    ? receivedToday().map(c => ({ key: c.q, pd: c.pd, pq: c.q, pv: `${c.ref} · ${c.asker}`, hay: `${c.q} ${c.ref} ${c.asker}` }))
-    : weeks().map(w => ({ key: w.id, pd: weekLabel(w), pq: w.q, pv: '', hay: `${w.q} ${w.confess} ${w.refs.join(' ')}` }));
+  const all = receivedToday().map(c => ({ key: c.q, pd: c.pd, pq: c.q, pv: `${c.ref} · ${c.asker}`, hay: `${c.q} ${c.ref} ${c.asker}` }));
   return all.filter(x => !needle || x.hay.toLowerCase().includes(needle) || (rt && x.hay.toLowerCase().includes(rt)));
 }
 function pkPaint() {
@@ -2802,13 +2753,13 @@ function pkPaint() {
   el.innerHTML = items.length ? items.map(x => `<button class="xpk${x.key === PK.sel ? ' on' : ''}" type="button" aria-pressed="${x.key === PK.sel}" data-act="pk-sel" data-k="${esc(x.key)}"><span><span class="pd">${esc(x.pd)}</span><span class="pq">${esc(x.pq)}</span>${x.pv ? `<span class="pv">${esc(x.pv)}</span>` : ''}</span>${x.key === PK.sel ? '<i class="xdt on" aria-hidden="true">✓</i>' : ''}</button>`).join('') : '<p class="sm" style="margin-top:12px">찾은 질문이 없어요</p>';
   const go = $('#pkGo'); if (go) go.disabled = !items.some(x => x.key === PK.sel);
 }
-function pkSheet(kind) {
-  PK = { kind, q: '', sel: '' };
-  openSheet(`<div class="sheet-top"><h2>${kind === 2 ? '오늘의 질문' : '지난 이번 주의 질문'}</h2><button class="tx" type="button" data-act="sheet-x">닫기</button></div>
-    <p class="sm">${kind === 2 ? '모든 질문에서 찾아요' : '열린 질문 안에서 찾아요'}</p>
+function pkSheet() {
+  PK = { kind: 2, q: '', sel: '' };
+  openSheet(`<div class="sheet-top"><h2>오늘의 질문</h2><button class="tx" type="button" data-act="sheet-x">닫기</button></div>
+    <p class="sm">모든 질문에서 찾아요</p>
     <label class="xsrchbox">${SRCH_IC(20)}<input id="pkQ" type="search" placeholder="낱말이나 장절" autocomplete="off" aria-label="낱말이나 장절"></label>
     <div id="pkList"></div>
-    <button class="btn wide" id="pkGo" type="button" data-act="pk-go" disabled>${kind === 2 ? '넣기' : '펴 보기'}</button>`);
+    <button class="btn wide" id="pkGo" type="button" data-act="pk-go" disabled>넣기</button>`);
   pkPaint();
 }
 // ⋯ 메뉴(M9g 자유롭게 쓰기 · M9h 하나씩 쓰기): [내보내기] [바꾸기] [닫기]. 길잡이 메뉴는 없다
@@ -2968,7 +2919,7 @@ function stepParts(n) {   // 모아 보기와 같은 모양: ①~⑤ 번호, 이
     if (p.empty) return p;
     if (i === 0) { if (t.trim()) p.paras.push(t.trim()); if (n.since) p.paras.push(`${ymLine(n.since)}에 처음 물었어요`); }
     else if (i === 1) { p.chips = refsOf(t); const rest = t.split('\n').filter(l => l.trim() && !parseRef(l)).join('\n'); if (rest) p.paras.push(rest); }
-    else if (i === 2) { if (n.added.s3) p.paras.push(`이번 주의 질문 '${n.added.s3.q}'를 펴 봤어요`); if (t.trim()) p.paras.push(t.trim()); }
+    else if (i === 2) { if (t.trim()) p.paras.push(t.trim()); }
     else p.paras.push(t.trim() ? t.trim() : '했어요');
     return p;
   });
@@ -3169,7 +3120,7 @@ const walkPart = w => { const m = /-(\d+)$/.exec(w.id); return m && (window.WALK
 const walkName = w => w.book + (walkPart(w) ? ` ${walkPart(w)}부` : '');
 // 연재가 다루는 장: 첫 편과 마지막 편 장절의 첫 "○장"으로 "1~4장"(장으로 셀 수 없는 책은 빈칸)
 const walkRange = w => { const ch = r => { const m = /(\d+)장/.exec(r || ''); return m ? Number(m[1]) : 0; }; const a = ch(w.eps[0] && w.eps[0].ref), b = ch(w.eps.length ? w.eps[w.eps.length - 1].ref : ''); return a && b ? (a === b ? `${a}장` : `${a}~${b}장`) : ''; };
-const walkMineId = (w, ep) => `wa-${w.id}-${ep.n}`;   // 묵상에 쓴 글은 이번 주의 질문 내 생각과 같은 자리(N.wk)에 이 id로 둔다
+const walkMineId = (w, ep) => `wa-${w.id}-${ep.n}`;   // 묵상에 쓴 글은 다른 개인 기록과 같은 자리(N.wk)에 이 id로 둔다
 const walkMine2Id = (w, ep) => `wb-${w.id}-${ep.n}`;   // 나의 해석에 쓴 글(S-44). 묵상과 같은 자리(N.wk)에 이 id로 둔다. 마친 날은 묵상 쪽('wa-')에만 남긴다
 const walkDone = (w, ep) => { const m = N.wk.find(x => x.id === walkMineId(w, ep)); return m && m.done ? m.done : 0; };   // 마친 날(ms), 안 마쳤으면 0
 // 연재를 읽는 방식(S-70): N.wk 'wm-<연재>'의 mine이 'read'면 통독, 아니면 1일 1편. 동기화로 다른 기기에도 간다
@@ -3363,7 +3314,6 @@ const BADGES = [
   { k: 'q-first', name: '첫 질문', when: '질문(?)을 처음 남겼어요', how: '말씀을 읽다 궁금한 것을 + 남기기에 한 줄 적어 봐요.', go: '#/write', kind: 'try' },
   { k: 'f-first', name: '첫 발견', when: '발견(!)을 처음 남겼어요', how: '알게 된 것을 + 남기기에서 ! 발견으로 적어 봐요.', go: '#/write', kind: 'try' },
   { k: 't-hold', name: '오늘의 질문 품기', when: '오늘의 질문을 내 질문에 품었어요', how: '오늘의 질문을 [내 질문에 품기]로 내 질문에 담아 봐요.', go: '#/today', kind: 'try' },
-  { k: 'w-open', name: '이번 주의 질문', when: '이번 주의 질문을 끝까지 펴 봤어요', how: '탐구하기에서 이번 주의 질문을 [마치기]까지 펴 봐요.', go: '#/explore', kind: 'try' },
   { k: 'walk-first', name: '질문으로 첫 묵상', when: '질문으로 묵상하기의 한 편을 처음 마쳤어요', how: '탐구하기의 질문으로 묵상하기에서 한 편을 머묾까지 읽어 봐요.', go: '#/explore', kind: 'try' },
   { k: 'x-first', name: '첫 탐구', when: '탐구 노트를 처음 시작했어요', how: '내 기록에서 질문 하나를 골라 탐구 노트를 시작해 봐요.', go: '#/mine', kind: 'try' },
   { k: 'q-found', name: '알게 된 질문', when: '품고 있던 질문이 처음 알게 된 질문이 되었어요', how: '품고 있던 질문에 ! 발견을 이어 봐요.', go: '#/mine', kind: 'try' },
@@ -3375,13 +3325,12 @@ const BADGES = [
 ];
 const BADGE_ART = true;   // 배지 그림(note/img/badges/<k>.webp, 지시서 S-07, PR #165). false로 바꾸면 선 아이콘으로 돌아간다
 const BADGE_IC = '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="9" r="6"/><path d="M8 14l-2 7 6-3 6 3-2-7"/></svg>';
-const WEEKS_IC = '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M7 3v4M17 3v4M3 11h18M7 15h2M15 15h2M7 18h2"/></svg>';
 const JOURNAL_IC = '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 3h10l4 4v14H5z"/><path d="M15 3v4h4M8 11h8M8 15h8M8 19h5"/></svg>';
+const ANSWERS_IC = '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 11.5a8 8 0 0 1-8 8H7l-4 2v-6a8.5 8.5 0 1 1 17-4z"/><path d="M8 10h8M8 14h6"/></svg>';
 const BADGE_LINES = {
   'q-first': '<path d="M6 3h12v18H6zM10 8a2 2 0 1 1 3 2c-1 .5-1 1-1 2"/><circle cx="12" cy="15" r=".5"/>',
   'f-first': '<path d="M5 5h12v16H5zM17 2l1.5 3.5L22 7l-3.5 1.5L17 12l-1.5-3.5L12 7l3.5-1.5z"/>',
   't-hold': '<path d="M8 3h8v12H8zM4 12v6l8 4 8-4v-6M4 12l8 5 8-5"/>',
-  'w-open': '<path d="M12 6C9 4 5 4 2 5v14c4-1 7-1 10 1 3-2 6-2 10-1V5c-4-1-7-1-10 1v14M16 5v7l2-2 2 2V5"/>',
   'walk-first': '<path d="M4 21c3-2 4-5 7-7s6-3 8-7"/><path d="M13 4h7v6h-7z"/><path d="M16.5 4v6"/>',
   'x-first': '<circle cx="12" cy="12" r="9"/><path d="M16 8l-2 6-6 2 2-6z"/>',
   'q-found': '<path d="M3 4h9v12H3zM12 8h9v12h-9M8 12l8 3"/>',
@@ -3556,12 +3505,11 @@ function snQ(q, sel) {
 }
 const snF = f => `<div class="sn y lf" data-act="pair-find" data-id="${f.id}"><span class="mk" aria-hidden="true">!</span><span class="tx4">${esc(f.text)}</span><span class="sft"><span class="mt" style="margin:0">${fDate(f)}</span><button class="tx" type="button" data-act="pair-find" data-id="${f.id}">질문에 잇기 ›</button></span></div>`;
 // 고른 해는 화면에서만 기억한다. 기기 보관이나 주소에는 넣지 않는다.
-let weeksYear = null;
 function mineTools(search = true) {
-  return `<div style="display:flex;align-items:center"><a class="ib" href="#/mine/vine" aria-label="포도나무">${VINE_IC}</a><a class="ib" href="#/mine/weeks" aria-label="펴 본 이번 주의 질문">${WEEKS_IC}</a><a class="ib" href="#/mine/journal" aria-label="묵상 모아 보기">${JOURNAL_IC}</a>${badgeButton()}${search ? `<a class="ib" href="#/mine/search" aria-label="검색" style="margin-right:-10px">${SEARCH_IC}</a>` : ''}</div>`;
+  return `<div style="display:flex;align-items:center"><a class="ib" href="#/mine/vine" aria-label="포도나무">${VINE_IC}</a><a class="ib" href="#/mine/journal" aria-label="묵상 모아 보기">${JOURNAL_IC}</a><a class="ib" href="#/mine/answers" aria-label="나의 대답">${ANSWERS_IC}</a>${badgeButton()}${search ? `<a class="ib" href="#/mine/search" aria-label="검색" style="margin-right:-10px">${SEARCH_IC}</a>` : ''}</div>`;
 }
-// ── 묵상 모아 보기(S-45): 내가 쓴 글을 날짜순 한 줄기로. 질문을 따라 걷기의 묵상·나의 해석, 이번 주의 질문의 내 생각. 숫자(몇 개)는 보이지 않는다 ──
-// 날짜: 걷기는 그 토막을 마친 날(아직 안 마쳤으면 마지막으로 고친 때), 이번 주의 질문은 다 펴 본 때(아니면 마지막으로 고친 때)
+// ── 묵상 모아 보기(S-45): 질문으로 묵상하기의 묵상·나의 해석을 날짜순으로. 숫자(몇 개)는 보이지 않는다 ──
+// 날짜: 걷기는 그 토막을 마친 날(아직 안 마쳤으면 마지막으로 고친 때)
 function journalEntries() {
   const out = [], find = id => N.wk.find(x => x.id === id);
   (window.WALKS || []).forEach(w => w.eps.forEach(ep => {
@@ -3570,10 +3518,6 @@ function journalEntries() {
     const t = (a && a.done) || Math.max(a ? a.at : 0, b ? b.at : 0);
     out.push({ t, head: `${walkName(w)} ${ep.title}`, ref: ep.ref, parts: [...(m1 ? [{ name: '묵상', q: ep.ask, text: m1 }] : []), ...(m2 ? [{ name: '나의 해석', q: '', text: m2 }] : [])] });
   }));
-  N.wk.forEach(x => {
-    const q = weekById(x.id); if (!q || !x.mine.trim()) return;
-    out.push({ t: x.done || x.at, head: `제${q.n}주일 이번 주의 질문`, ref: '', parts: [{ name: '내 생각', q: q.q, text: x.mine.trim() }] });
-  });
   return out.filter(e => e.t > 0).sort((a, b) => a.t - b.t);
 }
 const journalYearOf = e => new Date(e.t).getFullYear();
@@ -3588,7 +3532,31 @@ function viewJournal() {
     return head + `<div class="card xcard jn-day"><span class="sm">${walkDay(dnOfMs(e.t))}</span><span class="sf">${esc(e.head)}</span>${e.ref ? `<span class="sm">${esc(e.ref)}</span>` : ''}${e.parts.map(p => `<div class="jn-part"><div class="sm"><b>${p.name}</b>${p.q ? ` ${esc(p.q)}` : ''}</div><p class="jn-text">${esc(p.text)}</p></div>`).join('')}</div>`;
   }).join('');
   return `<div class="col"><div class="back-row"><a class="bk" href="#/mine">← 내 기록</a></div><h1 class="tt">묵상 모아 보기</h1>
-    ${years.length ? `<div class="weeks-year"><button class="ib" type="button" aria-label="이전 해" data-act="journal-year" data-year="${years[index + 1] || ''}"${index === years.length - 1 ? ' disabled' : ''}>‹</button><span>${journalYear}년</span><button class="ib" type="button" aria-label="다음 해" data-act="journal-year" data-year="${years[index - 1] || ''}"${index === 0 ? ' disabled' : ''}>›</button></div>${rows}<button class="btn lt wide" type="button" data-act="journal-export" style="margin-top:16px">${journalYear}년 묵상 내보내기</button>` : '<div class="empty"><div class="ph">질문으로 묵상하기에서 묵상이나 나의 해석을 적거나, 이번 주의 질문에 내 생각을 남기면 여기에 날짜순으로 모여요</div></div>'}</div>`;
+    ${years.length ? `<div class="weeks-year"><button class="ib" type="button" aria-label="이전 해" data-act="journal-year" data-year="${years[index + 1] || ''}"${index === years.length - 1 ? ' disabled' : ''}>‹</button><span>${journalYear}년</span><button class="ib" type="button" aria-label="다음 해" data-act="journal-year" data-year="${years[index - 1] || ''}"${index === 0 ? ' disabled' : ''}>›</button></div>${rows}<button class="btn lt wide" type="button" data-act="journal-export" style="margin-top:16px">${journalYear}년 묵상 내보내기</button>` : '<div class="empty"><div class="ph">질문으로 묵상하기에서 묵상이나 나의 해석을 적으면 여기에 날짜순으로 모여요</div></div>'}</div>`;
+}
+// 나의 대답은 묵상 모아 보기와 섞지 않고 질문별·해마다 따로 돌아본다.
+let answersYear = null;
+function viewAnswers() {
+  const all = answerEntries().sort((a, b) => b.at - a.at);
+  const years = [...new Set(all.map(e => new Date(e.at).getFullYear()))].sort((a, b) => b - a);
+  if (!years.includes(answersYear)) answersYear = years[0] || null;
+  const index = years.indexOf(answersYear);
+  const grouped = new Map();
+  all.forEach(e => { if (!grouped.has(e.key)) grouped.set(e.key, []); grouped.get(e.key).push(e); });
+  const repeated = [...grouped.values()].filter(items => new Set(items.map(x => x.churchYear)).size >= 2);
+  const again = repeated.length ? `<div class="xlb">다시 만난 질문</div>${repeated.map(items => {
+    const q = items[0].q;
+    return `<div class="card ta-year-card"><span class="sf">${esc(q.q)}</span><span class="sm">${esc(q.ref)}</span>${items.slice().sort((a, b) => a.churchYear - b.churchYear).map(e => `<div class="ta-year-entry"><b class="sm">${new Date(e.at).getFullYear()}년</b><p>${esc(e.mine)}</p></div>`).join('')}</div>`;
+  }).join('')}` : '';
+  let month = null;
+  const rows = all.filter(e => new Date(e.at).getFullYear() === answersYear).map(e => {
+    const d = new Date(e.at), m = d.getMonth() + 1;
+    const head = m !== month ? `<div class="xlb">${m}월</div>` : ''; month = m;
+    return head + `<a class="card xcard jn-day ta-row" href="#/today/q/${e.q.season}/${e.q.item}"><span class="sm">${mdLine(d)}</span><span class="sf">${esc(e.q.q)}</span><span class="ta-preview">${esc(e.mine)}</span></a>`;
+  }).join('');
+  return `<div class="col"><div class="back-row"><a class="bk" href="#/mine">← 내 기록</a></div><h1 class="tt">나의 대답</h1>
+  <div class="sm" style="margin-top:6px">질문은 다시 찾아오고, 나의 대답은 자라납니다.</div>
+  ${all.length ? `${again}<div class="xlb">해마다 모아 보기</div><div class="weeks-year"><button class="ib" type="button" aria-label="이전 해" data-act="answers-year" data-year="${years[index + 1] || ''}"${index === years.length - 1 ? ' disabled' : ''}>‹</button><span>${answersYear}년</span><button class="ib" type="button" aria-label="다음 해" data-act="answers-year" data-year="${years[index - 1] || ''}"${index === 0 ? ' disabled' : ''}>›</button></div>${rows}` : '<div class="sm" style="margin-top:20px">오늘의 질문에 대답을 남기면 여기에 모여요.</div>'}</div>`;
 }
 // 한 해 내보내기는 탐구 노트의 저장·인쇄·복사 도우미와 문서 스타일을 그대로 쓴다.
 function buildJournalMd(year) {
@@ -3639,18 +3607,6 @@ function doJournalExport(year, kind) {
   else if (kind === 'copy') copyText(buildJournalMd(year));
 }
 
-function viewWeeks() {
-  const list = N.wk.filter(w => w.done && weekById(w.id));
-  const years = [...new Set(list.map(w => Number(w.id.slice(2, 6))))].sort((a, b) => b - a);
-  if (!years.includes(weeksYear)) weeksYear = years[0] || null;
-  const index = years.indexOf(weeksYear), current = weekNow().id;
-  const rows = list.filter(w => Number(w.id.slice(2, 6)) === weeksYear).sort((a, b) => b.id.localeCompare(a.id)).map(w => {
-    const q = weekById(w.id), tag = w.id === current ? 'button' : 'div';
-    return `<${tag} class="card xcard week-trace"${tag === 'button' ? ' type="button" data-act="week-open"' : ''}><span class="sm">제${q.n}주일 · ${mdLine(new Date(w.done))}</span><span class="sf">${esc(q.q)}</span>${w.mine ? `<span class="sm week-mine">${esc(w.mine)}</span>` : ''}</${tag}>`;
-  }).join('');
-  return `<div class="col"><div class="back-row"><a class="bk" href="#/mine">← 내 기록</a></div><h1 class="tt">펴 본 이번 주의 질문</h1>
-    ${years.length ? `<div class="weeks-year"><button class="ib" type="button" aria-label="이전 해" data-act="weeks-year" data-year="${years[index + 1] || ''}"${index === years.length - 1 ? ' disabled' : ''}>‹</button><span>${weeksYear}년</span><button class="ib" type="button" aria-label="다음 해" data-act="weeks-year" data-year="${years[index - 1] || ''}"${index === 0 ? ' disabled' : ''}>›</button></div>${rows}` : '<div class="empty"><div class="ph">이번 주의 질문을 마무리까지 펴면 여기에 쌓여요</div></div>'}</div>`;
-}
 function viewMine(sel) {
   const all = wallItems();
   if (!all.length && mineFilter !== 'x') {   // 질문도 남겨 둔 ! 발견도 없다(M12)
@@ -3752,7 +3708,7 @@ function deleteQuestion(id) {
   N.ex = N.ex.filter(n => n.q !== id); N.cur = N.cur.filter(qid => qid !== id);
   N.fs.forEach(f => { if (f.q === id) { f.q = ''; f.touched = Date.now(); } });
   N.qs.forEach(q => { if (q.parent === id) { q.parent = ''; q.touched = Date.now(); } });
-  if (X.id === id) X = { id: '', step: 0, frame: 0, open3: false, panel: true, dirty: false };
+  if (X.id === id) X = { id: '', step: 0, frame: 0, panel: true, dirty: false };
   trailOpen.delete(id); finishDelete();
 }
 function deleteDiscovery(id) {
@@ -3828,7 +3784,7 @@ let undoSnap = null;   // 짝 풀기를 되돌리기 위한 직전 모습
 const VIEWS = {
   'start': viewStart, 'start/church': viewChurch, 'start/name': viewName, 'start/consent': viewConsent,
   'today': viewToday, 'today/past': viewPast, 'today/all': viewAll, 'today/write': viewWrite,
-  'explore': viewExplore, 'explore/walks': viewWalks, 'explore/week': viewWeek, 'write': viewWrite, 'mine': () => viewMine(), 'mine/search': viewSearch, 'mine/badges': viewBadges, 'mine/weeks': viewWeeks, 'mine/journal': viewJournal, 'mine/vine': viewVine,
+  'explore': viewExplore, 'explore/walks': viewWalks, 'write': viewWrite, 'mine': () => viewMine(), 'mine/search': viewSearch, 'mine/badges': viewBadges, 'mine/journal': viewJournal, 'mine/answers': viewAnswers, 'mine/vine': viewVine,
   'more': viewMore, 'more/about': viewAbout, 'more/guide': viewGuide, 'more/feedback': viewFeedback, 'more/sync': viewSync
 };
 const MENU_OF = k => (WALK_WRITE.test(k) ? 'write' : k.startsWith('today') ? (TODAY_WRITE.test(k) ? 'write' : 'today') : k.startsWith('more') ? 'more' : k.startsWith('mine') ? 'mine' : k.startsWith('explore') ? 'explore' : k);
@@ -4019,7 +3975,7 @@ function paintSettings() {
   const gd = $('#gearDate'), gi = $('#gearInfo');   // 데모의 오늘과 그날의 절기·번호(데모에만 보이는 표시)
   if (gd && gd.value !== dnStr(demoDN())) gd.value = dnStr(demoDN());
   const gs = $('#gearStart'); if (gs) gs.value = D.start || dnStr(demoDN() - 30);
-  if (gi) { const q = questionOn(demoDN()), w = weekNow(); gi.textContent = `${q.label} · 이번 주의 질문 ${Math.min(w.num, 52)}주${w.num > 52 ? '(53번째 주일, 정하지 않음)' : ''}`; }
+  if (gi) { const q = questionOn(demoDN()); gi.textContent = q.label; }
 }
 function closeMenus(returnGearFocus = false) {
   const gearWasOpen = !$('#gearPanel').hidden;
@@ -4033,6 +3989,8 @@ function closeMenus(returnGearFocus = false) {
 const acts = {
   'all-season'(e, el) { setHash('today/all/' + el.dataset.season); },
   'all-question'(e, el) { setHash('today/q/' + el.dataset.season + '/' + el.dataset.item); },
+  'today-answer'(e, el) { openTodayAnswer(el.dataset.key); },
+  'today-answer-save'(e, el) { saveTodayAnswer(el.dataset.key); },
   'vine-story'(e, el) { openFruitScene(el.dataset.key); },
   'vine-story-close'() { closeFruitScene(false); },
   'vine-story-go'() { closeFruitScene(true); },
@@ -4053,14 +4011,10 @@ const acts = {
   community() { location.href = '../app/'; },   // 디다코 교회: 같은 주소 아래 교회 층 앱(app/)으로 간다
   // 탐구하기(③-1)
   'srch-ex'() { srchBack = 'explore'; setHash('mine/search'); },
-  'week-open'() { WK = { max: 0, view: 0 }; showOpening(() => setHash('explore/week')); },   // 말씀을 열며 한 장 뒤에 한 단계씩
-  'weeks-year'(e, el) { weeksYear = Number(el.dataset.year); render(); },
   'journal-year'(e, el) { journalYear = Number(el.dataset.year); render(); },
+  'answers-year'(e, el) { answersYear = Number(el.dataset.year); render(); },
   'journal-export'() { journalExportSheet(); },
   jexp(e, el) { closeSheet(true); doJournalExport(journalYear, el.dataset.k); },
-  'week-next'() { WK.view = Math.min(3, WK.view + 1); WK.max = Math.max(WK.max, WK.view); if (WK.view === 3) { markWeekDone(); earnBadge('w-open'); } render(); window.scrollTo(0, 0); const h = $('#xHead'); if (h) h.focus({ preventScroll: true }); },
-  'week-view'(e, el) { WK.view = Number(el.dataset.i); render(); window.scrollTo(0, 0); const h = $('#xHead'); if (h) h.focus({ preventScroll: true }); },
-  'week-back'() { setHash('explore'); },
   'walk-pick'(e, el) {   // 다른 연재를 고르면 한 번 묻는다(지금 걷는 연재가 있을 때)
     const w = walkById(el.dataset.id), cur = walkById(walkCurId()); if (!w) return;
     if (!cur || cur.id === w.id) { pickWalk(w.id); if (routeKey() === 'explore/walk/' + w.id) render(); else setHash('explore/walk/' + w.id); return; }
@@ -4088,11 +4042,6 @@ const acts = {
   },
   'walk-notes'() { const r = walkEpOfRoute(); if (!r || !r.ep.notes || !r.ep.notes.length) return; openSheet(`<h2>원어 해설</h2><div class="wk-notes" style="margin-top:0"><ul>${r.ep.notes.map(walkNoteRow).join('')}</ul><div class="sm wk-src">원어는 <a href="https://www.stepbible.org" target="_blank" rel="noopener">STEP Bible</a>(Tyndale House, CC BY 4.0) 자료에서 뽑았어요. 틀린 곳은 <a href="#/more/feedback">의견 보내기</a>로 알려 주세요.</div></div><div class="ra"><button class="btn" type="button" data-act="sheet-x">닫기</button></div>`); },
   pray() { toast('데모라 넘어가지 않아요'); },   // 데모: 기도하는 앱으로 넘어가지 않는다
-  bring(e, el) {   // 그 질문이 내 탐구 질문이 된다: 닿는 내 질문이 있으면 그 질문, 없으면 이번 주의 질문 글로 새 질문
-    let id = el.dataset.id;
-    if (!id) { const now = Date.now(), q = { id: newId('q'), text: weekNow().q, ref: '', since: '', from: '', at: now, touched: now, state: 'holding', parent: '', trail: [] }; N.qs.push(q); saveNotes(); id = q.id; }
-    openNote(id, 'explore');
-  },
   'past-open'(e, el) { openNote(el.dataset.id); },
   'q-explore'(e, el) { openNote(el.dataset.id, 'mine/q/' + el.dataset.id); },
   'note-open'(e, el) { openNote(el.dataset.id, 'mine/q/' + el.dataset.id); },
@@ -4152,7 +4101,7 @@ const acts = {
   'step-ok'() {
     const n = curEx(); if (!n) return;
     const i = X.step, empty = !n.steps[i].trim();
-    if (empty && !(i === 3 || (i === 2 && n.added.s3))) { toast('한 줄 적어 주세요'); return; }   // 기도로 묻기와 펴 본 고백은 글 없이도 마칠 수 있다
+    if (empty && i !== 3) { toast('한 줄 적어 주세요'); return; }   // 기도로 묻기는 글 없이도 마칠 수 있다
     commitStep(n, i, true); goStep(i + 1);
   },
   'frame-use'() {
@@ -4167,18 +4116,11 @@ const acts = {
   'since-pick'(e, el) { if (el.showPicker) { try { el.showPicker(); } catch (_) { /* 지원하지 않거나 열 수 없어도 기본 고르기는 그대로 둔다 */ } } },
   's2-add'() { const n = curEx(), c = n && rec2(n); if (c) { addS2(n, c); render(); focusTa(); } },
   's2-del'() { const n = curEx(), a = n && n.added.s2; if (!a) return; n.steps[1] = n.steps[1].split('\n').filter(l => l.trim() !== a.ref).join('\n'); n.added.s2 = null; X.dirty = true; saveNotes(); render(); },
-  's3-open'(e, el) {
-    const n = curEx(), w = weeks().find(x => x.id === el.dataset.id); if (!n || !w) return;
-    n.added.s3 = { id: w.id, q: w.q }; X.open3 = true; X.dirty = true; saveNotes(); render();
-  },
-  's3-close'() { X.open3 = false; render(); },
-  find2() { pkSheet(2); },
-  find3() { pkSheet(3); },
+  find2() { pkSheet(); },
   'pk-sel'(e, el) { PK.sel = PK.sel === el.dataset.k ? '' : el.dataset.k; pkPaint(); },
   'pk-go'() {
     const n = curEx(); if (!n || !PK.sel) return;
-    if (PK.kind === 2) { const c = receivedToday().find(x => x.q === PK.sel); if (c) addS2(n, c); }
-    else { const w = weeks().find(x => x.id === PK.sel); if (w) { n.added.s3 = { id: w.id, q: w.q }; X.open3 = true; X.dirty = true; saveNotes(); } }
+    const c = receivedToday().find(x => x.q === PK.sel); if (c) addS2(n, c);
     closeSheet(true); render(); focusTa();
   },
   'hold-more'() {   // 질문은 품고 있는 질문 그대로 두고 탐구 첫 화면으로
@@ -4325,7 +4267,7 @@ function resetAll() {
   ls.del(K.session); ls.del(K.demo); ls.del(K.notes); ls.del(OPEN_K); me = null; D.start = ''; D.date = ''; D.sync = 'off'; D.syncAt = 0;
   if (CIRCLE_REAL) { circleForget(); paintPlaces(); }
   N = { qs: [], fs: [], ex: [], cur: [], wk: [] }; W = newDraft('', 'q'); mineFilter = 'all'; searchQ = ''; P = { fid: '', sel: '' }; undoSnap = null; trailOpen.clear(); hideOpening(true);
-  X = { id: '', step: 0, frame: 0, open3: false, panel: true, dirty: false }; WK = { max: 0, view: 0 }; pendingSwap = null; startBack = 'explore'; srchBack = 'mine';
+  X = { id: '', step: 0, frame: 0, panel: true, dirty: false }; pendingSwap = null; startBack = 'explore'; srchBack = 'mine';
   ob.kakao = ob.church = false; ob.name = ''; dispOpen = false; fb.text = ''; fb.named = false; fb.kind = '이랬으면';
   closeSheet(true); closeMenus(); setHash('start', true); render(true);
 }
@@ -4349,7 +4291,7 @@ document.addEventListener('click', e => {
 // 톱니의 날짜 바꾸기: 고른 날이 데모의 오늘이 된다(빈 값은 이 기기의 진짜 오늘로 돌아간다). 없는 날이거나 1900~2200년 밖이면 무시한다
 function setDemoDate(v) {
   if (v && !parseYmd(v)) return;   // 키보드로 연도를 치는 도중의 값(0002 등)은 아무것도 하지 않는다. 칸은 칸을 떠날 때 한 번만 되돌린다
-  D.date = v; saveDemo(); WK = { max: 0, view: 0 }; paintSettings(); render();
+  D.date = v; saveDemo(); paintSettings(); render();
 }
 document.addEventListener('change', e => { if (e.target.id === 'gearStart' && parseYmd(e.target.value)) { D.start = e.target.value; saveDemo(); paintSettings(); render(); } });
 document.addEventListener('change', e => { if (e.target.id === 'gearDate' && e.target.value) setDemoDate(e.target.value); });   // 칸을 비우면 그대로 두고, 진짜 오늘로 돌아가려면 [오늘로]
@@ -4359,8 +4301,8 @@ document.addEventListener('submit', e => {
   const f = e.target.closest('[data-form]'); if (!f) return;
   e.preventDefault(); if (forms[f.dataset.form]) forms[f.dataset.form]();
 });
-// 길게 적는 칸은 적은 만큼 늘어난다(S-55): 이번 주의 질문 내 생각(wkTa), 질문으로 묵상하기 묵상(waTa)·나의 해석(wbTa). 처음 높이(rows와 min-height)보다 작아지지 않는다
-const GROW_TA = ['wkTa', 'waTa', 'wbTa'];
+// 길게 적는 칸은 적은 만큼 늘어난다(S-55): 질문으로 묵상하기 묵상(waTa)·나의 해석(wbTa). 처음 높이(rows와 min-height)보다 작아지지 않는다
+const GROW_TA = ['waTa', 'wbTa'];
 function growTa(el) { el.style.height = 'auto'; el.style.height = el.scrollHeight + 2 + 'px'; }
 const growAll = () => GROW_TA.forEach(id => { const el = document.getElementById(id); if (el) growTa(el); });
 window.addEventListener('resize', growAll);
@@ -4370,7 +4312,6 @@ document.addEventListener('input', e => {
   if (e.target.id === 'nameIn') $('#nameGo').disabled = !e.target.value.trim();
   if (e.target.id === 'fbT') { fb.text = e.target.value; $('#fbN').textContent = [...fb.text].length; }
   if (e.target.id === 'srchIn') { searchQ = e.target.value; $('#srchRes').innerHTML = searchResults(); }
-  if (e.target.id === 'wkTa') setMine(weekNow().id, e.target.value);   // 이번 주의 질문에 남긴 내 생각
   if (e.target.id === 'waTa') { const r = walkEpOfRoute(); if (r) setMine(walkMineId(r.w, r.ep), e.target.value); }   // 질문을 따라 걷기 묵상
   if (e.target.id === 'wbTa') { const r = walkEpOfRoute(); if (r) setMine(walkMine2Id(r.w, r.ep), e.target.value); }   // 질문을 따라 걷기 나의 해석
   if (e.target.id === 'pkQ') { PK.q = e.target.value; pkPaint(); }
@@ -4942,7 +4883,7 @@ if (LIVE) {
   acts['sb-relogin'] = () => sbLoginOpen('sync');
   acts.pray = () => {
     const n = curEx(), q = n && getQ(n.q);
-    const we = walkEpOfRoute(), text = routeKey() === 'explore/week' ? weekNow().q : we ? we.ep.ask : q?.text;
+    const we = walkEpOfRoute(), text = we ? we.ep.ask : q?.text;
     if (!text) return;
     let copied;
     try { copied = navigator.clipboard.writeText(text); } catch (_) { /* 복사 실패는 아래에서 안내한다 */ }

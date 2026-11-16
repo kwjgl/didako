@@ -1,14 +1,8 @@
 /* 디다코 노트 데모의 예시 자료(한 곳에 모았다).
-   오늘의 질문 409개와 이번 주의 질문 52개는 여기가 아니라 questions-data.js에 있다(docs/의 AI 초안과 art/bible-questions/의 그림에서 note/tools/make-data.py가 만든다).
+   오늘의 질문 409개는 여기가 아니라 questions-data.js에 있다(docs/의 AI 초안과 art/bible-questions/의 그림에서 note/tools/make-data.py가 만든다).
    내 기록의 예시 이름과 글은 화면 시안(prototype/mulpyo)의 지어낸 예시다.
-   weeklyExtra는 캔버스 보드(M7b, M30)에 있던 이번 주의 질문 예시의 덧붙임이다. 보드 예시는 이제 52개 가운데 1주와 같은 글이라 그 주(1주)에만 붙인다. */
+ */
 window.NOTE_DATA = {
-  /* 이번 주의 질문 가운데 보드 예시가 붙어 있던 주(주 번호가 키).
-     lastYear는 작년의 내 생각(보드 M7b의 예시 글), keys는 "이 질문에 닿는 내 질문"을 찾을 때만 쓰는 낱말이고 화면에는 보이지 않는다(보드 M30의 예시 카드가 나오게 한 데모용) */
-  weeklyExtra: {
-    1: { lastYear: '솔직히 잘 모르겠어요. 죽음은 아직 멀게 느껴져요', keys: '기도 낫지' }
-  },
-
   /* 말씀을 열며의 세 줄(GBS 앱 app/demo-data.js와 같은 글) */
   openLines: ['아버지께서 주신 말씀을', '말씀이 가리키는 예수님 안에서', '성령님이 깨닫게 해 주시기를'],
 
@@ -49,7 +43,7 @@ window.NOTE_DATA = {
       { q: 'sq2', mode: 'steps', current: true, daysAgo: 22, touchedDaysAgo: 20, since: '2026-07', last: 1,
         steps: ['정말 궁금한 건 기도해도 왜 낫지 않는지야', '시편 13편 1절\n다윗도 나처럼 물었어요', '', '', ''],
         ok: [true, true, false, false, false], refs: ['시편 13편 1절'],
-        added: { s2: { q: '언제까지 나를 잊고 계시겠어요?', ref: '시편 13편 1절' }, s3: null } },
+        added: { s2: { q: '언제까지 나를 잊고 계시겠어요?', ref: '시편 13편 1절' } } },
       { q: 'sq4', mode: 'steps', daysAgo: 50, touchedDaysAgo: 50, steps: ['', '', '', '', ''] },
       { q: 'sq7', mode: 'free', daysAgo: 85, touchedDaysAgo: 85 },
       { q: 'sq1', mode: 'steps', daysAgo: 204, touchedDaysAgo: 204, last: 0, ok: [true, false, false, false, false],
