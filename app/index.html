@@ -579,6 +579,10 @@ label.f { display: block; font-size: .85em; font-weight: 600; margin: 12px 0 4px
 .ad-mrow[aria-expanded="true"] .ad-chev { transform: rotate(180deg); }
 .ad-fold-body { padding: 0 0 1em; display: flex; flex-direction: column; gap: .6em; }
 .ad-fold-body .hint { margin: 0; }
+.ad-fold { position: relative; }
+.ad-fold > .ad-fold-ghost { position: absolute; left: 0; top: 0; pointer-events: none; cursor: default; }
+.ad-fold-ghost b, .ad-fold-ghost small, .ad-fold-ghost .ad-chev, .ad-fold-ghost .ad-dot { visibility: hidden; }
+.ad-fold-ghost .info-i { visibility: visible; pointer-events: auto; }
 .ad-dot { width: .7em; height: .7em; border-radius: 50%; background: var(--accent); flex: none; display: inline-block; }
 .ad-dot.bad { background: var(--warn); box-shadow: 0 0 0 4px var(--warn-soft); }
 .ad-dot.off { background: var(--line-strong); }
@@ -1277,6 +1281,14 @@ button.gallery-cell { display: block; width: 100%; padding: 0; cursor: pointer; 
 .record-wrap .set-btns .delete-answer { min-height:44px; padding:0 .8em; border:0; border-radius:10px; background:none; color:var(--ink-2); font:inherit; cursor:pointer; }
 .ps-topics { margin-top: 8px; padding: 8px 10px; border-radius: 12px; background: var(--surface-2); }
 .menu select.field { margin: 0 .3em .3em; width: calc(100% - .6em); }
+/* 디다코 소개 맨 위 영상(첫 화면 영상과 같은 파일, 코이데 소개와 같은 모양). 가로로 눕힌 둥근 칸이라 위쪽 손·노트가 보이게 아래쪽을 맞춘다(object-position). 꾸미는 영상이라 글은 없다 */
+.na-film { position: relative; overflow: hidden; border-radius: 16px; border: 1px solid var(--line); aspect-ratio: 4 / 3; margin: 8px 0 12px; background: radial-gradient(circle at 50% 46%, var(--surface) 0, var(--accent-soft) 72%); }
+.na-film video, .na-film .na-film-poster { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: 50% 72%; }
+.na-film video { opacity: 0; transition: opacity .8s ease; }
+.na-film video.on { opacity: 1; }
+@media (min-width: 900px) { .na-film { aspect-ratio: 16 / 10; width: 100%; max-width: 640px; margin-left: auto; margin-right: auto; } }
+@media (prefers-reduced-motion: reduce) { .na-film video { transition: none; } }
+
 /* 디다코 소개(C-03): 노트 소개(M8c)와 같은 모양 */
 .about-page, .feedback-page { max-width: 760px; margin: 0 auto; }
 .about-page .ab-mark { margin: 0 auto; }
@@ -1465,6 +1477,7 @@ button.gallery-cell { display: block; width: 100%; padding: 0; cursor: pointer; 
 </div>
 
 <script src="config.js"></script>
+<script src="info-tip.js"></script>
 <script src="covers.js"></script>
 <script src="demo-data.js"></script>
 <script src="book-gospel.js"></script>
@@ -1719,9 +1732,8 @@ function statusCard() {
   if (D.role !== 'pastor') return '';
   const L = thisLesson(), cur = STATUS.find(x => x[0] === D.status)[1];
   return `<section class="card" aria-label="공개 범위">
-    <p class="opt-name">제${L.no}과 공개 범위</p>
+    <p class="opt-name">제${L.no}과 공개 범위${DidakoTip.btn('해설과 진행 안내는 늘 리더에게만 보여요.', '공개 범위')}</p>
     <p class="status-row" aria-label="공개 범위: ${esc(cur)}">${STATUS.map(([v, l], i) => (i ? '<span class="st-sep" aria-hidden="true">›</span>' : '') + (v === D.status ? `<span class="pill pill-p">${ic('check')}<b>${l}</b></span>` : `<span class="st-off">${l}</span>`)).join('')}</p>
-    <p class="fine" style="margin-top:.6em">해설과 진행 안내는 늘 리더에게만 보여요.</p>
     <a class="quiet-link" href="#mp-${DATA.thisWeek.main.book}.${DATA.thisWeek.main.no}">교재 관리에서 바꾸기</a>
   </section>`;
 }
@@ -1799,11 +1811,11 @@ function hiddenBoard(h, future = false) {
 }
 function hiddenWeekCard(h, found) {
   const open = hiddenOpen(h);
-  const hint = open === 0 ? '퀴즈 정답을 찾은 날마다 한 칸씩 열려요.'
+  const hint = open === 0 ? ''
     : open === HIDDEN_CELLS ? `「${esc(h.title)}」 그림이 다 열렸어요.`
     : '';
   return `<section class="card">
-    <div class="wk-head"><h2 class="walk-kicker">숨은 그림</h2><span class="wk-aside hidden-range">${h.from}~${h.to}주</span></div>
+    <div class="wk-head"><h2 class="walk-kicker">숨은 그림${DidakoTip.btn('퀴즈 정답을 찾은 날마다 한 칸씩 열려요.', '숨은 그림')}</h2><span class="wk-aside hidden-range">${h.from}~${h.to}주</span></div>
     ${hiddenBoard(h)}
     ${hint ? `<p class="hint hidden-caption">${hint}</p>` : ''}
     ${found}
@@ -1894,7 +1906,7 @@ function wqView() {
       <textarea class="field xta" id="wqMed" rows="4" placeholder="처음 생각과 달라진 것, 새로 알게 된 것, 마음에 남은 한 줄을 적어 봐요." aria-label="나의 묵상">${esc(med)}</textarea>
       <div class="act-row"><button class="btn ghost" type="button" data-act="wq-next">건너뛰기</button><button class="btn" type="button" data-act="wq-next">마치기</button></div></div>`
   ];
-  const finished = `<div class="xfin"><div class="xft">이번 주의 질문을 다 펴 봤어요.</div><div class="hint">오늘 적은 내 생각은 내년 이맘때<br>이 질문과 함께 다시 보여요.</div><p class="fine">이번 주 그림이 올해의 그림에 담겼어요.</p><a class="quiet-link" href="#gallery">올해의 그림 보기 ›</a></div>
+  const finished = `<div class="xfin"><div class="xft">이번 주의 질문을 다 펴 봤어요.${DidakoTip.btn('오늘 적은 내 생각은 내년 이맘때 이 질문과 함께 다시 보여요.', '이번 주의 질문')}</div><p class="fine">이번 주 그림이 올해의 그림에 담겼어요.</p><a class="quiet-link" href="#gallery">올해의 그림 보기 ›</a></div>
     <div class="act-row wq-end"><button class="btn" type="button" data-act="wq-pray" style="background:var(--accent-soft);color:var(--accent);border-color:var(--accent-soft)">이 질문으로 하나님께 기도하기</button><a class="btn" href="#week">이번 주로</a></div>`;
   let past = '';
   for (let i = Math.min(WQ.max, 3); i >= 0; i--) if (i !== WQ.view) past += fold(i);
@@ -2320,8 +2332,7 @@ function liveStartView(arg) {
   const me = LV.me || {};
   if (arg === 'church') return `<form class="col-n" data-lform="church" novalidate>
       <p class="eyebrow" style="display:flex;align-items:center;gap:.4em;color:var(--accent)">${ic('check')}카카오로 로그인했어요</p>${lvSteps(1)}
-      <h1>교회 코드를 넣어 주세요</h1>
-      <p class="hint">교회 관리자에게 받은 코드예요</p>
+      <h1>교회 코드를 넣어 주세요${DidakoTip.btn('교회 관리자에게 받은 코드예요.', '교회 코드')}</h1>
       <input class="field" id="lvCode" placeholder="교회 코드" aria-label="교회 코드" autocapitalize="characters" autocomplete="off" spellcheck="false">
       <button class="btn wide" id="lvGo" type="submit" disabled>들어가기</button>
       <p class="msg" id="liveMsg" role="alert">${esc(LV.notice)}</p>
@@ -2355,33 +2366,29 @@ function liveStartView(arg) {
   }
   if (arg === 'who') {
     const f = lvFam();
-    return `<div class="col-n">${lvSteps(2)}<p class="eyebrow">${esc(f.name)} 가정</p><h1>누구세요?</h1>
+    return `<div class="col-n">${lvSteps(2)}<p class="eyebrow">${esc(f.name)} 가정</p><h1>누구세요?${DidakoTip.btn('리더가 승인할 때 누구인지 알아보는 데 써요.', '누구세요')}</h1>
       <div class="choices">${String(f.name).split(' · ').map(n => `<button class="choice" type="button" data-act="lv-pick-who" data-v="${esc(n)}">${esc(n)}</button>`).join('')}</div>
-      <p class="hint">리더가 승인할 때 누구인지 알아보는 데 써요.</p>
       ${lvBackBtn('family')}</div>`;
   }
   // 이름: 카카오 닉네임이 아니라 실제 이름. 소그룹 초대 링크 없이 들어오면 가정 목록 대신 내 이름을 써서 찾는다(교인 명단을 보여 주지 않는다)
-  if (arg === 'name') return `<div class="col-n">${lvSteps(2)}<p class="eyebrow">${ST.staff ? esc(lvDept().name) + ' · 목사님·전도사님' : esc(lvRoom().name)}</p><h1>내 이름을 써 주세요</h1>
+  if (arg === 'name') return `<div class="col-n">${lvSteps(2)}<p class="eyebrow">${ST.staff ? esc(lvDept().name) + ' · 목사님·전도사님' : esc(lvRoom().name)}</p><h1>내 이름을 써 주세요${DidakoTip.btn(ST.staff ? '교역자 목록에 있는 이름과 같게 써요. 다른 분들의 이름은 보이지 않아요.' : `${lvGrp()} 명단에 있는 이름과 같게 써요.${lvSolo() ? '' : ' 가정이면 남편이나 아내 중 내 이름이에요.'} 다른 분들의 이름은 보이지 않아요.`, '내 이름')}</h1>
       <form data-lform="name" novalidate><input id="lvName" class="field" required maxlength="10" autocomplete="name" aria-label="내 이름" placeholder="예) 김하늘" value="${esc(ST.byName ? ST.person : '')}">
-        <p class="hint">${ST.staff ? '교역자 목록에 있는 이름과 같게 써요.' : `${esc(lvGrp())} 명단에 있는 이름과 같게 써요.${lvSolo() ? '' : ' 가정이면 남편이나 아내 중 내 이름이에요.'}`} 카카오 닉네임이 아니라 실제 이름이에요. 다른 분들의 이름은 보이지 않아요.</p>
         <p class="msg" id="liveMsg" role="alert"></p>
         <button class="btn wide" type="submit">다음</button></form>
       ${ST.staff ? '' : `<div class="choices"><button class="choice new" type="button" data-act="lv-new">${lvSolo() ? '처음 왔어요(새로 신청)' : '새로 온 가정이에요(새 가정 신청)'}</button></div>`}
       ${lvBackBtn('room')}</div>`;
   if (arg === 'new') {
     const N = ST.newFamily || {}, back = Array.isArray(lvRoom().families) ? 'family' : 'name';
-    return lvSolo() ? `<div class="col-n">${lvSteps(2)}<p class="eyebrow">새로 왔어요</p><h1>이름을 알려 주세요</h1>
+    return lvSolo() ? `<div class="col-n">${lvSteps(2)}<p class="eyebrow">새로 왔어요</p><h1>이름을 알려 주세요${DidakoTip.btn('신청하면 리더가 확인한 뒤 승인해요.', '이름')}</h1>
       <form data-lform="new" novalidate>
         <label class="f" for="lvNa">이름</label><input id="lvNa" class="field" required maxlength="10" autocomplete="name" value="${esc(N.a || (ST.byName ? ST.person : ''))}">
-        <p class="hint">신청하면 리더가 확인한 뒤 승인해요.</p>
         <button class="btn wide" type="submit">다음</button></form>
       ${lvBackBtn(back)}</div>`
-    : `<div class="col-n">${lvSteps(2)}<p class="eyebrow">새 가정 신청</p><h1>우리 가정을 알려 주세요</h1>
+    : `<div class="col-n">${lvSteps(2)}<p class="eyebrow">새 가정 신청</p><h1>우리 가정을 알려 주세요${DidakoTip.btn('신청하면 리더가 확인한 뒤 승인해요. 배우자는 나중에 각자 카카오로 연결하면 돼요.', '우리 가정')}</h1>
       <form data-lform="new" novalidate>
         <label class="f" for="lvNa">남편 또는 본인 이름</label><input id="lvNa" class="field" required maxlength="10" autocomplete="name" value="${esc(N.a || (ST.byName ? ST.person : ''))}">
         <label class="f" for="lvNb">아내 이름 · 1인 가정이면 비워 두세요</label><input id="lvNb" class="field" maxlength="10" value="${esc(N.b || '')}">
         <label class="f" for="lvNk">자녀 이름 · 선택, 쉼표로 구분</label><input id="lvNk" class="field" maxlength="40" value="${esc(N.kids || '')}">
-        <p class="hint">신청하면 리더가 확인한 뒤 승인해요. 배우자는 나중에 각자 카카오로 연결하면 돼요.</p>
         <button class="btn wide" type="submit">다음</button></form>
       ${lvBackBtn(back)}</div>`;
   }
@@ -2420,11 +2427,9 @@ function liveStartView(arg) {
       <a class="btn wide" href="#week">이번 주로</a></div>`;
   }
   if (arg === 'setup') return `<form class="col-n" data-lform="setup" novalidate>
-      <p class="eyebrow">처음 한 번만</p><h1>설치 코드를 넣어 주세요</h1>
-      <p class="hint">처음 한 번만 써요. 서버를 만든 사람에게 받은 설치 코드를 넣어 주세요.</p>
+      <p class="eyebrow">처음 한 번만</p><h1>설치 코드를 넣어 주세요${DidakoTip.btn('서버를 만든 사람에게 받은 코드예요.', '설치 코드')}</h1>
       <label class="f" for="lvSetupCode">설치 코드</label><input class="field" id="lvSetupCode" autocomplete="off" spellcheck="false" aria-label="설치 코드">
-      <label class="f" for="lvSetupName">내 이름</label><input class="field" id="lvSetupName" maxlength="20" autocomplete="name" aria-label="내 이름" placeholder="예) 김하늘">
-      <p class="hint">교회 관리자로 보일 이름이에요.</p>
+      <div class="tip-line"><label class="f" for="lvSetupName">내 이름</label>${DidakoTip.btn('교회 관리자로 보일 이름이에요.', '내 이름')}</div><input class="field" id="lvSetupName" maxlength="20" autocomplete="name" aria-label="내 이름" placeholder="예) 김하늘">
       <button class="btn wide" type="submit">교회 관리자로 시작하기</button>
       <p class="msg" id="liveMsg" role="alert"></p>
       <button class="link" type="button" data-act="lv-setup-skip">나중에 하기</button>
@@ -2466,10 +2471,9 @@ function liveRoomCard() {
   if (!me.roomName) return '';
   const names = liveLeads() && PEND.data ? PEND.data.families.flatMap(f => f.linked.map(l => l.person)) : null;
   return `<div class="gc" style="margin:14px 0;padding-top:14px;padding-bottom:14px">
-        <b>우리 사랑방</b><p>${esc(me.roomName)}</p>
+        <b>우리 사랑방${DidakoTip.btn('사랑방이 바뀌면 리더나 관리자에게 알려 주세요.', '우리 사랑방')}</b><p>${esc(me.roomName)}</p>
         ${names ? `<p class="mlabel">함께하는 사람</p><div class="kids">${names.map(n => `<span class="kid">${esc(n)}</span>`).join('')}</div>` : ''}
         <p class="hint">이름만 보여요. 서로 얼마나 썼는지는 보이지 않아요.</p>
-        <p class="hint">사랑방이 바뀌면 리더나 관리자에게 알려 주세요.</p>
       </div>`;
 }
 
@@ -2538,7 +2542,7 @@ const myRoom = () => roomState || (roomState = { members: DATA.rooms.mine.member
 function moreView() {
   const room = LIVE ? null : DATA.rooms.mine;
   const chevron = '<span class="ch" aria-hidden="true">›</span>';
-  const jobRow = (title, desc, target, tag) => `<a class="gr" href="${target}"><span class="gt"><b>${title}</b><span class="gd">${desc}</span></span><span class="role-tag ${!tag && D.role === 'leader' ? 'leader' : 'admin'}">${esc(tag || roleName())}</span>${chevron}</a>`;
+  const jobRow = (title, desc, target, tag) => `<a class="gr" href="${target}"><span class="gt"><b>${title}</b></span><span class="role-tag ${!tag && D.role === 'leader' ? 'leader' : 'admin'}">${esc(tag || roleName())}</span>${chevron}</a>`;
   let jobs = '';
   if (D.role === 'leader') jobs = jobRow('우리 사랑방', '함께하는 사람 · 연결 승인', '#church');
   else if (D.role === 'pastor') jobs = jobRow('교재 관리', '교재와 과를 꾸리고 배포해요', '#manage') + jobRow('사랑방 전체 보기', '모든 사랑방의 명단과 연결 상태', '#rooms');
@@ -2549,27 +2553,26 @@ function moreView() {
   return `<div class="page-top"><h1>더보기</h1></div>
     <div class="more-grid"><div>
       ${LIVE ? liveRoomCard() : `<div class="gc" style="margin:14px 0;padding-top:14px;padding-bottom:14px">
-        <b>우리 사랑방</b><p>${esc(room.name)}</p>
+        <b>우리 사랑방${DidakoTip.btn('사랑방이 바뀌면 리더나 관리자에게 알려 주세요.', '우리 사랑방')}</b><p>${esc(room.name)}</p>
         <p class="mlabel">리더</p><div class="kids"><span class="kid lead">${esc(room.leader)}</span><span class="kid lead">${esc(room.coLeader)} · 코리더</span></div>
         <p class="mlabel">함께하는 사람</p><div class="kids">${myRoom().members.map(n => `<span class="kid">${esc(n)}</span>`).join('')}</div>
         <p class="hint">이름만 보여요. 서로 얼마나 썼는지는 보이지 않아요.</p>
-        <p class="hint">사랑방이 바뀌면 리더나 관리자에게 알려 주세요.</p>
       </div>`}
       <div class="gl">함께하는 곳</div><div class="gc">
-        <a class="gr" href="../note/"><span class="gt"><b>디다코 노트</b><span class="gd">혼자 묵상하는 노트</span></span>${chevron}</a>
-        <a class="gr" href="../community/"><span class="gt"><b>디다코 공동체</b><span class="gd">작은 모임에서 말씀을 함께 읽어요.</span></span>${chevron}</a>
+        <a class="gr" href="../note/"><span class="gt"><b>디다코 노트</b></span>${chevron}</a>
+        <a class="gr" href="../community/"><span class="gt"><b>디다코 공동체</b></span>${chevron}</a>
       </div>
     </div><div>
       ${jobs ? `<div class="gl">맡은 일</div><div class="gc">${jobs}</div>` : ''}
       <div class="gl">앱 설정</div><div class="gc">
-        <button class="gr${dispOpen ? ' open' : ''}" type="button" data-act="disp" aria-expanded="${dispOpen}" aria-controls="dispEx"><span class="gt"><b class="mhead">화면 설정</b><span class="gd">화면 모드 · 색 테마 · 디자인 · 큰 글씨</span></span>${dispOpen ? ic('chev', 'ch') : chevron}</button>
+        <button class="gr${dispOpen ? ' open' : ''}" type="button" data-act="disp" aria-expanded="${dispOpen}" aria-controls="dispEx"><span class="gt"><b class="mhead">화면 설정</b></span>${dispOpen ? ic('chev', 'ch') : chevron}</button>
         ${dispOpen ? `<div id="dispEx" style="padding:4px 0 14px">${displayControls()}</div>` : ''}
-        <button class="gr" type="button" data-act="a2hs"><span class="gt"><b>홈 화면에 앱처럼 두기</b><span class="gd">아이콘을 눌러 바로 열 수 있게 해요</span></span>${chevron}</button>
+        <button class="gr" type="button" data-act="a2hs"><span class="gt"><b>홈 화면에 앱처럼 두기</b></span>${chevron}</button>
       </div>
       <div class="gl">디다코</div><div class="gc">
-        <a class="gr" href="#about"><span class="gt"><b>디다코 소개</b><span class="gd">이름의 뜻과 디다코가 지키는 것</span></span>${chevron}</a>
-        <button class="gr" type="button" data-act="more-guide"><span class="gt"><b>사용법</b><span class="gd">화면마다 무엇을 하는지 한 장씩 봐요</span></span>${chevron}</button>
-        <a class="gr" href="#feedback"><span class="gt"><b>의견 보내기</b><span class="gd">불편한 점, 바라는 점, 고마운 점</span></span>${chevron}</a>
+        <a class="gr" href="#about"><span class="gt"><b>디다코 소개</b></span>${chevron}</a>
+        <button class="gr" type="button" data-act="more-guide"><span class="gt"><b>사용법</b></span>${chevron}</button>
+        <a class="gr" href="#feedback"><span class="gt"><b>의견 보내기</b></span>${chevron}</a>
       </div>
       <button class="logout" type="button" data-act="more-logout">이 기기에서 로그아웃</button>
     </div></div>`;
@@ -2598,6 +2601,7 @@ function aboutView() {
     ['말씀 앞에서는 모두 배우는 사람이에요.', '목사님도 리더도 함께 배워요. 배운 것을 문답으로 스스로 확인하지만, 점수를 매기거나 서로 견주지 않아요.', '이번 주의 질문 열기 ›', '#week']
   ];
   return `<div class="about-page"><a class="back-link" href="#more">${ic('back')}<span>더보기</span></a>
+    <div class="na-film" aria-hidden="true"></div>
     <div class="card about-head"><span class="ab-mark" aria-hidden="true"><svg class="mk"><use href="#i-didako"/></svg></span>
       <h1>디다코</h1><p class="soft">말씀을 함께 읽고 나누고 간직해요</p></div>
     <section class="card about-card"><h2>이름의 뜻</h2>
@@ -2629,7 +2633,7 @@ const feedbackState = { kind:'이랬으면', named:false, text:'' };
 function feedbackView() {
   const s = feedbackState;
   return `<div class="feedback-page"><a class="back-link" href="#more">${ic('back')}<span>더보기</span></a>
-    <p class="eyebrow">디다코를 함께 만들어요</p><div class="page-top"><h1>의견 보내기</h1></div>
+    <p class="eyebrow">디다코를 함께 만들어요</p><div class="page-top"><h1>의견 보내기${DidakoTip.btn('디다코를 만드는 사람이 읽어요. 답장은 따로 오지 않아요.', '의견 보내기')}</h1></div>
     <section class="card feedback-card"><div class="seg" role="radiogroup" aria-label="의견 종류">
       ${['불편해요','이랬으면','고마워요'].map(k=>`<button type="button" role="radio" aria-checked="${s.kind===k}" class="${s.kind===k?'on':''}" data-act="fb-kind" data-kind="${k}">${k}</button>`).join('')}</div>
       <p class="warning">내 답변과 기록은 여기 쓰지 말아 주세요.</p>
@@ -2638,7 +2642,7 @@ function feedbackView() {
       <div class="set-row"><span><b>이름 밝히기</b><small class="hint">끄면 누가 보냈는지 남기지 않아요.</small></span>
         <button class="switch${s.named?' on':''}" type="button" role="switch" aria-label="이름 밝히기" aria-checked="${s.named}" data-act="fb-named"><span></span></button></div>
       <button class="btn wide" id="feedbackSend" type="button" data-act="fb-send" ${s.text.trim()?'':'disabled'}>보내기</button>
-      <p class="hint">디다코를 만드는 사람이 읽어요. 답장은 따로 오지 않아요.</p></section></div>`;
+      </section></div>`;
 }
 
 // ── 교재 관리(P-01): 원본과 회원 화면은 건드리지 않고 복사본만 고친다 ──
@@ -2714,16 +2718,16 @@ function mgPublishView(b, L) {
     <div class="record-top"><h1>배포</h1><a class="btn ghost small" href="${edit}">편집</a></div>
     ${missing.length ? `<section class="card"><p class="opt-name">배포하기 전에 채워 주세요</p><ul>${missing.map(v => '<li>' + v + '</li>').join('')}</ul><a class="btn ghost small" href="${edit}">편집으로 가서 채우기</a></section>` : ''}
     <section class="card">
-      <p class="opt-name">제${L.no}과 ${esc(L.name || '(제목을 적어 주세요)')}</p>
+      <p class="opt-name">제${L.no}과 ${esc(L.name || '(제목을 적어 주세요)')}${DidakoTip.btn('해설과 진행 안내는 리더에게만 보여요.', '제' + L.no + '과')}</p>
       <p class="status-row" aria-label="공개 범위: ${label}">${STATUS.map(([v, l], i) => (i ? '<span class="st-sep" aria-hidden="true">›</span>' : '') + (v === st ? `<span class="pill pill-p">${ic('check')}<b>${l}</b></span>` : `<span class="st-off">${l}</span>`)).join('')}</p>
       ${st === 'draft' ? '<p class="fine">회원에게는 "이번 주 과를 준비하고 있어요"가 보여요.</p>' : `<p class="fine">${ic('check')} ${st === 'leader' ? '리더까지 공개했어요' : '모두에게 공개했어요'}${L.pubAt ? ` (${esc(L.pubAt)})` : ''}</p>`}
-      <p class="fine" style="margin-top:.2em">해설과 진행 안내는 리더에게만 보여요.</p>
+      
       ${!missing.length && !String(L.ref || '').trim() ? `<p class="mg-warn">${ic('info')}<span>본문 장절이 비어 있어요. 본문이 없는 과라면 그대로 배포해도 돼요.</span></p>` : ''}
       <p class="mg-pub-lbl">배포</p>
       <div class="mg-pub-row">${button(mgLeadWho(count) + '에게', 'leader', false, st !== 'draft', mgLeadWho(count) + '에게 배포')}<span class="st-sep" aria-hidden="true">›</span>${button(esc(target) + ' 회원에게', 'all', st === 'draft', st !== 'leader', esc(target) + ' 회원에게 배포')}</div>
       <div class="mg-pub-more">${st === 'draft' ? `<button class="quiet-link" type="button" data-act="mg-pub" data-v="both"${disabled ? ' disabled' : ''}>한 번에 둘 다</button>` : '<button class="quiet-link" type="button" data-act="mg-unpub">배포 중단</button>'}</div>
     </section>
-    <div class="gc"><a class="gr" href="#mx-${b.id}.${L.no}"><span class="gt"><b>인쇄용 보기</b><span class="gd">PDF나 Word로 내려받아요</span></span><span class="ch" aria-hidden="true">›</span></a></div>`;
+    <div class="gc"><a class="gr" href="#mx-${b.id}.${L.no}"><span class="gt"><b>인쇄용 보기</b></span><span class="ch" aria-hidden="true">›</span></a></div>`;
 }
 // ── 인쇄(C-02): A4 종이와 쪽 나누기. 시안 manage.html의 인쇄용(ppHead·ppBlocks·paginate·paperPages)을 앱 자료에 맞게 옮겼다 ──
 // 종이 위아래 여백 16mm씩, 2mm는 넉넉하게 남긴다. 교재 관리의 인쇄에는 회원의 개인 기록을 넣지 않는다
@@ -2806,7 +2810,7 @@ function ppPagesHtml(src, o, n0) {
   return { html, count: n - n0 };
 }
 // 인쇄 단추: PDF는 기기의 인쇄 창을 연다(거기서 'PDF로 저장'). 인쇄할 때는 종이 쪽만 나간다
-const ppBar = wordAct => `<div class="print-bar"><div class="pb-btns"><button class="btn" type="button" data-act="pp-pdf">PDF로 내려받기</button><button class="btn ghost" type="button" data-act="${wordAct}">Word로 내려받기</button></div><p class="hint">A4 종이 크기로 미리 볼 수 있어요.</p></div>`;
+const ppBar = wordAct => `<div class="print-bar"><div class="pb-btns"><button class="btn" type="button" data-act="pp-pdf">PDF로 내려받기</button><button class="btn ghost" type="button" data-act="${wordAct}">Word로 내려받기</button></div></div>`;
 // 고르는 칸(대상·답변 공간)은 화면에서만 기억한다
 const PP = { leader: false, space: 'mid' };
 const ppOptsHtml = () => `<section class="card"><p class="opt-name">대상</p><div class="seg" style="--n:2">${[['0', '회원용'], ['1', '리더용']].map(([v, l]) => `<button type="button" data-act="pp-target" data-v="${v}" class="${PP.leader === (v === '1') ? 'on' : ''}" aria-pressed="${PP.leader === (v === '1')}">${l}</button>`).join('')}</div>
@@ -3035,8 +3039,7 @@ function mgBooksView() {
 // 디다코 기본 교재(실제 모드): 앱에 들어 있는 교재를 우리 교회 교재로 복제한다. 줄 모양은 교재 목록 줄과 같다
 function mgBasicHtml() {
   if (!BASIC.books.length) return '';
-  return `<div class="gl">디다코 기본 교재</div><div class="gc">${BASIC.books.map(b => `<div class="gr mg-row"><span class="mg-cover">${bookCover({ ...b, id: '' }, 'list')}</span><span class="gt"><b>${esc(b.title)}</b><span class="gd mg-pills">${mgChips([b.kind, b.lessons.length + '과'])}</span></span><button class="btn ghost small" type="button" data-act="mg-basic" data-v="${esc(b.id)}" aria-label="${esc(b.title)} 가져오기">가져오기</button></div>`).join('')}
-    <div class="gr"><span class="gt"><span class="gd">우리 교회 교재로 복제해서 읽고 고친 뒤 배포해요.</span></span></div></div>`;
+  return `<div class="gl">디다코 기본 교재${DidakoTip.btn('우리 교회 교재로 복제해서 읽고 고친 뒤 배포해요.', '디다코 기본 교재')}</div><div class="gc">${BASIC.books.map(b => `<div class="gr mg-row"><span class="mg-cover">${bookCover({ ...b, id: '' }, 'list')}</span><span class="gt"><b>${esc(b.title)}</b><span class="gd mg-pills">${mgChips([b.kind, b.lessons.length + '과'])}</span></span><button class="btn ghost small" type="button" data-act="mg-basic" data-v="${esc(b.id)}" aria-label="${esc(b.title)} 가져오기">가져오기</button></div>`).join('')}</div>`;
 }
 const mgLongDate = v => { const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(v || ''); return m ? `${m[1]}년 ${Number(m[2])}월 ${Number(m[3])}일` : (v || ''); };
 function mgBookView(b) {
@@ -3045,7 +3048,7 @@ function mgBookView(b) {
     <div class="more-grid"><div>${!b.closed ? '<button class="btn wide" type="button" data-act="mg-lesson-add">과 추가</button>' : ''}<div class="gl">과</div><div class="gc">
       ${b.lessons.map(L => `<a class="gr" href="#me-${b.id}.${L.no}"><span class="gt"><b>제${L.no}과 ${esc(L.name || '(제목을 적어 주세요)')}</b><span class="gd mg-pills">${mgChips([L.date, L.ref && [L.ref, true]])}</span></span>${mgPill(b, L)}</a>`).join('') || '<div class="gr"><span class="gt"><span class="gd">아직 과가 없어요. 과를 더해 시작해요.</span></span></div>'}
     </div></div><div><div class="gc"><div class="gr"><span class="mg-cover big">${bookCover({ ...b, id: '' }, 'list')}</span><span class="gt"><b>${esc(b.title)}</b><span class="gd">${esc(b.kind)}</span></span></div><dl class="mg-info"><div><dt>대상 모임</dt><dd>${esc(b.target || deptLabel())}</dd></div>${b.source ? `<div><dt>출처</dt><dd>${esc(b.source)}</dd></div>` : ""}${b.start ? `<div><dt>시작 날짜</dt><dd>${esc(mgLongDate(b.start))}</dd></div>` : ''}${b.closed && b.end ? `<div><dt>끝난 날짜</dt><dd>${esc(mgLongDate(b.end))}</dd></div>` : ''}</dl></div>
-    <div class="gc">${row('교재 정보 편집', '제목, 표지 이름, 표지, 대상 모임, 시작 날짜', 'mg-edit')}${row('교재 통째로 복제', '내용만 가져오고 배포 이력은 가져오지 않아요', 'mg-dup')}${`<a class="gr" href="#mxb-${b.id}"><span class="gt"><b>인쇄용 보기</b><span class="gd">PDF나 Word로 내려받아요</span></span><span class="ch" aria-hidden="true">›</span></a>`}${b.closed ? '' : row('교재 닫기', '오늘 날짜로 끝내고 지난 교재로 옮겨요', 'mg-close')}</div>${b.closed ? '<button class="quiet-link" type="button" data-act="mg-reopen">다시 열기</button>' : ''}</div></div>`;
+    <div class="gc">${row('교재 정보 편집', '', 'mg-edit')}${row('교재 통째로 복제', '내용만 가져오고 배포 이력은 가져오지 않아요', 'mg-dup')}${`<a class="gr" href="#mxb-${b.id}"><span class="gt"><b>인쇄용 보기</b></span><span class="ch" aria-hidden="true">›</span></a>`}${b.closed ? '' : row('교재 닫기', '오늘 날짜로 끝내고 지난 교재로 옮겨요', 'mg-close')}</div>${b.closed ? '<button class="quiet-link" type="button" data-act="mg-reopen">다시 열기</button>' : ''}</div></div>`;
 }
 function mgForm(b) {
   mgEditing = b ? b.id : '';
@@ -3058,7 +3061,7 @@ function mgForm(b) {
   openSheet(sheetHead(b ? '교재 정보 편집' : '새 교재 만들기') + `<div class="keep-form">
     <div><label for="mgKind">종류</label><select class="field" id="mgKind">${options(kinds.map(k => [k, k]), b && b.kind)}</select></div>
     <div><label for="mgTitle">제목</label><input class="field" id="mgTitle" maxlength="40" value="${esc(b ? b.title : '')}"><p class="hint" id="mgTitleHint" hidden>교재 제목을 적어 주세요</p></div>
-    <div><label for="mgCoverName">표지 이름 <span class="hint">선택, 10자까지</span></label><input class="field" id="mgCoverName" maxlength="10" value="${esc(b ? b.coverName || '' : '')}" placeholder="예: 요한복음"><p class="hint">표지 위쪽에 보여요. 비워 두면 그림만 보여요.</p></div>
+    <div><label for="mgCoverName">표지 이름 <span class="hint">선택, 10자까지</span>${DidakoTip.btn('표지 위쪽에 보여요. 비워 두면 그림만 보여요.', '표지 이름')}</label><input class="field" id="mgCoverName" maxlength="10" value="${esc(b ? b.coverName || '' : '')}" placeholder="예: 요한복음"></div>
     <div><label for="mgGroup">표지 묶음</label><select class="field" id="mgGroup">${options(COVERS.groups.map(g => [g.id, g.name]), group.id)}</select></div>
     <div><label for="mgMotif">상징</label><select class="field" id="mgMotif">${options(group.items.map(i => [i.id, i.name]), cover.motif)}</select></div>
     <div><label for="mgColor">색</label><select class="field" id="mgColor">${options(COVERS.colors.map(c => [c[0], c[2]]), cover.color)}</select></div>
@@ -3133,11 +3136,11 @@ function mgWriteHtml(b, L, g) {
       <button class="btn ghost small" type="button" data-act="mg-q-add" data-si="${si}">질문 추가</button>
       <button class="btn ghost small" type="button" data-act="mg-read-add" data-si="${si}">읽을 글 추가</button></section>`).join('')}
     <button class="btn ghost wide" type="button" data-act="mg-stage-add">단계 추가</button>
-    <section class="card"><p class="opt-name">깊이 묵상하기</p>${g.triple.map(t => `<div class="tri-item"><span class="who">${esc(t.who)}</span><p class="q-t">${esc(t.t)}</p></div>`).join('')}<p class="hint">깊이 묵상하기 질문은 교재마다 같아요.</p></section>
+    <section class="card"><p class="opt-name">깊이 묵상하기${DidakoTip.btn('깊이 묵상하기 질문은 교재마다 같아요.', '깊이 묵상하기')}</p>${g.triple.map(t => `<div class="tri-item"><span class="who">${esc(t.who)}</span><p class="q-t">${esc(t.t)}</p></div>`).join('')}</section>
     <section class="card"><div class="keep-form">${field('wrap', '마무리 적용·기도 안내 (선택)', L.wrap, { ta: true })}</div></section>
-    <section class="card"><p class="opt-name">성경 본문 (인쇄용)</p>${mgEditSeg('mg-edit-seg', 'print-on', [['0', '넣지 않기'], ['1', '넣기']], L.useText ? '1' : '0')}
+    <section class="card"><p class="opt-name">성경 본문 (인쇄용)${DidakoTip.btn('앱에서는 장절만 보여요. 직접 성경을 펴서 읽고 찾아보게 해요.', '성경 본문')}</p>${mgEditSeg('mg-edit-seg', 'print-on', [['0', '넣지 않기'], ['1', '넣기']], L.useText ? '1' : '0')}
       ${L.useText ? `<div class="keep-form">${field('print-text', '성경 본문', L.text, { ta: true, rows: 8 })}<div><p class="mlabel">글자 크기</p>${mgEditSeg('mg-edit-seg', 'print-size', [['s', '작게'], ['m', '보통'], ['l', '크게']], L.fs || 'm')}</div></div>` : ''}
-      <p class="hint">앱에서는 장절만 보여요. 직접 성경을 펴서 읽고 찾아보게 해요.</p></section>
+      </section>
     <div class="end-btns"><a class="btn" href="#mp-${b.id}.${L.no}">배포로 가기</a><div class="mg-pair"><button class="btn ghost" type="button" data-act="mg-q-lesson-dup">이 과 복제</button>${mgStatus(b, L) === 'draft' ? '<button class="btn ghost" type="button" data-act="mg-lesson-del">이 과 지우기</button>' : ''}</div></div>
     ${mgStatus(b, L) !== 'draft' ? '<p class="hint">배포한 과는 배포 화면에서 배포를 멈출 수 있어요.</p>' : ''}`;
 }
@@ -3277,11 +3280,15 @@ const AD_ROLES = ['리더', '코리더', '교재 담당', '관리자'];
 const AD_GROUPS = ['사랑방', '셀', '목장', '순', '구역', '조', '소그룹'];
 const adSay = (label, msg, cls) => `<button class="${cls || 'btn small ghost'}" type="button" data-act="ad-say" data-msg="${esc(msg || AD_NOCHANGE)}">${label}</button>`;
 // 접어 둔 한 줄(제목 굵게 + 작은 설명 + 오른쪽 꺾쇠). 누르면 그 자리에서 펼쳐진다. 속은 열렸을 때만 만든다
-function adFold(key, title, sub, body, lead) {
-  const open = !!AD.fold[key];
-  return `<div class="ad-fold${open ? ' open' : ''}"><button class="ad-mrow" type="button" data-act="ad-fold" data-v="${key}" aria-expanded="${open}"${open ? ` aria-controls="adf-${key}"` : ''}>${lead || ''}<span class="ad-t"><b>${title}</b><small>${sub}</small></span><span class="ad-chev" aria-hidden="true">${ic('chev')}</span></button>
+// 접어 둔 한 줄(제목 굵게 + 작은 설명 + 오른쪽 꺾쇠). 누르면 그 자리에서 펼쳐진다. 속은 열렸을 때만 만든다
+// tip이 있으면 줄 제목 옆에 ⓘ를 둔다: 줄 버튼 안에 버튼을 넣지 않으려고, 같은 틀(.ad-mrow)의 투명한 복사본 위에 ⓘ만 보이게 겹친다(코이데 .fold-ghost와 같다)
+function adFold(key, title, sub, body, lead, tip) {
+  const open = !!AD.fold[key], small = sub ? `<small>${sub}</small>` : '';
+  const ghost = tip ? `<div class="ad-mrow ad-fold-ghost">${lead || ''}<span class="ad-t"><b>${title}${DidakoTip.btn(tip, title)}</b>${small}</span><span class="ad-chev">${ic('chev')}</span></div>` : '';
+  return `<div class="ad-fold${open ? ' open' : ''}"><button class="ad-mrow" type="button" data-act="ad-fold" data-v="${key}" aria-expanded="${open}"${open ? ` aria-controls="adf-${key}"` : ''}>${lead || ''}<span class="ad-t"><b>${title}</b>${small}</span><span class="ad-chev" aria-hidden="true">${ic('chev')}</span></button>${ghost}
     ${open ? `<div class="ad-fold-body" id="adf-${key}">${body()}</div>` : ''}</div>`;
 }
+
 // 모두 승인: 신청이 둘 이상일 때. 누르면 그 자리에서 한 번 더 묻고, 지금 보이는 신청만 승인한다
 function adApproveAll(n) {
   if (n < 2) return '';
@@ -3371,14 +3378,14 @@ function adRosterCard() {
     return `<div class="ad-rs-acts" id="adp-${f.id}">
       <p class="ad-pn-st">${adDot(n)}${n ? '카카오 연결 ' + n + '명' : '아직 카카오 연결 없음'}</p>
       <div class="ad-pn-sec"><p class="ad-label">역할</p><div class="seg" style="--n:3" role="radiogroup" aria-label="${esc(f.name)} 역할">${['회원', '코리더', '리더'].map(k => `<button type="button" class="${role === k ? 'on' : ''}" role="radio" aria-checked="${role === k}" data-act="ad-rrole" data-v="${k}">${k}</button>`).join('')}</div>
-        <div class="set-row" style="margin-top:.7em"><div><p class="ad-label" style="margin:0">부서 관리자</p><p class="hint" style="margin:.2em 0 0">이 관리 화면을 함께 열어요.</p></div>
+        <div class="set-row" style="margin-top:.7em"><div><p class="ad-label" style="margin:0">부서 관리자${DidakoTip.btn('이 관리 화면을 함께 열어요.', '부서 관리자')}</p></div>
           <button type="button" class="switch${f.admin ? ' on' : ''}" role="switch" aria-checked="${!!f.admin}" aria-label="${esc(f.name)} 부서 관리자" data-act="ad-radmin"><span></span></button></div></div>
       <div class="ad-pn-sec"><p class="ad-label">소속</p><p style="margin:0${others.length ? ' 0 .5em' : ''}">지금 <b>${esc(r.name)}</b></p>
         ${others.length ? `<div class="ad-kform"><label class="ad-mv-l" for="adMoveTo">다른 ${esc(adJ(g, '으로/로'))}</label><select id="adMoveTo" class="field">${others.map(x => `<option value="${x.id}">${esc(x.name)}</option>`).join('')}</select><button class="btn small ghost" type="button" data-act="ad-rmove">옮기기</button></div>` : ''}</div>
       <div class="ad-pn-sec"><p class="ad-label">카카오 연결</p>${n ? `<ul class="ad-rs-links">${f.on.map(p => `<li><span>${esc(p)} <small>카카오 "${esc(adNick(p))}"</small></span>${ask === 'unlink:' + p
           ? `<span class="ad-btns"><button class="btn small" type="button" data-act="ad-ask-yes">네, 해제</button><button class="btn small ghost" type="button" data-act="ad-ask-no">아니요</button></span><p class="hint" style="flex-basis:100%;margin:0">휴대폰을 잃어버렸거나 잘못 고른 경우에만 해제해요.</p>`
           : `<button class="ad-link danger" type="button" data-act="ad-runlink" data-v="${esc(p)}" aria-label="${esc(p)} 연결 해제">해제</button>`}</li>`).join('')}</ul>` : '<p class="hint">아직 연결된 분이 없어요. 초대 링크로 들어와 연결을 신청하면 여기에 보여요.</p>'}</div>
-      ${solo ? '' : `<div class="ad-pn-sec"><p class="ad-label">가끔 하는 일</p><div class="ad-pn-rows"><button class="ad-mrow sub" type="button" data-act="ad-mvstart" data-v="marry" data-fam="${f.id}"><span class="ad-t"><b>결혼해서 가정 합치기</b><small>새 가정 하나로 합쳐요. 각자의 기록은 그대로 남아요.</small></span><span class="ad-chev" style="transform:rotate(-90deg)" aria-hidden="true">${ic('chev')}</span></button></div></div>`}
+      ${solo ? '' : `<div class="ad-pn-sec"><p class="ad-label">가끔 하는 일</p><div class="ad-pn-rows"><button class="ad-mrow sub" type="button" data-act="ad-mvstart" data-v="marry" data-fam="${f.id}"><span class="ad-t"><b>결혼해서 가정 합치기</b></span><span class="ad-chev" style="transform:rotate(-90deg)" aria-hidden="true">${ic('chev')}</span></button></div></div>`}
       <div class="ad-pn-sec ad-pn-end">${ask === 'leave'
         ? `<p class="warn-text" style="margin:0">${esc(adJ(f.name, '을/를'))} 지금 편성에서 뺄까요? 각자의 기록은 남고, 1년이 지나면 개인정보 요청에 올라와요.</p><div class="ad-acts" style="margin-top:.5em"><button class="btn small" type="button" data-act="ad-ask-yes">네, 뺄게요</button><button class="btn small ghost" type="button" data-act="ad-ask-no">아니요</button></div>`
         : `<button class="ad-link danger" type="button" data-act="ad-rleave">${DATA.admin.term}년 편성에서 빼기 (떠남)</button><p class="hint">각자의 기록은 남아요. 누르면 한 번 더 확인해요.</p>`}</div></div>`;
@@ -3409,11 +3416,11 @@ function adRosterCard() {
         : `<div class="ad-foot"><button class="ad-link" type="button" data-act="ad-redit" data-v="person|${r.id}">+ ${one} 더하기</button><button class="ad-link" type="button" data-act="ad-redit" data-v="bulk|${r.id}">+ 여러 명 더하기</button><button class="ad-link quiet" type="button" data-act="ad-redit" data-v="rename|${r.id}">이름 바꾸기</button>${r.fams.length ? '' : `<button class="ad-link quiet" type="button" data-act="ad-rdrop" data-v="${r.id}">지우기</button>`}</div>`}</div>`}</li>`;
   };
   const addRoom = E0 && E0.kind === 'room', hasOther = DATA.admin.depts.some(x => x !== d);
-  return `<section class="card"><h2>${esc(title)}</h2>
+  return `<section class="card"><h2>${esc(title)}${DidakoTip.btn(`새로 온 ${one}은 첫 접속에서 "새로 왔어요"로 신청해도 되고, 여기서 미리 더해 두면 그 이름을 골라 연결을 요청해요. 해마다 새로 짤 때는 연도 개편을 써요.`, title)}</h2>
     <ul class="ad-rs-rooms">${d.rooms.map(room).join('') || `<li class="hint">아직 ${esc(g)}이 없어요.</li>`}</ul>
     ${addRoom ? `<form class="ad-rs-form" data-adform="room"><label class="ad-label" for="adNewRoom">새 ${esc(g)} 이름</label><div class="ad-kform"><input id="adNewRoom" class="field" name="n" maxlength="20" placeholder="예) 1${esc(g)}" autocomplete="off" data-adin="n" value="${esc(E0.n || '')}"><button class="btn small" type="submit">만들기</button><button class="btn small ghost" type="button" data-act="ad-redit" data-v="">취소</button></div></form>`
       : `<div class="ad-foot ad-foot-btns"><button class="btn small ghost" type="button" data-act="ad-redit" data-v="room|">+ ${esc(g)} 만들기</button>${solo ? '' : `<button class="btn small ghost" type="button" data-act="ad-mvstart" data-v="marry">결혼해서 가정 합치기</button>`}${hasOther ? `<button class="btn small ghost" type="button" data-act="ad-mvstart" data-v="move">다른 부서에서 옮겨 오기</button>` : ''}</div>`}
-    <p class="hint">${DATA.admin.term}년 편성이에요. 새로 온 ${one}은 첫 접속에서 "새로 왔어요"로 신청해도 되고, 여기서 미리 더해 두면 그 이름을 골라 연결을 요청해요. 떠나도 각자의 기록은 남아요. 해마다 새로 짤 때는 연도 개편을 써요.</p></section>`;
+    <p class="hint">${DATA.admin.term}년 편성이에요. 떠나도 각자의 기록은 남아요.</p></section>`;
 }
 // ── 결혼해서 가정 합치기, 다른 부서에서 옮겨 오기: 관리자가 두 분(또는 옮길 가정)께 직접 확인하고 처리한다 ──
 // AD.mv: { kind: 'marry' | 'move', step, a, b, newOn, newPerson, name, nameEdited, roomId, inherit, map, ok, slot, q, found }
@@ -3438,7 +3445,7 @@ function adMvRedraw(sel) { adRedraw(sel); const c = $('.ad-mv-card'); if (c) win
 function adMvSlot(M, k) {
   const p = M[k], label = k === 'a' ? '첫째 사람' : '둘째 사람', g = adDept().group;
   if (p) return `<li class="ad-mv-slot"><span><b>${esc(p.name)}</b><small>${esc(p.dept)} ${esc(p.room)}, ${p.links.length ? '카카오 연결 ' + p.links.length : '아직 연결 없음'}</small></span><button class="ad-link quiet" type="button" data-act="ad-mvclear" data-v="${k}" aria-label="${esc(label)} 바꾸기">바꾸기</button></li>`;
-  if (k === 'b' && M.newOn) return `<li class="ad-mv-slot"><span class="ad-mv-col"><label class="ad-label" for="adMvNp">배우자 이름</label><input id="adMvNp" class="field" maxlength="10" data-adin="mvnp" value="${esc(M.newPerson)}" autocomplete="off"><small>그분은 처음 들어올 때 새 가정이 있는 ${esc(g)}에서 이름으로 찾아 연결을 요청해요. 승인 전에는 연결된 사람이 한 명이에요.</small></span><button class="ad-link quiet" type="button" data-act="ad-mvtog" data-v="newOn">앱에 있어요</button></li>`;
+  if (k === 'b' && M.newOn) return `<li class="ad-mv-slot"><span class="ad-mv-col"><div class="tip-line"><label class="ad-label" for="adMvNp">배우자 이름</label>${DidakoTip.btn(`그분은 처음 들어올 때 새 가정이 있는 ${g}에서 이름으로 찾아 연결을 요청해요. 승인 전에는 연결된 사람이 한 명이에요.`, '배우자 이름')}</div><input id="adMvNp" class="field" maxlength="10" data-adin="mvnp" value="${esc(M.newPerson)}" autocomplete="off"></span><button class="ad-link quiet" type="button" data-act="ad-mvtog" data-v="newOn">앱에 있어요</button></li>`;
   const F = M.slot === k ? M.found : null;
   return `<li class="ad-mv-slot"><span class="ad-mv-col"><form class="ad-kform" data-adform="mvfind" data-v="${k}"><input class="field" name="q" maxlength="10" placeholder="${label} 이름으로 찾기" aria-label="${label} 이름" autocomplete="off" value="${esc(M.slot === k ? M.q : '')}"><button class="btn small ghost" type="submit">찾기</button></form>
     ${F ? (F.length ? `<ul class="ad-rs-people">${F.map((x, i) => `<li><button class="ad-rs-p" type="button" data-act="ad-mvpick" data-v="${k}|${i}"><span class="nm">${esc(x.name)}</span><small>${esc(x.dept)} ${esc(x.room)}${x.links.length ? ', 카카오 ' + x.links.map(l => '"' + esc(l.nick) + '"').join(', ') : ', 아직 연결 없음'}</small></button></li>`).join('')}</ul>` : '<p class="hint">찾지 못했어요. 이름을 다시 확인해 주세요.</p>') : ''}</span>
@@ -3448,7 +3455,7 @@ const adMvSwitch = (key, on, label, hint) => `<div class="set-row" style="margin
 function adMvCard() {
   const M = AD.mv, marry = M.kind === 'marry', d = adDept(), g = d.group, a = M.a, b = M.b, room = d.rooms.find(r => r.id === M.roomId);
   const total = 5, names = adMvNames(M), other = (DATA.admin.depts.find(x => x !== d) || {}).name || '다른 부서';
-  const head = (t, sub) => `<section class="card ad-mv-card" aria-labelledby="adMvT"><div class="row"><h2 id="adMvT">${t}</h2>${marry ? `<small class="hint" style="margin:0">${M.step} / ${total}</small>` : ''}</div>${sub ? `<p class="hint" style="margin:.4em 0 .6em">${sub}</p>` : ''}`;
+  const head = (t, sub) => `<section class="card ad-mv-card" aria-labelledby="adMvT"><div class="row"><h2 id="adMvT">${t}${sub ? DidakoTip.btn(sub, t) : ''}</h2>${marry ? `<small class="hint" style="margin:0">${M.step} / ${total}</small>` : ''}</div>`;
   const nav = (next, label, ok) => `<div class="ad-acts" style="margin-top:.8em">${M.step > 1 ? '<button class="btn small ghost" type="button" data-act="ad-mvback">이전</button>' : ''}${next ? `<button class="btn small" type="button" data-act="${next}" ${ok ? '' : 'disabled'}>${label}</button>` : ''}<button class="btn small ghost" type="button" data-act="ad-mvcancel">그만두기</button></div>`;
   const roomPick = () => `<p style="margin:.4em 0">${marry ? '새 가정이 들어갈 부서' : '받는 부서'} <b>${esc(d.name)}</b></p><label class="ad-label" for="adMvRoom">${esc(g)}</label><select id="adMvRoom" class="field" data-admv="roomId"><option value="">고르세요</option>${d.rooms.map(r => `<option value="${r.id}"${r.id === M.roomId ? ' selected' : ''}>${esc(r.name)}</option>`).join('')}</select>`;
   if (!marry) {
@@ -3462,8 +3469,8 @@ function adMvCard() {
       <div class="ad-acts"><button class="btn small" type="button" data-act="ad-mvgo" ${M.ok && room ? '' : 'disabled'}>옮기기</button><button class="btn small ghost" type="button" data-act="ad-mvcancel">그만두기</button></div>` : '<div class="ad-acts"><button class="btn small ghost" type="button" data-act="ad-mvcancel">그만두기</button></div>'}</section>`;
   }
   if (M.step === 1) return head('결혼해서 가정 합치기', '결혼한 두 사람을 새 가정 하나로 합쳐요. 옛 가정 둘은 목록에서 빠지고, 각자의 기록은 그대로 따라가요.')
-    + `<p class="ad-label">함께할 사람</p><ul class="ad-mv-people">${adMvSlot(M, 'a')}${adMvSlot(M, 'b')}</ul>
-    <p class="hint">${esc(other)} 사람도 이름으로 찾아요. 다른 부서 사람은 이름과 카카오 닉네임만 보여요. 결혼했지만 ${esc(other)}에 그대로 있을 때는 아무것도 하지 않아도 돼요.</p>`
+    + `<p class="ad-label">함께할 사람${DidakoTip.btn(`${other} 사람도 이름으로 찾아요. 다른 부서 사람은 이름과 카카오 닉네임만 보여요. 결혼했지만 ${other}에 그대로 있을 때는 아무것도 하지 않아도 돼요.`, '함께할 사람')}</p><ul class="ad-mv-people">${adMvSlot(M, 'a')}${adMvSlot(M, 'b')}</ul>
+`
     + nav('ad-mvnext', '다음', a && (b || (M.newOn && M.newPerson.trim()))) + '</section>';
   if (M.step === 2) return head('새 가정 이름', '두 이름이 "A, B"로 채워져 있어요. 순서와 글자를 고칠 수 있어요. 자녀 이름은 가정이 나중에 적어요.')
     + `<label class="ad-label" for="adMvName">새 가정 이름</label><input id="adMvName" class="field" maxlength="40" data-adin="mvname" value="${esc(M.name)}" autocomplete="off">` + nav('ad-mvnext', '다음', M.name.trim()) + '</section>';
@@ -3507,12 +3514,12 @@ const adStaffBody = () => {
   const st = DATA.admin.staff;
   return `${st.length ? `<ul class="ad-list">${st.map(s => `<li><div class="ad-main"><span class="ad-l1"><b>${esc(s.name)}</b><span class="role-tag">${esc(s.title)}</span></span><small><i class="ad-dot${s.linked ? '' : ' off'}" aria-hidden="true"></i>${s.linked ? '카카오 연결됨' : '아직 카카오 연결 없음'}</small></div>${s.linked ? adSay('해제') : adSay('교역자 연결 승인', '', 'btn small')}</li>`).join('')}</ul>`
     : '<p class="hint">아직 교역자가 없어요.</p>'}
-    <p class="hint">교역자가 연결을 신청하면 여기서 승인해요. 다른 사람의 신청은 위 할 일에서 승인해요.</p>`;
+`;
 };
 const adInviteBody = () => {
   const I = DATA.admin.invites, row = label => `<li><div class="ad-main"><b>${esc(label)}</b></div><span class="ad-btns">${adSay('복사', '데모에서는 복사하지 않아요')}${adSay('QR 보기', '데모에서는 QR을 만들지 않아요')}</span></li>`;
   return `<ul class="ad-list">${row(I.dept)}${I.rooms.map(n => row(n)).join('')}</ul>
-    <p class="hint">${esc(I.dept)} 링크는 새가족 환영, 주보, 교회 화면에 써요. 사랑방 링크로 들어오면 사랑방을 고르는 단계를 건너뛰어요. 링크로 들어와도 연결 승인은 리더가 해요.</p>`;
+`;
 };
 const adPeopleBody = () => {
   const ppl = adPeople(), admins = adDeptAdmins(adDept());
@@ -3520,9 +3527,8 @@ const adPeopleBody = () => {
       <div class="ad-acts">${adSay('저장', '', 'btn small')}</div></div>`;
   return `<ul class="ad-list">${ppl.map((p, i) => ({ p, i, roles: adRoleList(p) })).filter(x => x.roles.length || AD.roleOpen === x.i).map(({ p, i, roles }) => `<li><div class="ad-main"><b>${esc(p.name)}</b><small>${esc(p.where)}</small>${roles.length ? `<span class="kids">${roles.map(role => `<span class="kid${role === '리더' || role === '코리더' ? ' lead' : ''}">${esc(role)}</span>`).join('')}</span>` : ''}</div><button class="btn small ghost" type="button" data-act="ad-role" data-i="${i}" aria-expanded="${AD.roleOpen === i}">${AD.roleOpen === i ? '접기' : '바꾸기'}</button>${AD.roleOpen === i ? panel(p, i) : ''}</li>`).join('')}</ul>
     <div class="ad-acts">${adSay('맡은 일 맡기기', '', 'btn small')}</div>
-    <p class="ad-sub">관리자</p>
+    <p class="ad-sub">관리자${DidakoTip.btn('한 사람이 빠져도 운영이 멈추지 않도록 관리자는 두 명 이상을 권해요.', '관리자')}</p>
     ${admins.length ? `<ul class="ad-list">${admins.map(name => `<li><div class="ad-main"><b>${esc(name)}</b></div></li>`).join('')}</ul>` : '<p class="hint">관리자가 없어요.</p>'}
-    <p class="hint">한 사람이 빠져도 운영이 멈추지 않도록 관리자는 두 명 이상을 권해요.</p>
     <div class="ad-acts">${adSay('관리자 더하기', '', 'btn small')}${adSay('내 자리 넘겨주기')}</div>
     <p class="soft" style="margin:0">마지막 남은 관리자는 자리를 넘겨준 뒤에 교회를 나갈 수 있어요.</p>`;
 };
@@ -3538,24 +3544,22 @@ const adPrivacyBody = () => {
   const P = DATA.admin.privacy, li = (f, why) => `<li><div class="ad-main"><b>${esc(f.name)}</b><small>${esc(why)}</small></div>${adSay('지우기', '데모에서는 지우지 않아요')}</li>`;
   const n = P.requests.length + P.due.length;
   return `${n ? `<ul class="ad-list">${P.requests.map(f => li(f, f.at + ' 기록 지우기 요청')).join('')}${P.due.map(f => li(f, '떠난 지 1년이 지났어요')).join('')}</ul>` : '<p class="hint">지울 기록이 없어요.</p>'}
-    <p class="hint">회원의 기록은 잠겨 있어서 아무도 읽을 수 없어요. 지우기 요청이 오면 그 사람의 잠긴 기록 덩어리를 지워요.</p>
-    <p class="hint">떠난 지 1년이 된 가정과 기록을 지워 달라고 한 사람이 여기 올라와요. 저절로 지우지 않아요.${adLater() ? ` 떠난 가정 ${adLater()}곳은 1년이 되면 올라와요.` : ''}</p>`;
+    <p class="hint">저절로 지우지 않아요.${adLater() ? ` 떠난 가정 ${adLater()}곳은 1년이 되면 올라와요.` : ''}</p>`;
 };
 const adChangesBody = () => {
   const L = DATA.admin.changes;
   return `${L.length ? `<ul class="ad-list chg">${L.map(x => `<li><div class="ad-main"><small>${esc(x.at)}</small><span><b>${esc(x.kind)}</b> ${esc(x.target)}</span><small>${esc(x.role)} ${esc(x.who)}</small></div></li>`).join('')}</ul>` : '<p class="hint">아직 기록이 없어요.</p>'}
-    <p class="hint">누가 언제 무엇을 바꿨는지만 남아요. 회원의 기록 내용은 남기지 않아요.</p>`;
+`;
 };
 const adFeedbackBody = () => {
   const L = DATA.admin.feedback;
   return `${L.length ? `<ul class="ad-list fb">${L.map(x => `<li><div class="ad-main"><span class="ad-l1"><span class="fb-kind">${esc(x.kind)}</span><small>${esc(x.at)}</small></span><p>${esc(x.text)}</p></div></li>`).join('')}</ul>` : '<p class="hint">아직 받은 의견이 없어요. 회원은 더보기 › 의견 보내기에서 보내요.</p>'}
-    <p class="hint">이름을 밝힌 의견에만 보낸 사람이 나와요.</p>`;
+`;
 };
 // 소그룹 이름과 단위: 우리 부서에서 소그룹을 부르는 말(사랑방, 순, 목장 등)과 한 줄이 가정인지 개인인지. 저장은 데모라 바뀌지 않는다
 const adGroupBody = () => {
   const d = adDept(), cur = d.group, pick = AD.grp || cur, unit = AD.unit || d.unit;
-  return `<p class="hint" style="margin-top:0">우리 ${esc(d.name)}에서 소그룹을 부르는 말을 골라요. 앱 곳곳의 이름이 이 말로 바뀌어요.</p>
-    <div class="mchips" role="radiogroup" aria-label="소그룹 이름">${[...new Set([...AD_GROUPS, cur, ...AD.grpExtra, pick])].map(g => `<button class="mchip${pick === g ? ' on' : ''}" type="button" role="radio" aria-checked="${pick === g}" data-act="ad-grp" data-v="${esc(g)}">${esc(g)}</button>`).join('')}</div>
+  return `<div class="mchips" role="radiogroup" aria-label="소그룹 이름">${[...new Set([...AD_GROUPS, cur, ...AD.grpExtra, pick])].map(g => `<button class="mchip${pick === g ? ' on' : ''}" type="button" role="radio" aria-checked="${pick === g}" data-act="ad-grp" data-v="${esc(g)}">${esc(g)}</button>`).join('')}</div>
     <div class="ad-write"><input class="field" id="adGrpIn" placeholder="직접 쓰기 (예: 가정교회, 다락방)" aria-label="소그룹 이름 직접 쓰기" maxlength="6" autocomplete="off"><button class="btn small ghost" type="button" data-act="ad-grp-write">쓰기</button></div>
     <p class="ad-sub">단위</p>
     <div class="seg seg-unit" style="--n:2" role="radiogroup" aria-label="단위">${[['family', '가정'], ['single', '개인']].map(([k, l]) => `<button type="button" class="${unit === k ? 'on' : ''}" role="radio" aria-checked="${unit === k}" data-act="ad-unit" data-v="${k}">${l}</button>`).join('')}</div>
@@ -3588,8 +3592,7 @@ const AD_RG_SAMPLE = [
 // 관리 화면의 연도 개편 줄 안: 예약이 있으면 무엇을 언제 바꾸는지, 없으면 시작 버튼
 const adReorgBody = () => {
   const A = DATA.admin, P = AD.plan;
-  if (!P) return `<p class="hint" style="margin-top:0">교회에서 받은 편성표를 붙여 넣어 ${A.nextYear}년 편성을 만들고, 바뀌는 날을 예약해요. 그날까지는 지금 편성(${A.term}년)이 그대로예요.</p>
-    <div class="ad-acts"><button class="btn small ghost" type="button" data-act="ad-rgopen">${A.nextYear}년 개편 시작</button></div>`;
+  if (!P) return `<div class="ad-acts"><button class="btn small ghost" type="button" data-act="ad-rgopen">${A.nextYear}년 개편 시작</button></div>`;
   return `<p style="margin:0"><b>${A.nextYear}년 편성</b>을 예약해 두었어요. ${adMonName(P.start)} 1일에 바뀌어요.</p>
     <p class="hint">${P.nRooms}개 ${esc(adDept().group)}, ${P.nFams}${adRgCnt()}, 리더 미리 보기 ${adMd(P.lf)}부터, 회원 안내 ${adMd(P.mf)}부터</p>
     <p class="hint">${esc(AD_NOCHANGE_PLAN)}</p>
@@ -3636,11 +3639,10 @@ function adRgGo() { route(false); window.scrollTo(0, 0); const h = $('h1', $('#v
 // 교회 묶음(교회 초대, 교재 종류, 교회 밖 모임): 교회 전체 관리(#church-admin)의 오른쪽 메뉴가 쓴다
 const adChurchInviteBody = () => `<p class="lesson-title" style="font-size:1.3em;margin-top:0">${esc(DATA.admin.code)}</p>
   <div class="ad-acts">${adSay('초대 링크 복사하기', '데모에서는 복사하지 않아요', 'btn small')}${adSay('교회 코드 복사하기', '데모에서는 복사하지 않아요')}</div>
-  <p class="hint">링크나 코드로 들어온 사람은 사랑방 리더가 연결을 승인해요.</p>`;
+`;
 const adKindsBody = () => `<ul class="ad-list">${DATA.admin.kinds.map(([name, desc, on]) => `<li><div class="ad-main"><b>${esc(name)}</b><small>${esc(desc)}</small></div>${on ? '<span class="chip">켜짐</span>' : '<span class="soft">다음에</span>'}</li>`).join('')}</ul>
   <p class="hint">켜고 끄기는 데모에서 바뀌지 않아요.</p>`;
-const adOutBody = () => `<p class="hint" style="margin-top:0">신우회, 캠퍼스처럼 교회 밖에서 모이는 모임도 이 교회에 속한 모임으로 열어요. 목사님도 열 수 있어요.</p>
-  <ul class="ad-list">${DATA.admin.outKinds.map(([name, desc]) => `<li><div class="ad-main"><b>${esc(name)}</b><small>${esc(desc)}</small></div>${adSay('열기')}</li>`).join('')}</ul>
+const adOutBody = () => `<ul class="ad-list">${DATA.admin.outKinds.map(([name, desc]) => `<li><div class="ad-main"><b>${esc(name)}</b><small>${esc(desc)}</small></div>${adSay('열기')}</li>`).join('')}</ul>
   <p class="ad-sub">열린 모임</p>
   <ul class="ad-list">${DATA.admin.outs.map(o => `<li><div class="ad-main"><b>${esc(o.name)}</b><small>${esc(o.kind)}, 목회 책임자 ${esc(o.pastor)}, 교회에 속한 모임</small></div></li>`).join('')}</ul>`;
 // 관리 화면 위쪽 탭 [관리 | 분석](부서 관리와 교회 전체가 같이 쓴다)
@@ -3657,19 +3659,19 @@ function adminView() {
   const probs = adProblems();
   const rows = {
     people: [
-      adFold('staff', '교역자', a.staff.length ? a.staff.map(s => esc(s.name + ' ' + s.title)).join(', ') : '아직 없어요', adStaffBody),
-      adFold('invite', '초대 링크와 QR', `${esc(dept)} 전체, ${esc(d.group)} ${a.invites.rooms.length}곳`, adInviteBody),
-      adFold('people', '맡은 일', '리더, 코리더, 교재 담당, 관리자', adPeopleBody)
+      adFold('staff', '교역자', a.staff.length ? a.staff.map(s => esc(s.name + ' ' + s.title)).join(', ') : '아직 없어요', adStaffBody, '', '교역자가 연결을 신청하면 여기서 승인해요. 다른 사람의 신청은 위 할 일에서 승인해요.'),
+      adFold('invite', '초대 링크와 QR', `${esc(dept)} 전체, ${esc(d.group)} ${a.invites.rooms.length}곳`, adInviteBody, '', `${a.invites.dept} 링크는 새가족 환영, 주보, 교회 화면에 써요. ${d.group} 링크로 들어오면 ${d.group}을 고르는 단계를 건너뛰어요. 링크로 들어와도 연결 승인은 리더가 해요.`),
+      adFold('people', '맡은 일', '', adPeopleBody)
     ],
     ops: [
       adFold('app', '앱 상태', probs.length ? esc(probs.join(', ')) : `모두 괜찮아요, 화면 ${esc(a.app.version)}`, adAppBody, `<i class="ad-dot${probs.length ? ' bad' : ''}" aria-hidden="true"></i>`),
-      adFold('privacy', '개인정보 요청', adLater() ? `떠난 가정 ${adLater()}곳, 1년이 되면 올라와요` : '지울 기록이 없어요', adPrivacyBody),
-      adFold('changes', '변경 기록', '누가 언제 무엇을 바꿨는지', adChangesBody),
-      adFold('feedback', '의견함', a.feedback.length ? `받은 의견 ${a.feedback.length}` : '아직 없어요', adFeedbackBody)
+      adFold('privacy', '개인정보 요청', adLater() ? `떠난 가정 ${adLater()}곳, 1년이 되면 올라와요` : '지울 기록이 없어요', adPrivacyBody, '', '회원의 기록은 잠겨 있어서 아무도 읽을 수 없어요. 떠난 지 1년이 된 가정과 기록을 지워 달라고 한 사람이 여기 올라와요. 지우면 그 사람의 잠긴 기록 덩어리를 지워요.'),
+      adFold('changes', '변경 기록', '', adChangesBody, '', '누가 언제 무엇을 바꿨는지만 남아요. 회원의 기록 내용은 남기지 않아요.'),
+      adFold('feedback', '의견함', a.feedback.length ? `받은 의견 ${a.feedback.length}` : '아직 없어요', adFeedbackBody, '', '이름을 밝힌 의견에만 보낸 사람이 나와요.')
     ],
     set: [
-      adFold('group', '소그룹 이름', esc(d.group), adGroupBody),
-      adFold('reorg', '연도 개편', AD.plan ? `${esc(a.nextYear)}년 편성 예약, ${esc(adMonName(AD.plan.start))}부터` : `${esc(a.nextYear)}년 개편 준비`, adReorgBody)
+      adFold('group', '소그룹 이름', esc(d.group), adGroupBody, '', '우리 부서에서 소그룹을 부르는 말이에요. 앱 곳곳의 이름이 이 말로 바뀌어요.'),
+      adFold('reorg', '연도 개편', AD.plan ? `${esc(a.nextYear)}년 편성 예약, ${esc(adMonName(AD.plan.start))}부터` : `${esc(a.nextYear)}년 개편 준비`, adReorgBody, '', `교회에서 받은 편성표를 붙여 넣어 ${a.nextYear}년 편성을 만들고, 바뀌는 날을 예약해요. 그날까지는 지금 편성(${a.term}년)이 그대로예요.`)
     ]
   };
   const sec = (h, list) => `<p class="more-h">${h}</p><section class="card mrows folds">${list.join('')}</section>`;
@@ -3720,11 +3722,11 @@ function adminReorgView() {
       ${checks.length ? `<section class="card"><h2>확인 필요, 비슷한 이름</h2>${checks.map(({ r, i }) => `<div class="ad-rg-row">
           <div><b>${esc(r.raw)}</b><small>편성표: ${esc(r.room)}</small><small>지금: ${esc(r.ex.name)} (${esc(r.ex.room)})</small></div>
           <div class="seg2" role="group" aria-label="${esc(r.raw)}">${[['same', '같은 ' + one + '이에요'], ['new', '새 ' + one + '이에요']].map(([v, l]) => `<button type="button" class="${rg.dec[i] === v ? 'on' : ''}" data-act="ad-rgdec" data-v="${i}:${v}" aria-pressed="${rg.dec[i] === v}">${l}</button>`).join('')}</div></div>`).join('')}</section>` : ''}
-      ${news.length ? `<section class="card"><h2>새 ${one}</h2><p class="hint" style="margin:0">바뀌는 날부터 명단에 나와요. 처음 들어올 때 이름을 골라 카카오 연결을 요청하고, 리더가 승인해요.</p><ul class="ad-rg-fams">${news.map(({ r }) => `<li>${esc(r.raw)} <small>${esc(r.room)}</small></li>`).join('')}</ul></section>` : ''}
-      ${miss.length ? `<section class="card"><h2>편성표에 없는 ${one}</h2>${miss.map(f => `<div class="ad-rg-row">
+      ${news.length ? `<section class="card"><h2>새 ${one}${DidakoTip.btn('바뀌는 날부터 명단에 나와요. 처음 들어올 때 이름을 골라 카카오 연결을 요청하고, 리더가 승인해요.', '새 ' + one)}</h2><ul class="ad-rg-fams">${news.map(({ r }) => `<li>${esc(r.raw)} <small>${esc(r.room)}</small></li>`).join('')}</ul></section>` : ''}
+      ${miss.length ? `<section class="card"><h2>편성표에 없는 ${one}${DidakoTip.btn(`떠남이어도 각자의 기록은 남고 명단에서만 빠져요. 편성 보류는 ${adJ(g, '이/가')} 정해질 때까지 "새 편성을 정하고 있어요" 안내가 나와요. 둘 다 바뀌는 날부터예요.`, '편성표에 없는 ' + one)}</h2>${miss.map(f => `<div class="ad-rg-row">
           <div><b>${esc(f.name)}</b><small>${now}년 ${esc(f.room || '')}</small></div>
           <div class="seg2" role="group" aria-label="${esc(f.name)}">${[['leave', '떠남'], ['hold', '편성 보류']].map(([v, l]) => `<button type="button" class="${(rg.miss[f.id] || 'leave') === v ? 'on' : ''}" data-act="ad-rgmiss" data-v="${esc(f.id)}:${v}" aria-pressed="${(rg.miss[f.id] || 'leave') === v}">${l}</button>`).join('')}</div></div>`).join('')}
-        <p class="hint">떠남이어도 각자의 기록은 남고 명단에서만 빠져요. 편성 보류는 ${esc(adJ(g, '이/가'))} 정해질 때까지 "새 편성을 정하고 있어요" 안내가 나와요. 둘 다 바뀌는 날부터예요.</p></section>` : ''}
+</section>` : ''}
       ${matches.length ? `<details class="card ad-rg-match"><summary>자동으로 맞춘 ${matches.length}${cnt} 보기</summary><ul class="ad-rg-fams">${matches.map(({ r }) => `<li>${esc(r.raw)} <small>${esc(r.room)}, 지금 ${esc(r.ex.name)}</small></li>`).join('')}</ul></details>` : ''}`
       + nav('ad-rgnext', undecided ? `확인 필요 ${undecided}개 남음` : '다음: 리더 정하기', undecided));
   }
@@ -3744,7 +3746,7 @@ function adminReorgView() {
   const months = Array.from({ length: 6 }, (_, k) => adMonAdd(adMonth(), k + 1));
   if (!months.includes(rg.start)) months.push(rg.start);
   const dayBefore = adDayAdd(rg.start + '-01', -1);
-  return wrap(`<section class="card"><h2>${Object.keys(rooms).length}개 ${esc(g)}, ${res.rows.length}${cnt}</h2><p class="hint" style="margin:0">이 편성으로 ${next}년 편성을 만들어요. 여기에는 구성과 이동만 나와요. 각자의 기록은 잠겨 있어서 옮겨도 아무도 읽을 수 없어요.</p></section>
+  return wrap(`<section class="card"><h2>${Object.keys(rooms).length}개 ${esc(g)}, ${res.rows.length}${cnt}${DidakoTip.btn(`이 편성으로 ${next}년 편성을 만들어요. 여기에는 구성과 이동만 나와요. 각자의 기록은 잠겨 있어서 옮겨도 아무도 읽을 수 없어요.`, '확인')}</h2></section>
     <div class="ad-rg-board">${Object.keys(rooms).map(n => { const c = {}; rooms[n].forEach(i => { const k = from(i) || NEW; c[k] = (c[k] || 0) + 1; });
       return `<section class="card"><h2>${esc(n)}</h2><div class="ad-rg-comp">${Object.entries(c).map(([k, v]) => `<span class="ad-rg-cc">${esc(k)}${k === NEW ? '' : '에서'} ${v}</span>`).join('')}</div>
         <ul class="ad-rg-fams">${rooms[n].map(i => `<li>${esc(adRgLabel(i))}${role(n, i)}</li>`).join('')}</ul></section>`; }).join('')}</div>
@@ -3752,11 +3754,10 @@ function adminReorgView() {
       <label class="vh" for="adRgFind">이름으로 찾기</label><input id="adRgFind" class="field" type="search" placeholder="이름으로 찾기" value="${esc(rg.find)}" autocomplete="off">
       <div class="ad-rg-tw"><table class="ad-rg-table"><caption class="vh">${one}별 이동표</caption><thead><tr><th scope="col">${solo ? '이름' : '가정'}</th><th scope="col">${now}년</th><th scope="col">${next}년</th></tr></thead>
         <tbody>${moves.map(m => `<tr data-name="${esc(m.name)}"${rg.find && !m.name.includes(rg.find) ? ' hidden' : ''}><th scope="row">${esc(m.name)}</th><td>${esc(m.from)}</td><td class="${m.to === '떠남' || m.to === '편성 보류' ? 'muted' : 'to'}">${esc(m.to)}</td></tr>`).join('')}</tbody></table></div></section>
-    <section class="card"><h2>날짜</h2><div class="ad-rg-dates">
+    <section class="card"><h2>날짜${DidakoTip.btn(`바뀌는 날 0시에 새 편성이 저절로 적용돼요. 그 전까지는 ${now}년 편성이 그대로이고, 예약은 언제든 고치거나 취소할 수 있어요. 카카오 연결과 각자의 잠긴 기록은 그대로 따라가요.`, '날짜')}</h2><div class="ad-rg-dates">
       <label for="adRgStart">바뀌는 날<select id="adRgStart" class="field" data-adrg="start">${months.map(m => `<option value="${m}"${rg.start === m ? ' selected' : ''}>${adMonName(m)} 1일</option>`).join('')}</select></label>
       <label for="adRgLf">새 리더에게 맡을 ${one} 명단 보여 주기<input id="adRgLf" class="field" type="date" data-adrg="lf" value="${rg.lf}" max="${dayBefore}"></label>
       <label for="adRgMf">회원에게 "${Number(rg.start.slice(5))}월부터 ○○ ${esc(adJ(g, '이에요/예요'))}" 안내하기<input id="adRgMf" class="field" type="date" data-adrg="mf" value="${rg.mf}" max="${dayBefore}"></label></div>
-      <p class="hint">바뀌는 날 0시에 새 편성이 저절로 적용돼요. 그 전까지는 ${now}년 편성이 그대로이고, 예약은 언제든 고치거나 취소할 수 있어요. 카카오 연결과 각자의 잠긴 기록은 그대로 따라가요.</p>
       <p class="hint">${esc(AD_NOCHANGE_PLAN)}</p></section>`
     + nav('ad-rgsave', `${adMonName(rg.start)} 1일에 바뀌도록 예약`));
 }
@@ -3770,7 +3771,6 @@ const adChurchAdminBody = () => {
   const L = DATA.admin.churchAdmins, n = L.length;
   return `<ul class="ad-list">${L.map(x => `<li><div class="ad-main"><span class="ad-l1"><b>${esc(x.name)}</b><span class="role-tag admin">교회 관리자</span></span><small>${adDot(x.linked)}${x.linked ? '카카오 연결됨' : '아직 카카오 연결 없음'}</small></div></li>`).join('')}</ul>
     ${n < 2 ? '<p class="warn-text" style="margin:0">한 사람이 빠져도 멈추지 않게 관리자를 한 명 더 정해 주세요.</p>' : ''}
-    <p class="hint">모든 부서를 꾸리고 부서를 만들어요. 앱을 쓰는 사람의 기록은 보이지 않아요. 한 사람이 빠져도 멈추지 않도록 두 명 이상을 권해요.</p>
     <div class="ad-acts">${adSay('교회 관리자 더하기', '데모에서는 초대 링크를 만들지 않아요', 'btn small')}${adSay('내 자리 넘겨주기')}</div>
     <p class="soft" style="margin:0">마지막 남은 관리자는 자리를 넘겨준 뒤에 교회를 나갈 수 있어요.</p>`;
 };
@@ -3789,8 +3789,7 @@ function adSendBody() {
   const solo = !!from && from.unit === 'single', lost = x && (x.f.role || x.f.admin) ? `<li>옛 부서의 ${x.f.admin ? '부서 관리자' : x.f.role} 역할은 끝나요.</li>` : '';
   const preview = x && room ? `<p class="plain" style="margin:.6em 0 0"><b>${esc(x.f.name)}</b>${solo ? ' 님이 ' : ' 가정이 '}<b>${esc(to.name)} ${esc(room.name)}</b>${adPt(to.name + ' ' + room.name, '으로/로')} 가요. 각자의 기록은 그대로 따라가요.</p>
       <ul class="ad-mv-list"><li>보낸 날부터 새 ${esc(to.group)}${adPt(to.group, '이에요/예요')}.</li>${lost}<li>카카오 연결과 각자의 기록은 그대로예요. 기록은 잠겨 있어 옮겨도 아무도 읽을 수 없어요.</li>${solo && to.unit === 'family' ? '<li>이름은 본인 이름 그대로 1인 가정이 돼요. 나중에 결혼하면 받은 부서에서 "결혼해서 가정 합치기"를 써요.</li>' : ''}</ul>` : '';
-  return `<p class="hint" style="margin:0">결혼과 상관없이 가정이 그대로 다른 부서의 사랑방으로 갈 때 써요(예: 나이가 차서 청년부 사람이 청장년부로).</p>
-    ${adSelect('adCmvFrom', 'from', '보낼 부서', fromOpts)}
+  return `${adSelect('adCmvFrom', 'from', '보낼 부서', fromOpts)}
     ${from ? adSelect('adCmvFam', 'fam', `보낼 ${solo ? '사람' : '가정'}`, famOpts) : ''}
     ${x ? (toList.length ? adSelect('adCmvTo', 'to', '받을 부서', toOpts) : `<p class="hint">${esc(from.name)}에서 보낼 수 있는 부서가 없어요. 가정 단위 부서의 가정은 개인 단위 부서로 갈 수 없어요.</p>`) : ''}
     ${x && to ? adSelect('adCmvRoom', 'room', esc(to.group), roomOpts) : ''}
@@ -3829,20 +3828,19 @@ function churchAdminView() {
   const sec = (h, list) => `<p class="more-h">${h}</p><section class="card mrows folds">${list.join('')}</section>`;
   const rows = {
     church: [
-      adFold('cinvite', '교회 초대', '초대 링크와 교회 코드를 나눠요', adChurchInviteBody),
-      adFold('kinds', '교재 종류', '쓸 교재 종류 켜기, 지금은 ' + esc(a.kinds.filter(k => k[2]).map(k => k[0]).join(', ')), adKindsBody),
-      adFold('out', '교회 밖 모임 열기', esc(a.outKinds.map(k => k[0]).join(', ')), adOutBody)
+      adFold('cinvite', '교회 초대', '', adChurchInviteBody, '', '링크나 코드로 들어온 사람은 사랑방 리더가 연결을 승인해요.'),
+      adFold('kinds', '교재 종류', '지금은 ' + esc(a.kinds.filter(k => k[2]).map(k => k[0]).join(', ')), adKindsBody),
+      adFold('out', '교회 밖 모임 열기', esc(a.outKinds.map(k => k[0]).join(', ')), adOutBody, '', '신우회, 캠퍼스처럼 교회 밖에서 모이는 모임도 이 교회에 속한 모임으로 열어요. 목사님도 열 수 있어요.')
     ],
     people: [
-      adFold('cadmins', '교회 관리자', nAdm < 2 ? '한 명뿐이에요, 한 명 더 정해 주세요' : esc(a.churchAdmins.map(x => x.name).join(', ')), adChurchAdminBody, `<i class="ad-dot${nAdm < 2 ? ' bad' : ''}" aria-hidden="true"></i>`),
-      adFold('csend', '가정 다른 부서로 보내기', '부서와 가정을 골라 다른 부서의 사랑방으로 보내요', adSendBody)
+      adFold('cadmins', '교회 관리자', nAdm < 2 ? '한 명뿐이에요, 한 명 더 정해 주세요' : esc(a.churchAdmins.map(x => x.name).join(', ')), adChurchAdminBody, `<i class="ad-dot${nAdm < 2 ? ' bad' : ''}" aria-hidden="true"></i>`, '모든 부서를 꾸리고 부서를 만들어요. 앱을 쓰는 사람의 기록은 보이지 않아요. 한 사람이 빠져도 멈추지 않도록 두 명 이상을 권해요.'),
+      adFold('csend', '가정 다른 부서로 보내기', '', adSendBody, '', '결혼과 상관없이 가정이 그대로 다른 부서의 사랑방으로 갈 때 써요(예: 나이가 차서 청년부 사람이 청장년부로).')
     ]
   };
   return `${head}
     <div class="two-col"><div class="col">
       <p class="more-h">부서</p><div class="ch-grid">${a.depts.map(adDeptCard).join('')}</div>
       ${AD.cNew ? adDeptForm() : '<div class="ad-foot ad-foot-btns"><button class="btn small ghost" type="button" data-act="ad-cnew">+ 부서 만들기</button></div>'}
-      <p class="soft" style="margin:0">부서 카드를 누르면 그 부서의 관리로 들어가요.</p>
     </div><div class="col side">
       ${sec('교회', rows.church)}${sec('사람', rows.people)}
     </div></div>
@@ -4205,8 +4203,7 @@ function deepHtml() {
 function wrapHtml() {
   const k = readKeep();
   return `<section class="card wrapup" id="wrapup" aria-labelledby="wrapT">
-    <h2 id="wrapT">모임에 가지 못했다면</h2>
-    <p class="soft" style="margin:.3em 0 0">혼자 읽었다면 마음에 남은 말과 작은 실천을 남길 수 있어요. 둘 다 비워 두어도 괜찮아요. 모임에 함께했다면 나눔하기 끝에서 남기면 돼요.</p>
+    <h2 id="wrapT">모임에 가지 못했다면${DidakoTip.btn('혼자 읽었다면 마음에 남은 말과 작은 실천을 남길 수 있어요. 둘 다 비워 두어도 괜찮아요. 모임에 함께했다면 나눔하기 끝에서 남기면 돼요.', '모임에 가지 못했다면')}</h2>
     <div class="keep-form">
       <div><label for="kSentence">한 문장</label><textarea class="field" id="kSentence" rows="2" maxlength="200" placeholder="마음에 남은 말을 짧게">${esc(k.sentence || '')}</textarea></div>
       <div><label for="kAction">이번 주 작은 실천</label><input class="field" id="kAction" maxlength="120" placeholder="하나만 적어요" value="${esc(k.action || '')}" autocomplete="off"></div>
@@ -4856,7 +4853,7 @@ function reportHtml() {
   const prac = es.filter(e => e.action);
   const acts = prac.slice(0, rec.more ? prac.length : 3).map(e => `<div class="path-item"><strong>${esc(e.action)}</strong><p class="reflection">${e.reflectionDate ? `<small style="display:block">${esc(e.reflectionDate)}</small>` : ''}${e.reflection ? esc(e.reflection) : '아직 돌아보지 않았어요'}</p></div>`).join('')
     + (prac.length > 3 ? `<button type="button" class="more-practices" data-act="rec-more">${rec.more ? '접기' : '더 보기 ↓'}</button>` : '');
-  return monthNav(ps, p) + `<p class="eyebrow" style="margin:.2em 0 .6em">${esc(LIVE ? ((LV.me && LV.me.roomName) || liveGroupName()) : DATA.church.room)}과 함께</p><div class="report-grid">${recSection('간직한 말씀', rec.year && keeps ? '<p class="fine">달마다 한 문장씩 모았어요</p>' + keeps : keeps)}${recSection(rec.year ? '나의 고백' : '삼위일체 하나님 묵상', threads)}${recSection('작은 실천의 길', acts)}</div>`;
+  return monthNav(ps, p) + `<p class="eyebrow" style="margin:.2em 0 .6em">${esc(LIVE ? ((LV.me && LV.me.roomName) || liveGroupName()) : DATA.church.room)}과 함께</p><div class="report-grid">${recSection('간직한 말씀', keeps)}${recSection(rec.year ? '나의 고백' : '삼위일체 하나님 묵상', threads)}${recSection('작은 실천의 길', acts)}</div>`;
 }
 function listRows(es) {
   if (!es.length) return `<section class="card"><p style="margin:0">찾는 기록이 없어요. 검색어를 바꿔 보세요.</p></section>`;
@@ -4928,8 +4925,7 @@ function foundView() {
   }).join('');
   return `<div class="record-wrap">
     <a class="back-link" href="#record">${ic('back')}<span>내 기록</span></a>
-    <div class="record-top"><h1>찾은 말씀</h1></div>
-    <p class="soft">이번 주 문답에서 찾은 말씀이 이 기기에 모여요.</p>
+    <div class="record-top"><h1>찾은 말씀${DidakoTip.btn('이번 주 문답에서 찾은 말씀이 이 기기에 모여요.', '찾은 말씀')}</h1></div>
     ${cards || `<section class="card calm">
       <h2 class="calm-t">아직 찾은 말씀이 없어요</h2>
       <p class="soft" style="margin:0">이번 주 화면에서 오늘의 말씀 문답을 풀어 보세요.</p>
@@ -5039,11 +5035,42 @@ function wlFilm(on) {
   v.src = LOGIN_FILM.src; v.play().catch(() => {});
 }
 
+// ── 디다코 소개 맨 위 영상(2026-11-16, 코이데 index.html의 afMount를 옮겼다). 첫 화면 영상(wlFilm)과 같은 파일(LOGIN_FILM)·같은 절약 규칙(wlLite)을 쓴다
+//  화면을 다시 그려도 영상 요소는 하나를 계속 쓴다(그릴 때마다 빈 칸 .na-film을 이 요소로 바꿔 끼운다). 소개 화면을 떠나면 받기를 멈추고 지운다
+let afEl = null, afBound = false;
+const afVideo = () => afEl && afEl.querySelector('video');
+function afOff() {
+  if (!afEl) return;
+  const v = afVideo(); if (v) { v.pause(); v.removeAttribute('src'); v.load(); }
+  afEl.remove(); afEl = null;
+}
+function afMount(on) {
+  const ph = on && $('#view .na-film');
+  if (!ph || !LOGIN_FILM) return afOff();
+  if (!afBound) { afBound = true; document.addEventListener('visibilitychange', () => { const v = afVideo(); if (!v) return; if (document.hidden) v.pause(); else if (!wlLite()) v.play().catch(() => {}); }); }
+  if (!afEl) {
+    afEl = document.createElement('div'); afEl.className = 'na-film'; afEl.setAttribute('aria-hidden', 'true');
+    if (LOGIN_FILM.poster) { const im = new Image(); im.className = 'na-film-poster'; im.alt = ''; im.onerror = () => im.remove(); im.src = LOGIN_FILM.poster; afEl.appendChild(im); }
+    if (!wlLite()) { // 움직임 줄이기·데이터 절약: 영상은 받지 않고 포스터 한 장만
+      const v = document.createElement('video');
+      v.muted = true; v.loop = true; v.autoplay = true; v.playsInline = true; v.preload = 'none'; v.tabIndex = -1; v.disablePictureInPicture = true;
+      v.setAttribute('muted', ''); v.setAttribute('playsinline', ''); v.setAttribute('aria-hidden', 'true');
+      if (LOGIN_FILM.poster) v.poster = LOGIN_FILM.poster;
+      v.addEventListener('playing', () => v.classList.add('on'));
+      v.addEventListener('error', () => v.remove());
+      afEl.appendChild(v); v.src = LOGIN_FILM.src;
+    }
+  }
+  ph.replaceWith(afEl);
+  const v = afVideo(); if (v && v.paused && !document.hidden && !wlLite()) v.play().catch(() => {}); // 다시 끼우는 동안 멈췄으면 이어서
+}
+
 // ── 길 찾기(# 주소) ──
 let adNote = '';
 let lastV = '', prevV = '';   // 지금 화면과 바로 앞 화면(교회 전체의 돌아가기 링크가 쓴다)
 function route(moved) {
   teardown();
+  if (window.DidakoTip) DidakoTip.close();   // 다시 그리기 전에 열린 ⓘ 말풍선을 닫는다
   // 실제 모드: 교재를 받기 전에 열려던 화면은 기억해 두었다가, 다 받으면 그 화면으로 간다(받는 동안은 "불러오고 있어요")
   if (LIVE && D.entered && LV.booksOk && LV.want) { const w = LV.want; LV.want = ''; if ((!/^#start/.test(w) || w === '#start/done') && /^#start\/loading$/.test(location.hash)) history.replaceState(null, '', w); }
   let { v, arg } = parseHash();
@@ -5075,6 +5102,7 @@ function route(moved) {
   reuseImgs($('#view'));
   const film = start && !!$('#view .welcome');   // 첫 화면(로그인 전)일 때만 영상. 첫 접속의 다음 걸음들에는 없다
   document.body.classList.toggle('wl-on', film); wlFilm(film);
+  afMount(v === 'about');   // 디다코 소개일 때만 맨 위 영상
   const tab = start ? '' : v === 'week' ? 'week' : PLACE[v][1];
   $$('[data-tab]').forEach(a => { const on = a.dataset.tab === tab; a.classList.toggle('on', on); on ? a.setAttribute('aria-current', 'page') : a.removeAttribute('aria-current'); });
   document.title = start ? '디다코' : (v === 'shelf' && arg ? bTitle(bookById(arg)) : v === 'record' && arg ? '기록 상세' : v === 'week' ? '이번 주' : PLACE[v][0]) + ' · 디다코';

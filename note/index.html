@@ -449,6 +449,14 @@ body.tabs-off .stickbar { bottom: env(safe-area-inset-bottom, 0px); }
 .fq { display: flex; align-items: center; justify-content: space-between; gap: 12px; width: 100%; min-height: 56px; padding: 8px 0; border: 0; border-top: 1px solid var(--line); background: none; text-align: left; font: 700 1rem var(--f-body); color: var(--ink); }
 .fq:first-of-type { border-top: 0; }
 .mk { display: block; }
+/* 디다코 소개 맨 위 영상(첫 화면 영상과 같은 파일, 코이데 소개와 같은 모양). 가로로 눕힌 둥근 칸이라 위쪽 손·노트가 보이게 아래쪽을 맞춘다(object-position). 꾸미는 영상이라 글은 없다 */
+.na-film { position: relative; overflow: hidden; border-radius: 16px; border: 1px solid var(--line); aspect-ratio: 4 / 3; margin: 8px 0 12px; background: radial-gradient(circle at 50% 46%, var(--surface) 0, var(--accent-soft) 72%); }
+.na-film video, .na-film .na-film-poster { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: 50% 72%; }
+.na-film video { opacity: 0; transition: opacity .8s ease; }
+.na-film video.on { opacity: 1; }
+@media (min-width: 900px) { .na-film { aspect-ratio: 16 / 10; width: 100%; max-width: 640px; margin-left: auto; margin-right: auto; } }
+@media (prefers-reduced-motion: reduce) { .na-film video { transition: none; } }
+
 .ab-mark { width: 72px; height: 72px; border-radius: 36px; background: var(--accent); margin: 0 auto; display: grid; place-items: center; }
 .ab-mark .mk { width: 44px; height: 44px; --s1: var(--on-accent); --s2: color-mix(in srgb, var(--on-accent) 72%, var(--accent)); --s3: color-mix(in srgb, var(--on-accent) 48%, var(--accent)); --cord-bg: var(--accent); }
 .story-mark { display: flex; justify-content: center; margin: 4px 0 10px; }
@@ -1829,6 +1837,7 @@ const colWrap = inner => `<div class="col">${inner}</div>`;
 // 디다코 노트 소개(M8c)
 function viewAbout() {
   return colWrap(`${back}
+    <div class="na-film" aria-hidden="true"></div>
     <div class="sc" style="text-align:center;margin-top:6px;padding:24px 18px">
       <span class="ab-mark" aria-hidden="true"><svg class="mk"><use href="#i-didako"/></svg></span>
       <h1 class="tt" style="margin-top:14px">디다코 노트</h1>
@@ -3902,6 +3911,37 @@ function wlFilm(on) {
   wlEl.appendChild(v);
   v.src = LOGIN_FILM.src; v.play().catch(() => {});
 }
+
+// ── 디다코 소개 맨 위 영상(2026-11-16, 코이데 index.html의 afMount를 옮겼다). 첫 화면 영상(wlFilm)과 같은 파일(LOGIN_FILM)·같은 절약 규칙(wlLite)을 쓴다
+//  화면을 다시 그려도 영상 요소는 하나를 계속 쓴다(그릴 때마다 빈 칸 .na-film을 이 요소로 바꿔 끼운다). 소개 화면을 떠나면 받기를 멈추고 지운다
+let afEl = null, afBound = false;
+const afVideo = () => afEl && afEl.querySelector('video');
+function afOff() {
+  if (!afEl) return;
+  const v = afVideo(); if (v) { v.pause(); v.removeAttribute('src'); v.load(); }
+  afEl.remove(); afEl = null;
+}
+function afMount(on) {
+  const ph = on && $('#main .na-film');
+  if (!ph || !LOGIN_FILM) return afOff();
+  if (!afBound) { afBound = true; document.addEventListener('visibilitychange', () => { const v = afVideo(); if (!v) return; if (document.hidden) v.pause(); else if (!wlLite()) v.play().catch(() => {}); }); }
+  if (!afEl) {
+    afEl = document.createElement('div'); afEl.className = 'na-film'; afEl.setAttribute('aria-hidden', 'true');
+    if (LOGIN_FILM.poster) { const im = new Image(); im.className = 'na-film-poster'; im.alt = ''; im.onerror = () => im.remove(); im.src = LOGIN_FILM.poster; afEl.appendChild(im); }
+    if (!wlLite()) { // 움직임 줄이기·데이터 절약: 영상은 받지 않고 포스터 한 장만
+      const v = document.createElement('video');
+      v.muted = true; v.loop = true; v.autoplay = true; v.playsInline = true; v.preload = 'none'; v.tabIndex = -1; v.disablePictureInPicture = true;
+      v.setAttribute('muted', ''); v.setAttribute('playsinline', ''); v.setAttribute('aria-hidden', 'true');
+      if (LOGIN_FILM.poster) v.poster = LOGIN_FILM.poster;
+      v.addEventListener('playing', () => v.classList.add('on'));
+      v.addEventListener('error', () => v.remove());
+      afEl.appendChild(v); v.src = LOGIN_FILM.src;
+    }
+  }
+  ph.replaceWith(afEl);
+  const v = afVideo(); if (v && v.paused && !document.hidden && !wlLite()) v.play().catch(() => {}); // 다시 끼우는 동안 멈췄으면 이어서
+}
+
 function render(fromHash, still) {
   const drawStart = performance.now();
   const raw = routeKey(), key = guard(raw);
@@ -3942,6 +3982,7 @@ function render(fromHash, still) {
   keepImgs($('#main'), viewOf(key)());
   const film = key === 'start' && !!$('#main .ob-start');   // 첫 화면(로그인 전)일 때만 영상. 교회 코드·이름·동의 걸음에는 없다
   document.body.classList.toggle('wl-on', film); wlFilm(film);
+  afMount(key === 'more/about');   // 디다코 소개일 때만 맨 위 영상
   growAll();
   drawnDay = realDN();
   const newList = $('.t8-list'); if (oldList && newList) newList.scrollTop = listTop;
