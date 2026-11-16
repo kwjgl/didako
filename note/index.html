@@ -17,6 +17,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Gowun+Batang:wght@400;700&family=IBM+Plex+Sans+KR:wght@400;500;600&display=swap">
 <script src="config.js"></script>
+<script src="info-tip.js"></script>
 <script>
 // 저장된 화면 설정을 그림이 그려지기 전에 먼저 입힌다(밝은 화면이 잠깐 번쩍이지 않게). 읽을 수 없으면 기기 설정을 따른다
 try {
@@ -1492,8 +1493,7 @@ function viewChurch() {
   return `<form class="ob" data-form="church" novalidate>
     <div class="ob-ok">${CHECK}카카오로 로그인했어요</div>
     ${STEPS(1)}
-    <h1 class="ob-h">교회 코드를 넣어 주세요</h1>
-    <div class="sm" style="margin-top:8px">교회 관리자에게 받은 코드예요</div>
+    <h1 class="ob-h">교회 코드를 넣어 주세요${DidakoTip.btn('교회 관리자에게 받은 코드예요.', '교회 코드')}</h1>
     <input class="field" id="codeIn" style="margin-top:24px" placeholder="교회 코드" aria-label="교회 코드" autocapitalize="characters" autocomplete="off" spellcheck="false">
     <button class="btn big" id="codeGo" type="submit" disabled>들어가기</button>
     ${LIVE ? `<p class="msg" id="churchMsg" role="alert">${esc(churchNotice)}</p>` : '<div class="ob-demo">데모: 아무 코드나 넣어도 돼요</div>'}
@@ -1503,9 +1503,8 @@ function viewName() {
   return `<form class="ob" data-form="name" novalidate>
     ${STEPS(2)}
     <div class="sm lead">${LIVE && sbMode() ? '디다코 노트' : LIVE ? esc((ls.get('didako-church-name') || '우리 교회') + (ls.get('didako-church-kind') === 'test' ? ' · 테스트' : '')) : '우리 교회'}</div>
-    <h1 class="ob-h tight">이름을 적어 주세요</h1>
+    <h1 class="ob-h tight">이름을 적어 주세요${DidakoTip.btn('카카오 닉네임이 아니라 실제 이름이에요.', '이름')}</h1>
     <input class="field" id="nameIn" style="margin-top:24px" maxlength="10" placeholder="예) 김하늘" aria-label="내 이름" autocomplete="name" value="${esc(ob.name)}">
-    <div class="sm" style="margin-top:10px">카카오 닉네임이 아니라 실제 이름이에요.</div>
     <button class="btn big" id="nameGo" type="submit" disabled>다음</button>
   </form>`;
 }
@@ -1794,9 +1793,9 @@ function paintPlaces() {
 function circleCard() {
   if (!CIRCLES.loading && (!CIRCLES.loaded || Date.now() - CIRCLES.at > 60000)) queueMicrotask(() => loadCircles());
   const C = CIRCLES, end = '<span class="ch" aria-hidden="true">›</span>';
-  const one = (name, small, href) => href ? `<a class="gr" href="${esc(href)}"><span class="gt"><b>${name}</b><span class="gd">${small}</span></span>${end}</a>`
-    : `<div class="gr" aria-disabled="true"><span class="gt"><b>${name}</b><span class="gd">${small}</span></span></div>`;
-  if (!C.open) return `<div class="gc">${one('디다코 공동체', '작은 모임에서 말씀을 함께 읽어요.', '../community/')}</div>`;
+  const one = (name, small, href) => href ? `<a class="gr" href="${esc(href)}"><span class="gt"><b>${name}</b>${small ? `<span class="gd">${small}</span>` : ''}</span>${end}</a>`
+    : `<div class="gr" aria-disabled="true"><span class="gt"><b>${name}</b>${small ? `<span class="gd">${small}</span>` : ''}</span></div>`;
+  if (!C.open) return `<div class="gc">${one('디다코 공동체', '', '../community/')}</div>`;
   if (CIRCLE_REAL && !C.session && !C.loaded && ls.get('didako-note-sb')) return `<div class="gc">${one('디다코 공동체', '불러오는 중이에요…', '')}</div>`;
   const rows = C.list.map(c => {
     const off = c.status === '요청' || c.state === '닫음', ended = c.state === '끝남' || c.state === '끝맺음';
@@ -1813,20 +1812,20 @@ function circleCard() {
 function viewMore() {
   const on = D.sync === 'on';
   const places = `<div class="gl">함께하는 곳</div>${circleCard()}<div class="gc">
-      <button class="gr" type="button" data-act="community"><span class="gt"><b>디다코 교회</b><span class="gd">교회 코드가 있으면 우리 교회와 함께 말씀을 나눠요</span></span><span class="ch" aria-hidden="true">›</span></button>
+      <button class="gr" type="button" data-act="community"><span class="gt"><b>디다코 교회</b></span><span class="ch" aria-hidden="true">›</span></button>
     </div>`;
   const account = `<div class="gl">계정과 동기화</div><div class="gc">
       <a class="gr" href="#/more/sync"><span class="gt"><b>계정과 동기화</b><span class="gd">${on ? `동기화 켜짐${syncLine() ? ' · ' + syncLine() : ''}` : '켜면 기기를 바꿔도 기록이 이어져요'}</span></span><span class="ch" aria-hidden="true">›</span></a>
     </div>`;
   const set1 = `<div class="gl">앱 설정</div><div class="gc">
-      <button class="gr${dispOpen ? ' open' : ''}" type="button" data-act="disp" aria-expanded="${dispOpen}" aria-controls="dispEx"><span class="gt"><b class="mhead">화면 설정</b><span class="gd">화면 모드 · 색 테마 · 디자인 · 큰 글씨</span></span>${dispOpen ? CHEV_DOWN_S : '<span class="ch" aria-hidden="true">›</span>'}</button>
+      <button class="gr${dispOpen ? ' open' : ''}" type="button" data-act="disp" aria-expanded="${dispOpen}" aria-controls="dispEx"><span class="gt"><b class="mhead">화면 설정</b></span>${dispOpen ? CHEV_DOWN_S : '<span class="ch" aria-hidden="true">›</span>'}</button>
       ${dispOpen ? displayEx() : ''}
-      <button class="gr" type="button" data-act="a2hs"><span class="gt"><b>홈 화면에 앱처럼 두기</b><span class="gd">아이콘을 눌러 바로 열 수 있게 해요</span></span><span class="ch" aria-hidden="true">›</span></button>
+      <button class="gr" type="button" data-act="a2hs"><span class="gt"><b>홈 화면에 앱처럼 두기</b></span><span class="ch" aria-hidden="true">›</span></button>
     </div>`;
   const app1 = `<div class="gl">디다코</div><div class="gc">
-      <a class="gr" href="#/more/about"><span class="gt"><b>디다코 소개</b><span class="gd">이름의 뜻과 디다코가 지키는 것</span></span><span class="ch" aria-hidden="true">›</span></a>
-      <a class="gr" href="#/more/guide"><span class="gt"><b>사용법</b><span class="gd">따라 하기와 도움말</span></span><span class="ch" aria-hidden="true">›</span></a>
-      <a class="gr" href="#/more/feedback"><span class="gt"><b>의견 보내기</b><span class="gd">불편한 점, 바라는 점, 고마운 점</span></span><span class="ch" aria-hidden="true">›</span></a>
+      <a class="gr" href="#/more/about"><span class="gt"><b>디다코 소개</b></span><span class="ch" aria-hidden="true">›</span></a>
+      <a class="gr" href="#/more/guide"><span class="gt"><b>사용법</b></span><span class="ch" aria-hidden="true">›</span></a>
+      <a class="gr" href="#/more/feedback"><span class="gt"><b>의견 보내기</b></span><span class="ch" aria-hidden="true">›</span></a>
     </div><button class="logout" type="button" data-act="logout">이 기기에서 로그아웃</button>`;
   return `<div class="col more">${pageHead('', '더보기')}
     ${LIVE && !sbMode() && ls.get('didako-church-name') ? `<div class="sm" style="margin:-4px 0 12px">${esc((ls.get('didako-church-name') || '') + (ls.get('didako-church-kind') === 'test' ? ' · 테스트' : ''))}</div>` : ''}
@@ -1897,7 +1896,7 @@ const fb = { kind: '이랬으면', named: false, text: '' };
 function viewFeedback() {
   return colWrap(`${back}
     <div class="sm" style="margin-top:10px">디다코를 함께 만들어요</div>
-    <h1 class="tt" style="margin-top:2px">의견 보내기</h1>
+    <h1 class="tt" style="margin-top:2px">의견 보내기${DidakoTip.btn('디다코를 만드는 사람이 읽어요. 답장은 따로 오지 않아요.', '의견 보내기')}</h1>
     <div class="sc" style="margin-top:16px;display:flex;flex-direction:column;gap:12px">
       <div class="seg" role="radiogroup" aria-label="의견 종류">${FB_KINDS.map(k => `<button type="button" class="${fb.kind === k ? 'on' : ''}" role="radio" aria-checked="${fb.kind === k}" data-act="fbkind" data-v="${k}">${k}</button>`).join('')}</div>
       <p class="sm warn">내 질문과 발견은 여기 쓰지 말아 주세요.</p>
@@ -1905,7 +1904,6 @@ function viewFeedback() {
       <p class="sm" style="margin:0;text-align:right"><span id="fbN">${[...fb.text].length}</span>/500</p>
       <div class="set-row" style="margin-top:0"><span><b>이름 밝히기</b><span class="sm">끄면 누가 보냈는지 남기지 않아요.</span></span><button class="switch${fb.named ? ' on' : ''}" type="button" role="switch" aria-checked="${fb.named}" aria-label="이름 밝히기" data-act="fbnamed"><span></span></button></div>
       <button class="btn lg wide" type="button" data-act="fbsend">보내기</button>
-      <p class="sm" style="margin:0">디다코를 만드는 사람이 읽어요. 답장은 따로 오지 않아요.</p>
     </div>`);
 }
 // 동기화(M8g 꺼짐 · M8f 켜짐): 데모라 실제 잠금은 없다
@@ -1913,14 +1911,14 @@ function viewSync() {
   const on = D.sync === 'on';
   const secret = `<div class="cg">${LIVE && canMoveVault() ? `
       <button class="gr" type="button" data-act="vault-move"><span class="gt"><b>새 보관함으로 옮기기</b><span class="gd">기록은 휴대폰에서 잠긴 그대로 옮겨요</span></span><span class="ch" aria-hidden="true">›</span></button>` : ''}
-      <button class="gr${on ? '' : ' dm'}" type="button" data-act="${on ? 'pass-sheet' : 'need-sync'}"><span class="gt"><b>비밀 문구 바꾸기</b><span class="gd">기록을 잠그는 문구를 새로 정해요</span></span><span class="ch" aria-hidden="true">›</span></button>
-      <button class="gr${on ? '' : ' dm'}" type="button" data-act="${on ? 'forgot-sheet' : 'need-sync'}"><span class="gt"><b>비밀 문구를 잊었어요</b><span class="gd">적어 둔 복구용 낱말로 다시 열어요</span></span><span class="ch" aria-hidden="true">›</span></button>
+      <button class="gr${on ? '' : ' dm'}" type="button" data-act="${on ? 'pass-sheet' : 'need-sync'}"><span class="gt"><b>비밀 문구 바꾸기</b></span><span class="ch" aria-hidden="true">›</span></button>
+      <button class="gr${on ? '' : ' dm'}" type="button" data-act="${on ? 'forgot-sheet' : 'need-sync'}"><span class="gt"><b>비밀 문구를 잊었어요</b></span><span class="ch" aria-hidden="true">›</span></button>
       <button class="gr${on ? '' : ' dm'}" type="button" data-act="${on ? 'rec-new' : 'need-sync'}"><span class="gt"><b>복구용 낱말 새로 만들기</b></span><span class="ch" aria-hidden="true">›</span></button>
       <p class="nt2" style="padding-top:2px">비밀 문구와 복구용 낱말을 둘 다 잃으면 기록을 되살릴 수 없어요.</p></div>`;
-  const dl = `<button class="gr" type="button" data-act="soon"${on ? '' : ' style="border-top:0"'}><span class="gt"><b>내 기록 내려받기</b><span class="gd">PDF, Markdown, TXT, HTML, 마크다운 복사</span></span><span class="ch" aria-hidden="true">›</span></button>`;
+  const dl = `<button class="gr" type="button" data-act="soon"${on ? '' : ' style="border-top:0"'}><span class="gt"><b>내 기록 내려받기</b></span><span class="ch" aria-hidden="true">›</span></button>`;
   const file = `<div class="cg"><div class="sl" style="padding-top:16px;margin-bottom:0;font-size:.84375rem">내 기록 파일</div>${on ? `
-      <button class="gr" type="button" data-act="soon" style="border-top:0"><span class="gt"><b>기록 저장하기</b><span class="gd">파일·드라이브에 저장하거나, 카카오톡으로 보내요.</span></span></button>
-      <button class="gr" type="button" data-act="soon"><span class="gt"><b>불러오기</b><span class="gd">저장해 둔 파일로 기록을 되살려요.</span></span></button>` : ''}
+      <button class="gr" type="button" data-act="soon" style="border-top:0"><span class="gt"><b>기록 저장하기</b></span></button>
+      <button class="gr" type="button" data-act="soon"><span class="gt"><b>불러오기</b></span></button>` : ''}
       ${dl}</div>`;
   const how = on ? '' : `<div class="ft"><div class="sl">켜는 순서</div><ol class="os"><li>비밀 문구를 두 번 적어요</li><li>복구용 낱말 여섯 개를 보고 적어 둬요</li><li>기록이 암호화되어 맡겨져요</li></ol></div>`;
   return colWrap(`${back}
@@ -1954,7 +1952,6 @@ function recSheet() {
     <ol class="wd" aria-label="복구용 낱말 6개">${words.map((w, i) => `<li><small>${i + 1}</small>${esc(w)}</li>`).join('')}</ol>
     <p>비밀 문구를 잊었을 때 이 낱말로 기록을 열어요. 사진으로 찍거나 카톡 나에게 보내 두세요. 운영하는 사람도 다시 알려 드릴 수 없어요.</p>
     <div class="rb"><button class="btn ghost" type="button" data-act="rec-share">보내기</button><button class="btn ghost" type="button" data-act="rec-copy">복사하기</button></div>
-    <p class="sm" style="font-size:.84375rem">보내기를 누르고 카카오톡 나에게 보내 두면 편해요.</p>
     <div class="ra"><button class="btn" type="button" data-act="rec-done">보관했어요</button></div>`, true);   // 바깥을 눌러도 닫히지 않고 '보관했어요'를 눌러야 닫힌다
 }
 let a2hsOs = /android/i.test(navigator.userAgent) ? 'android' : 'ios';
@@ -3470,18 +3467,18 @@ function closeFruitScene(goVine) {
   scheduleVineMoment();
 }
 function viewVine() {
-  return `<div class="col vine-page"><div class="vine-copy"><div class="back-row"><a class="bk" href="#/mine">← 내 기록</a></div><div class="vine-heading"><h1 class="tt">포도나무</h1><span class="sm">요 15:1~8</span></div><p class="sm">말씀에 머문 날마다 잎이 돋고, 성령의 열매가 맺혀요</p></div>
+  return `<div class="col vine-page"><div class="vine-copy"><div class="back-row"><a class="bk" href="#/mine">← 내 기록</a></div><div class="vine-heading"><h1 class="tt">포도나무${DidakoTip.btn('잎은 무언가를 남긴 날마다 하나씩 돋아요. 며칠 쉬어도 시들지 않아요. 발견(!)을 남긴 날의 잎에는 이슬이 맺혀요.', '포도나무')}</h1><span class="sm">요 15:1~8</span></div><p class="sm">말씀에 머문 날마다 잎이 돋고, 성령의 열매가 맺혀요</p></div>
     <div class="vine-stage">${vineScene()}</div><div class="vine-fruits">${FRUITS.map((fruit, i) => {
       const n = vineLeaves(i + 1), state = n === 10 ? 'earned' : n ? 'growing' : 'waiting', tag = n === 10 ? 'button' : 'div';
       return `<${tag} class="card vine-fruit ${state}"${n === 10 ? ` type="button" data-act="vine-story" data-key="${fruit.k}"` : ''}>${vineGrape(vineGrapeFrame(n) ?? 4)}<span class="vine-fruit-name">${fruit.name}</span></${tag}>`;
-    }).join('')}</div><div class="vine-copy vine-guide">${vineDays() >= 90 ? '<p class="sm">아홉 열매를 다 맺었어요. 다음 포도원은 준비하고 있어요.</p>' : ''}<p class="sm">잎은 무언가를 남긴 날마다 하나씩 돋아요. 며칠 쉬어도 시들지 않아요.<br>발견(!)을 남긴 날의 잎에는 이슬이 맺혀요.</p></div></div>`;
+    }).join('')}</div><div class="vine-copy vine-guide">${vineDays() >= 90 ? '<p class="sm">아홉 열매를 다 맺었어요. 다음 포도원은 준비하고 있어요.</p>' : ''}</div></div>`;
 }
 const VINE_IC = '<svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M11 19c-3 0-5-2-7-5l4-1-3-5 5 1 2-6 3 5 5-2-1 6 3 2c-3 4-6 6-9 5M7 22l6-8M12 15l-2-4M13 14l4-3"/></svg>';
 
 function viewBadges() {
   const days = badgeDays(), vine = vineBadgeDays(), seen = badgeSeen([...B.seen, ...BADGES.filter(b => days[b.k]).map(b => b.k), ...Object.keys(vine).filter(k => vine[k])]);
   if (seen.length !== B.seen.length) { B.seen = seen; saveBadges(); }
-  return `<div class="col"><div class="back-row"><a class="bk" href="#/mine">‹ 내 기록</a></div><h1 class="tt">나의 배지</h1><p class="sm">앱을 하나씩 써 보며 받는 표시예요.</p>
+  return `<div class="col"><div class="back-row"><a class="bk" href="#/mine">‹ 내 기록</a></div><h1 class="tt">나의 배지${DidakoTip.btn('앱을 하나씩 써 보며 받는 표시예요.', '나의 배지')}</h1>
     <div class="badge-grid">${BADGES.map(b => `<button type="button" class="badge-item${days[b.k] ? ' earned' : ''}" data-act="badge-open" data-badge="${b.k}">${badgeVisual(b.k, days[b.k], false)}<span class="sm badge-name">${esc(b.name)}</span></button>`).join('')}</div>${vineBadgeGroups(vine)}</div>`;
 }
 function openBadge(k) {
@@ -3944,6 +3941,7 @@ function afMount(on) {
 
 function render(fromHash, still) {
   const drawStart = performance.now();
+  if (window.DidakoTip) DidakoTip.close();   // 다시 그리기 전에 열린 ⓘ 말풍선을 닫는다
   const raw = routeKey(), key = guard(raw);
   if (key !== raw) { setHash(key, true); return; }
   if (key !== lastKey) WE.key = '';   // 다시 열 때 저장된 묵상이나 마친 기록에 맞춰 단계를 연다
