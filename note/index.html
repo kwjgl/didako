@@ -478,9 +478,9 @@ body.tabs-off .stickbar { bottom: env(safe-area-inset-bottom, 0px); }
 .os { margin: 0; padding-left: 1.3em; display: flex; flex-direction: column; gap: 6px; font-size: .9375rem; line-height: 1.55; }
 
 /* 아래에서 올라오는 창 */
-.pop { position: fixed; inset: 0; z-index: 50; display: flex; align-items: flex-end; justify-content: center; }
+.pop { position: fixed; inset: 0; bottom: var(--kb, 0px); z-index: 50; display: flex; align-items: flex-end; justify-content: center; }
 .pop-scrim { position: absolute; inset: 0; background: rgb(0 0 0 / .4); }
-.pop-sheet { position: relative; width: 100%; max-width: 480px; max-height: 90vh; overflow-y: auto; background: var(--page); border-radius: 20px 20px 0 0; padding: 20px 16px max(28px, env(safe-area-inset-bottom, 0px)); display: flex; flex-direction: column; gap: 12px; box-shadow: 0 -8px 28px var(--shadow); }
+.pop-sheet { position: relative; width: 100%; max-width: 480px; max-height: min(90vh, calc(100% - 12px)); overflow-y: auto; background: var(--page); border-radius: 20px 20px 0 0; padding: 20px 16px max(28px, env(safe-area-inset-bottom, 0px)); display: flex; flex-direction: column; gap: 12px; box-shadow: 0 -8px 28px var(--shadow); }
 @media (min-width: 640px) { .pop { align-items: center; } .pop-sheet { border-radius: 18px; } }
 .pop-sheet h2 { margin: 0; font: 700 1.25rem/1.35 var(--f-display); }
 .pop-sheet p { margin: 0; font-size: .9375rem; line-height: 1.65; }
@@ -1149,7 +1149,7 @@ const SB_CFG = CFG.NOTE_BACKEND === 'supabase' && !!CFG.SUPABASE_URL && !!CFG.SU
 const LIVE = (!!CFG.HUB_URL || SB_CFG) && !new URLSearchParams(location.search).has('demo');
 const DATA = window.NOTE_DATA;
 const KOIDE_PRAY_URL = 'https://koide.koinobia.com/app/note.html';   // 기도하러 갈 곳(코이데 기도 노트). 화면 글에는 '코이데'라고 쓰지 않는다(결정 기록 2026-10-26)
-const Q = window.NOTE_Q;   // 오늘의 질문 409개(note/tools/make-data.py가 만든다. 이번 주의 질문 52개도 들어 있지만 노트에서는 쓰지 않는다, D-49)
+const Q = window.NOTE_Q;   // 오늘의 질문 409개(note/tools/make-data.py가 만든다)
 const $ = (s, el = document) => el.querySelector(s);
 const $$ = (s, el = document) => [...el.querySelectorAll(s)];
 const esc = s => String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
@@ -2896,7 +2896,7 @@ async function holdAwake() {
 }
 function releaseAwake() { const wl = wakeLock; wakeLock = null; if (wl) wl.release().catch(() => {}); }
 const syncAwake = key => { wakeWant = /^explore\/note\/[\w-]+$/.test(key); wakeWant ? holdAwake() : releaseAwake(); };   // 하나씩 쓰기와 자유롭게 쓰기 화면(모아 보기는 빼고)
-// 휴대폰 화면 키보드가 올라오면 서식 막대도 그 위로 올린다
+// 휴대폰 화면 키보드가 올라오면 서식 막대와 아래 창(.pop)도 그 위로 올린다
 (function trackKeyboard() {
   const vv = window.visualViewport; if (!vv) return;
   const set = () => root.style.setProperty('--kb', Math.max(0, Math.round(window.innerHeight - vv.height - vv.offsetTop)) + 'px');
