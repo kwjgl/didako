@@ -1494,6 +1494,7 @@ function viewStart() {
     <div class="ob-start-act">
       ${LIVE && sbMode() ? sbList.map(k => `<button class="kakao sso-${k}" type="button" data-act="sb-login" data-v="${k}"${authBusy ? ' disabled aria-busy="true"' : ''}>${k === 'kakao' ? BUBBLE : SB_LOGO[k]}${SB_START[k]}</button>`).join('') : `<button class="kakao" type="button" data-act="kakao"${LIVE && authBusy ? ' disabled aria-busy="true"' : ''}>${BUBBLE}${LIVE && authBusy ? '카카오 로그인을 확인하고 있어요…' : '카카오로 시작하기'}</button>`}
       <div class="sm" style="text-align:center;margin-top:4px">${LIVE && authBusy ? '잠시만 기다려 주세요. 몇 초 걸려요.' : '내 질문은 나만 볼 수 있어요'}</div>
+      <a class="sm" href="https://koinobia.com/privacy/" target="_blank" rel="noopener" style="display:block;text-align:center;margin-top:12px;color:var(--ink-2)">개인정보 처리방침</a>
     </div>
   </div>`;
 }
@@ -1834,6 +1835,7 @@ function viewMore() {
       <a class="gr" href="#/more/about"><span class="gt"><b>디다코 소개</b></span><span class="ch" aria-hidden="true">›</span></a>
       <a class="gr" href="#/more/guide"><span class="gt"><b>사용법</b></span><span class="ch" aria-hidden="true">›</span></a>
       <a class="gr" href="#/more/feedback"><span class="gt"><b>의견 보내기</b></span><span class="ch" aria-hidden="true">›</span></a>
+      <a class="gr" href="https://koinobia.com/privacy/" target="_blank" rel="noopener"><span class="gt"><b>개인정보 처리방침</b></span><span class="ch" aria-hidden="true">›</span></a>
     </div><button class="logout" type="button" data-act="logout">이 기기에서 로그아웃</button>`;
   return `<div class="col more">${pageHead('', '더보기')}
     ${LIVE && !sbMode() && ls.get('didako-church-name') ? `<div class="sm" style="margin:-4px 0 12px">${esc((ls.get('didako-church-name') || '') + (ls.get('didako-church-kind') === 'test' ? ' · 테스트' : ''))}</div>` : ''}
