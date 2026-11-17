@@ -230,6 +230,7 @@ body.pop-open { overflow: hidden; }
 @media (max-width: 359px) { .topbar .wrap { gap: .3em; } .topbar .brand-name { display: none; } }
 </style>
 <link rel="stylesheet" href="design-styles.css">
+<link rel="stylesheet" href="../note/guide.css">
 <style>
 /* ── 이 시안에만 있는 것 ── */
 [hidden] { display: none !important; }
@@ -1311,12 +1312,17 @@ button.gallery-cell { display: block; width: 100%; padding: 0; cursor: pointer; 
 .feedback-page .feedback-card .warning { color: var(--ink-2); }
 .feedback-page .feedback-card .feedback-count { text-align: right; margin: 0; color: var(--ink-2); }
 .feedback-page .feedback-card .set-row > span { display: flex; flex-direction: column; gap: 3px; }
-.guide-icon { display: grid; place-items: center; margin: 12px auto; width: 56px; height: 56px; border-radius: 50%; background: var(--surface-2); color: var(--accent); }
-.guide-icon .ic { width: 30px; height: 30px; }
-.guide-dots { display: flex; justify-content: center; gap: 8px; margin: 18px 0; }
-.guide-dots i { width: 9px; height: 9px; border: 1px solid var(--accent); border-radius: 50%; }
-.guide-dots i.on { background: var(--accent); }
-.guide-nav { display: grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap: 8px; }
+
+/* 따라 하기(guide.js) 중에는 위·아래 막대를 항상 보이게 한다. */
+html.kg-on .topbar, html.kg-on .tabs { transform: none !important; }
+/* 더보기 › 사용법: 디다코 노트의 펼치는 질문과 같은 짜임. */
+.fq { display: flex; align-items: center; justify-content: space-between; gap: 12px; width: 100%; min-height: 56px; padding: 8px 0; border: 0; border-top: 1px solid var(--line); background: none; text-align: left; font: 700 1rem var(--f-body); color: var(--ink); cursor: pointer; }
+.fq:first-of-type { border-top: 0; }
+.fa { padding: 0 0 14px; }
+.fa .pg { margin: 0; line-height: 1.65; }
+.guide-page .lk { display: inline-block; margin-top: 8px; color: var(--accent); }
+.guide-page .card > h2 { margin: 0 0 8px; font-family: var(--f-body); font-size: .875rem; font-weight: 500; color: var(--ink-2); }   /* 카드 제목은 노트 사용법의 작은 이름표(.sl)와 같게 */
+html.tutorial .demo-tag { display: none !important; }
 /* ── 인쇄(C-02): A4 종이와 쪽 나누기. 시안 manage.html·prep.html의 인쇄용을 옮겼다. 종이 안 색은 화면 색 테마와 상관없이 흰 종이 ── */
 .print-bar { display: flex; flex-direction: column; align-items: flex-start; gap: 6px; margin: 12px 0 14px; }
 .print-bar .btn { align-self: flex-start; }
@@ -1386,8 +1392,13 @@ button.gallery-cell { display: block; width: 100%; padding: 0; cursor: pointer; 
   .print-area .paper { --mm: 1mm; width: 210mm; height: 297mm; aspect-ratio: auto; border: 0; box-shadow: none; }
 }
 </style>
+<!-- 시작 화면이 뜨기 전에는 바탕을 단색으로(바탕 무늬가 잠깐 비치지 않게). splash.js가 닫을 때 푼다(S-34) -->
+<script>document.documentElement.classList.add('booting'); setTimeout(() => document.documentElement.classList.remove('booting'), 5000);</script>
+<style>html.booting body { background-image: none !important; } html.booting body::before { display: none !important; }</style>
 </head>
 <body>
+<script src="practice.js"></script>
+<script src="../note/splash.js" data-place="church"></script>
 <svg width="0" height="0" style="position:absolute" aria-hidden="true">
   <defs id="spriteDefs">
     <symbol id="i-week" viewBox="0 0 24 24"><rect x="4" y="5" width="16" height="15" rx="3"/><path d="M4 10h16M9 3v4M15 3v4"/></symbol>
@@ -1482,6 +1493,7 @@ button.gallery-cell { display: block; width: 100%; padding: 0; cursor: pointer; 
 <script src="demo-data.js"></script>
 <script src="book-gospel.js"></script>
 <script src="book-prophets.js"></script>
+<script src="../note/guide.js"></script>
 <script src="../note/places.js"></script>
 <script>
 (() => {
@@ -1489,7 +1501,9 @@ button.gallery-cell { display: block; width: 100%; padding: 0; cursor: pointer; 
 // 설정 파일(config.js)에 서버 주소(HUB_URL)가 있으면 실제 모드, 비어 있으면(또는 주소 끝에 ?demo) 데모다 (디다코 노트와 같다).
 // 데모에서는 아무것도 밖으로 보내지 않고, 쓴 것은 이 기기(localStorage)에만 남는다
 const CFG = window.DIDAKO_CONFIG || {};
-const LIVE = !!CFG.HUB_URL && !new URLSearchParams(location.search).has('demo');
+const TUT = new URLSearchParams(location.search).has('tutorial');
+if (TUT) document.documentElement.classList.add('tutorial');
+const LIVE = !!CFG.HUB_URL && !new URLSearchParams(location.search).has('demo') && !TUT;
 const DEMO = !LIVE;
 const DATA = window.DIDAKO_DEMO;
 const clone = x => JSON.parse(JSON.stringify(x));
@@ -1607,6 +1621,7 @@ function loadState() {
 const saveDisplay = () => ls.set(K.display, JSON.stringify({ ...readJson(K.display), mode: S.mode, accent: S.accent, style: S.style, big: S.big }));
 const saveDemo = () => { if (!LIVE) ls.set(K.demo, JSON.stringify(D)); };
 loadState();
+if (TUT) { D.entered = true; D.role = 'member'; }   // 연습용 회원. 기록·로그인에는 남기지 않는다
 
 const STYLE_ATTR = { basic: null, neu: 'neu', skeu: 'skeu', glass: 'glass' };
 function applySettings() {
@@ -1658,7 +1673,7 @@ function displayControls() {
 }
 function renderSettings() {
   // 실제 모드에는 데모용 설정(역할 바꾸기 등)이 없다. 화면 설정만 연다
-  if (LIVE) { $('#settings').innerHTML = displayControls(); return; }
+  if (LIVE || TUT) { $('#settings').innerHTML = displayControls(); return; }
   const inApp = currentView() !== 'start';
   $('#settings').innerHTML = `${displayControls()}    <div class="mdiv"></div>
     <p class="mlabel">데모용 <span class="demo-tag static">데모</span></p>
@@ -1697,7 +1712,7 @@ function closeMenu() { const m = $('#settings'); m.hidden = true; $('#gearBtn').
 // 이름표와 어느 탭이 켜지는지는 여기에 모아 둔다. 아직 만들지 않은 화면은 차분한 안내 한 장으로 연다(막다른 길이 없게 이번 주로 가는 링크를 둔다)
 const PLACE = {
   wq: ['이번 주의 질문', 'week'], read: ['펼치기', 'week'], share: ['나눔하기', 'share'], shelf: ['책장', 'shelf'], record: ['내 기록', 'record'], records: ['모든 기록', 'record'], found: ['찾은 말씀', 'record'], gallery: ['올해의 그림', 'record'], rooms: ['사랑방 전체 보기', 'more'], more: ['더보기', 'more'],
-  church: ['우리 사랑방', 'more'], prep: ['진행 준비', 'share'], prepprint: ['리더용 인쇄', 'share'], manage: ['교재 관리', 'more'], admin: ['관리', 'more'], 'admin-reorg': ['연도 개편', 'more'], 'church-admin': ['교회 전체', 'more'], about: ['디다코 소개', 'more'], feedback: ['의견 보내기', 'more']
+  church: ['우리 사랑방', 'more'], prep: ['진행 준비', 'share'], prepprint: ['리더용 인쇄', 'share'], manage: ['교재 관리', 'more'], admin: ['관리', 'more'], 'admin-reorg': ['연도 개편', 'more'], 'church-admin': ['교회 전체', 'more'], about: ['디다코 소개', 'more'], guide: ['사용법', 'more'], feedback: ['의견 보내기', 'more']
 };
 const VIEWS = ['start', 'week'].concat(Object.keys(PLACE));
 // 책 안(#book-교재)과 기록 상세(#rec-기록)는 책장·내 기록 안의 화면이다
@@ -2571,7 +2586,7 @@ function moreView() {
       </div>
       <div class="gl">디다코</div><div class="gc">
         <a class="gr" href="#about"><span class="gt"><b>디다코 소개</b></span>${chevron}</a>
-        <button class="gr" type="button" data-act="more-guide"><span class="gt"><b>사용법</b></span>${chevron}</button>
+        <a class="gr" href="#guide"><span class="gt"><b>사용법</b></span>${chevron}</a>
         <a class="gr" href="#feedback"><span class="gt"><b>의견 보내기</b></span>${chevron}</a>
       </div>
       <button class="logout" type="button" data-act="more-logout">이 기기에서 로그아웃</button>
@@ -2620,14 +2635,24 @@ const GUIDE_CARDS = [
   ['log','내 기록','모임 뒤에 마음에 남은 한 문장과 작은 실천을 남겨요. 달마다 간직한 말씀과 묵상을 모아 보고, 기록 상세에서 돌아보기를 남겨요.'],
   ['more','더보기','화면 모드와 색, 글씨 크기를 바꿔요. 기록을 잠가서 맡기는 동기화는 디다코 노트 더보기에서 해요.']
 ];
-let guideIndex = 0;
-function showGuide() {
-  const [symbol,title,desc] = GUIDE_CARDS[guideIndex];
-  openSheet(`<div class="sheet-h"><h3 id="popT">사용법</h3><button type="button" class="sheet-x" aria-label="닫기" data-act="pop-close" data-focus>×</button></div>
-    <div class="card" style="text-align:center;padding:20px"><span class="guide-icon">${ic(symbol)}</span><h3>${title}</h3><p class="hint">${desc}</p>
-    ${guideIndex === 4 ? '<a href="#about" data-act="guide-about">더 알아보기 › 디다코 소개</a>' : ''}</div>
-    <div class="guide-dots" aria-label="사용법 진행">${GUIDE_CARDS.map((_,i)=>`<i class="${i===guideIndex?'on':''}" aria-hidden="true"></i>`).join('')}</div>
-    <div class="guide-nav"><button type="button" class="btn ghost" data-act="guide-prev" ${guideIndex===0?'disabled':''}>이전</button><button type="button" class="btn" data-act="${guideIndex===4?'pop-close':'guide-next'}">${guideIndex===4?'닫기':'다음'}</button></div>`);
+
+let faqOpen = new Set();
+function guideView() {
+  const faqItems = [
+    ['이번 주는 어떻게 써요?', '이번 주 ›', '#week'],
+    ['책장에는 무엇이 있어요?', '책장 ›', '#shelf'],
+    ['나눔하기는 언제 써요?', '나눔하기 ›', '#share'],
+    ['내 기록에는 무엇이 남아요?', '내 기록 ›', '#record'],
+    ['더보기에서는 무엇을 해요?', '디다코 소개 ›', '#about']
+  ];
+  const faq = faqItems.map(([q, label, url], i) => `<button class="fq" type="button" data-act="faq" data-i="${i}" aria-expanded="${faqOpen.has(i)}" aria-controls="fa${i}"><span>${q}</span><span data-chev aria-hidden="true">${faqOpen.has(i) ? '⌃' : '⌄'}</span></button><div class="fa" id="fa${i}"${faqOpen.has(i) ? '' : ' hidden'}><p class="pg">${esc(GUIDE_CARDS[i][2])}</p><a class="lk" href="${url}">${label}</a></div>`).join('');
+  return `<div class="feedback-page guide-page"><a class="back-link" href="#more">${ic('back')}<span>더보기</span></a>
+    <div class="page-top" style="margin-top:8px"><h1>사용법</h1></div>
+    <section class="card" style="margin-top:18px"><h2>처음처럼 따라 해 보기</h2><p class="pg">예시 화면에서 이번 주, 책장, 나눔하기, 내 기록을 한 걸음씩 눌러 보며 익혀요. 연습한 것은 저장되지 않아요.</p>
+      <button class="btn wide" type="button" data-act="guidere" style="margin-top:16px"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M6 3.5v17l14-8.5z"/></svg>따라 하기 시작</button></section>
+    <section class="card"><h2>궁금한 것 찾아보기</h2>${faq}</section>
+    ${true ? `<section class="card"><h2>의견 보내기</h2><p class="pg">불편한 점이나 바라는 점, 고마운 점을 보내 주세요.</p><a class="lk" href="#feedback">의견 보내기 ›</a></section>` : ''}
+  </div>`;
 }
 const feedbackState = { kind:'이랬으면', named:false, text:'' };
 function feedbackView() {
@@ -5097,7 +5122,7 @@ function route(moved) {
   $('#topbar').classList.toggle('bare', start);
   $('#topnav').hidden = start; $('#tabs').hidden = start;
   document.body.dataset.view = v;
-  $('#view').innerHTML = start ? startView(arg) : v === 'week' ? weekView() : v === 'wq' ? wqView() : v === 'read' ? readView() : v === 'share' ? shareView() : v === 'shelf' ? shelfView(arg) : v === 'record' ? recordView(arg) : v === 'records' ? recordsView() : v === 'found' ? foundView() : v === 'gallery' ? galleryView() : v === 'more' ? moreView() : v === 'admin' ? adminView() : v === 'admin-reorg' ? adminReorgView() : v === 'church-admin' ? churchAdminView() : v === 'about' ? aboutView() : v === 'feedback' ? feedbackView() : v === 'prep' ? prepView() : v === 'prepprint' ? prepPrintView() : v === 'church' ? churchView() : v === 'rooms' ? roomsView() : v === 'manage' ? manageView(arg) : placeView(v);
+  $('#view').innerHTML = start ? startView(arg) : v === 'week' ? weekView() : v === 'wq' ? wqView() : v === 'read' ? readView() : v === 'share' ? shareView() : v === 'shelf' ? shelfView(arg) : v === 'record' ? recordView(arg) : v === 'records' ? recordsView() : v === 'found' ? foundView() : v === 'gallery' ? galleryView() : v === 'more' ? moreView() : v === 'admin' ? adminView() : v === 'admin-reorg' ? adminReorgView() : v === 'church-admin' ? churchAdminView() : v === 'about' ? aboutView() : v === 'guide' ? guideView() : v === 'feedback' ? feedbackView() : v === 'prep' ? prepView() : v === 'prepprint' ? prepPrintView() : v === 'church' ? churchView() : v === 'rooms' ? roomsView() : v === 'manage' ? manageView(arg) : placeView(v);
   if (adv && !adShown) { adShown = adv; showAdSplash(adv === 'admin' ? DATA.church.dept + ' 관리' : '교회 전체'); }
   reuseImgs($('#view'));
   const film = start && !!$('#view .welcome');   // 첫 화면(로그인 전)일 때만 영상. 첫 접속의 다음 걸음들에는 없다
@@ -5115,6 +5140,8 @@ function route(moved) {
   if (v === 'wq') wqInit(); else if (v === 'read') readInit(); else if (v === 'share') shareInit(); else if (v === 'shelf') shelfInit(arg); else if (v === 'manage' || v === 'prepprint') ppFill();
   if (v === 'share' && shareAuto) { shareAuto = false; if (G) startShare(); }
   if (adNote) { const m = adNote; adNote = ''; toast(m); }   // 화면을 옮긴 뒤에 알릴 글(연도 개편 예약)
+  if (!TUT && !start && D.entered) window.didakoPlace && window.didakoPlace.used('church');
+  ChGuide.maybe();   // 이번 주에서 처음 온 회원이라면 연습 페이지로   // 교회 회원 화면에서만 마지막 곳 기억(D-59)
 }
 // 설정을 바꿔 다시 그릴 때는 보던 자리를 지키고, 말씀을 열며를 다시 띄우지 않는다
 function rerender() {
@@ -5257,10 +5284,8 @@ const acts = {
     a2hsOs = el.dataset.v; a2hsSheet();
     $('#popSheet [data-act="a2hsos"].on').focus({ preventScroll: true });
   },
-  'more-guide'() { guideIndex = 0; showGuide(); },
-  'guide-prev'() { if (guideIndex > 0) { guideIndex--; showGuide(); } },
-  'guide-next'() { if (guideIndex < GUIDE_CARDS.length - 1) { guideIndex++; showGuide(); } },
-  'guide-about'(e) { e.preventDefault(); closeSheet(); location.hash = '#about'; },
+  guidere() { ChGuide.goTutorial(false); },
+  faq(e, el) { const i = Number(el.dataset.i), open = !faqOpen.has(i); open ? faqOpen.add(i) : faqOpen.delete(i); el.setAttribute('aria-expanded', String(open)); $('#fa' + i).hidden = !open; $('[data-chev]', el).textContent = open ? '⌃' : '⌄'; },
   'fb-kind'(e,el) { feedbackState.kind = el.dataset.kind; route(false); },
   'fb-named'() { feedbackState.named = !feedbackState.named; route(false); },
   'fb-send'() { if (!feedbackState.text.trim()) return; feedbackState.text = ''; const t = $('#feedbackText'); if (t) t.value = ''; const n = $('#feedbackCount'); if (n) n.textContent='0'; const b = $('#feedbackSend'); if (b) b.disabled = true; toast('데모라 보내지 않았어요. 고마워요'); },
@@ -5286,7 +5311,7 @@ const acts = {
   },
   'demo-reset'() {
     closeSheet(); roomState = null; MG = null; mgTab = 'now'; mgEditing = ''; mgSerial = 0; clearTimeout(mgPvTimer); mgEditTab = 'write'; mgPvMode = 'member'; mgPvOpen = true; mgTouched.clear();
-    ls.del(K.demo); ls.del(K.keep); ls.del(K.answers); ls.del(K.walkRead); ls.del(K.walkThought); ls.del(K.walkDone); ls.del(K.walkMeditate); ls.del(K.bookmark); ls.del(K.memo); ls.del(K.leadopen);
+    ls.del(GUIDE_K); ls.del(K.demo); ls.del(K.keep); ls.del(K.answers); ls.del(K.walkRead); ls.del(K.walkThought); ls.del(K.walkDone); ls.del(K.walkMeditate); ls.del(K.bookmark); ls.del(K.memo); ls.del(K.leadopen);
     [K.shareDone, K.liveRec, K.recRefl, K.recAns, K.recEdit, K.recDel, K.recHide].forEach(ls.del); loadState();
     if (location.hash === '#start') route(true); else location.hash = '#start';
   },
@@ -5997,13 +6022,76 @@ document.addEventListener('submit', e => {
     adRenameRoom(r, n); AD.edit = null; AD.hl = [r.id]; toast('이름을 바꿨어요'); adRedraw();
   }
 });
+
+ // ── 따라 하기(처음 온 회원: 이번 주 · 책장 · 나눔하기 · 내 기록 · 더보기) ──
+ // 진짜 앱과 분리된 연습 페이지는 practice.js의 메모리 판을 쓴다. 서버는 TUT에서 꺼 둔다.
+ const GUIDE_K = 'didako-guide';
+ const ChGuide = (() => {
+   let timer = 0, leaving = false, begun = false, bootReady = !LIVE;
+   const PRE = new URLSearchParams(location.search).has('demo') ? '&demo' : '';
+   const tutOff = () => { try { return !!sessionStorage.getItem('didako-tut-off'); } catch (e) { return false; } };
+   const running = () => !!window.DidakoGuide && DidakoGuide.running();
+   // 내 기록의 reportHtml()과 모든 기록 listHtml()이 함께 쓰는 recRows()로 판단한다.
+   const noRecords = () => recRows().length === 0;
+   const goTutorial = auto => { const to = location.pathname + '?tutorial' + PRE; if (auto === true) location.replace(to); else location.href = to; };
+   const back = () => { leaving = true; location.replace(location.pathname + '?tutdone' + PRE + '#week'); };
+   const fail = () => { try { sessionStorage.setItem('didako-tut-off', '1'); } catch (e) {} leaving = true; location.replace(location.pathname + '?tutdone=fail' + PRE + '#week'); };
+   const tabBtn = k => [...document.querySelectorAll(`.tabs [data-tab="${k}"], .topnav [data-tab="${k}"]`)].find(el => el.offsetWidth > 0 && el.offsetHeight > 0);
+   const view = v => document.body.dataset.view === v;
+   const go = v => { if (!view(v)) location.hash = '#' + v; };
+   const steps = () => [
+     { mode: 'next', target: () => $('#view .walk-hero'), before: () => go('week'),
+       text: '이번 주의 질문이에요. 한 주 동안 함께 품고, 월요일부터 금요일까지 하루 한 곳씩 말씀을 펴 봐요.' },
+     { mode: 'tap', target: () => tabBtn('shelf'), done: () => view('shelf'), text: '책장을 눌러 보세요.' },
+     { mode: 'next', target: () => $('#view .shelf-home .sh-card') || $('#view .shelf-wrap'), wait: () => view('shelf'), before: () => go('shelf'),
+       text: '지금 읽는 책이에요. 과를 펼쳐 모임 전에 미리 읽을 수 있어요.' },
+     { mode: 'tap', target: () => tabBtn('share'), done: () => view('share'), text: '모임 때는 나눔하기를 눌러요.' },
+     { mode: 'next', target: () => $('#startBtn'), wait: () => view('share'), before: () => go('share'),
+       text: '함께 모이면 여기서 시작해 질문을 하나씩 나눠요. 이야기하는 동안에는 화면을 내려놓아요.' },
+     { mode: 'next', target: () => tabBtn('record'), text: '모임 뒤에 마음에 남은 한 문장과 작은 실천은 내 기록에 모여요.' },
+     { mode: 'tap', target: () => tabBtn('more'), done: () => view('more'), text: '더보기를 눌러 보세요.' },
+     { mode: 'next', target: () => $('#view a[href="#guide"]'), wait: () => view('more'), before: () => go('more'),
+       text: '사용법과 따라 하기는 언제든 여기서 다시 볼 수 있어요.' },
+     { mode: 'next', target: () => $('#view .walk-hero'), wait: () => view('week'), before: () => go('week'), nextLabel: '시작하기',
+       text: '이제 이번 주의 질문부터 시작해 볼까요?' }
+   ];
+   function start() {
+     if (!window.DidakoGuide || running()) return;
+     begun = true;
+     DidakoGuide.run(steps(), { noStuck: true, onSkipFirst: back, onDone: back });
+   }
+   const due = () => TUT || (!!window.DidakoGuide && D.entered && D.role === 'member' && view('week') && noRecords() && !localStorage.getItem(GUIDE_K) && !tutOff() && bootReady );
+   function maybe() {
+     if (timer || leaving || running() || !due()) return;
+     timer = setTimeout(() => {
+       timer = 0;
+       if (leaving || running() || !due()) return;
+       if (document.getElementById('splash') || document.documentElement.classList.contains('booting') || !$('#pop').hidden) return maybe();
+       TUT ? start() : goTutorial(true);
+     }, 700);
+   }
+   return { maybe, goTutorial, fail, begun: () => begun || leaving, ready() { bootReady = true; maybe(); } };
+ })();
+ // ?tutdone으로 돌아왔을 때는 주소를 정리한 뒤 마친 날을 한 번만 남긴다.
+ { const q = new URLSearchParams(location.search);
+   if (q.has('tutdone') && !TUT) {
+     const r = q.get('tutdone') || 'done'; q.delete('tutdone');
+     history.replaceState(null, '', location.pathname + (q.toString() ? '?' + q.toString().replace(/=(&|$)/g, '$1') : '') + location.hash);
+     if (r === 'fail') setTimeout(() => toast('연습 페이지를 열지 못했어요. 더보기 › 사용법에서 다시 할 수 있어요.'), 300);
+     else ls.set(GUIDE_K, new Date().toISOString().slice(0, 10));
+   }
+ }
+ if (TUT) setTimeout(() => { if (!ChGuide.begun()) ChGuide.fail(); }, 6000);
+
 window.addEventListener('hashchange', () => route(true));
 
 applySettings(); route(false);
+if (TUT) { const demoTag = $('.topbar .demo-tag'); if (demoTag) demoTag.remove(); }
+if (!LIVE) window.didakoSplash && window.didakoSplash.hide();
 if (LIVE) {
   // 실제 모드에는 데모 표시가 없다. 로그인 상태를 확인하고 첫 화면을 정한다
   const demoTag = $('.topbar .demo-tag'); if (demoTag) demoTag.remove();
-  bootLive();
+  bootLive().finally(() => { window.didakoSplash && window.didakoSplash.hide(); ChGuide.ready(); });
 }
 // 홈 화면 앱: 한 번 열어 두면 인터넷이 없어도 열린다
 if ('serviceWorker' in navigator && (location.protocol === 'https:' || location.hostname === 'localhost')) navigator.serviceWorker.register('sw.js').catch(() => { /* 없어도 앱은 그대로 */ });

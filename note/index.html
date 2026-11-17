@@ -214,6 +214,8 @@ body.tabs-off .stickbar { bottom: env(safe-area-inset-bottom, 0px); }
   body.tabs-off .topbar { transform: translateY(-100%); }
 }
 @media (max-width: 999px) and (prefers-reduced-motion: reduce) { .topbar { transition: none; } }
+/* 따라 하기(guide.js) 중에는 위·아래 막대를 늘 보이게: 안내가 가리키는 탭이 스크롤로 숨지 않게 */
+html.kg-on body.tabs-off .topbar, html.kg-on body.tabs-off .tabs { transform: none; }
 
 /* 시안 보기 설정(톱니, 데모에만 있다) */
 .gear { position: fixed; top: 0; right: 0; z-index: 30; width: 44px; height: 44px; padding: 3px 0 0; display: flex; align-items: flex-start; justify-content: center; background: none; border: 0; color: var(--ink-2); opacity: .6; }
@@ -1046,6 +1048,7 @@ body.fs .xw-top { padding-right: 52px; }   /* 시안 보기 설정(톱니)이 �
 }
 </style>
 <link rel="stylesheet" href="design-styles.css">
+<link rel="stylesheet" href="guide.css">
 <!-- 시작 화면이 뜨기 전에는 바탕을 단색으로(바탕 무늬가 잠깐 비치지 않게). splash.js가 닫을 때 푼다(S-34) -->
 <script>document.documentElement.classList.add('booting'); setTimeout(() => document.documentElement.classList.remove('booting'), 5000);</script>
 <style>html.booting body { background-image: none !important; } html.booting body::before { display: none !important; }</style>
@@ -1053,7 +1056,9 @@ body.fs .xw-top { padding-right: 52px; }   /* 시안 보기 설정(톱니)이 �
 <body>
 <!-- 세 겹 책갈피 로고(상단 바와 소개 화면에서 쓴다) -->
 <svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs><symbol id="i-didako" viewBox="0 0 16 16"><g fill="none"><circle cx="8" cy="2.6" r="1.5" stroke="var(--s1, var(--accent))" stroke-width="1.4"/><path d="M8 4.2V5.8" stroke="var(--s1, var(--accent))" stroke-width="1.2"/><clipPath id="didako-clip"><path d="M4.2 5.6H11.8V14.8L8 11.8L4.2 14.8Z"/></clipPath><g clip-path="url(#didako-clip)" stroke="none"><rect x="4.2" y="4.6" width="2.53" height="12" fill="var(--s1, var(--accent))"/><rect x="6.73" y="4.6" width="2.54" height="12" fill="var(--s2, var(--accent-mid))"/><rect x="9.27" y="4.6" width="2.53" height="12" fill="var(--s3, var(--ink-2))"/><path d="M6.73 4.6V15M9.27 4.6V15" stroke="var(--cord-bg, var(--page))" stroke-width=".5"/></g></g></symbol></defs></svg>
-<script src="splash.js"></script>
+<!-- 따라 하기 연습 페이지(?tutorial)에서만 저장소를 메모리 판으로 바꾼다. 시작 화면보다 먼저 불러야 한다 -->
+<script src="practice.js"></script>
+<script src="splash.js" data-place="note"></script>
 
 <!-- 모든 화면의 상단 바: 로고와 앱 이름, 넓은 화면 글자 메뉴, 함께하는 곳과 화면 설정 -->
 <header class="topbar" id="topbar" hidden>
@@ -1111,6 +1116,7 @@ body.fs .xw-top { padding-right: 52px; }   /* 시안 보기 설정(톱니)이 �
 <script src="walks-data.js"></script>
 <script src="map-places.js"></script>
 <script src="demo-data.js"></script>
+<script src="guide.js"></script>
 <script>
 // 새 길(Supabase) 로그인에서 돌아오는 길(?code=): 노트 자리를 정하기 전에 먼저 세션을 받고, 기기에는 사용자 id의 해시 앞 16자만 적어 둔 뒤 주소를 정리해 다시 연다(코이데 노트와 같다).
 //  다시 열린 화면이 그 해시로 내 노트 자리(주인 'sb:해시')를 정한다. 이 일이 도는 동안 아래 노트 스크립트는 아무것도 하지 않는다(시작 화면도 그대로).
@@ -1119,7 +1125,7 @@ body.fs .xw-top { padding-right: 52px; }   /* 시안 보기 설정(톱니)이 �
   const C = window.DIDAKO_CONFIG || {}, q = new URLSearchParams(location.search);
   const hq = new URLSearchParams(location.hash.replace(/^#/, ''));
   if (!(q.has('code') || q.has('error_code') || q.has('error') || hq.has('error_code') || hq.has('error'))) return;
-  if (C.NOTE_BACKEND !== 'supabase' || !C.SUPABASE_URL || !C.SUPABASE_KEY || q.has('demo')) return;
+  if (C.NOTE_BACKEND !== 'supabase' || !C.SUPABASE_URL || !C.SUPABASE_KEY || q.has('demo') || q.has('tutorial')) return;
   let mine = !C.HUB_URL;
   try { mine = mine || !!localStorage.getItem('didako-note-sb-go'); localStorage.removeItem('didako-note-sb-go'); } catch (e) { /* 표시를 못 읽으면 설정만 본다 */ }
   if (!mine) return;
@@ -1154,8 +1160,10 @@ body.fs .xw-top { padding-right: 52px; }   /* 시안 보기 설정(톱니)이 �
 if (window.__didakoSbReturn) return;   // 새 길 로그인에서 돌아오는 중: 위 스크립트가 주소를 정리해 다시 연다
 const CFG = window.DIDAKO_CONFIG || {};
 // 새 길(Supabase 로그인과 보관함): 설정 NOTE_BACKEND가 'supabase'이고 주소·키가 다 있을 때만(docs/setup.md 3-4). 비어 있으면 지금과 똑같이 돈다
-const SB_CFG = CFG.NOTE_BACKEND === 'supabase' && !!CFG.SUPABASE_URL && !!CFG.SUPABASE_KEY && !new URLSearchParams(location.search).has('demo');
-const LIVE = (!!CFG.HUB_URL || SB_CFG) && !new URLSearchParams(location.search).has('demo');
+// 따라 하기 연습 페이지(?tutorial): 데모처럼 서버 없이 돈다. practice.js가 저장소를 메모리 판으로 바꿔 놓아서 진짜 기록·로그인·화면 기억에 닿지 않는다
+const TUT = new URLSearchParams(location.search).has('tutorial');
+const SB_CFG = CFG.NOTE_BACKEND === 'supabase' && !!CFG.SUPABASE_URL && !!CFG.SUPABASE_KEY && !new URLSearchParams(location.search).has('demo') && !TUT;
+const LIVE = (!!CFG.HUB_URL || SB_CFG) && !new URLSearchParams(location.search).has('demo') && !TUT;
 const DATA = window.NOTE_DATA;
 const KOIDE_PRAY_URL = 'https://koide.koinobia.com/app/note.html';   // 기도하러 갈 곳(코이데 기도 노트). 화면 글에는 '코이데'라고 쓰지 않는다(결정 기록 2026-10-26)
 const Q = window.NOTE_Q;   // 오늘의 질문 409개(note/tools/make-data.py가 만든다)
@@ -1360,7 +1368,7 @@ let vineMoment = null, vineMomentTimer = 0, vineStoryFollow = false;
 const saveVine = () => { ls.set(K.vine, JSON.stringify(VN)); if (LIVE) scheduleSync(); };
 function ensureVineStart() { if (!VN.start) { VN.start = dnStr(demoDN()); saveVine(); } }
 function markStay({ dew = false } = {}) {
-  if (!me) return false;
+  if (!me || TUT) return false;   // 연습 페이지에서는 포도나무 잎을 틔우지 않는다
   ensureVineStart();
   const today = dnStr(demoDN());
   if (today < VN.start) return false;   // 데모 날짜를 되돌려도 시작 전 기록은 세지 않는다.
@@ -1722,7 +1730,7 @@ function displayEx(id = 'dispEx') {
 // 마지막에 받은 목록(공동체 이름 · 역할 · 사람 수 · 끝나는 날 · 신청 수)은 이 기기에 남겨 두었다가 인터넷이 없을 때 보인다(didako-note-circles). 로그아웃하면 지운다.
 // 데모(설정이 비었거나 ?demo)에서는 공동체 데모가 이 브라우저에 둔 목록(didako-cm-groups)을 읽고, 없으면 공동체 데모와 같은 지어낸 예시를 보인다
 const CIRCLE_K = 'didako-note-circles', CIRCLE_MAX = 3;
-const CIRCLE_DEMO_Q = new URLSearchParams(location.search).has('demo');
+const CIRCLE_DEMO_Q = new URLSearchParams(location.search).has('demo') || TUT;
 const CIRCLE_REAL = !!CFG.SUPABASE_URL && !!CFG.SUPABASE_KEY && !CIRCLE_DEMO_Q;
 const CIRCLES = { list: [], places: CIRCLE_MAX, open: true, session: false, loaded: false, loading: false, at: 0, h: '' };
 // 서버나 기기에서 온 한 줄을 화면이 쓰는 모양으로(글은 문자열, 수는 숫자로만 받는다. 화면에 넣을 때는 esc()를 거친다)
@@ -1876,13 +1884,12 @@ const FAQ = [
   ['말씀을 열며는 뭐예요?', '질문으로 묵상하기에서 마치지 않은 편을 그날 처음 열 때 "말씀을 열며" 한 장이 나와요. 세 겹으로 꼰 끈 아래 "아버지께서 주신 말씀을 / 말씀이 가리키는 예수님 안에서 / 성령님이 깨닫게 해 주시기를"이 한 줄씩 나타나고, 누르면 바로 넘어가요.', ['#/explore', '탐구하기 ›']],
   ['묵상한 것을 다른 사람에게 보낼 수 있나요?', '한 편의 머묾 아래 공유 표시를 누르면 묵상 질문과 장절을 글로 보낼 수 있어요. 내가 쓴 묵상과 나의 해석은 체크했을 때만 함께 가요. 내 글은 잠가서 맡기기 때문에, 링크로 내 글을 보여 주는 방법은 없어요.']
 ];
-let faqOpen = new Set([0]);
+let faqOpen = new Set();
 function viewGuide() {
   const faq = FAQ.map(([q, a, l], i) => `<button class="fq" type="button" data-act="faq" data-i="${i}" aria-expanded="${faqOpen.has(i)}" aria-controls="fa${i}"><span>${q}</span><span data-chev>${faqOpen.has(i) ? CHEV_UP2 : CHEV_DOWN}</span></button><div class="fa" id="fa${i}"${faqOpen.has(i) ? '' : ' hidden'}><p class="pg">${a}</p>${l ? `<div style="margin-top:6px"><a class="lk" href="${l[0]}">${l[1]}</a></div>` : ''}</div>`).join('');
   return colWrap(`${back}
-    <div class="sm" style="margin-top:14px;font-size:.9375rem">따라 하기와 도움말</div>
-    <h1 class="tt" style="margin-top:4px">사용법</h1>
-    <div class="sc" style="margin-top:18px"><div class="sl">처음처럼 따라 해 보기</div><p class="pg">예시로 질문 남기기와 탐구하기를 직접 눌러 보며 한 걸음씩 익혀요. 연습한 것은 저장되지 않아요.</p><div style="margin-top:16px"><button class="btn lg wide" type="button" data-act="soon"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M6 3.5v17l14-8.5z"/></svg>따라 하기 시작</button></div></div>
+    <h1 class="tt" style="margin-top:14px">사용법</h1>
+    <div class="sc" style="margin-top:18px"><div class="sl">처음처럼 따라 해 보기</div><p class="pg">예시로 질문 남기기와 탐구하기를 직접 눌러 보며 한 걸음씩 익혀요. 연습한 것은 저장되지 않아요.</p><div style="margin-top:16px"><button class="btn lg wide" type="button" data-act="guidere"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M6 3.5v17l14-8.5z"/></svg>따라 하기 시작</button></div></div>
     <div class="sc"><div class="sl">궁금한 것 찾아보기</div>${faq}</div>
     <div class="sc"><div class="sl">만든 곳 · 의견 보내기</div><p class="pg">허그 공동체가 함께 만들어 가고 있어요. 불편한 점이나 바라는 점, 고마운 점을 보내 주세요.</p><div style="margin-top:6px"><a class="lk" href="#/more/feedback">의견 보내기 ›</a></div></div>
     <div class="sc"><div class="sl">쓴 것들</div><div class="ls">
@@ -4003,6 +4010,8 @@ function render(fromHash, still) {
   if (LIVE) paintSyncStatus();
   if (after) { const f = after; after = null; f(); }   // 화면을 옮긴 뒤에 띄울 것(카드, 알림)
   scheduleVineMoment();
+  NoteGuide.maybe();   // 처음 온 사람이면 따라 하기(연습 페이지)로
+  if (!TUT && me) window.didakoPlace && window.didakoPlace.used('note');   // 로그인 뒤 화면 전환에도 마지막 곳 기억(D-59)
   if (!vtNow && motion && key === lastKey && performance.now() - drawStart <= 50) vtAnim($('#main'), $('#main').querySelector('.xact, .qpanel, .fbar.pf') ? 'vt-fade' : motion);   // 화면에 붙은 막대가 있으면 옆으로 밀지 않고 밝아지기만 한다(transform은 붙은 막대를 제자리에서 벗어나게 한다, S-72)
 }
 // 고른 설정을 눌린 표시로 맞춘다(자리를 다시 그리지 않아서 누르던 단추가 그대로 있다)
@@ -4046,6 +4055,7 @@ const acts = {
   'past-month'(e, el) { const l = el.getAttribute('aria-label'); after = () => { const b = $(`[data-act="past-month"][aria-label="${l}"]`); if (b && !b.disabled) b.focus({ preventScroll: true }); }; setHash('today/past/' + el.dataset.ym); },
   'date-today'() { setDemoDate(''); },
   'soon'() { toast(SOON); },
+  guidere() { NoteGuide.goTutorial(false); },   // 더보기 › 사용법 › 따라 하기 시작: 기록이 있어도, 마쳤어도 연다
   koinonia() { location.href = '../community/'; },   // 디다코 공동체: 같은 주소 아래 공동체 층 앱(community/)으로 간다. 설정이 비어 있으면 그쪽이 데모로 연다
   community() { location.href = '../app/'; },   // 디다코 교회: 같은 주소 아래 교회 층 앱(app/)으로 간다
   // 탐구하기(③-1)
@@ -4303,7 +4313,7 @@ function resetAll() {
   clearVineMoments();
   ls.del(K.vine); VN = normalizeVine({});
   ls.del(K.badges); B = { seen: [] };
-  ls.del(K.session); ls.del(K.demo); ls.del(K.notes); ls.del(OPEN_K); me = null; D.start = ''; D.date = ''; D.sync = 'off'; D.syncAt = 0;
+  ls.del(GUIDE_K); ls.del(K.session); ls.del(K.demo); ls.del(K.notes); ls.del(OPEN_K); me = null; D.start = ''; D.date = ''; D.sync = 'off'; D.syncAt = 0;
   if (CIRCLE_REAL) { circleForget(); paintPlaces(); }
   N = { qs: [], fs: [], ex: [], cur: [], wk: [] }; W = newDraft('', 'q'); mineFilter = 'all'; searchQ = ''; P = { fid: '', sel: '' }; undoSnap = null; trailOpen.clear(); hideOpening(true);
   X = { id: '', step: 0, frame: 0, panel: true, dirty: false }; pendingSwap = null; startBack = 'explore'; srchBack = 'mine';
@@ -5069,6 +5079,77 @@ document.addEventListener('visibilitychange', () => { if (document.visibilitySta
 // 사파리 뒤로 가기로 기억해 둔 화면이 돌아오면(카카오로 가며 잠근 버튼이 남아 있다) 잠금을 푼다
 window.addEventListener('pageshow', e => { if (e.persisted && !new URLSearchParams(location.search).has('code')) setAuthBusy(false); refreshDay(); });
 
+// ── 따라 하기(처음 쓰는 사람, 결정 기록 2026-11-17. 코이데 기도 노트의 NoteGuide를 본떴다) ──
+//  기록(질문·발견·탐구·묵상·오늘의 질문 대답)이 하나도 없고 이 기기에서 따라 하기를 마친 적이 없는 사람이 오늘의 질문 화면을 열면, 시작 화면이 걷힌 뒤에 연습 페이지(?tutorial)로 저절로 보낸다.
+//  연습 페이지는 따로 연 창이라 연습한 것이 진짜 기록·로그인·화면 기억에 닿지 않는다(practice.js가 저장소를 메모리 판으로 바꾸고, 위의 TUT가 서버를 끊는다). 끝나면 진짜 노트(?tutdone)로 돌아와 마친 날을 적는다.
+//  ① 남겨 보기(+ 남기기 › 예시 질문 › 품어 두기) ② 둘러보기(내 기록 · 탐구하기 · 오늘의 질문 · 더보기 › 동기화) ③ 이제 직접 남겨 보세요(쓰기 칸을 비춤). 직접 쓰는 단계는 없다(키보드가 열리지 않게 예시로만 연습)
+//  마친 날은 기기에 둔다(GUIDE_K, 계정이 바뀌어도 따라 움직이지 않는다). 더보기 › 사용법 › 따라 하기 시작은 기록이 있어도, 마쳤어도 연다
+//  연습 페이지가 뜬 뒤 6초 안에 안내가 시작되지 않으면 진짜 노트(?tutdone=fail)로 돌려보내고 마침은 적지 않는다. 이 창에서는 다시 보내지 않는다(sessionStorage didako-note-tut-off: 무한 반복 방지)
+const GUIDE_K = 'didako-note-guide';
+const NoteGuide = (() => {
+  let ev = null, timer = 0, leaving = false;
+  const PRE = new URLSearchParams(location.search).has('demo') ? '&demo' : '';
+  const SAMPLE_Q = '아브라함은 갈 곳을 모르는데 어떻게 떠날 수 있었을까?', SAMPLE_REF = '창세기 12:1';   // 지어낸 예시 질문(성경 원문 없이 장절만)
+  const tutOff = () => { try { return !!sessionStorage.getItem('didako-note-tut-off'); } catch (e) { return false; } };
+  const done = () => !!ls.get(GUIDE_K);
+  const running = () => !!window.DidakoGuide && DidakoGuide.running();   // guide.js를 못 받았어도 노트는 그대로 돈다
+  const noRecords = () => !N.qs.length && !N.fs.length && !N.ex.length && !N.wk.length;
+  // 연습 페이지(?tutorial)로 간다. 저절로 보낼 때(auto)는 replace: 방문 기록에 진짜 노트를 남기면 연습 중 '뒤로 가기'가 안 마친 노트로 돌아가 다시 끌려온다
+  const goTutorial = auto => { const to = location.pathname + '?tutorial' + PRE; if (auto === true) location.replace(to); else location.href = to; };
+  const back = route => { leaving = true; location.replace(location.pathname + '?tutdone' + PRE + '#/' + route); };
+  const fail = () => { try { sessionStorage.setItem('didako-note-tut-off', '1'); } catch (e) { /* 표시를 못 남겨도 돌아간다 */ } leaving = true; location.replace(location.pathname + '?tutdone=fail' + PRE); };
+  // 창이나 시작 화면이 떠 있으면 시작하지 않는다
+  const calmNow = () => !document.getElementById('splash') && !root.classList.contains('booting') && $('#pop').hidden && $('#opening').hidden && !editing();
+  const tabBtn = k => [...document.querySelectorAll(`.tabs [data-tab="${k}"], .topnav [data-menu="${k}"]`)].find(b => b.offsetWidth > 0);
+  const onWrite = () => routeKey() === 'write' && $('#wrTa');
+  const steps = () => [
+    // ① 남겨 보기: 글 칸은 눌리지 않게 덮는다(직접 쓰지 않으니 키보드가 열리지 않는다)
+    { mode: 'tap', target: () => tabBtn('write'), before: () => { if (routeKey() !== 'today') go('today'); }, text: '궁금한 것을 남겨 볼까요? + 남기기를 눌러 보세요.' },
+    { mode: 'tap', target: () => [$('#wrTa'), $('#wrGo')], inert: () => [$('#wrTa'), ...$$('.wr-row'), ...$$('.wr2-foot .vc')], wait: onWrite,
+      before: () => { if (ev && !ev.sample) { ev.sample = true; W = newDraft('', 'q'); W.text = SAMPLE_Q; const r = parseRef(SAMPLE_REF); W.ref = r ? r.text : ''; render(); } },
+      done: () => N.qs.length > 0,
+      text: '예시를 넣어 두었어요. 품어 두기를 눌러 보세요.' },
+    // 남긴 뒤 내 기록에 어떻게 들어갔는지 먼저 보여 준다(남기고 뜬 창은 닫고 간다)
+    { mode: 'next', target: () => $('#main .sn'), wait: () => routeKey() === 'mine' && $('#main .sn'), before: () => { closeSheet(true); if (routeKey() !== 'mine') go('mine'); },
+      text: '질문 하나가 쪽지 한 장으로 남았어요.' },
+    // ② 둘러보기
+    { mode: 'next', target: () => tabBtn('explore'), text: '질문 하나를 깊이 파고들고 싶을 때 탐구하기를 써요.' },
+    { mode: 'next', target: () => tabBtn('today'), text: '오늘의 질문은 날마다 하나씩 찾아와요. 대답은 나만 봐요.' },
+    { mode: 'tap', target: () => tabBtn('more'), done: () => routeKey() === 'more', text: '더보기를 눌러 보세요.' },
+    { mode: 'next', target: () => { const a = $('#main a[href="#/more/sync"]'); return a && a.closest('.gc'); }, wait: () => routeKey() === 'more', before: () => { if (routeKey() !== 'more') go('more'); },
+      text: '동기화를 켜 두면 여러 기기에서 볼 수 있어요. 기록은 잠가서 맡겨요.' },
+    // ③ 마무리: 연습한 예시는 그대로 두고(이 창과 함께 사라진다) 빈 쓰기 칸을 비춘다. 칸은 눌리지 않고, 키보드도 우리가 열지 않는다
+    { mode: 'next', target: () => $('#wrTa'), inert: () => [$('#wrTa')], nextLabel: '시작하기', wait: onWrite, before: () => { closeSheet(true); W = newDraft('', 'q'); if (routeKey() !== 'write') go('write'); else render(); },
+      text: '이제 내 질문을 직접 남겨 볼까요?' }
+  ];
+  function start() {
+    if (!window.DidakoGuide || running()) return;
+    ev = { sample: false };
+    DidakoGuide.run(steps(), { noStuck: true, onSkipFirst: () => back('today'), onDone: () => back('write') });
+  }
+  // 이 화면에서 따라 하기를 열 때인지: 연습 페이지는 늘, 진짜 노트는 로그인한 사람이 기록 없이 오늘의 질문을 열었고 마친 적이 없을 때
+  const due = () => TUT || (!!window.DidakoGuide && !!me && routeKey() === 'today' && noRecords() && !done() && !tutOff() && (!LIVE || liveReady));
+  // 화면을 그릴 때마다: 조건이 맞으면 처음 한 번만 시작한다. 진짜 노트에서는 연습 페이지로 보내고, 연습 페이지에서는 바로 안내를 연다. 시작 화면이 걷히고 화면이 자리 잡도록 잠깐 뒤에, 아직 덮여 있으면 다시 본다
+  function maybe() {
+    if (timer || leaving || running() || !due()) return;
+    timer = setTimeout(() => {
+      timer = 0;
+      if (leaving || running() || !due()) return;
+      if (!calmNow()) return maybe();
+      TUT ? start() : goTutorial(true);
+    }, 700);
+  }
+  return { maybe, goTutorial, fail, begun: () => !!ev || leaving };
+})();
+// 연습 페이지에서 돌아오면(?tutdone) 마친 날을 적고 주소에서 지운다. 연습 페이지를 열지 못해 돌아왔으면(=fail) 적지 않는다
+{ const q = new URLSearchParams(location.search);
+  if (q.has('tutdone') && !TUT) {
+    const r = q.get('tutdone') || 'done'; q.delete('tutdone');
+    history.replaceState(null, '', location.pathname + (q.toString() ? '?' + q.toString().replace(/=(&|$)/g, '$1') : '') + location.hash);
+    if (r === 'fail') setTimeout(() => toast('연습 페이지를 열지 못했어요. 더보기 › 사용법에서 다시 할 수 있어요.'), 300);
+    else ls.set(GUIDE_K, dnStr(realDN()));
+  } }
+
 // ── 시작 ──
 $('#vineDemo').hidden = LIVE;
 paintPlaces();
@@ -5079,6 +5160,8 @@ applySettings();
 if (!location.hash) setHash(me ? 'today' : 'start', true);
 render(true);
 window.didakoSplash && window.didakoSplash.hide();   // 첫 화면을 그렸으면 시작 화면을 닫는다(S-34)
+if (!TUT && me) window.didakoPlace && window.didakoPlace.used('note');   // 마지막에 쓴 곳(D-59)
+if (TUT) setTimeout(() => { if (!NoteGuide.begun()) NoteGuide.fail(); }, 6000);   // 연습 페이지에서 안내가 시작되지 않으면 진짜 노트로 돌려보낸다
 if (LIVE) {
   bootLive().catch(liveError);
   if ('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js').catch(() => {});
