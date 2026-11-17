@@ -2645,9 +2645,9 @@ function liveStartView(arg) {
         <li><b>내 기록</b><span>답변, 한 문장, 작은 실천, 돌아보기, 메모는 이 휴대폰에서 잠가서 맡겨요. 운영자도, 목사님도, 리더도 열 수 없어요</span></li>
         <li><b>이 기기</b><span>브라우저에서 사이트 데이터를 지우면 이 기기의 사본이 지워질 수 있어요</span></li>
         <li><b>홈 화면</b><span>홈 화면에 추가해 두면 좋아요. 아이폰은 공유 버튼에서, 안드로이드는 메뉴에서 "홈 화면에 추가"를 눌러요</span></li></ul>
-      <button class="btn wide" type="button" data-act="lv-request">동의하고 연결 요청</button>
+      <label style="display:flex;align-items:flex-start;gap:8px;margin:16px 0;text-align:left;word-break:keep-all"><input type="checkbox" data-sens style="margin-top:3px;flex:none"><span>신앙 정보(민감정보) 처리에 동의해요 (필수)<a class="quiet-link" href="https://koinobia.com/privacy/" target="_blank" rel="noopener" style="display:block;margin-top:4px;min-height:0">개인정보 처리방침 전체 보기</a></span></label>
+      <button class="btn wide" type="button" data-act="lv-request" data-sens-btn disabled>동의하고 연결 요청</button>
       <p class="msg" id="liveMsg" role="alert"></p>
-      <p class="hint">동의하지 않으면 앱을 쓸 수 없어요. 궁금한 점은 리더나 목사님께 물어봐 주세요.</p>
       ${lvBackBtn(back)}</div>`;
   }
   if (arg === 'wait') {
@@ -2802,8 +2802,9 @@ function cmStartView(arg) {
         <label class="f" for="cmMe">내 이름</label><input id="cmMe" class="field" required maxlength="10" autocomplete="name" placeholder="예) 김하늘"${myName ? ` value="${myName}"` : ''}>
         <div class="tip-line"><label class="f" for="cmEnd">끝나는 날</label>${DidakoTip.btn(`끝나는 날을 정하지 않으면 계속 열려 있어요. 한 공동체는 ${CM_PEOPLE}명까지 함께해요.`, '끝나는 날')}</div><select id="cmEnd" class="field">${CM_ENDS.map(([v, l]) => `<option value="${v}">${l}</option>`).join('')}</select>
         <p class="hint">${CM_CONSENT}</p>
+        <label style="display:flex;align-items:flex-start;gap:8px;margin:16px 0;text-align:left;word-break:keep-all"><input type="checkbox" data-sens style="margin-top:3px;flex:none"><span>신앙 정보(민감정보) 처리에 동의해요 (필수)<a class="quiet-link" href="https://koinobia.com/privacy/" target="_blank" rel="noopener" style="display:block;margin-top:4px;min-height:0">개인정보 처리방침 전체 보기</a></span></label>
         <p class="msg" id="cmMsg" role="alert"></p>
-        <button class="btn wide" type="submit">만들기</button></form>
+        <button class="btn wide" type="submit" data-sens-btn disabled>만들기</button></form>
       ${back}</div>`;
   if (arg === 'join' && SB) {   // 실제 서버: 초대 링크의 공동체 이름과 모임장은 서버에서 받는다
     if (!SBJ.peek && !SBJ.err) return `<div class="col-n"><p class="eyebrow">초대받은 공동체</p><p class="hint">불러오고 있어요…</p></div>`;
@@ -2817,8 +2818,9 @@ function cmStartView(arg) {
       <form data-cmform="join" novalidate>
         <div class="tip-line"><label class="f" for="cmMe">내 이름</label>${DidakoTip.btn('모임장이 승인할 때 누구인지 알아보는 데 써요.', '내 이름')}</div><input id="cmMe" class="field" required maxlength="10" autocomplete="name" placeholder="예) 김하늘"${myName ? ` value="${myName}"` : ''}>
         <p class="hint">${CM_CONSENT}</p>
+        <label style="display:flex;align-items:flex-start;gap:8px;margin:16px 0;text-align:left;word-break:keep-all"><input type="checkbox" data-sens style="margin-top:3px;flex:none"><span>신앙 정보(민감정보) 처리에 동의해요 (필수)<a class="quiet-link" href="https://koinobia.com/privacy/" target="_blank" rel="noopener" style="display:block;margin-top:4px;min-height:0">개인정보 처리방침 전체 보기</a></span></label>
         <p class="msg" id="cmMsg" role="alert"></p>
-        <button class="btn wide" type="submit">들어오기 신청</button></form>
+        <button class="btn wide" type="submit" data-sens-btn disabled>들어오기 신청</button></form>
       ${back}</div>`;
   if (arg === 'wait') return `<div class="col-n"><section class="card calm"><p class="calm-t">신청을 보냈어요</p>
       <p class="soft" style="margin:0">모임장이 승인하면 열려요.${SB ? '' : ' 데모에서는 신청이 실제로 전해지지 않아요.'}</p>
@@ -5421,6 +5423,7 @@ if (LIVE) {
     'lv-new'() { ST.familyId = ''; lvGo('new'); },
     'lv-back'(e, el) { lvGo(el.dataset.v); },
     'lv-request': lvRun(async () => {
+      if (!document.querySelector('[data-act="lv-request"]')?.closest('.col-n')?.querySelector('input[data-sens]')?.checked) return;
       const body = ST.newFamily ? { newFamily: ST.newFamily, roomId: ST.roomId }
         : ST.byName ? { byName: true, person: ST.person, roomId: ST.roomId, staff: !!ST.staff, deptId: ST.deptId }
         : { familyId: ST.familyId, person: ST.person };
@@ -5691,6 +5694,7 @@ window.addEventListener('pagehide', () => { flushAll(); if (keepT) saveKeepRead(
 window.addEventListener('beforeunload', e => { if (SB && sbHasUnsaved()) { e.preventDefault(); e.returnValue = ''; } });
 // 남기고 다음: 눌러서 넘어가기 전에 나눔하기의 오늘 남길 것을 저장
 document.addEventListener('click', e => { const el = e.target.closest('[data-act="next"]'); if (el && R.on && cur().t === 'keep') saveKeepShare(); }, true);
+document.addEventListener('change', e => { const c = e.target.closest && e.target.closest('input[data-sens]'); if (!c) return; const w = c.closest('form, .col-n, .ob'); const b = w && w.querySelector('[data-sens-btn]'); if (b) b.disabled = !c.checked; });
 document.addEventListener('change', e => {
   if (['mgGroup', 'mgMotif', 'mgColor'].includes(e.target.id)) { mgPreview(); return; }
   if (e.target.id === 'walkSel') { const n = Number(e.target.value); if (Number.isInteger(n) && DATA.weekWalk.some(w => w.n === n)) { D.walk = n; walkDay = ''; saveDemo(); rerender(); } return; }
@@ -5715,6 +5719,7 @@ document.addEventListener('submit', e => {
 document.addEventListener('submit', e => {
   const f = e.target; if (!f || !f.dataset || !f.dataset.cmform) return;
   e.preventDefault();
+  if (!f.querySelector('input[data-sens]')?.checked) return;
   if (SB) { sbForm(f); return; }   // 실제 서버: 서버가 만들고 받는다(아래 sbForm)
   const msg = t => { const m = $('#cmMsg'); if (m) m.textContent = t; };
   if (cmFull()) { msg(`한 사람은 ${CM_MAX}곳까지 함께할 수 있어요.`); return; }
