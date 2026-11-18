@@ -1166,6 +1166,10 @@ const SB_CFG = CFG.NOTE_BACKEND === 'supabase' && !!CFG.SUPABASE_URL && !!CFG.SU
 const LIVE = (!!CFG.HUB_URL || SB_CFG) && !new URLSearchParams(location.search).has('demo') && !TUT;
 const DATA = window.NOTE_DATA;
 const KOIDE_PRAY_URL = 'https://koide.koinobia.com/app/note.html';   // 기도하러 갈 곳(코이데 기도 노트). 화면 글에는 '코이데'라고 쓰지 않는다(결정 기록 2026-10-26)
+// 이용 통계 끄기(더보기 › 앱 설정): 이 기기에만 기억한다. 노트·공동체·교회가 같은 주소라 키 하나를 함께 쓴다. '1'이면 끈 것. 사용 기록을 붙일 때(설계서 3장) 이 값이 '1'이면 모으지도 보내지도 않는다
+const USAGE_OFF = 'didako-usage-off';
+const usageOff = () => { try { return localStorage.getItem(USAGE_OFF) === '1'; } catch (e) { return false; } };
+const HOME_APP = !!(navigator.standalone || (window.matchMedia && matchMedia('(display-mode: standalone)').matches));
 const Q = window.NOTE_Q;   // 오늘의 질문 409개(note/tools/make-data.py가 만든다)
 const $ = (s, el = document) => el.querySelector(s);
 const $$ = (s, el = document) => [...el.querySelectorAll(s)];
@@ -1539,7 +1543,7 @@ const KEEP_ROWS_SB = `<div class="kv"><b>무엇을</b><span>내가 남긴 질문
   <div class="kv"><b>어디에</b><span>디다코가 쓰는 서버(Supabase)의 보관함. 서버는 서울에 있고, 운영사는 미국 회사예요. 휴대폰에서 잠근 덩어리로만 보내요</span></div>
   <div class="kv"><b>누가 보나</b><span>나만 봐요. 잠가서 보내기 때문에 운영자도 읽을 수 없어요</span></div>
   <div class="kv"><b>얼마나</b><span>내가 지워 달라고 할 때까지 맡아 둬요. 언제든 내 기록을 지워 달라고 할 수 있어요.</span></div>
-  <div class="kv"><b>사용 기록</b><span>앱을 좋게 만들기 위해 이름 없는 사용 기록을 남겨요. '탐구하기를 열었다'처럼 누른 것, 연 때와 머문 시간 같은 숫자만이고, 이름과 내가 쓴 글은 넣지 않아요.</span></div>`;
+  <div class="kv"><b>사용 기록</b><span>앱을 좋게 만들기 위해 이름 없는 사용 기록을 남겨요. '탐구하기를 열었다'처럼 누른 것, 연 때와 머문 시간 같은 숫자만이고, 이름과 내가 쓴 글은 넣지 않아요. 더보기 › 앱 설정에서 끌 수 있어요.</span></div>`;
 const keepRows = () => (sbMode() ? KEEP_ROWS_SB : KEEP_ROWS);
 
 // ── 오늘의 질문(M1, M10, T8) ──
@@ -1830,7 +1834,8 @@ function viewMore() {
   const set1 = `<div class="gl">앱 설정</div><div class="gc">
       <button class="gr${dispOpen ? ' open' : ''}" type="button" data-act="disp" aria-expanded="${dispOpen}" aria-controls="dispEx"><span class="gt"><b class="mhead">화면 설정</b></span>${dispOpen ? CHEV_DOWN_S : '<span class="ch" aria-hidden="true">›</span>'}</button>
       ${dispOpen ? displayEx() : ''}
-      <button class="gr" type="button" data-act="a2hs"><span class="gt"><b>홈 화면에 앱처럼 두기</b></span><span class="ch" aria-hidden="true">›</span></button>
+      ${HOME_APP ? '' : `<button class="gr" type="button" data-act="a2hs"><span class="gt"><b>홈 화면에 앱처럼 두기</b></span><span class="ch" aria-hidden="true">›</span></button>`}
+      <div class="gr" style="cursor:default"><span class="gt"><b>이용 통계 보내기</b>${DidakoTip.btn('앱을 좋게 만들기 위해 이름 없는 사용 기록을 보내요. 누른 것, 연 때와 머문 시간 같은 숫자만이고 이름과 내가 쓴 글은 보내지 않아요. 끄면 이 기기에서는 더 보내지 않아요.', '이용 통계 보내기')}</span><button type="button" class="switch${usageOff() ? '' : ' on'}" role="switch" aria-checked="${!usageOff()}" aria-label="이용 통계 보내기" data-act="usageoff"><span></span></button></div>
     </div>`;
   const app1 = `<div class="gl">디다코</div><div class="gc">
       <a class="gr" href="#/more/about"><span class="gt"><b>디다코 소개</b></span><span class="ch" aria-hidden="true">›</span></a>
@@ -4241,6 +4246,7 @@ const acts = {
   'need-sync'() { toast('동기화를 먼저 켜 주세요'); },
   disp() { dispOpen = !dispOpen; render(); const b = $('[data-act="disp"]'); if (b) b.focus({ preventScroll: true }); },
   a2hs() { a2hsSheet(); },
+  usageoff() { try { if (usageOff()) localStorage.removeItem(USAGE_OFF); else localStorage.setItem(USAGE_OFF, '1'); } catch (e) { /* 저장하지 못하면 그대로 */ } render(); },
   a2hsos(e, el) { a2hsOs = el.dataset.v; a2hsSheet(); },
   logout() { confirmSheet('로그아웃할까요?', '다시 들어올 때는 카카오로 로그인해요. 맡긴 기록은 비밀 문구로 다시 열 수 있어요.', '그만두기', '로그아웃', 'logout-go'); },
   'logout-go'() { resetAll(); },
