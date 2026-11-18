@@ -1,10 +1,10 @@
 // 디다코 공동체의 데모 자료를 맞추고 책장을 채운다. 디다코 교회(app/)의 데모 자료(demo-data.js)에서 예시 교재를 빼고,
 // 질문으로 묵상하기 연재(../note/walks-data.js의 window.WALKS)를 교회 앱의 교재 모양으로 바꿔 꽂는다.
-// 디다코 기본 교재(book-trinity.js, book-family.js)는 그대로 둔다. 이 파일은 그 파일들 다음에 읽는다.
+// 디다코 기본 교재(book-trinity.js, book-family.js, book-jesus-walk.js)는 그대로 둔다. 이 파일은 그 파일들 다음에 읽는다.
 // 표지는 교회 방식(무늬 + 색, 세 겹 끈)이고 연재 표지 그림(cover)은 쓰지 않는다(결정 기록 2026-11-12 교재 쓰기 줄).
 (function () {
   const D = window.DIDAKO_DEMO, W = window.WALKS || [];
-  const BASIC = ['trinity', 'family'];
+  const BASIC = ['trinity', 'family', 'jesus-walk'];
   // 연재마다 표지 무늬와 색(covers.js의 기본 묶음에서 고른다). 목록에 없는 연재는 세 겹 끈·종이색
   const COVER = {
     habakkuk: ['lattice', 'ink'], 'genesis-1': ['leaf', 'green'], 'genesis-2': ['star', 'blue'], 'genesis-3': ['wave', 'paper'], 'genesis-4': ['cord', 'amber'],

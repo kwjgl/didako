@@ -1540,6 +1540,7 @@ html.tutorial .demo-tag { display: none !important; }
 <script src="demo-data.js"></script>
 <script src="book-trinity.js"></script>
 <script src="book-family.js"></script>
+<script src="book-jesus-walk.js"></script>
 <script src="../note/guide.js"></script>
 <script src="../note/places.js"></script>
 <script src="../note/walks-data.js"></script>
@@ -1561,9 +1562,9 @@ const SB = !LIVE && !!CFG.SUPABASE_URL && !!CFG.SUPABASE_KEY && !new URLSearchPa
 const DEMO = !LIVE && !SB;
 const DATA = window.DIDAKO_DEMO;
 const clone = x => JSON.parse(JSON.stringify(x));
-// 디다코 기본 교재(앱에 들어 있는 GOSPEL 새가족반과 12소예언서). 실제 모드에서는 DATA.books를 서버 교재로 바꾸니, 그 전에 복사해 둔다.
+// 디다코 기본 교재(삼위일체·가정예배·예수님과 함께 걷기). 실제 모드에서는 DATA.books를 서버 교재로 바꾸니, 그 전에 복사해 둔다.
 //  교재 관리의 "디다코 기본 교재"에서 [가져오기]를 누르면 우리 교회 교재로 복제된다(서버 basicImport)
-const BASIC = LIVE ? { books: ['trinity', 'family'].map(id => DATA.books.find(b => b.id === id)).filter(Boolean).map(clone), guides: clone(DATA.guides) } : { books: [], guides: {} };
+const BASIC = LIVE ? { books: ['trinity', 'family', 'jesus-walk'].map(id => DATA.books.find(b => b.id === id)).filter(Boolean).map(clone), guides: clone(DATA.guides) } : { books: [], guides: {} };
 
 // ── 도구 ──
 const $ = (s, r) => (r || document).querySelector(s);
