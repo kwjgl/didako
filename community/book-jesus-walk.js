@@ -15,7 +15,7 @@
     "color": "green"
   },
   "range": "누가복음 4:16~24:35",
-  "source": "디다코 가정예배 원고",
+  "source": "",
   "lessons": [
     {
       "no": 1,

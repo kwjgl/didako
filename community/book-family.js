@@ -5,8 +5,8 @@
   const D = window.DIDAKO_DEMO;
   D.books.push({
   "id": "family",
-  "title": "가정예배",
-  "coverName": "가정예배",
+  "title": "가정예배 첫걸음",
+  "coverName": "가정예배 첫걸음",
   "period": "",
   "closed": false,
   "kind": "가정예배",
@@ -15,7 +15,7 @@
     "color": "amber"
   },
   "range": "창세기~요한계시록",
-  "source": "디다코 가정예배 원고",
+  "source": "",
   "lessons": [
     {
       "no": 1,

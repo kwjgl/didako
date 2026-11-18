@@ -5,8 +5,8 @@
   const D = window.DIDAKO_DEMO;
   D.books.push({
   "id": "trinity",
-  "title": "삼위일체 하나님을 만나다",
-  "coverName": "삼위일체 하나님을 만나다",
+  "title": "헤르만 바빙크의 삼위일체 하나님",
+  "coverName": "삼위일체 하나님",
   "period": "",
   "closed": false,
   "kind": "자유 모임",
@@ -15,7 +15,7 @@
     "color": "blue"
   },
   "range": "바빙크 『하나님의 큰 일』 10장",
-  "source": "헤르만 바빙크 『하나님의 큰 일』 10장을 바탕으로",
+  "source": "헤르만 바빙크 『하나님의 큰 일』",
   "lessons": [
     {
       "no": 1,
