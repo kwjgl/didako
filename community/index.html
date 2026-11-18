@@ -201,8 +201,7 @@ textarea.field { resize: vertical; line-height: 1.55; overflow-y: hidden; }
 @keyframes vt-push { from { opacity: 0; transform: translateX(40px); } }
 @keyframes vt-pop { from { opacity: 0; transform: translateX(-28px); } }
 @media (prefers-reduced-motion: reduce) { .vt-in-r, .vt-in-l, .vt-fade, .vt-push, .vt-pop { animation: none; } }
-/* 겹쳐 넘기기: 넘기는 동안만 이름을 붙여 따로 찍는다. 위쪽 바·하단 탭은 움직이지 않고 맨 위에 둔다(떼어 낸 #view가 그 위를 덮지 않게) */
-:root[data-vt] #view { view-transition-name: view; }
+/* 겹쳐 넘기기: 보이는 화면 전체(root)를 사진처럼 찍어 넘긴다. 내용 칸만 떼면 긴 화면이 맨 위부터 붙어 위로 튀고, 말씀을 열며·나눔 화면처럼 위에 덮이는 막보다 내용이 위에 겹쳤다(2026-11-18). 위쪽 바·하단 탭은 따로 떼어 움직이지 않는다 */
 :root[data-vt] #topbar { view-transition-name: topbar; }
 :root[data-vt] #tabs { view-transition-name: tabs; }
 ::view-transition-group(topbar), ::view-transition-group(tabs) { animation: none; }
@@ -213,12 +212,11 @@ textarea.field { resize: vertical; line-height: 1.55; overflow-y: hidden; }
 :root[data-vt="vt-in-r"] { --vt-in: 14px; --vt-out: -10px; }
 :root[data-vt="vt-in-l"] { --vt-in: -14px; --vt-out: 10px; }
 :root[data-vt="vt-fade"] { --vt-in: 0px; --vt-out: 0px; }
-::view-transition-old(root), ::view-transition-new(root) { animation: none; }
-::view-transition-group(view) { animation: none; }
-::view-transition-old(view) { animation: vt-old-out .32s ease-out both; }
-::view-transition-new(view) { animation: vt-new-in .45s cubic-bezier(.22, .8, .24, 1) both; }
-:root[data-vt="vt-in-r"]::view-transition-old(view), :root[data-vt="vt-in-l"]::view-transition-old(view) { animation-duration: .18s; }
-:root[data-vt="vt-in-r"]::view-transition-new(view), :root[data-vt="vt-in-l"]::view-transition-new(view) { animation-duration: .25s; }
+::view-transition-group(root) { animation: none; }
+::view-transition-old(root) { animation: vt-old-out .32s ease-out both; }
+::view-transition-new(root) { animation: vt-new-in .45s cubic-bezier(.22, .8, .24, 1) both; }
+:root[data-vt="vt-in-r"]::view-transition-old(root), :root[data-vt="vt-in-l"]::view-transition-old(root) { animation-duration: .18s; }
+:root[data-vt="vt-in-r"]::view-transition-new(root), :root[data-vt="vt-in-l"]::view-transition-new(root) { animation-duration: .25s; }
 @keyframes vt-old-out { to { opacity: 0; transform: translateX(var(--vt-out, 0px)); } }
 @keyframes vt-new-in { from { opacity: 0; transform: translateX(var(--vt-in, 0px)); } }
 body.pop-open { overflow: hidden; }
@@ -4145,18 +4143,16 @@ function shareView() {
       <h2 class="lesson-title" id="lessonTitle">${esc(L.title)}</h2>
       <span class="passage-chip">${esc(L.ref)}</span>
       <button class="quiet-link" type="button" data-act="share-pick">다른 과 고르기</button>
-      <p class="fine">화면에서 눈을 뗄 시간이에요. 함께 질문과 답을 나눕니다.</p>
       ${isLead() ? '<button class="btn ghost" type="button" data-act="prep">진행 준비</button>' : ''}
     </section>
     <section class="card" aria-label="나눔 설정">
       <div class="opt">
-        <p class="opt-name">나눌 단계</p>
-        <p class="opt-sub">모두 나누거나, 한 단계만 뺄 수 있어요.</p>
+        <p class="opt-name">나눌 단계${DidakoTip.btn('모두 나누거나, 한 단계만 뺄 수 있어요.', '나눌 단계')}</p>
         <div class="stage-checks" id="stageChecks"></div>
       </div>
-      <div class="opt"><div class="row"><div><p class="opt-name">말씀을 열며</p><p class="opt-sub">삼위일체 하나님께 간구하며 시작해요.</p></div><button class="switch on" type="button" role="switch" aria-checked="true" aria-label="말씀을 열며" id="swOpen" data-act="sw-open"><span></span></button></div></div>
-      <div class="opt"${G.triple.length ? '' : ' hidden'}><div class="row"><div><p class="opt-name">깊이 묵상하기</p><p class="opt-sub">맨 끝에 삼위일체 하나님을 묵상해요.</p></div><button class="switch on" type="button" role="switch" aria-checked="true" aria-label="깊이 묵상하기" id="swTriple" data-act="sw-triple"><span></span></button></div></div>
-      <div class="opt"><div class="row"><div><p class="opt-name">화면 내려놓기</p><p class="opt-sub">질문을 연 지 얼마 뒤 화면이 어두워져요.</p></div><button class="switch on" type="button" role="switch" aria-checked="true" aria-label="화면 내려놓기" id="swDim" data-act="sw-dim"><span></span></button></div></div>
+      <div class="opt"><div class="row"><div><p class="opt-name">말씀을 열며${DidakoTip.btn('삼위일체 하나님께 간구하며 시작해요.', '말씀을 열며')}</p></div><button class="switch on" type="button" role="switch" aria-checked="true" aria-label="말씀을 열며" id="swOpen" data-act="sw-open"><span></span></button></div></div>
+      <div class="opt"${G.triple.length ? '' : ' hidden'}><div class="row"><div><p class="opt-name">깊이 묵상하기${DidakoTip.btn('맨 끝에 삼위일체 하나님을 묵상해요.', '깊이 묵상하기')}</p></div><button class="switch on" type="button" role="switch" aria-checked="true" aria-label="깊이 묵상하기" id="swTriple" data-act="sw-triple"><span></span></button></div></div>
+      <div class="opt"><div class="row"><div><p class="opt-name">화면 내려놓기${DidakoTip.btn('질문을 연 지 얼마 뒤 화면이 어두워져요.', '화면 내려놓기')}</p></div><button class="switch on" type="button" role="switch" aria-checked="true" aria-label="화면 내려놓기" id="swDim" data-act="sw-dim"><span></span></button></div></div>
       <div class="opt"><p class="opt-name">보는 방법</p><div class="seg" id="segView" style="--n:2"></div></div>
       <button class="btn wide start-btn" type="button" id="startBtn" data-act="share-start">나눔 시작</button>
     </section>
@@ -4867,7 +4863,12 @@ let lastV = '';   // 지금 화면과 바로 앞 화면(교회 전체의 돌아�
 //  화면 전환 기능이 있으면 옛 화면과 새 화면을 겹쳐 넘기고, 없으면 새 화면만 움직인다(.vt-*). 첫 접속 화면과 움직임 줄이기에서는 움직이지 않는다
 const VT_CLASSES = ['vt-in-r', 'vt-in-l', 'vt-fade', 'vt-push', 'vt-pop'];
 const VT_TABS = ['week', 'shelf', 'share', 'record', 'more'];
-let vtV = '', vtArg = '', vtNow = false, vtCur = null;
+let vtV = '', vtArg = '', vtNow = false, vtCur = null, vtTap = 0, vtUA = false;
+// 휴대폰의 쓸어서 뒤로 가기는 브라우저가 이미 옛 화면을 밀어 넘긴다. 거기에 또 넘기면 옛 화면이 잠깐 반짝인다.
+//  브라우저가 넘겼다고 알려 주면(hasUAVisualTransition) 움직이지 않고, 알려 주지 않는 아이폰은 누르지 않고 주소가 바뀐 때(뒤로 가기) 움직이지 않는다
+const vtIOS = /iP(hone|ad|od)/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+['click', 'keydown'].forEach(t => document.addEventListener(t, () => { vtTap = Date.now(); }, true));
+if (window.navigation && typeof navigation.addEventListener === 'function') navigation.addEventListener('navigate', e => { vtUA = !!e.hasUAVisualTransition; });
 const vtTab = v => v === 'week' ? 'week' : PLACE[v] ? PLACE[v][1] : '';
 function vtDepth(v, arg) {
   if (v === 'manage') return !arg ? 1 : /^mb-/.test(arg) ? 2 : 3;   // 교재 관리 → 교재 → 과·인쇄
@@ -4876,6 +4877,8 @@ function vtDepth(v, arg) {
   return VT_TABS.includes(v) ? 0 : 1;
 }
 function vtMotion() {
+  const ua = vtUA; vtUA = false;
+  if (ua || (vtIOS && Date.now() - vtTap > 1500)) return '';
   if (vtNow || reflow || !D.entered || !vtV || vtV === 'start') return '';
   if (matchMedia('(prefers-reduced-motion: reduce)').matches) return '';
   const { v, arg } = parseHash();
