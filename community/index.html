@@ -386,7 +386,9 @@ main.wrap { padding-top: 14px; padding-bottom: calc(110px + env(safe-area-inset-
 .walk-scripture { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; margin: 0 0 .7em; }
 .read-scripture { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; }
 .read-scripture .quiet-link { display: inline-flex; align-items: center; margin: 0; }
-.share-lead-row { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; margin-top: 12px; }
+/* 나눔하기 제목 카드의 할 일 줄: 위(책·제목·장절)와 가는 선으로 나누고, 진행 준비는 왼쪽, 다른 과 고르기는 오른쪽 */
+.share-acts { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; margin-top: 14px; padding-top: 12px; border-top: 1px solid var(--line); }
+.share-acts .quiet-link { margin: 0 0 0 auto; }
 /* 말씀에서 찾아보기 문답(철학 ⑪ 2026-11-10): 맞으면 본문 위치를 알려 주고, 틀리면 다시 펴 보게 한다. 점수·맞힌 수·틀린 기록은 없다 */
 .walk-days { display: flex; gap: 5px; margin: 0; }
 .walk-day { position: relative; display: grid; place-items: center; flex: 0 0 30px; width: 30px; height: 30px; padding: 0; border: 1px solid var(--line); border-radius: 50%; background: transparent; color: var(--ink-2); font: inherit; font-size: .8125rem; font-weight: 600; cursor: pointer; }
@@ -987,7 +989,7 @@ label.f { display: block; font-size: .85em; font-weight: 600; margin: 12px 0 4px
 .wrapup label { font-weight: 600; font-size: .92em; display: block; margin-bottom: .3em; }
 .wrapup .field { font-size: 1em; }
 .end-btns { display: flex; flex-direction: column; gap: 10px; margin-top: 12px; }
-.end-btns.row { flex-direction: row-reverse; } .end-btns.row .btn { flex: 1; min-height: 44px; }
+.end-btns.row { flex-direction: row-reverse; } .end-btns.row .btn { flex: 1; min-height: 44px; } .end-btns.row .btn:not(.ghost) { flex: 3; }
 .end-btns .btn { min-height: 52px; text-decoration: none; }
 @media (min-width: 640px) { .end-btns { flex-direction: row-reverse; } .end-btns .btn { flex: 1; } }
 .keep-form { display: flex; flex-direction: column; gap: 14px; margin-top: 1.1em; }
@@ -1024,7 +1026,6 @@ body.sharing { overflow: hidden; }
 .st-nav { display: grid; grid-template-columns: 1fr 1.4fr; gap: 10px; max-width: 680px; margin: 0 auto; }
 .st-nav .btn { min-height: 52px; font-size: 1.02em; }
 .st-nav.one { grid-template-columns: 1fr; }
-.st-skip { display: block; margin: 0 auto 6px; background: none; border: 0; color: var(--ink-2); font-size: .9em; min-height: 44px; padding: 0 1em; cursor: pointer; text-decoration: underline; text-underline-offset: 3px; }
 .st-eyebrow { font-size: .84em; color: var(--ink-2); margin: 0 0 .7em; text-align: center; }
 .st-body.qmode { overflow: hidden; }
 .q-top { flex: none; min-height: 36vh; min-height: 36dvh; display: flex; align-items: center; justify-content: center; padding: 8px 0; }
@@ -3967,7 +3968,7 @@ function wrapHtml() {
       <p class="hint" id="kStatus" aria-live="polite" hidden><button type="button" class="quiet-link retry" data-act="keep-retry">저장하지 못했어요 · 다시 시도</button></p>
     </div>
   </section>
-  <div class="end-btns row"><a class="btn" href="${readBack().href}">돌아가기</a><a class="btn ghost" href="#share">나눔하기</a></div>`;
+  <div class="end-btns row">${D.role === 'leader' && !readAsMember && nextNo() ? '<button class="btn ghost" type="button" data-act="cm-next">다음 과로</button>' : ''}<a class="btn" href="#share">나눔하기</a></div>`;
 }
 function tocHtml() {
   let h = '';
@@ -4028,7 +4029,7 @@ function readView() {
       <section class="card today read-head rg-head" aria-labelledby="lessonTitle">
         <p class="lesson-book">${bookHtml()}</p>
         <h2 class="lesson-title" id="lessonTitle">${esc(L.title)}</h2>
-        <div class="read-scripture"><span class="passage-chip">${esc(L.ref)}</span>${bibleUrl(L.ref) ? `<a class="quiet-link" href="${esc(bibleUrl(L.ref))}" target="_blank" rel="noopener" aria-label="${esc(L.ref)} 성경 펴기 (새 창)">성경 펴기 ›</a>` : ''}${D.role === 'leader' && !readAsMember && nextNo() ? '<button class="quiet-link" type="button" data-act="cm-next">다음 과로 ›</button>' : ''}</div>
+        <div class="read-scripture"><span class="passage-chip">${esc(L.ref)}</span>${bibleUrl(L.ref) ? `<a class="quiet-link" href="${esc(bibleUrl(L.ref))}" target="_blank" rel="noopener" aria-label="${esc(L.ref)} 성경 펴기 (새 창)">성경 펴기 ›</a>` : ''}</div>
         ${readAsMember ? '<p class="fine">회원에게 보이는 모습이에요. 해설은 보이지 않아요.</p>' : ''}
       </section>
       <section class="card toc rg-toc" aria-label="단계 목록">
@@ -4149,8 +4150,8 @@ function shareView() {
     <section class="card today" aria-labelledby="lessonTitle">
       <p class="lesson-book">${bookHtml()}</p>
       <h2 class="lesson-title" id="lessonTitle">${esc(L.title)}</h2>
-      <div class="read-scripture"><span class="passage-chip">${esc(L.ref)}</span><button class="quiet-link" type="button" data-act="share-pick">다른 과 고르기 ›</button></div>
-      ${isLead() ? `<div class="share-lead-row"><button class="btn ghost" type="button" data-act="prep">진행 준비</button>${D.role === 'leader' && nextNo() ? '<button class="quiet-link" type="button" data-act="cm-next">다음 과로 ›</button>' : ''}</div>` : ''}
+      <span class="passage-chip">${esc(L.ref)}</span>
+      <div class="share-acts">${isLead() ? '<button class="btn ghost" type="button" data-act="prep">진행 준비</button>' : ''}<button class="quiet-link" type="button" data-act="share-pick">다른 과 고르기 ›</button></div>
     </section>
     <section class="card" aria-label="나눔 설정">
       <div class="opt">
@@ -4301,7 +4302,7 @@ function renderStep() {
     html = `<div class="st-in"><p class="st-eyebrow">오늘 남길 것</p><h2 class="h2d">오늘 마음에 남은 한 문장을 각자 품고 가요.</h2>
       <div class="keep-form"><div><label for="kSentence">한 문장</label><textarea class="field" id="kSentence" rows="2" maxlength="200" placeholder="마음에 남은 말을 짧게">${esc(sv.sentence || '')}</textarea></div>
       <div><label for="kAction">이번 주 작은 실천</label><input class="field" id="kAction" maxlength="120" placeholder="하나만 적어요" value="${esc(sv.action || '')}" autocomplete="off"></div></div></div>`;
-    nav = '\u0001' + prev + next('남기고 다음');
+    nav = prev + next();
   } else if (s.t === 'bless') {
     html = `<div class="st-in"><div class="bless" aria-live="polite"><div class="st-eyebrow bl-lead">함께 읽어요</div>${BLESS_LINES.map((l, i) => `<p class="${i === BLESS_LINES.length - 1 ? 'lastline' : ''}" style="--i:${i}">${esc(l)}</p>`).join('')}<span class="verse bl-ref">${esc(BLESS_REF)}</span></div></div>`;
     nav = prev + next();
@@ -4313,10 +4314,8 @@ function renderStep() {
   }
   if (s.t !== 'q') body.className = 'st-body';
   body.innerHTML = html; body.scrollTop = 0;
-  // nav 조각 풀기: \u0001 = 건너뛰기 줄이 붙는 버튼 줄
-  let skip = '', btns = nav;
-  if (nav.startsWith('\u0001')) { skip = `<button class="st-skip" type="button" data-act="skip-keep">남기지 않고 건너뛰기</button>`; btns = nav.slice(1); }
-  foot.innerHTML = btns ? skip + `<div class="st-nav">${btns}</div>` : '';
+  const btns = nav;
+  foot.innerHTML = btns ? `<div class="st-nav">${btns}</div>` : '';
   foot.hidden = !btns;
   if (s.t === 'keep' || s.t === 'bless') { const b = foot.querySelector('.btn:not(.ghost)'); if (b) b.blur(); }
 }
@@ -4356,7 +4355,7 @@ const nextNo = () => { const g = cmCur(), b = g && bookById(g.book); if (!b) ret
 function cmNowSheet(no) {
   const g = cmCur(), b = g && bookById(g.book), l = b && b.lessons.find(x => x.no === no);
   if (D.role !== 'leader' || !l) return;
-    openSheet(sheetHead('지금 읽는 과') + `<p>제${l.no}과 · ${esc(l.name || '(제목 없음)')}을(를) 공동체가 지금 읽는 과로 정할까요?</p><p class="hint">공동체 사람 모두의 이번 주와 나눔하기가 이 과로 바뀌어요.</p><div class="set-btns"><button class="btn ghost" type="button" data-act="pop-close">그만두기</button><button class="btn" type="button" data-act="cm-now-do" data-no="${l.no}">정하기</button></div>`);
+    openSheet(sheetHead('지금 읽는 과') + `<p>[제${l.no}과] ${esc(l.name || '(제목 없음)')}을(를) 공동체가 지금 읽는 과로 정할까요?</p><p class="hint">공동체 사람 모두의 이번 주와 나눔하기가 이 과로 바뀌어요.</p><div class="set-btns"><button class="btn ghost" type="button" data-act="pop-close">그만두기</button><button class="btn" type="button" data-act="cm-now-do" data-no="${l.no}">정하기</button></div>`);
 }
 const cmMine = b => cmOwn().books.includes(b);   // 이 공동체의 모임장이 쓴 교재인가
 const bTitle = b => (b.id === 'john' && D.longTitle ? LONG_JOHN : b.title);
@@ -5457,7 +5456,6 @@ const acts = {
   'share-pick-shelf'() { closeSheet(); location.hash = '#shelf'; },
   'share-start'() { startShare(); },
   next() { go(1); }, prev() { go(-1); },
-  'skip-keep'() { go(1); },
   pray() { toast('데모에서는 코이데로 이어지지 않아요'); },
   finish() { exitShare(); },
   'ask-close'() {
@@ -5790,7 +5788,7 @@ document.addEventListener('focusout', e => {
 window.addEventListener('pagehide', () => { flushAll(); if (keepT) saveKeepRead(); cmSaveBooks(); if (SB) sbStash(); });
 // 저장하지 못한 교재 글이 있는 채로 페이지를 떠나려 하면 묻는다(실제 서버. 글은 이 기기에 임시로도 남는다)
 window.addEventListener('beforeunload', e => { if (SB && sbHasUnsaved()) { e.preventDefault(); e.returnValue = ''; } });
-// 남기고 다음: 눌러서 넘어가기 전에 나눔하기의 오늘 남길 것을 저장
+// 오늘 남길 것의 다음: 눌러서 넘어가기 전에 쓴 것을 저장(비워 두어도 넘어간다)
 document.addEventListener('click', e => { const el = e.target.closest('[data-act="next"]'); if (el && R.on && cur().t === 'keep') saveKeepShare(); }, true);
 document.addEventListener('change', e => { const c = e.target.closest && e.target.closest('input[data-sens]'); if (!c) return; const w = c.closest('form, .col-n, .ob'); const b = w && w.querySelector('[data-sens-btn]'); if (b) b.disabled = !c.checked; });
 document.addEventListener('change', e => {
