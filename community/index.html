@@ -189,6 +189,38 @@ textarea.field { resize: vertical; line-height: 1.55; overflow-y: hidden; }
 @keyframes pop-up { from { transform: translateY(24px); opacity: 0; } }
 @keyframes pop-fade { from { opacity: 0; } }
 @media (prefers-reduced-motion: reduce) { .pop-scrim, .pop-sheet { animation: none; } }
+/* 부드럽게 넘어가기(디다코 노트 S-72·S-73과 같은 값, 2026-11-18): 화면 전환 기능이 있으면 옛 화면과 새 화면을 겹쳐 넘기고(아래 view-transition), 없으면 새 화면만 움직인다(.vt-*) */
+.vt-in-r { animation: vt-in-r .2s cubic-bezier(.2, .8, .2, 1) both; }
+.vt-in-l { animation: vt-in-l .2s cubic-bezier(.2, .8, .2, 1) both; }
+.vt-fade { animation: vt-fade .25s ease-out both; }
+.vt-push { animation: vt-push .45s cubic-bezier(.2, .8, .2, 1) both; }
+.vt-pop { animation: vt-pop .45s cubic-bezier(.2, .8, .2, 1) both; }
+@keyframes vt-in-r { from { opacity: 0; transform: translateX(14px); } }
+@keyframes vt-in-l { from { opacity: 0; transform: translateX(-14px); } }
+@keyframes vt-fade { from { opacity: 0; } }
+@keyframes vt-push { from { opacity: 0; transform: translateX(40px); } }
+@keyframes vt-pop { from { opacity: 0; transform: translateX(-28px); } }
+@media (prefers-reduced-motion: reduce) { .vt-in-r, .vt-in-l, .vt-fade, .vt-push, .vt-pop { animation: none; } }
+/* 겹쳐 넘기기: 넘기는 동안만 이름을 붙여 따로 찍는다. 위쪽 바·하단 탭은 움직이지 않고 맨 위에 둔다(떼어 낸 #view가 그 위를 덮지 않게) */
+:root[data-vt] #view { view-transition-name: view; }
+:root[data-vt] #topbar { view-transition-name: topbar; }
+:root[data-vt] #tabs { view-transition-name: tabs; }
+::view-transition-group(topbar), ::view-transition-group(tabs) { animation: none; }
+::view-transition-old(topbar), ::view-transition-old(tabs) { animation: none; opacity: 0; }
+::view-transition-new(topbar), ::view-transition-new(tabs) { animation: none; }
+:root[data-vt="vt-push"] { --vt-in: 40px; --vt-out: -24px; }
+:root[data-vt="vt-pop"] { --vt-in: -28px; --vt-out: 24px; }
+:root[data-vt="vt-in-r"] { --vt-in: 14px; --vt-out: -10px; }
+:root[data-vt="vt-in-l"] { --vt-in: -14px; --vt-out: 10px; }
+:root[data-vt="vt-fade"] { --vt-in: 0px; --vt-out: 0px; }
+::view-transition-old(root), ::view-transition-new(root) { animation: none; }
+::view-transition-group(view) { animation: none; }
+::view-transition-old(view) { animation: vt-old-out .32s ease-out both; }
+::view-transition-new(view) { animation: vt-new-in .45s cubic-bezier(.22, .8, .24, 1) both; }
+:root[data-vt="vt-in-r"]::view-transition-old(view), :root[data-vt="vt-in-l"]::view-transition-old(view) { animation-duration: .18s; }
+:root[data-vt="vt-in-r"]::view-transition-new(view), :root[data-vt="vt-in-l"]::view-transition-new(view) { animation-duration: .25s; }
+@keyframes vt-old-out { to { opacity: 0; transform: translateX(var(--vt-out, 0px)); } }
+@keyframes vt-new-in { from { opacity: 0; transform: translateX(var(--vt-in, 0px)); } }
 body.pop-open { overflow: hidden; }
 
 
@@ -3437,11 +3469,12 @@ function mgForm(b) {
   const cover = b && b.cover || { motif: COVERS.groups[0].items[0].id, color: COVERS.colors[0][0] };
   const group = COVERS.groups.find(g => g.items.some(i => i.id === cover.motif)) || COVERS.groups[0];
   // 종류는 교회가 켠 것만 고른다. 다만 이미 다른 종류인 교재(예: 새가족반)는 그 종류를 함께 보여서, 열고 저장만 해도 종류가 바뀌지 않게 한다(2026-11-10)
-  const kinds = ['자유 모임'];   // 공동체의 교재는 종류를 나누지 않는다
+  // 종류는 다섯 가지(1장 표)에서 고른다. 앱 관리자가 쓰는 디다코 교재와 모임장이 쓰는 공동체 교재가 같다(2026-11-18, 사용자). 새 교재는 자유 모임으로 시작한다
+  const kinds = ['GBS', '새가족반', '가정예배', '주일학교 공과', '자유 모임'];
   if (b && b.kind && !kinds.includes(b.kind)) kinds.push(b.kind);
   const options = (rows, val) => rows.map(([v, name]) => `<option value="${esc(v)}"${v === val ? ' selected' : ''}>${esc(name)}</option>`).join('');
   openSheet(sheetHead(b ? '교재 정보 편집' : '새 교재 만들기') + `<div class="keep-form">
-    <div><label for="mgKind">종류</label><select class="field" id="mgKind">${options(kinds.map(k => [k, k]), b && b.kind)}</select></div>
+    <div><label for="mgKind">종류</label><select class="field" id="mgKind">${options(kinds.map(k => [k, k]), b && b.kind || '자유 모임')}</select></div>
     <div><label for="mgTitle">제목</label><input class="field" id="mgTitle" maxlength="40" value="${esc(b ? b.title : '')}"><p class="hint" id="mgTitleHint" hidden>교재 제목을 적어 주세요</p></div>
     <div><label for="mgCoverName">표지 이름 <span class="hint">선택, 10자까지</span>${DidakoTip.btn('표지 위쪽에 보여요. 비워 두면 그림만 보여요.', '표지 이름')}</label><input class="field" id="mgCoverName" maxlength="10" value="${esc(b ? b.coverName || '' : '')}" placeholder="예: 요한복음"></div>
     <div><label for="mgGroup">표지 묶음</label><select class="field" id="mgGroup">${options(COVERS.groups.map(g => [g.id, g.name]), group.id)}</select></div>
@@ -4829,7 +4862,46 @@ function afMount(on) {
 
 // ── 길 찾기(# 주소) ──
 let lastV = '';   // 지금 화면과 바로 앞 화면(교회 전체의 돌아가기 링크가 쓴다)
-function route(moved) {
+// 부드럽게 넘어가기(디다코 노트 S-72·S-73을 옮겼다, 2026-11-18): 주소를 옮겨 화면이 바뀔 때만 움직인다.
+//  탭이 바뀌면 탭 순서대로 옆으로, 같은 탭 안에서는 깊이(목록 → 책 → 과)로 들어가면 밀어 넣고 나오면 되돌린다.
+//  화면 전환 기능이 있으면 옛 화면과 새 화면을 겹쳐 넘기고, 없으면 새 화면만 움직인다(.vt-*). 첫 접속 화면과 움직임 줄이기에서는 움직이지 않는다
+const VT_CLASSES = ['vt-in-r', 'vt-in-l', 'vt-fade', 'vt-push', 'vt-pop'];
+const VT_TABS = ['week', 'shelf', 'share', 'record', 'more'];
+let vtV = '', vtArg = '', vtNow = false, vtCur = null;
+const vtTab = v => v === 'week' ? 'week' : PLACE[v] ? PLACE[v][1] : '';
+function vtDepth(v, arg) {
+  if (v === 'manage') return !arg ? 1 : /^mb-/.test(arg) ? 2 : 3;   // 교재 관리 → 교재 → 과·인쇄
+  if (v === 'shelf' || v === 'record') return !arg ? 0 : isAllArg(arg) ? 1 : 2;   // 책장 → 모두 보기 → 책 안, 내 기록 → 기록 상세
+  if (v === 'prepprint') return 2;
+  return VT_TABS.includes(v) ? 0 : 1;
+}
+function vtMotion() {
+  if (vtNow || reflow || !D.entered || !vtV || vtV === 'start') return '';
+  if (matchMedia('(prefers-reduced-motion: reduce)').matches) return '';
+  const { v, arg } = parseHash();
+  if (!v || v === 'start' || (v === vtV && (arg || '') === vtArg)) return '';
+  const from = VT_TABS.indexOf(vtTab(vtV)), to = VT_TABS.indexOf(vtTab(v));
+  if (from < 0 || to < 0) return '';
+  if (to !== from) return to > from ? 'vt-in-r' : 'vt-in-l';
+  const a = vtDepth(vtV, vtArg), b = vtDepth(v, arg);
+  return b > a ? 'vt-push' : b < a ? 'vt-pop' : 'vt-fade';
+}
+// anim: 주소가 바뀌어(hashchange) 부를 때만 true. 다른 곳에서 부르는 route(true)는 지금처럼 바로 그린다
+function route(moved, anim) {
+  const motion = moved && anim ? vtMotion() : '', html = document.documentElement;
+  if (motion && typeof document.startViewTransition === 'function') {
+    closeMenu(); $('#toast').hidden = true;   // 새 화면은 다음 그림에서 그려지므로, 옮긴 뒤 띄우는 알림이 지워지지 않게 미리 닫는다
+    vtNow = true; html.dataset.vt = motion;
+    let t = null;
+    try { t = document.startViewTransition(() => { try { drawRoute(moved); } finally { vtNow = false; } }); }
+    catch (err) { vtNow = false; delete html.dataset.vt; }
+    if (t) { vtCur = t; t.ready.catch(() => {}); t.finished.finally(() => { if (vtCur === t) { vtCur = null; delete html.dataset.vt; } }); return; }
+  }
+  drawRoute(moved);
+  if (motion) $('#view').classList.add(motion);
+}
+function drawRoute(moved) {
+  $('#view').classList.remove(...VT_CLASSES);
   teardown();
   if (window.DidakoTip) DidakoTip.close();   // 다시 그리기 전에 열린 ⓘ 말풍선을 닫는다
   cmSaveBooks(); cmApply();   // 모임장이 쓴 교재를 이 기기에 남기고, 지금 연 공동체에 맞게 책장과 이름을 맞춘다
@@ -4862,7 +4934,8 @@ function route(moved) {
   if (v === 'record' && arg && !recById(arg)) arg = '';
   if (v !== 'shelf' && v !== 'record' && v !== 'manage' && v !== 'start') arg = '';
   if (location.hash !== hashFor(v, arg)) history.replaceState(null, '', hashFor(v, arg));
-  if (moved) { closeMenu(); $('#toast').hidden = true; }
+  if (moved && !vtNow) { closeMenu(); $('#toast').hidden = true; }   // 겹쳐 넘길 때는 route가 미리 닫았다
+  vtV = v; vtArg = arg || '';
   const start = v === 'start';
   $('#topbar').classList.toggle('bare', start);
   $('#topnav').hidden = start; $('#tabs').hidden = start;
@@ -6338,7 +6411,7 @@ if (!LIVE && !SB && new URLSearchParams(location.search).has('join')) { D.entere
  }
  if (TUT) setTimeout(() => { if (!CmGuide.begun()) CmGuide.fail(); }, 6000);
 
-window.addEventListener('hashchange', () => route(true));
+window.addEventListener('hashchange', () => route(true, true));
 
 applySettings(); route(false);
 if (TUT) { const demoTag = $('.topbar .demo-tag'); if (demoTag) demoTag.remove(); }
