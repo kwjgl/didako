@@ -1748,7 +1748,7 @@ function closeMenu() { const m = $('#settings'); m.hidden = true; $('#gearBtn').
 // 이름표와 어느 탭이 켜지는지는 여기에 모아 둔다. 아직 만들지 않은 화면은 차분한 안내 한 장으로 연다(막다른 길이 없게 이번 주로 가는 링크를 둔다)
 const PLACE = {
   wq: ['이번 주의 질문', 'week'], read: ['펼치기', 'week'], share: ['나눔하기', 'share'], shelf: ['책장', 'shelf'], record: ['내 기록', 'record'], records: ['모든 기록', 'record'], found: ['찾은 말씀', 'record'], gallery: ['올해의 그림', 'record'], rooms: ['사랑방 전체 보기', 'more'], more: ['더보기', 'more'],
-  church: ['우리 사랑방', 'more'], prep: ['진행 준비', 'share'], prepprint: ['리더용 인쇄', 'share'], manage: ['교재 관리', 'more'], admin: ['관리', 'more'], 'admin-reorg': ['연도 개편', 'more'], 'church-admin': ['교회 전체', 'more'], about: ['디다코 소개', 'more'], guide: ['사용법', 'more'], feedback: ['의견 보내기', 'more']
+  church: ['우리 사랑방', 'more'], prep: ['진행 준비', 'share'], prepprint: ['인쇄', 'share'], manage: ['교재 관리', 'more'], admin: ['관리', 'more'], 'admin-reorg': ['연도 개편', 'more'], 'church-admin': ['교회 전체', 'more'], about: ['디다코 소개', 'more'], guide: ['사용법', 'more'], feedback: ['의견 보내기', 'more']
 };
 const VIEWS = ['start', 'week'].concat(Object.keys(PLACE));
 // 책 안(#book-교재)과 기록 상세(#rec-기록)는 책장·내 기록 안의 화면이다
@@ -2898,21 +2898,22 @@ function ppTocHtml(b) {
   return `<div class="paper-wrap"><article class="paper" aria-label="${esc(b.title)} 차례"><h3 style="display:flex;align-items:center;gap:.4em"><span class="pp-logo">${mkIc()}</span>${esc(b.title)}</h3><p class="pp-ref">${esc(b.target || deptLabel())}</p>
     <h4>차례</h4><ul class="pp-toc">${b.lessons.map(L => `<li><span>제${L.no}과${L.name ? ' ' + esc(L.name) : ''}</span><span>${esc(L.ref || L.date || '')}</span></li>`).join('') || '<li><span>아직 과가 없어요</span><span></span></li>'}</ul>${ppPg(1)}</article></div>`;
 }
-// 진행 준비의 리더용 인쇄(#prepprint): 이번 주 과에 해설과 내 진행 메모(이 기기의 내 것만)
+// 진행 준비의 인쇄(#prepprint): 이번 주 과. 회원용(처음) 또는 리더용(해설 + 내 진행 메모, 이 기기의 내 것만)
 function prepSource() {
   const L = thisLesson();
   return { book: L.book, no: L.no, name: L.title.replace(/^\[제\d+과\] /, ''), ref: L.ref, intro: L.intro, useText: false, text: '', fs: 'm', wrap: '', guide: G.guide, stages: G.stages, triple: G.triple || [] };
 }
-const prepPrintOpts = () => ({ leader: true, space: 'mid', memo: key => readMemo()[key] || '' });
+// 회원용(처음): 질문과 답변 공간만. 리더용: 해설과 내 진행 메모(답변 공간 대신)
+const prepPrintOpts = () => PP.leader ? { leader: true, space: PP.space, memo: key => readMemo()[key] || '' } : { leader: false, space: PP.space, memo: null };
 function prepPrintView() {
   if (!isLead()) return `<div class="page-top"><h1>리더용 인쇄</h1></div>
     <section class="card calm"><p class="calm-t">리더와 목사님이 여는 화면이에요</p>
       <p class="soft" style="margin:0">데모 설정에서 역할을 리더나 목사님으로 바꿔 보세요.</p>
       <a class="btn ghost" href="#share">나눔하기로 돌아가기</a></section>`;
-  G = readyGuide(); if (!G) return noGuideView('리더용 인쇄');
+  G = readyGuide(); if (!G) return noGuideView('인쇄');
   return `<a class="back-link" href="#prep">${ic('back')}<span>진행 준비</span></a>
-    <p class="eyebrow top-eyebrow">${esc(groupName())} · 이번 주</p><div class="page-top"><h1>리더용 인쇄</h1></div>
-    <div class="pp-layout"><aside class="pp-side">${ppBar('pp-word-prep')}<p class="hint">${ic('lock')} 내 진행 메모는 이 기기에 있는 내 것만 들어가요.</p></aside>
+    <p class="eyebrow top-eyebrow">${esc(groupName())} · 이번 주</p><div class="page-top"><h1>인쇄</h1></div>
+    <div class="pp-layout"><aside class="pp-side">${ppOptsHtml()}${ppBar('pp-word-prep')}<p class="hint">${PP.leader ? `${ic('lock')} 리더용에는 해설과 내 진행 메모가 들어가요. 메모는 이 기기에 있는 내 것만이고, 답변 공간 대신 들어가요.` : '회원용에는 해설과 메모 없이 질문과 답변 공간만 들어가요. 앱을 쓰지 않는 분께 드리기 좋아요.'}</p></aside>
     <div class="pp-main"><div class="print-area" id="ppArea"></div></div></div>`;
 }
 // 종이는 화면에 붙은 뒤에 재야 해서 그린 다음에 채운다
@@ -4308,6 +4309,7 @@ function prepView() {
         <section class="card today read-head" aria-labelledby="lessonTitle">
           <p class="lesson-book">${bookHtml()}</p><h2 class="lesson-title" id="lessonTitle">${esc(L.title)}</h2>
           <span class="passage-chip">${esc(L.ref)}</span>${L.intro ? `<p class="fine">${esc(L.intro)}</p>` : ''}
+          <div class="share-acts"><a class="btn ghost" href="#prepprint">인쇄</a><button class="quiet-link" type="button" data-act="prep-member">회원 화면으로 보기 ›</button></div>
         </section>
         ${G.guide ? `<section class="card"><p class="opt-name">전체 진행 안내</p><div class="pn lead"><p class="lab">리더·목사님</p><p class="t">${esc(G.guide)}</p></div></section>` : ''}
       </div>
@@ -4321,7 +4323,7 @@ function prepView() {
           <h3 class="q-t" id="pt-${q.id}">${esc(q.t)}</h3>${helpHtml(q)}${leadHtml(q)}${memo(si + '-' + qi)}</article>`).join('')}</section>`).join('')}
         ${G.triple.length ? `<section class="card deep" id="p-deep" aria-labelledby="prepDeepT"><p class="eyebrow" style="margin:0">깊이 묵상하기</p><h2 class="d-lead" id="prepDeepT">오늘 말씀에서 삼위일체 하나님을 묵상해요.</h2>
           ${G.triple.map(t => `<div class="tri-item"><div class="q-meta"><span class="who">${esc(t.who)}</span></div><h3 class="q-t">${esc(t.t)}</h3>${memo(t.id)}</div>`).join('')}</section>` : ''}
-        <div class="end-btns"><button type="button" class="btn" data-act="prep-start">나눔 시작</button><a class="btn ghost" href="#prepprint">리더용 인쇄</a><button type="button" class="btn ghost" data-act="prep-member">회원 화면으로 보기</button></div>
+        <div class="end-btns"><button type="button" class="btn" data-act="prep-start">나눔 시작</button></div>
       </div>
     </div>
   </div>`;
@@ -4434,7 +4436,7 @@ function readInit() {
   const target = readResume && BM ? document.getElementById('q-' + BM.id) : null;
   readResume = false;
   if (target) { jumpedAt = Date.now(); target.scrollIntoView({ block: 'start' }); }
-  else if (D.readOpen && !reflow && !readFrom) showOpening();
+  else if (D.readOpen && !reflow && !readFrom && !readAsMember) showOpening();
 }
 
 // ══ 나눔하기(#share) ══
@@ -5618,7 +5620,7 @@ const acts = {
   'pp-word-prep'() {
     if (!isLead() || !(G = readyGuide())) return;
     const src = prepSource();
-    downloadDocx(buildDocxBlob(wordLessonXml(src, prepPrintOpts(), false)), `${src.book} 제${src.no}과 ${src.name} (리더용 · 내 메모)`);
+    downloadDocx(buildDocxBlob(wordLessonXml(src, prepPrintOpts(), false)), `${src.book} 제${src.no}과 ${src.name} (${PP.leader ? '리더용 · 내 메모' : '회원용'})`);
   },
   'pp-word'() {
     const m = /^mx-([\w-]+)\.(\d+)$/.exec(parseHash().arg || ''), b = m && mgBook(m[1]), L = b && b.lessons.find(l => l.no === Number(m[2])); if (!L) return;
