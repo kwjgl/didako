@@ -1138,31 +1138,35 @@ body.sharing { overflow: hidden; }
 .sh-actions { grid-column: 2; display: flex; flex-wrap: wrap; gap: 6px; }
 .sh-actions .btn { min-height: 36px; padding: 0 .8em; font-size: .88em; border-radius: 10px; }
 /* 교재 목록: 한 칸에 책 표지와 두 줄까지의 제목 */
-.sh-group-head { display: flex; justify-content: space-between; align-items: center; gap: 8px; margin: 22px 0 2px; }
+.sh-group-head { display: flex; justify-content: space-between; align-items: center; gap: 8px; min-height: 44px; margin: 22px 0 2px; }   /* 링크가 없는 묶음도 머리줄 높이를 같게 해서 묶음 사이가 같아 보이게 */
 .sh-group-head .xlb { margin: 0; }
+.sh-head-links { display: flex; align-items: center; gap: 12px; flex-shrink: 0; }   /* 오른쪽 링크 묶음: 모두 보기 · 교재 관리(모임장) */
 .sh-group-head .quiet-link { display: inline-flex; align-items: center; min-height: 44px; margin: 0; white-space: nowrap; }
 .sh-group > .hint { margin: 0 0 12px; }
+.sh-group > .hint:last-child { margin-bottom: 0; }   /* 우리 공동체 교재가 비었을 때 안내 글 아래에 여백이 겹치지 않게 */
 .sh-title-row { display: flex; align-items: center; gap: 2px; min-width: 0; }
 .sh-group { position: relative; }
+.sh-group:not(:last-child) { padding-bottom: 22px; }   /* 묶음 사이를 책 줄 사이보다 넓게 해서 묶음끼리 나뉘어 보이게 한다(머리줄 위 22px와 합쳐 44px) */
 /* 모두 보기 화면: 책장과 같은 바둑판에 그 묶음의 책 전체를 놓는다 */
 .shelf-all h1 { margin: 6px 0 4px; }
 .shelf-all > .hint { margin: 0 0 16px; }
 @media (width < 640px) {
   .sh-group:not(.open) .sh-books > :nth-child(n+4),
-  .sh-group:not(:has(.sh-books > :nth-child(4))) .sh-group-head .quiet-link { display: none; }
+  .sh-group:not(:has(.sh-books > :nth-child(4))) .sh-group-head .sh-all { display: none; }
 }
 @media (640px <= width < 1000px) {
   .sh-group:not(.open) .sh-books > :nth-child(n+5),
-  .sh-group:not(:has(.sh-books > :nth-child(5))) .sh-group-head .quiet-link { display: none; }
+  .sh-group:not(:has(.sh-books > :nth-child(5))) .sh-group-head .sh-all { display: none; }
 }
 @media (width >= 1000px) {
   .sh-group:not(.open) .sh-books > :nth-child(n+7),
-  .sh-group:not(:has(.sh-books > :nth-child(7))) .sh-group-head .quiet-link { display: none; }
+  .sh-group:not(:has(.sh-books > :nth-child(7))) .sh-group-head .sh-all { display: none; }
 }
 .sh-books { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); column-gap: 14px; row-gap: 18px; }
 .sh-book { display: flex; flex-direction: column; align-items: flex-start; gap: 5px; min-width: 0; padding: 0; border: 0; background: none; color: var(--ink); font-family: var(--f-body); text-align: left; cursor: pointer; }
 .sh-book-title { display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; overflow: hidden; font-size: calc(var(--base) * .875); font-weight: 700; line-height: 1.4; overflow-wrap: anywhere; margin-top: 3px; }
 .sh-book-period { font-size: calc(var(--base) * .75); color: var(--ink-2); line-height: 1.4; }
+.sh-book-period:empty { display: none; }   /* 기간이 빈 책은 빈 줄이 자리를 차지하지 않게 */
 .sh-book .walk-tag { max-width: 100%; min-height: 22px; padding: 2px 6px; font-size: calc(var(--base) * .625); white-space: normal; }
 @media (min-width: 640px) { .sh-books { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
 @media (min-width: 1000px) {
@@ -3490,6 +3494,7 @@ function mgForm(b) {
     <div><label for="mgColor">색</label><select class="field" id="mgColor">${options(COVERS.colors.map(c => [c[0], c[2]]), cover.color)}</select></div>
     <span class="mg-cover big" id="mgPreview">${bookCover({ cover, coverName: b ? b.coverName : '' }, 'list')}</span>
     <div><label for="mgStart">시작 날짜</label><input class="field" type="date" id="mgStart" value="${esc(b ? b.start || '' : LIVE ? liveWeek().sun : isoOf(new Date()))}"></div>
+    <div><label for="mgSource">출처 <span class="hint">선택, 60자까지</span>${DidakoTip.btn('교재 화면의 출처에 보여요. 바탕으로 쓴 책이나 원고를 적어요.', '출처')}</label><input class="field" id="mgSource" maxlength="60" value="${esc(b ? b.source || '' : '')}" placeholder="예: ○○ 원고를 바탕으로"></div>
     <p class="hint">${mgBaseMode() ? '여기서 쓴 교재는 디다코 교재로 모든 공동체 책장에 보여요. 새 교재는 숨겨진 채로 생기니, 다 쓴 뒤 [보이기]를 눌러 주세요.' : '여기서 쓴 교재는 이 공동체 안에서만 보여요. 다른 공동체로 보내거나 함께 쓸 수 없어요.'}</p>
     </div><div class="set-btns"><button class="btn ghost" type="button" data-act="pop-close">취소</button><button class="btn" type="button" data-act="mg-save">${b ? '저장하기' : '만들기'}</button></div>`);
 }
@@ -3497,7 +3502,7 @@ function mgForm(b) {
 function mgFormRead() {
   const title = $('#mgTitle').value.trim(); $('#mgTitleHint').hidden = !!title; if (!title) { $('#mgTitle').focus(); return null; }
   const b = mgEditing && mgBook(mgEditing), start = $('#mgStart').value;
-  return { b, fields: { title, coverName: $('#mgCoverName').value.trim(), kind: $('#mgKind').value, cover: { motif: $('#mgMotif').value, color: $('#mgColor').value }, start, period: start ? `${Number(start.slice(0, 4))}년 ${Number(start.slice(5, 7))}월부터` : b ? b.period : '', edited: true } };
+  return { b, fields: { title, coverName: $('#mgCoverName').value.trim(), source: $('#mgSource').value.trim(), kind: $('#mgKind').value, cover: { motif: $('#mgMotif').value, color: $('#mgColor').value }, start, period: start ? `${Number(start.slice(0, 4))}년 ${Number(start.slice(5, 7))}월부터` : b ? b.period : '', edited: true } };
 }
 // 새 교재의 재료(교재 + 과별 질문 자료)를 만든다. 넣는 것은 mgPut이 한다(실제 서버는 서버가 받은 뒤에 넣는다)
 function mgBuildBasic(src) {
@@ -4482,11 +4487,11 @@ function browseHtml() {
     if (!list.length && (key !== 'own' || !canManage())) return '';
     return `<section class="sh-group" aria-labelledby="sh-title-${key}">
       <div class="sh-group-head"><div class="sh-title-row"><h2 class="xlb" id="sh-title-${key}">${name}</h2>${tip ? DidakoTip.btn(hint, name) : ''}</div>
-        ${list.length > 3 ? `<a class="quiet-link" href="#shelf/all/${key}" aria-label="${name} 모두 보기">모두 보기 ›</a>` : ''}
+        <div class="sh-head-links">${list.length > 3 ? `<a class="quiet-link sh-all" href="#shelf/all/${key}" aria-label="${name} 모두 보기">모두 보기 ›</a>` : ''}${key === 'own' && canManage() ? '<a class="quiet-link sh-manage" href="#manage">교재 관리 ›</a>' : ''}</div>
       </div>
       ${tip ? '' : `<p class="hint">${hint}</p>`}
       ${list.length ? `<div class="sh-books" id="sh-books-${key}">${list.map(shelfBookHtml).join('')}</div>` : `
-        <p class="hint">교재 관리에서 이 공동체만의 교재를 쓸 수 있어요.</p><a class="quiet-link" href="#manage">교재 관리 ›</a>`}
+        <p class="hint">교재 관리에서 이 공동체만의 교재를 쓸 수 있어요.</p>`}
     </section>`;
   }).join('');
 }
@@ -5613,7 +5618,7 @@ if (LIVE) {
       if (!canManage()) return;
       const title = $('#mgTitle').value.trim(); $('#mgTitleHint').hidden = !!title; if (!title) { $('#mgTitle').focus(); return; }
       const b = mgEditing && mgBook(mgEditing), start = $('#mgStart').value;
-      const body = { title, coverName: $('#mgCoverName').value.trim(), kind: $('#mgKind').value, cover: { motif: $('#mgMotif').value, color: $('#mgColor').value }, deptId: $('#mgTarget').value, start,
+      const body = { title, coverName: $('#mgCoverName').value.trim(), source: $('#mgSource').value.trim(), kind: $('#mgKind').value, cover: { motif: $('#mgMotif').value, color: $('#mgColor').value }, deptId: $('#mgTarget').value, start,
         period: start ? `${Number(start.slice(0, 4))}년 ${Number(start.slice(5, 7))}월부터` : b ? b.period : '' };
       if (b) body.id = b.id;
       const nb = (await api('bookSave', body)).book;
