@@ -386,6 +386,7 @@ main.wrap { padding-top: 14px; padding-bottom: calc(110px + env(safe-area-inset-
 .walk-scripture { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; margin: 0 0 .7em; }
 .read-scripture { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; }
 .read-scripture .quiet-link { display: inline-flex; align-items: center; margin: 0; }
+.share-lead-row { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; margin-top: 12px; }
 /* 말씀에서 찾아보기 문답(철학 ⑪ 2026-11-10): 맞으면 본문 위치를 알려 주고, 틀리면 다시 펴 보게 한다. 점수·맞힌 수·틀린 기록은 없다 */
 .walk-days { display: flex; gap: 5px; margin: 0; }
 .walk-day { position: relative; display: grid; place-items: center; flex: 0 0 30px; width: 30px; height: 30px; padding: 0; border: 1px solid var(--line); border-radius: 50%; background: transparent; color: var(--ink-2); font: inherit; font-size: .8125rem; font-weight: 600; cursor: pointer; }
@@ -986,6 +987,7 @@ label.f { display: block; font-size: .85em; font-weight: 600; margin: 12px 0 4px
 .wrapup label { font-weight: 600; font-size: .92em; display: block; margin-bottom: .3em; }
 .wrapup .field { font-size: 1em; }
 .end-btns { display: flex; flex-direction: column; gap: 10px; margin-top: 12px; }
+.end-btns.row { flex-direction: row-reverse; } .end-btns.row .btn { flex: 1; min-height: 44px; }
 .end-btns .btn { min-height: 52px; text-decoration: none; }
 @media (min-width: 640px) { .end-btns { flex-direction: row-reverse; } .end-btns .btn { flex: 1; } }
 .keep-form { display: flex; flex-direction: column; gap: 14px; margin-top: 1.1em; }
@@ -1987,7 +1989,7 @@ const currentView = () => parseHash().v;
 // ── 이번 주 ──
 function lessonOf(sel) {
   const b = DATA.books.find(x => x.id === sel.book), l = b.lessons.find(x => x.no === sel.no);
-  return { id: sel.book + ':' + l.no, book: b.title, period: b.period, no: l.no, title: `제${l.no}과 · ${l.name}`, ref: l.ref, date: l.date, intro: l.intro || '' };
+  return { id: sel.book + ':' + l.no, book: b.title, period: b.period, no: l.no, title: `[제${l.no}과] ${l.name}`, ref: l.ref, date: l.date, intro: l.intro || '' };
 }
 const thisLesson = () => lessonOf(weekSel());
 function keepCard() {
@@ -3180,7 +3182,7 @@ function ppTocHtml(b) {
 // 진행 준비의 모임장용 인쇄(#prepprint): 이번 주 과에 해설과 내 진행 메모(이 기기의 내 것만)
 function prepSource() {
   const L = thisLesson();
-  return { book: L.book, no: L.no, name: L.title.replace(/^제\d+과 · /, ''), ref: L.ref, intro: L.intro, useText: false, text: '', fs: 'm', wrap: '', guide: G.guide, stages: G.stages, triple: G.triple || [] };
+  return { book: L.book, no: L.no, name: L.title.replace(/^\[제\d+과\] /, ''), ref: L.ref, intro: L.intro, useText: false, text: '', fs: 'm', wrap: '', guide: G.guide, stages: G.stages, triple: G.triple || [] };
 }
 const prepPrintOpts = () => ({ leader: true, space: 'mid', memo: key => readMemo()[key] || '' });
 function prepPrintView() {
@@ -3815,7 +3817,7 @@ function touchLive(lessonId, patch) {
   const row = {
     ...old,
     book: lesson ? book.title : (old.book || ''),
-    title: lesson ? `제${lesson.no}과 · ${lesson.name}` : (old.title || ''),
+    title: lesson ? `[제${lesson.no}과] ${lesson.name}` : (old.title || ''),
     ref: lesson ? lesson.ref : (old.ref || ''),
     year: fresh ? now.getFullYear() : old.year,
     month: fresh ? now.getMonth() + 1 : old.month,
@@ -3853,6 +3855,7 @@ function saveKeepRead(fromBlur) {
 let answers = {}, BM = null, readResume = false, reflow = false;
 // 책장에서 펼치면 어느 책에서 왔는지(교재 id). 위쪽 돌아가기와 맨 끝의 돌아가기가 그 책의 과 목차로 이어진다(설계서 M-04). 이번 주에서 오면 비어 있고 이번 주로 돌아간다
 let readFrom = '', readAsMember = false;
+const readTab = () => readAsMember ? 'share' : readFrom ? 'shelf' : 'week';
 let shareAuto = false;
 const readBack = () => { if (readAsMember) return { href: '#prep', name: '진행 준비' }; const b = readFrom && DATA.books.find(x => x.id === readFrom); return b ? { href: '#book-' + b.id, name: bTitle(b) } : { href: '#shelf', name: '책장' }; };
 const editing = new Set(), status = {}, timers = {}, expanded = new Set();
@@ -3964,7 +3967,7 @@ function wrapHtml() {
       <p class="hint" id="kStatus" aria-live="polite" hidden><button type="button" class="quiet-link retry" data-act="keep-retry">저장하지 못했어요 · 다시 시도</button></p>
     </div>
   </section>
-  <div class="end-btns"><a class="btn" href="${readBack().href}">돌아가기</a><a class="btn ghost" href="#share">나눔하기</a></div>`;
+  <div class="end-btns row"><a class="btn" href="${readBack().href}">돌아가기</a><a class="btn ghost" href="#share">나눔하기</a></div>`;
 }
 function tocHtml() {
   let h = '';
@@ -4025,9 +4028,8 @@ function readView() {
       <section class="card today read-head rg-head" aria-labelledby="lessonTitle">
         <p class="lesson-book">${bookHtml()}</p>
         <h2 class="lesson-title" id="lessonTitle">${esc(L.title)}</h2>
-        <div class="read-scripture"><span class="passage-chip">${esc(L.ref)}</span>${bibleUrl(L.ref) ? `<a class="quiet-link" href="${esc(bibleUrl(L.ref))}" target="_blank" rel="noopener" aria-label="${esc(L.ref)} 성경 펴기 (새 창)">성경 펴기 ›</a>` : ''}</div>
+        <div class="read-scripture"><span class="passage-chip">${esc(L.ref)}</span>${bibleUrl(L.ref) ? `<a class="quiet-link" href="${esc(bibleUrl(L.ref))}" target="_blank" rel="noopener" aria-label="${esc(L.ref)} 성경 펴기 (새 창)">성경 펴기 ›</a>` : ''}${D.role === 'leader' && !readAsMember && nextNo() ? '<button class="quiet-link" type="button" data-act="cm-next">다음 과로 ›</button>' : ''}</div>
         ${readAsMember ? '<p class="fine">회원에게 보이는 모습이에요. 해설은 보이지 않아요.</p>' : ''}
-        <p class="fine">쓰지 않아도 괜찮아요. 미리 생각을 남기고 싶은 질문에만 남겨요.</p>
       </section>
       <section class="card toc rg-toc" aria-label="단계 목록">
         <button class="toc-btn" type="button" id="tocBtn" data-act="toc" aria-expanded="false" aria-controls="tocList"><span class="l">${ic('list')}단계 목록</span>${ic('chev', 'ch')}</button>
@@ -4147,9 +4149,8 @@ function shareView() {
     <section class="card today" aria-labelledby="lessonTitle">
       <p class="lesson-book">${bookHtml()}</p>
       <h2 class="lesson-title" id="lessonTitle">${esc(L.title)}</h2>
-      <span class="passage-chip">${esc(L.ref)}</span>
-      <button class="quiet-link" type="button" data-act="share-pick">다른 과 고르기</button>
-      ${isLead() ? '<button class="btn ghost" type="button" data-act="prep">진행 준비</button>' : ''}
+      <div class="read-scripture"><span class="passage-chip">${esc(L.ref)}</span><button class="quiet-link" type="button" data-act="share-pick">다른 과 고르기 ›</button></div>
+      ${isLead() ? `<div class="share-lead-row"><button class="btn ghost" type="button" data-act="prep">진행 준비</button>${D.role === 'leader' && nextNo() ? '<button class="quiet-link" type="button" data-act="cm-next">다음 과로 ›</button>' : ''}</div>` : ''}
     </section>
     <section class="card" aria-label="나눔 설정">
       <div class="opt">
@@ -4307,7 +4308,8 @@ function renderStep() {
   } else if (s.t === 'done') {
     if (LIVE) touchLive(thisLesson().id, { shared: true }); else ls.set(K.shareDone, '1');   // 나눔하기를 끝까지 넘겼다: 이때부터 내 기록에 이번 주 기록이 나타난다
     html = `<div class="st-in center">${bookmarkSvg()}<div class="center">${bookHtml(true)}</div><h1 class="h2d" style="margin:.5em 0 0;font-size:1.2em">오늘 나눈 말씀 · ${esc(L.ref)}</h1>
-      <div class="done-btns"><button class="btn" type="button" data-act="pray">${ic('cord')}함께 기도하기 → 코이데로 이동</button><button class="btn ghost" type="button" data-act="finish">마치기</button></div></div>`;
+      <div class="done-btns"><button class="btn" type="button" data-act="pray">${ic('cord')}함께 기도하기 → 코이데로 이동</button><button class="btn ghost" type="button" data-act="finish">마치기</button></div>
+      ${D.role !== 'leader' ? '<p class="hint">다음 과는 모임장이 열어요</p>' : nextNo() ? '<button class="quiet-link" type="button" data-act="cm-next">다음 과로 넘어가기</button>' : ''}</div>`;
   }
   if (s.t !== 'q') body.className = 'st-body';
   body.innerHTML = html; body.scrollTop = 0;
@@ -4348,6 +4350,14 @@ const weekSel = () => {
 };
 const shelfBooks = () => DATA.books;
 const bookById = id => shelfBooks().find(b => b.id === id);
+// 다음 과는 지금 공동체가 읽는 과를 기준으로 찾는다(나눔에서 따로 고른 과가 아니다).
+const nextNo = () => { const g = cmCur(), b = g && bookById(g.book); if (!b) return 0; const nos = b.lessons.map(l => l.no).sort((a, c) => a - c); const i = nos.indexOf(g.no); return i >= 0 && i < nos.length - 1 ? nos[i + 1] : 0; };
+// 책에서 과를 고르거나 다음 과로 넘길 때 같은 확인 창을 쓴다.
+function cmNowSheet(no) {
+  const g = cmCur(), b = g && bookById(g.book), l = b && b.lessons.find(x => x.no === no);
+  if (D.role !== 'leader' || !l) return;
+    openSheet(sheetHead('지금 읽는 과') + `<p>제${l.no}과 · ${esc(l.name || '(제목 없음)')}을(를) 공동체가 지금 읽는 과로 정할까요?</p><p class="hint">공동체 사람 모두의 이번 주와 나눔하기가 이 과로 바뀌어요.</p><div class="set-btns"><button class="btn ghost" type="button" data-act="pop-close">그만두기</button><button class="btn" type="button" data-act="cm-now-do" data-no="${l.no}">정하기</button></div>`);
+}
 const cmMine = b => cmOwn().books.includes(b);   // 이 공동체의 모임장이 쓴 교재인가
 const bTitle = b => (b.id === 'john' && D.longTitle ? LONG_JOHN : b.title);
 // 같은 상징·색 조합으로 지금 읽는 책과 교재 목록의 표지를 그린다. 없거나 알 수 없는 값은 세 겹 끈·종이색으로 대신한다
@@ -4875,7 +4885,7 @@ let vtV = '', vtArg = '', vtNow = false, vtCur = null, vtTap = 0, vtUA = false;
 const vtIOS = /iP(hone|ad|od)/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
 ['click', 'keydown'].forEach(t => document.addEventListener(t, () => { vtTap = Date.now(); }, true));
 if (window.navigation && typeof navigation.addEventListener === 'function') navigation.addEventListener('navigate', e => { vtUA = !!e.hasUAVisualTransition; });
-const vtTab = v => v === 'week' ? 'week' : PLACE[v] ? PLACE[v][1] : '';
+const vtTab = v => v === 'read' ? readTab() : v === 'week' ? 'week' : PLACE[v] ? PLACE[v][1] : '';
 function vtDepth(v, arg) {
   if (v === 'manage') return !arg ? 1 : /^mb-/.test(arg) ? 2 : 3;   // 교재 관리 → 교재 → 과·인쇄
   if (v === 'shelf' || v === 'record') return !arg ? 0 : isAllArg(arg) ? 1 : 2;   // 책장 → 모두 보기 → 책 안, 내 기록 → 기록 상세
@@ -4954,7 +4964,7 @@ function drawRoute(moved) {
   const film = start && !!$('#view .welcome');   // 첫 화면(로그인 전)일 때만 영상. 첫 접속의 다음 걸음들에는 없다
   document.body.classList.toggle('wl-on', film); wlFilm(film);
   afMount(v === 'about');   // 디다코 소개일 때만 맨 위 영상
-  const tab = start ? '' : v === 'week' ? 'week' : PLACE[v][1];
+  const tab = start ? '' : v === 'read' ? readTab() : v === 'week' ? 'week' : PLACE[v][1];
   $$('[data-tab]').forEach(a => { const on = a.dataset.tab === tab; a.classList.toggle('on', on); on ? a.setAttribute('aria-current', 'page') : a.removeAttribute('aria-current'); });
   document.title = start ? '디다코' : (v === 'shelf' && arg ? (isAllArg(arg) ? SHELF_GROUPS.find(g => g[0] === arg.slice(4))[1] : bTitle(bookById(arg))) : v === 'record' && arg ? '기록 상세' : v === 'week' ? '이번 주' : PLACE[v][0]) + ' · 디다코';
   paintBadge(); $('#badge').hidden = start;
@@ -5154,8 +5164,12 @@ const acts = {
   },
   'lesson-other'(e, el) {
     const g = cmCur(), no = Number(el.dataset.no), b = bookById(el.dataset.book), l = b && b.lessons.find(x => x.no === no);
-    if (D.role !== 'leader' || !l || b.id !== g.book) { toast(b && b.id === g.book ? '지금 읽는 과만 펼칠 수 있어요. 지난 과는 나눔하기의 다른 과 고르기에서 골라요' : '지금 읽는 책의 과만 펼칠 수 있어요'); return; }
-    openSheet(sheetHead('지금 읽는 과') + `<p>제${l.no}과 · ${esc(l.name || '(제목 없음)')}을(를) 공동체가 지금 읽는 과로 정할까요?</p><p class="hint">공동체 사람 모두의 이번 주와 나눔하기가 이 과로 바뀌어요.</p><div class="set-btns"><button class="btn ghost" type="button" data-act="pop-close">그만두기</button><button class="btn" type="button" data-act="cm-now-do" data-no="${l.no}">정하기</button></div>`);
+    if (D.role !== 'leader' || !l || !g || b.id !== g.book) { toast(b && g && b.id === g.book ? '지금 읽는 과만 펼칠 수 있어요. 지난 과는 나눔하기의 다른 과 고르기에서 골라요' : '지금 읽는 책의 과만 펼칠 수 있어요'); return; }
+    cmNowSheet(no);
+  },
+  'cm-next'() {
+    const no = D.role === 'leader' ? nextNo() : 0;
+    if (no) cmNowSheet(no);
   },
   // 내 기록
   'rec-prev'() { recStep(-1); }, 'rec-next'() { recStep(1); },
