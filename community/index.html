@@ -207,6 +207,9 @@ textarea.field { resize: vertical; line-height: 1.55; overflow-y: hidden; }
 ::view-transition-group(topbar), ::view-transition-group(tabs) { animation: none; }
 ::view-transition-old(topbar), ::view-transition-old(tabs) { animation: none; opacity: 0; }
 ::view-transition-new(topbar), ::view-transition-new(tabs) { animation: none; }
+/* 말씀을 열며는 넘기는 동안에도 위쪽 바·하단 탭보다 위에 바로 덮는다(나눔하기처럼 메뉴가 곧바로 가려진다) */
+:root[data-vt] #opening:not([hidden]) { view-transition-name: opening; }
+::view-transition-group(opening), ::view-transition-new(opening) { animation: none; }
 :root[data-vt="vt-push"] { --vt-in: 40px; --vt-out: -24px; }
 :root[data-vt="vt-pop"] { --vt-in: -28px; --vt-out: 24px; }
 :root[data-vt="vt-in-r"] { --vt-in: 14px; --vt-out: -10px; }
@@ -933,6 +936,7 @@ label.f { display: block; font-size: .85em; font-weight: 600; margin: 12px 0 4px
 .stage-h { font-family: var(--f-display); font-size: 1.1em; margin: 12px 2px 0; }
 .stage-sec:first-child .stage-h { margin-top: 2px; }
 .r-t { white-space: pre-line; line-height: 1.75; word-break: keep-all; margin: .3em 0 0; }
+@media (min-width: 760px) { .r-t { text-align: justify; } }   /* 읽을 글: 휴대폰은 왼쪽 정렬, 아이패드·PC는 양쪽 정렬 */
 
 .md > :first-child { margin-top: 0; }
 .md p { margin: .6em 0 0; }
@@ -1134,6 +1138,8 @@ body.sharing { overflow: hidden; }
 .sh-body { min-width: 0; }
 .sh-kind { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; }
 .sh-lesson { margin-top: 4px; line-height: 1.5; }
+.sh-cap { display: block; font-size: calc(var(--base) * .75); color: var(--ink-2); }   /* 지금 읽는 책 카드의 '이번 주' 작은 이름표 */
+.sh-cap-t { display: block; color: var(--ink); }   /* 그 아래 과 제목 */
 .sh-date { margin-top: 2px; }
 .sh-actions { grid-column: 2; display: flex; flex-wrap: wrap; gap: 6px; }
 .sh-actions .btn { min-height: 36px; padding: 0 .8em; font-size: .88em; border-radius: 10px; }
@@ -4427,7 +4433,7 @@ const pastBooks = () => shelfBooks().filter(b => b.id !== myBookId()).sort((a, b
 function capOf(b) {
   const w = weekSel();
   const c = b.id === w.book ? b.lessons.find(l => l.no === w.no) : null;
-  return c ? { lead: '이번 주', text: `제${c.no}과 ${c.name}`, date: c.date || DATA.thisWeek.date } : null;
+  return c ? { lead: '이번 주', text: `[제${c.no}과] ${c.name}`, date: c.date || DATA.thisWeek.date } : null;
 }
 // 아직 회원에게 열리지 않은 과(준비 중)는 목차에 넣지 않는다
 const tocLessons = b => b.lessons.filter(l => l.state !== 'prep' && !l.hold);
@@ -4445,7 +4451,7 @@ function coverHtml(b) {
     <div class="sh-body">
       <div class="sh-sm sh-kind"><span class="walk-tag">${esc(b.kind)}</span><span>${esc(b.period)}</span></div>
       <div class="sf xct" style="margin-top:4px">${esc(bTitle(b))}</div>
-      ${weekHidden() ? '<div class="sh-sm sh-lesson">이번 주 과를 준비하고 있어요</div>' : c ? `<div class="sh-sm sh-lesson">${esc(c.lead)} ${esc(c.text)}</div><div class="sh-sm sh-date">${esc(c.date)}</div>` : ''}
+      ${weekHidden() ? '<div class="sh-sm sh-lesson">이번 주 과를 준비하고 있어요</div>' : c ? `<div class="sh-sm sh-lesson"><span class="sh-cap">${esc(c.lead)}</span><span class="sh-cap-t">${esc(c.text)}</span></div><div class="sh-sm sh-date">${esc(c.date)}</div>` : ''}
       ${dotsHtml(b)}
     </div>
     <div class="sh-actions">
