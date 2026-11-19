@@ -1117,6 +1117,7 @@ body.fs .xw-top { padding-right: 52px; }   /* 시안 보기 설정(톱니)이 �
 <script src="map-places.js"></script>
 <script src="demo-data.js"></script>
 <script src="guide.js"></script>
+<script src="usage.js"></script>
 <script>
 // 새 길(Supabase) 로그인에서 돌아오는 길(?code=): 노트 자리를 정하기 전에 먼저 세션을 받고, 기기에는 사용자 id의 해시 앞 16자만 적어 둔 뒤 주소를 정리해 다시 연다(코이데 노트와 같다).
 //  다시 열린 화면이 그 해시로 내 노트 자리(주인 'sb:해시')를 정한다. 이 일이 도는 동안 아래 노트 스크립트는 아무것도 하지 않는다(시작 화면도 그대로).
@@ -1592,7 +1593,7 @@ function saveTodayAnswer(key) {
   const area = $('#todayAnswerText'); if (!area) return;
   const text = area.value.slice(0, 1000), first = !thisAnswer(key) && !!text.trim();
   setMine(todayAnswerId(key), text);
-  if (first) markStay();
+  if (first) { markStay(); UZ.track('answer', { once: 'a:' + todayAnswerId(key) }); }   // 사용 기록: 오늘의 질문에 처음 대답했다(글은 보내지 않는다)
   closeSheet();
   render();
   toast('저장했어요');
@@ -3993,6 +3994,7 @@ function render(fromHash, still) {
   if (fromHash) { closeMenus(); closeSheet(true); hideOpening(true); clearTimeout(toastT); $('#toast').hidden = true; }   // 화면을 옮기면 떠 있던 알림은 바로 숨긴다
   const oldList = $('.t8-list'), listTop = oldList ? oldList.scrollTop : 0;   // 넓은 화면 지난 질문 목록의 스크롤은 같은 목록 화면끼리 옮길 때 그대로 둔다
   keepImgs($('#main'), viewOf(key)());
+  usageNote(key);
   const film = key === 'start' && !!$('#main .ob-start');   // 첫 화면(로그인 전)일 때만 영상. 교회 코드·이름·동의 걸음에는 없다
   document.body.classList.toggle('wl-on', film); wlFilm(film);
   afMount(key === 'more/about');   // 디다코 소개일 때만 맨 위 영상
@@ -4246,7 +4248,7 @@ const acts = {
   'need-sync'() { toast('동기화를 먼저 켜 주세요'); },
   disp() { dispOpen = !dispOpen; render(); const b = $('[data-act="disp"]'); if (b) b.focus({ preventScroll: true }); },
   a2hs() { a2hsSheet(); },
-  usageoff() { try { if (usageOff()) localStorage.removeItem(USAGE_OFF); else localStorage.setItem(USAGE_OFF, '1'); } catch (e) { /* 저장하지 못하면 그대로 */ } render(); },
+  usageoff() { try { if (usageOff()) localStorage.removeItem(USAGE_OFF); else { localStorage.setItem(USAGE_OFF, '1'); UZ.clear(); } } catch (e) { /* 저장하지 못하면 그대로 */ } render(); },
   a2hsos(e, el) { a2hsOs = el.dataset.v; a2hsSheet(); },
   logout() { confirmSheet('로그아웃할까요?', '다시 들어올 때는 카카오로 로그인해요. 맡긴 기록은 비밀 문구로 다시 열 수 있어요.', '그만두기', '로그아웃', 'logout-go'); },
   'logout-go'() { resetAll(); },
@@ -4534,6 +4536,30 @@ async function sbFetch(path, opt) {
   if (sm) throw { code: sm[1], message: sm[2] };
   if (!res.ok) throw { code: 'bad', message: '서버가 받지 못했어요. 잠시 뒤 다시 해 주세요.' };
   return { body, who };
+}
+// 사용 기록(설계서 3장 "사용 기록에 담을 것", 결정 기록 2026-11-19): 행동 이름만 usage.js가 모아 두었다가 묶어서 usage_track(supabase/016)으로 보낸다.
+//  보내는 때는 셋이 모두 맞을 때뿐이다: 새 길(Supabase)로 로그인해 있고(ok) · 데모·따라 하기(?tutorial)·?demo가 아니고(LIVE) · 앱 설정 "이용 통계 보내기"가 켜져 있다. 예전 길(Apps Script)에서는 보내지 않는다.
+//  글·질문·발견·묵상 내용은 어디에도 넣지 않는다. 사용 기록 요청은 실패해도 앱에 아무 일도 없어야 하므로 sbFetch(로그인이 풀리면 시작 화면으로 보내는 길)를 쓰지 않고 따로 부른다.
+async function usageRpc(name, args) {
+  const s = await sbSession();
+  if (!s) throw { code: 'login' };
+  const ctl = new AbortController(), stop = setTimeout(() => ctl.abort(), 20000);
+  let res, body = null;
+  try { res = await fetch(SB_URL() + '/rest/v1/rpc/' + encodeURIComponent(name), { method: 'POST', signal: ctl.signal, headers: { apikey: CFG.SUPABASE_KEY, Authorization: 'Bearer ' + s.access_token, 'Content-Type': 'application/json' }, body: JSON.stringify(args || {}) }); }
+  catch (_) { throw { code: 'net' }; }
+  finally { clearTimeout(stop); }
+  try { body = await res.json(); } catch (_) { body = null; }
+  if (res.status === 401 || res.status === 403) throw { code: 'login' };
+  if (!res.ok) throw { code: body && /^bad:/.test(String(body.message || '')) ? 'bad' : 'net' };
+  return body;
+}
+const UZ = window.DidakoUsage || { init() {}, track() {}, open() {}, timed() {}, dayDiff() { return null; }, flush() {}, clear() {} };
+UZ.init({ prefix: 'note', cache: 'didako-note-v', ok: () => LIVE && SB_CFG && sbMode() && liveReady && !!me, who: () => ls.get(SBH) || '', rpc: usageRpc });
+// 화면을 그릴 때마다: 앱 열기(하루 한 번), 지난 질문·묵상 모아 보기·나의 대답을 열었는지(하루 한 번)
+const USAGE_VIEW = [[/^today\/past(\/\d{4}-\d{2})?$/, 'view-past'], [/^mine\/journal$/, 'view-journal'], [/^mine\/answers$/, 'view-answers']];
+function usageNote(key) {
+  if (!LIVE) return;
+  try { UZ.open(); const v = USAGE_VIEW.find(x => x[0].test(key)); if (v) UZ.track(v[1], { daily: v[1] }); } catch (e) { /* 기록 못 해도 앱은 그대로 */ }
 }
 // 노트 보관함 요청 셋(noteGet · notePut · noteKeys). 예전 길이면 noteApi 그대로, 새 길이면 Supabase 표·함수로 같은 모양의 답을 돌려준다. force는 길을 정해 부를 때만(옮기기)
 async function vaultApi(action, data, force) {

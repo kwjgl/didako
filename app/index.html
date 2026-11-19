@@ -611,6 +611,28 @@ label.f { display: block; font-size: .85em; font-weight: 600; margin: 12px 0 4px
 .seg2 button { font-size: .8em; border: 0; border-radius: 8px; padding: .3em 1em; min-height: 44px; background: transparent; color: var(--ink-2); cursor: pointer; }
 .seg2 button.on { background: var(--surface); color: var(--ink); font-weight: 600; box-shadow: 0 1px 3px var(--shadow); }
 .admin-seg { max-width: 320px; margin: 0 0 14px; }
+/* ── 교역자 홈(S-01, 2026-11-19): 코이데 목사님 홈(.home-grid·.stats·.room-board·.room-sum)의 짜임을 옮겼다. 앱에 이미 있는 이름과 겹치지 않게 sf-로 시작한다. 새 색은 없다 ── */
+.sf-grid { display: grid; gap: 14px; align-items: start; margin-top: 12px; }
+.sf-grid .col { display: flex; flex-direction: column; gap: 12px; min-width: 0; }
+.sf-grid .col > .card { margin: 0; }
+@media (max-width: 999px) { .sf-grid { gap: 0; } .sf-grid .side { padding-bottom: 22px; margin-bottom: 22px; border-bottom: 1px solid var(--line-strong); } }
+@media (min-width: 1000px) {
+  .sf-grid { grid-template-columns: minmax(0, 1fr) 340px; gap: 24px; }
+  .sf-grid .side { grid-column: 2; grid-row: 1; }
+  .sf-grid .main { grid-column: 1; grid-row: 1; }
+}
+.sf-seg { max-width: 320px; margin: 0 0 6px; }
+.sf-stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; text-align: center; }
+.sf-stat b { display: block; font-size: 1.6em; font-weight: 600; font-variant-numeric: tabular-nums; }
+.sf-stat span { font-size: .78em; color: var(--ink-2); }
+.sf-title { font-size: .9em; font-weight: 600; color: var(--ink-2); margin: 8px 2px 0; }
+.sf-board { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 12px; }
+.sf-room { font: inherit; color: inherit; text-align: left; cursor: pointer; display: flex; flex-direction: column; gap: 8px; width: 100%; margin: 0; }
+.sf-room .sf-row { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.sf-room .sf-row .ic { width: 1em; height: 1em; color: var(--ink-2); flex: none; }
+.sf-room .hint { margin: 0; }
+.sf-week { display: flex; flex-wrap: wrap; align-items: center; gap: .3em .6em; font-size: .92em; }
+.sf-week b { font-weight: 600; }
 .more-h { font-size: .8em; font-weight: 600; color: var(--ink-2); margin: 6px 4px -4px; letter-spacing: .02em; }
 .folds { padding-top: 0; padding-bottom: 0; }
 .ad-fold + .ad-fold { border-top: 1px solid var(--line); }
@@ -1548,6 +1570,7 @@ html.tutorial .demo-tag { display: none !important; }
 <script src="../community/book-jesus-walk.js"></script>
 <script src="../note/guide.js"></script>
 <script src="../note/places.js"></script>
+<script src="../note/usage.js"></script>
 <script>
 (() => {
 'use strict';
@@ -1708,7 +1731,7 @@ function applySettings() {
 // 배지 규칙: 회원·리더는 "2-20 사랑방", 목사님·관리자는 "청장년부" + 역할 이름표
 const isTop = () => D.role === 'pastor' || D.role === 'admin';
 const groupName = () => LIVE ? liveGroupName() : (isTop() ? DATA.church.dept : DATA.church.room);
-// 실제 모드에서는 서버가 알려 준 직분(목사님·전도사님, 리더·코리더)을 그대로 보인다. 직분이 비었거나 '회원'으로 오면(옛 자료 등) 역할 이름(목사님·리더)으로 둔다
+// 실제 모드에서는 서버가 알려 준 직분(목사님·전도사님·장로님, 리더·코리더)을 그대로 보인다. 직분이 비었거나 '회원'으로 오면(옛 자료 등) 역할 이름(목사님·리더)으로 둔다
 const roleName = () => LIVE && LV.me && LV.me.role && LV.me.role !== '회원' && (D.role === 'pastor' || D.role === 'leader') ? LV.me.role : ROLES.find(x => x[0] === D.role)[1];
 function paintBadge() {
   $('#badge').innerHTML = `<span class="badge-name">${esc(groupName())}</span><span class="role-tag${D.role === 'leader' ? ' leader' : isTop() ? ' admin' : ''}">${esc(roleName())}</span>`;
@@ -1784,7 +1807,7 @@ function closeMenu() { const m = $('#settings'); m.hidden = true; $('#gearBtn').
 // ── 화면 이름표 ──
 // 이름표와 어느 탭이 켜지는지는 여기에 모아 둔다. 아직 만들지 않은 화면은 차분한 안내 한 장으로 연다(막다른 길이 없게 이번 주로 가는 링크를 둔다)
 const PLACE = {
-  wq: ['이번 주의 질문', 'week'], read: ['펼치기', 'week'], share: ['나눔하기', 'share'], shelf: ['책장', 'shelf'], record: ['내 기록', 'record'], records: ['모든 기록', 'record'], found: ['찾은 말씀', 'record'], gallery: ['올해의 그림', 'record'], rooms: ['사랑방 전체 보기', 'more'], more: ['더보기', 'more'],
+  wq: ['이번 주의 질문', 'week'], read: ['펼치기', 'week'], share: ['나눔하기', 'share'], shelf: ['책장', 'shelf'], record: ['내 기록', 'record'], records: ['모든 기록', 'record'], found: ['찾은 말씀', 'record'], gallery: ['올해의 그림', 'record'], staff: ['교역자 홈', 'week'], rooms: ['사랑방 전체 보기', 'more'], more: ['더보기', 'more'],
   church: ['우리 사랑방', 'more'], prep: ['진행 준비', 'share'], prepprint: ['인쇄', 'share'], manage: ['교재 관리', 'more'], admin: ['관리', 'more'], 'admin-reorg': ['연도 개편', 'more'], 'church-admin': ['교회 전체', 'more'], about: ['디다코 소개', 'more'], guide: ['사용법', 'more'], feedback: ['의견 보내기', 'more']
 };
 const VIEWS = ['start', 'week'].concat(Object.keys(PLACE));
@@ -1925,6 +1948,50 @@ function walkFoundWeek(w, read, today, alone) {
       <a class="quiet-link" href="#found">찾은 말씀 모아 보기 ›</a>`;
   return alone ? `<section class="card"><div class="walk-found alone">${body}</div></section>` : `<div class="walk-found">${body}</div>`;
 }
+// ── 교역자 홈(S-01, 2026-11-19) ──
+// 교역자(목사님·전도사님·장로님, 역할 pastor)가 들어오면 첫 탭(이번 주) 자리에서 여는 부서 운영 화면이다. 코이데 목사님 홈(staffHomeView)을 본떴다.
+// 부서 합계(사랑방·가정·연결된 사람)와 사랑방별 이번 주 과(리더·코리더, 제N과, 공개 범위)만 보인다. 잠긴 기록(답변·묵상·쓴 사람·쓴 횟수)과 사랑방끼리 견주는 막대·숫자·순위는 없다.
+// 이번 주(이번 주의 질문) 화면도 교역자가 쓴다(교역자도 한 회원으로 GBS를 한다, 철학 ⑪). 첫 탭 안에서 위쪽 [교역자 홈 | 이번 주]로 오간다.
+// 예전 길(Apps Script)은 바꾸지 않아 교역자 홈이 없다(첫 탭은 지금처럼 이번 주). 데모와 새 길(CHURCH_ON)에서만 쓴다.
+const staffHomeOn = () => D.role === 'pastor' && (!LIVE || CHURCH_ON);
+const homeV = () => (staffHomeOn() ? 'staff' : 'week');
+const staffSeg = cur => `<div class="seg2 sf-seg" role="group" aria-label="첫 화면 고르기">${[['staff', '교역자 홈'], ['week', '이번 주']].map(([k, l]) => `<button type="button" class="${cur === k ? 'on' : ''}" data-act="staff-go" data-v="${k}" aria-pressed="${cur === k}">${l}</button>`).join('')}</div>`;
+// 지금 읽는 교재의 이번 주 과 하나: 번호·제목·공개 범위(준비 중·리더까지·모두). 교재는 부서마다 내리므로 같은 부서 사랑방은 모두 같은 과를 한다
+function staffLesson() {
+  const b = bookById(myBookId());
+  if (!b) return null;
+  const l = b.lessons.find(x => x.state === 'now');
+  if (!l) return { book: b.title };
+  return l.hold ? { book: b.title, no: l.no, name: '', st: 'draft' } : { book: b.title, no: l.no, name: l.name, st: mgStatus(b, l) };
+}
+function staffHomeView() {
+  const head = `<p class="eyebrow top-eyebrow">${esc(groupName())} 전체 · 교역자 홈</p><div class="page-top"><h1>이번 주 ${HEAD_ICON.calendar}</h1></div>${staffSeg('staff')}`;
+  if (ADL) {   // 새 길: 사랑방·리더·가정·연결은 서버(didako_ch_dept_rooms)가 준다. 받기 전에는 "불러오고 있어요"
+    if (!LA.ready.rooms) {
+      if (!LA.work.rooms && !LA.err.rooms) adlLoad('rooms');
+      return `${head}<section class="card calm" style="margin-top:12px"><p class="calm-t">${LA.err.rooms ? '불러오지 못했어요' : '불러오고 있어요'}</p>${LA.err.rooms ? `<p class="soft" style="margin:0">${esc(LA.err.rooms)}</p><button class="btn ghost" type="button" data-act="adl-reload" data-v="rooms">다시 불러오기</button>` : ''}</section>`;
+    }
+  }
+  const d = adDept() || { name: '', group: '사랑방', unit: 'family', rooms: [] }, rooms = d.rooms, g = d.group || '사랑방', solo = adSolo(d);
+  const fams = rooms.reduce((n, r) => n + r.fams.length, 0), linked = rooms.reduce((n, r) => n + adRoomN(r), 0);
+  const stat = (n, l) => `<div class="sf-stat"><b>${n}</b><span>${esc(l)}</span></div>`;
+  const wk = staffLesson();
+  const lesson = !wk ? '<span class="hint">이번 주 교재가 없어요</span>'
+    : wk.no == null ? '<span class="hint">이번 주 과가 없어요</span>'
+    : `<span class="sf-week"><b>제${wk.no}과</b>${wk.name ? `<span>${esc(wk.name)}</span>` : '<span class="hint">준비하고 있어요</span>'}<span class="kid${wk.st === 'leader' ? ' lead' : ''}">${esc(STATUS.find(x => x[0] === wk.st)[1])}</span></span>`;
+  const jump = (href, name) => `<a class="gr" href="${href}"><span class="gt"><b>${name}</b></span><span class="ch" aria-hidden="true">›</span></a>`;
+  return `${head}
+    <div class="sf-grid"><div class="col side">
+      <section class="card"><div class="sf-stats">${stat(rooms.length, g)}${stat(fams, solo ? '사람' : '가정')}${stat(linked, '연결된 사람')}</div></section>
+      <div><div class="gl" style="margin-top:0">바로 가기</div><div class="gc">${jump('#manage', '교재 관리')}${jump('#prep', '진행 준비')}${jump('#rooms', '사랑방 전체 보기')}</div></div>
+    </div><div class="col main">
+      <h2 class="sf-title">${esc(g)}별 이번 주${DidakoTip.btn(`${adJ(g, '을/를')} 누르면 그 ${g}의 ${solo ? '사람' : '가정'}과 연결 상태가 보여요. 공개 범위는 교재 관리에서 바꿔요.`, g + '별 이번 주')}${wk ? `<span class="hint" style="font-weight:400"> · ${esc(wk.book)}</span>` : ''}</h2>
+      ${rooms.length ? `<div class="sf-board">${rooms.map((r, i) => `<button class="card sf-room" type="button" data-act="rooms-open" data-i="${i}" aria-label="${esc(r.name)} 명단 보기"><span class="sf-row"><b>${esc(r.name)}</b>${ic('chevr')}</span>
+          <span class="hint">리더 ${esc(r.leader || '미지정')}${r.co ? ' · 코리더 ' + esc(r.co) : ''}</span>${lesson}</button>`).join('')}</div>`
+        : `<p class="hint">아직 ${esc(adJ(g, '이/가'))} 없어요.</p>`}
+      <p class="soft">${ic('lock')} 묵상 기록은 잠겨 있어서 교역자도 볼 수 없어요. 이름과 연결 상태, 이번 주 과만 보여요.</p>
+    </div></div>`;
+}
 function weekView() {
   const w = walkWeek(), today = walkToday(), selected = walkDay || today;
   const day = w.days.find(x => x.d === selected) || w.days[3];
@@ -1943,7 +2010,7 @@ function weekView() {
   lampNow = '';
   hiddenNow = '';
   return `<p class="eyebrow top-eyebrow">${esc(LIVE ? (ls.get(LK.name) || '') : DATA.admin.church)}</p>
-    <div class="page-top"><h1>이번 주 ${HEAD_ICON.calendar}</h1></div>
+    <div class="page-top"><h1>이번 주 ${HEAD_ICON.calendar}</h1></div>${staffHomeOn() ? staffSeg('week') : ''}
     <div class="week-grid"><div class="col">
     <section class="card walk-hero">
       <img src="${w.img}" alt="${esc(w.alt)}">
@@ -2020,6 +2087,10 @@ const LK = { hub: 'didako-hub-token', tok: 'didako-token', uid: 'didako-uid', ur
 // me: 서버가 알려 준 나의 정보, depts: 첫 접속에서 고르는 부서·사랑방 목록, booting: 켜지는 중, sbIn: 새 길(Supabase)로 로그인해 있는가
 // writer: 교재를 쓸 수 있는 사람인지, writeDepts: 새 교재의 대상으로 고를 수 있는 부서, hold: 못 받은 이번 주 즈음의 과(교재ID와 날짜), booksOk: 교재를 받았는지(2-3)
 const LV = { me: null, depts: null, join: null, epoch: 0, booting: false, authBusy: false, sbIn: false, needChurch: false, repick: false, notice: '', err: '', busy: false, work: null, want: '', writer: false, writeDepts: [], hold: [], booksOk: false, booksWork: null, eraseReq: null };
+// 사용 기록(설계서 3장 "사용 기록에 담을 것", 결정 기록 2026-11-19): 행동 이름과 날 수만 ../note/usage.js가 모아 두었다가 묶어서 usage_track(supabase/016)으로 보낸다.
+//  보내는 때는 셋이 모두 맞을 때뿐이다: 새 길로 로그인해 있고(ok) · 데모·따라 하기(?tutorial)·?demo가 아니고(LIVE) · 앱 설정 "이용 통계 보내기"가 켜져 있다. 글·이름·교회·사랑방·교재 이름은 어디에도 넣지 않는다.
+const UZ = window.DidakoUsage || { init() {}, track() {}, open() {}, timed() {}, dayDiff() { return null; }, flush() {}, clear() {} };
+UZ.init({ prefix: 'church', cache: 'didako-v', ok: () => LIVE && CHURCH_ON && LV.sbIn === true, who: () => String(ls.get('didako-note-owner') || '').replace(/^sb:/, ''), rpc: (name, args) => window.DidakoSb.rpc(name, args) });
 // 첫 접속에서 고르는 중인 것. byName은 이름을 써서 찾는 길, newFamily는 새로 왔어요
 const lvFresh = () => ({ deptId: '', roomId: '', staff: false, familyId: '', person: '', byName: false, newFamily: null });
 const ST = lvFresh();
@@ -2273,7 +2344,7 @@ function liveStep(arg) {
 const lvGo = step => goHash(step ? '#start/' + step : '#start');
 function goHash(h) { if (location.hash === h) route(true); else location.hash = h; }
 // 화면을 옮길 때 서버에서 새로 받을 것: 리더의 우리 사랑방(승인을 기다리는 요청과 명단)
-function liveEnter(v) { if ((v === 'church' || v === 'more') && liveLeads()) livePendLoad(); if (v === 'more' && eraseCan()) eraseLoad(); if (CHURCH_ON && ['admin', 'church-admin', 'rooms'].includes(v)) adlEnter(v); }
+function liveEnter(v) { if ((v === 'church' || v === 'more') && liveLeads()) livePendLoad(); if (v === 'more' && eraseCan()) eraseLoad(); if (CHURCH_ON && ['admin', 'church-admin', 'rooms'].includes(v)) adlEnter(v); if (CHURCH_ON && v === 'staff') adlEnter('rooms'); }
 function livePendLoad() {
   PEND.err = '';
   return api('pending').then(d => { PEND.data = d; }).catch(err => { if (!err.cancelled) PEND.err = err.code && err.message ? err.message : '서버가 답하지 않아요. 잠시 뒤 다시 해 주세요.'; })
@@ -2505,7 +2576,7 @@ function liveStartView(arg) {
   if (arg === 'room') {
     const d = lvDept(), many = (LV.depts || []).length > 1;
     return `<div class="col-n">${lvSteps(1)}<p class="eyebrow">${d.name ? esc(d.name) : '처음 한 번만 확인할게요'}</p><h1>어느 ${esc(lvGrp())}인가요?</h1>
-      <div class="choices">${d.rooms.map(r => `<button class="choice" type="button" data-act="lv-pick-room" data-v="${esc(r.id)}">${esc(r.name)}</button>`).join('')}${d.hasStaff ? '<button class="choice new" type="button" data-act="lv-staff">목사님·전도사님으로 들어가기</button>' : ''}</div>
+      <div class="choices">${d.rooms.map(r => `<button class="choice" type="button" data-act="lv-pick-room" data-v="${esc(r.id)}">${esc(r.name)}</button>`).join('')}${d.hasStaff ? '<button class="choice new" type="button" data-act="lv-staff">목사님·전도사님·장로님으로 들어가기</button>' : ''}</div>
       ${many ? lvBackBtn('dept') : lvFirstBack()}</div>`;
   }
   if (arg === 'family') {
@@ -2522,7 +2593,7 @@ function liveStartView(arg) {
       ${lvBackBtn('family')}</div>`;
   }
   // 이름: 카카오 닉네임이 아니라 실제 이름. 소그룹 초대 링크 없이 들어오면 가정 목록 대신 내 이름을 써서 찾는다(교인 명단을 보여 주지 않는다)
-  if (arg === 'name') return `<div class="col-n">${lvSteps(2)}<p class="eyebrow">${ST.staff ? esc(lvDept().name) + ' · 목사님·전도사님' : esc(lvRoom().name)}</p><h1>내 이름을 써 주세요${DidakoTip.btn(ST.staff ? '교역자 목록에 있는 이름과 같게 써요. 다른 분들의 이름은 보이지 않아요.' : `${lvGrp()} 명단에 있는 이름과 같게 써요.${lvSolo() ? '' : ' 가정이면 남편이나 아내 중 내 이름이에요.'} 다른 분들의 이름은 보이지 않아요.`, '내 이름')}</h1>
+  if (arg === 'name') return `<div class="col-n">${lvSteps(2)}<p class="eyebrow">${ST.staff ? esc(lvDept().name) + ' · 목사님·전도사님·장로님' : esc(lvRoom().name)}</p><h1>내 이름을 써 주세요${DidakoTip.btn(ST.staff ? '교역자 목록에 있는 이름과 같게 써요. 다른 분들의 이름은 보이지 않아요.' : `${lvGrp()} 명단에 있는 이름과 같게 써요.${lvSolo() ? '' : ' 가정이면 남편이나 아내 중 내 이름이에요.'} 다른 분들의 이름은 보이지 않아요.`, '내 이름')}</h1>
       <form data-lform="name" novalidate><input id="lvName" class="field" required maxlength="10" autocomplete="name" aria-label="내 이름" placeholder="예) 김하늘" value="${esc(ST.byName ? ST.person : '')}">
         <p class="msg" id="liveMsg" role="alert"></p>
         <button class="btn wide" type="submit">다음</button></form>
@@ -4250,7 +4321,7 @@ function adlLoad(v) {
     }
     LA.ready[v] = true;
   })().catch(err => { if (!err || err.cancelled) return; LA.err[v] = err.code && err.message ? err.message : '서버가 답하지 않아요. 잠시 뒤 다시 해 주세요.'; LA.ready[v] = false; })
-    .finally(() => { LA.work[v] = null; if (e === LV.epoch && currentView() === v) adRedraw(); });
+    .finally(() => { LA.work[v] = null; if (e === LV.epoch && (currentView() === v || (v === 'rooms' && currentView() === 'staff'))) adRedraw(); });   // 교역자 홈도 사랑방 자료(rooms)를 쓴다
   return LA.work[v];
 }
 // 데모에만 있는 칸(앱 상태·개인정보·변경 기록·의견함·교회 밖 모임 예시)은 비워 둔다
@@ -4374,7 +4445,7 @@ const adlStaffBody = () => {
     ${E ? `<form class="ad-pform ad-rs-form" data-adform="staff">
         <label class="ad-label" for="adSa">이름</label><input id="adSa" class="field" name="a" maxlength="10" required autocomplete="off" data-adin="a" value="${esc(E.a || '')}">
         <label class="ad-label" for="adSb">배우자 이름 (함께 섬기지 않으면 비워 두세요)</label><input id="adSb" class="field" name="b" maxlength="10" autocomplete="off" data-adin="b" value="${esc(E.b || '')}">
-        <label class="ad-label" for="adSt">직분</label><select id="adSt" class="field" name="t">${['목사님', '전도사님'].map(t => `<option value="${t}">${t}</option>`).join('')}</select>
+        <label class="ad-label" for="adSt">직분</label><select id="adSt" class="field" name="t">${['목사님', '전도사님', '장로님'].map(t => `<option value="${t}">${t}</option>`).join('')}</select>
         <div class="ad-acts"><button class="btn small" type="submit">더하기</button><button class="btn small ghost" type="button" data-act="ad-redit" data-v="">취소</button></div></form>`
       : `<div class="ad-acts"><button class="btn small ghost" type="button" data-act="ad-redit" data-v="staff|">+ 교역자 더하기</button></div>`}
     <p class="hint">교역자는 교회 관리자가 정해요. 교역자가 연결을 신청하면 위 할 일에 보여요.</p>`;
@@ -4595,10 +4666,45 @@ function readKeep() {
   const row = readLive()[thisLesson().id];
   return row ? { sentence: row.sentence, action: row.action, ref: row.ref, at: row.at } : {};
 }
+// 사용 기록 도우미. 모두 LIVE일 때만 하고, 기록 못 해도 앱은 그대로다. 과는 모임 날(과의 날짜)로, 기록은 남긴 날로 날 수를 센다
+// 지금 보는 과를 처음 열었다(first) · 그 과의 기록을 처음 남겼다(keep): 과마다 이 기기에서 처음 한 번만. 모임 날 전이면 -before(남은 날 수), 당일이거나 뒤면 -after(지난 날 수)
+function usageLesson(base) {
+  if (!LIVE) return;
+  try { const s = weekSel(), b = DATA.books.find(x => x.id === s.book), l = b && b.lessons.find(x => x.no === s.no); if (l) UZ.timed(base, l.iso || l.date, s.book + ':' + s.no); }
+  catch (e) { /* 기록 못 해도 앱은 그대로 */ }
+}
+// 오늘 남길 것을 저장했다: 한 문장·작은 실천을 했는지는 과마다 처음 한 번만. 글 내용은 보내지 않는다
+function usageKeep(sentence, action) {
+  if (!LIVE || (!sentence && !action)) return;
+  try {
+    const s = weekSel(), id = s.book + ':' + s.no;
+    usageLesson('keep');
+    if (sentence) UZ.track('keep-sentence', { once: 'ks:' + id });
+    if (action) UZ.track('keep-action', { once: 'ka:' + id });
+  } catch (e) { /* 기록 못 해도 앱은 그대로 */ }
+}
+// 그 기록을 남긴 뒤 지난 날 수(기록의 날짜로 센다. 못 읽으면 null)
+const usageAge = e => { const d = UZ.dayDiff(e.year + '-' + String(e.month).padStart(2, '0') + '-' + String(dayOf(e)).padStart(2, '0')); return d === null ? null : Math.max(0, d); };
+// 돌아보기를 남겼다
+function usageReflect(id) {
+  if (!LIVE) return;
+  try { const r = recById(id); UZ.track('reflect', { n: r ? usageAge(r) : null }); } catch (e) { /* 기록 못 해도 앱은 그대로 */ }
+}
+// 화면을 그릴 때마다: 앱 열기(하루 한 번), 내 기록의 달마다 보기·한 해 보기 열기(하루 한 번), 남긴 기록 다시 보기(기록마다 하루 한 번)
+function usageRoute(v, arg) {
+  if (!LIVE) return;
+  try {
+    UZ.open();
+    if (v !== 'record') return;
+    if (arg) { const e = recById(arg); if (e) UZ.track('record-again', { n: usageAge(e), daily: 'ra:' + arg }); }
+    else UZ.track(rec.year ? 'view-year' : 'view-month', { daily: rec.year ? 'vy' : 'vm' });
+  } catch (e) { /* 기록 못 해도 앱은 그대로 */ }
+}
 function putKeep(sentence, action) {
-  if (LIVE) return touchLive(thisLesson().id, { sentence, action });
-  if (sentence || action) return ls.set(K.keep, JSON.stringify({ sentence, action, ref: thisLesson().ref, at: Date.now() }));
-  ls.del(K.keep); return true;
+  const ok = LIVE ? touchLive(thisLesson().id, { sentence, action })
+    : (sentence || action) ? ls.set(K.keep, JSON.stringify({ sentence, action, ref: thisLesson().ref, at: Date.now() })) : (ls.del(K.keep), true);
+  if (ok) usageKeep(sentence, action);
+  return ok;
 }
 let keepT = 0;
 function saveKeepRead(fromBlur) {
@@ -4878,6 +4984,7 @@ window.addEventListener('resize', () => { if (currentView() === 'read') measureA
 if (document.fonts && document.fonts.ready) document.fonts.ready.then(() => { if (currentView() === 'read') measureAll(); });
 function readInit() {
   if (!G) return;
+  usageLesson('first');
   answers = readJson(K.answers); BM = readBm();
   if (BM && !allQs().concat(G.triple).some(q => q.id === BM.id)) BM = null;
   editing.clear(); expanded.clear();
@@ -4967,6 +5074,7 @@ function progHtml() {
 function tick() { if (R.on) $$('.tm').forEach(e => { e.textContent = elapsed(); }); }
 function clearTimers() { clearTimeout(autoT); clearTimeout(dimT); clearInterval(tickT); autoT = dimT = tickT = 0; }
 function startShare() {
+  usageLesson('first');
   R.steps = buildSteps(); R.pos = 0; R.on = true; t0 = Date.now(); clearInterval(tickT); tickT = setInterval(tick, 30000);
   stage.hidden = false; document.body.classList.add('sharing');
   stage.classList.toggle('big', R.view === 'big'); stage.classList.remove('dim');
@@ -5596,7 +5704,7 @@ function vtDepth(v, arg) {
   if (v === 'manage') return !arg ? 1 : /^mb-/.test(arg) ? 2 : 3;   // 교재 관리 → 교재 → 과·인쇄
   if (v === 'shelf' || v === 'record') return arg ? 2 : 0;   // 책장 → 책 안, 내 기록 → 기록 상세
   if (v === 'prepprint' || v === 'admin-reorg') return 2;
-  return VT_TABS.includes(v) ? 0 : 1;
+  return VT_TABS.includes(v) || v === 'staff' ? 0 : 1;   // 교역자 홈은 첫 탭 안의 같은 깊이 화면
 }
 function vtMotion() {
   const ua = vtUA; vtUA = false;
@@ -5633,12 +5741,13 @@ function drawRoute(moved) {
   if (LIVE && D.entered && LV.booksOk && LV.want) { const w = LV.want; LV.want = ''; if ((!/^#start/.test(w) || w === '#start/done') && /^#start\/loading$/.test(location.hash)) history.replaceState(null, '', w); }
   let { v, arg } = parseHash();
   // 모르는 주소이거나 데모로 들어오기 전이면 첫 화면(들어온 뒤의 빈 주소는 이번 주)
-  if (!v) v = D.entered ? 'week' : 'start';
+  if (!v) v = D.entered ? homeV() : 'start';
+  if (v === 'staff' && !staffHomeOn()) v = 'week';   // 교역자 홈은 교역자만(예전 길에는 없다)
   else if (v !== 'start' && !D.entered) v = 'start';
   if (LIVE && v !== 'start' && canSetup() && LV.me && !LV.me.ops && lvIn()) { v = 'start'; arg = 'setup'; }
   if (LIVE && v !== 'start' && D.entered && !LV.booksOk) { if (!LV.want) LV.want = location.hash; v = 'start'; arg = ''; }
   // 실제 모드: 첫 접속의 어느 걸음을 보일지는 서버에서 받은 나의 정보와 고른 것으로 정한다. 이미 들어와 있으면 이번 주로
-  if (LIVE && v === 'start') { arg = liveStep(arg); if (arg === 'enter') { v = 'week'; arg = ''; } }
+  if (LIVE && v === 'start') { arg = liveStep(arg); if (arg === 'enter') { v = homeV(); arg = ''; } }
   if (v !== 'read') { readFrom = ''; readAsMember = false; }
   const entering = v !== lastV;
   if (v !== lastV) { prevV = lastV; lastV = v; }
@@ -5656,7 +5765,7 @@ function drawRoute(moved) {
   $('#topbar').classList.toggle('bare', start);
   $('#topnav').hidden = start; $('#tabs').hidden = start;
   document.body.dataset.view = v;
-  $('#view').innerHTML = start ? startView(arg) : v === 'week' ? weekView() : v === 'wq' ? wqView() : v === 'read' ? readView() : v === 'share' ? shareView() : v === 'shelf' ? shelfView(arg) : v === 'record' ? recordView(arg) : v === 'records' ? recordsView() : v === 'found' ? foundView() : v === 'gallery' ? galleryView() : v === 'more' ? moreView() : v === 'admin' ? adminView() : v === 'admin-reorg' ? adminReorgView() : v === 'church-admin' ? churchAdminView() : v === 'about' ? aboutView() : v === 'guide' ? guideView() : v === 'feedback' ? feedbackView() : v === 'prep' ? prepView() : v === 'prepprint' ? prepPrintView() : v === 'church' ? churchView() : v === 'rooms' ? roomsView() : v === 'manage' ? manageView(arg) : placeView(v);
+  $('#view').innerHTML = start ? startView(arg) : v === 'week' ? weekView() : v === 'staff' ? staffHomeView() : v === 'wq' ? wqView() : v === 'read' ? readView() : v === 'share' ? shareView() : v === 'shelf' ? shelfView(arg) : v === 'record' ? recordView(arg) : v === 'records' ? recordsView() : v === 'found' ? foundView() : v === 'gallery' ? galleryView() : v === 'more' ? moreView() : v === 'admin' ? adminView() : v === 'admin-reorg' ? adminReorgView() : v === 'church-admin' ? churchAdminView() : v === 'about' ? aboutView() : v === 'guide' ? guideView() : v === 'feedback' ? feedbackView() : v === 'prep' ? prepView() : v === 'prepprint' ? prepPrintView() : v === 'church' ? churchView() : v === 'rooms' ? roomsView() : v === 'manage' ? manageView(arg) : placeView(v);
   if (adv && !adShown) { adShown = adv; showAdSplash(adv === 'admin' ? DATA.church.dept + ' 관리' : '교회 전체'); }
   reuseImgs($('#view'));
   const film = start && !!$('#view .welcome');   // 첫 화면(로그인 전)일 때만 영상. 첫 접속의 다음 걸음들에는 없다
@@ -5664,6 +5773,7 @@ function drawRoute(moved) {
   afMount(v === 'about');   // 디다코 소개일 때만 맨 위 영상
   const tab = start ? '' : v === 'read' ? readTab() : v === 'week' ? 'week' : PLACE[v][1];
   $$('[data-tab]').forEach(a => { const on = a.dataset.tab === tab; a.classList.toggle('on', on); on ? a.setAttribute('aria-current', 'page') : a.removeAttribute('aria-current'); });
+  $$('[data-tab="week"]').forEach(a => a.setAttribute('href', '#' + homeV()));   // 교역자는 첫 탭이 교역자 홈으로 간다
   document.title = start ? '디다코' : (v === 'shelf' && arg ? bTitle(bookById(arg)) : v === 'record' && arg ? '기록 상세' : v === 'week' ? '이번 주' : PLACE[v][0]) + ' · 디다코';
   paintBadge(); $('#badge').hidden = start;
   if (moved) {
@@ -5671,6 +5781,7 @@ function drawRoute(moved) {
     const h = $('h1', $('#view')); if (h) { h.setAttribute('tabindex', '-1'); h.focus({ preventScroll: true }); }
   }
   if (LIVE && entering) liveEnter(v);
+  usageRoute(v, arg);
   if (v === 'wq') wqInit(); else if (v === 'read') readInit(); else if (v === 'share') shareInit(); else if (v === 'shelf') shelfInit(arg); else if (v === 'manage' || v === 'prepprint') ppFill();
   if (v === 'share' && shareAuto) { shareAuto = false; if (G) startShare(); }
   if (adNote) { const m = adNote; adNote = ''; toast(m); }   // 화면을 옮긴 뒤에 알릴 글(연도 개편 예약)
@@ -5814,7 +5925,7 @@ const acts = {
   },
   disp() { dispOpen = !dispOpen; rerender(); },
   a2hs() { a2hsSheet(); },
-  usageoff() { try { if (usageOff()) localStorage.removeItem(USAGE_OFF); else localStorage.setItem(USAGE_OFF, '1'); } catch (e) { /* 저장하지 못하면 그대로 */ } rerender(); },
+  usageoff() { try { if (usageOff()) localStorage.removeItem(USAGE_OFF); else { localStorage.setItem(USAGE_OFF, '1'); UZ.clear(); } } catch (e) { /* 저장하지 못하면 그대로 */ } rerender(); },
   a2hsos(e, el) {
     a2hsOs = el.dataset.v; a2hsSheet();
     $('#popSheet [data-act="a2hsos"].on').focus({ preventScroll: true });
@@ -5835,7 +5946,8 @@ const acts = {
     }
     feedbackState.text = ''; const t = $('#feedbackText'); if (t) t.value = ''; const n = $('#feedbackCount'); if (n) n.textContent='0'; const b = $('#feedbackSend'); if (b) b.disabled = true; toast('데모라 보내지 않았어요. 고마워요'); },
   'more-logout'() { toast('데모에서는 로그아웃하지 않아요'); },
-  home() { location.hash = '#week'; },
+  home() { location.hash = '#' + homeV(); },
+  'staff-go'(e, el) { location.hash = '#' + (el.dataset.v === 'week' ? 'week' : 'staff'); },
   gear(e, el) { closePlaceMenu(); const m = $('#settings'); m.hidden = !m.hidden; el.setAttribute('aria-expanded', String(!m.hidden)); if (!m.hidden) renderSettings(); },
   'place-menu'() {
     if ($('#badge').hidden) return;
@@ -6542,6 +6654,7 @@ document.addEventListener('submit', e => {
   const all = readJson(K.recRefl); all[id] = Array.isArray(all[id]) ? all[id] : [];
   all[id].push({ date: LIVE ? `${new Date().getMonth() + 1}월 ${new Date().getDate()}일` : DATA.today.replace(/\(.*$/, '').trim(), text });
   const ok = recSave(K.recRefl, all); recRedraw(); recDone(ok);
+  if (ok) usageReflect(id);
 });
 // 편성의 쓰는 칸은 쓰는 대로 AD에 담아 둔다(다시 그려져도 쓴 글이 남도록)
 function adInput(t) {
