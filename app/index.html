@@ -631,6 +631,8 @@ label.f { display: block; font-size: .85em; font-weight: 600; margin: 12px 0 4px
 .sf-room .sf-row { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
 .sf-room .sf-row .ic { width: 1em; height: 1em; color: var(--ink-2); flex: none; }
 .sf-room .hint { margin: 0; }
+.sf-lesson { display: flex; flex-direction: column; gap: 6px; }
+.sf-lesson .hint { margin: 0; }
 .sf-week { display: flex; flex-wrap: wrap; align-items: center; gap: .3em .6em; font-size: .92em; }
 .sf-week b { font-weight: 600; }
 .more-h { font-size: .8em; font-weight: 600; color: var(--ink-2); margin: 6px 4px -4px; letter-spacing: .02em; }
@@ -1965,7 +1967,7 @@ function staffLesson() {
   return l.hold ? { book: b.title, no: l.no, name: '', st: 'draft' } : { book: b.title, no: l.no, name: l.name, st: mgStatus(b, l) };
 }
 function staffHomeView() {
-  const head = `<p class="eyebrow top-eyebrow">${esc(groupName())} 전체 · 교역자 홈</p><div class="page-top"><h1>이번 주 ${HEAD_ICON.calendar}</h1></div>${staffSeg('staff')}`;
+  const head = `<p class="eyebrow top-eyebrow">${esc(groupName())} 전체</p><div class="page-top"><h1>교역자 홈 ${HEAD_ICON.calendar}</h1></div>${staffSeg('staff')}`;
   if (ADL) {   // 새 길: 사랑방·리더·가정·연결은 서버(didako_ch_dept_rooms)가 준다. 받기 전에는 "불러오고 있어요"
     if (!LA.ready.rooms) {
       if (!LA.work.rooms && !LA.err.rooms) adlLoad('rooms');
@@ -1976,18 +1978,20 @@ function staffHomeView() {
   const fams = rooms.reduce((n, r) => n + r.fams.length, 0), linked = rooms.reduce((n, r) => n + adRoomN(r), 0);
   const stat = (n, l) => `<div class="sf-stat"><b>${n}</b><span>${esc(l)}</span></div>`;
   const wk = staffLesson();
+  // 이번 주 과는 부서가 같으니 한 번만 보인다(사랑방 카드마다 되풀이하지 않는다): 교재 이름, 제N과 제목, 공개 범위 칩
   const lesson = !wk ? '<span class="hint">이번 주 교재가 없어요</span>'
-    : wk.no == null ? '<span class="hint">이번 주 과가 없어요</span>'
-    : `<span class="sf-week"><b>제${wk.no}과</b>${wk.name ? `<span>${esc(wk.name)}</span>` : '<span class="hint">준비하고 있어요</span>'}<span class="kid${wk.st === 'leader' ? ' lead' : ''}">${esc(STATUS.find(x => x[0] === wk.st)[1])}</span></span>`;
+    : wk.no == null ? `<span class="hint">${esc(wk.book)}</span><span class="hint">이번 주 과가 없어요</span>`
+    : `<span class="hint">${esc(wk.book)}</span><span class="sf-week"><b>제${wk.no}과</b>${wk.name ? `<span>${esc(wk.name)}</span>` : '<span class="hint">준비하고 있어요</span>'}<span class="kid${wk.st === 'leader' ? ' lead' : ''}">${esc(STATUS.find(x => x[0] === wk.st)[1])}</span></span>`;
   const jump = (href, name) => `<a class="gr" href="${href}"><span class="gt"><b>${name}</b></span><span class="ch" aria-hidden="true">›</span></a>`;
   return `${head}
     <div class="sf-grid"><div class="col side">
       <section class="card"><div class="sf-stats">${stat(rooms.length, g)}${stat(fams, solo ? '사람' : '가정')}${stat(linked, '연결된 사람')}</div></section>
       <div><div class="gl" style="margin-top:0">바로 가기</div><div class="gc">${jump('#manage', '교재 관리')}${jump('#prep', '진행 준비')}${jump('#rooms', '사랑방 전체 보기')}</div></div>
     </div><div class="col main">
-      <h2 class="sf-title">${esc(g)}별 이번 주${DidakoTip.btn(`${adJ(g, '을/를')} 누르면 그 ${g}의 ${solo ? '사람' : '가정'}과 연결 상태가 보여요. 공개 범위는 교재 관리에서 바꿔요.`, g + '별 이번 주')}${wk ? `<span class="hint" style="font-weight:400"> · ${esc(wk.book)}</span>` : ''}</h2>
+      <section class="card sf-lesson" aria-label="이번 주 과">${lesson}</section>
+      <h2 class="sf-title">${esc(g)}별 이번 주${DidakoTip.btn(`${adJ(g, '을/를')} 누르면 그 ${g}의 ${solo ? '사람' : '가정'}과 연결 상태가 보여요. 공개 범위는 교재 관리에서 바꿔요.`, g + '별 이번 주')}</h2>
       ${rooms.length ? `<div class="sf-board">${rooms.map((r, i) => `<button class="card sf-room" type="button" data-act="rooms-open" data-i="${i}" aria-label="${esc(r.name)} 명단 보기"><span class="sf-row"><b>${esc(r.name)}</b>${ic('chevr')}</span>
-          <span class="hint">리더 ${esc(r.leader || '미지정')}${r.co ? ' · 코리더 ' + esc(r.co) : ''}</span>${lesson}</button>`).join('')}</div>`
+          <span class="hint">리더 ${esc(r.leader || '미지정')}${r.co ? ' · 코리더 ' + esc(r.co) : ''}</span></button>`).join('')}</div>`
         : `<p class="hint">아직 ${esc(adJ(g, '이/가'))} 없어요.</p>`}
       <p class="soft">${ic('lock')} 묵상 기록은 잠겨 있어서 교역자도 볼 수 없어요. 이름과 연결 상태, 이번 주 과만 보여요.</p>
     </div></div>`;
