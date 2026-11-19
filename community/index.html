@@ -1586,6 +1586,7 @@ html.tutorial .demo-tag { display: none !important; }
 <script src="book-jesus-walk.js"></script>
 <script src="../note/guide.js"></script>
 <script src="../note/places.js"></script>
+<script src="../note/usage.js"></script>
 <script src="../note/walks-data.js"></script>
 <script src="walks-books.js"></script>
 <script src="sb.js"></script>
@@ -2224,6 +2225,10 @@ const LK = { hub: 'didako-cm-hub-token', tok: 'didako-cm-token', uid: 'didako-cm
 // me: 서버가 알려 준 나의 정보, depts: 첫 접속에서 고르는 부서·사랑방 목록, booting: 켜지는 중
 // writer: 교재를 쓸 수 있는 사람인지, writeDepts: 새 교재의 대상으로 고를 수 있는 부서, hold: 못 받은 이번 주 즈음의 과(교재ID와 날짜), booksOk: 교재를 받았는지(2-3)
 const LV = { me: null, depts: null, join: null, epoch: 0, booting: false, authBusy: false, needChurch: false, repick: false, notice: '', err: '', busy: false, work: null, want: '', writer: false, writeDepts: [], hold: [], booksOk: false, booksWork: null };
+// 사용 기록(설계서 3장 "사용 기록에 담을 것", 결정 기록 2026-11-19): 행동 이름과 날 수만 ../note/usage.js가 모아 두었다가 묶어서 usage_track(supabase/016)으로 보낸다.
+//  보내는 때는 셋이 모두 맞을 때뿐이다: 새 길로 로그인해 있고(ok) · 데모·따라 하기(?tutorial)·?demo가 아니고(SB) · 앱 설정 "이용 통계 보내기"가 켜져 있다. 글·이름·교회·사랑방·교재 이름은 어디에도 넣지 않는다.
+const UZ = window.DidakoUsage || { init() {}, track() {}, open() {}, timed() {}, dayDiff() { return null; }, flush() {}, clear() {} };
+UZ.init({ prefix: 'cm', cache: 'didako-cm-v', ok: () => SB && D.entered === true, who: () => ls.get(SBH) || '', rpc: (name, args) => window.DidakoSb.rpc(name, args) });
 // 첫 접속에서 고르는 중인 것. byName은 이름을 써서 찾는 길, newFamily는 새로 왔어요
 const lvFresh = () => ({ deptId: '', roomId: '', staff: false, familyId: '', person: '', byName: false, newFamily: null });
 const ST = lvFresh();
@@ -3848,10 +3853,45 @@ function readKeep() {
   const row = readLive()[thisLesson().id];
   return row ? { sentence: row.sentence, action: row.action, ref: row.ref, at: row.at } : {};
 }
+// 사용 기록 도우미. 모두 SB일 때만 하고, 기록 못 해도 앱은 그대로다. 과는 모임 날(과의 날짜)로, 기록은 남긴 날로 날 수를 센다
+// 지금 보는 과를 처음 열었다(first) · 그 과의 기록을 처음 남겼다(keep): 과마다 이 기기에서 처음 한 번만. 모임 날 전이면 -before(남은 날 수), 당일이거나 뒤면 -after(지난 날 수)
+function usageLesson(base) {
+  if (!SB) return;
+  try { const s = weekSel(), b = DATA.books.find(x => x.id === s.book), l = b && b.lessons.find(x => x.no === s.no); if (l) UZ.timed(base, l.iso || l.date, s.book + ':' + s.no); }
+  catch (e) { /* 기록 못 해도 앱은 그대로 */ }
+}
+// 오늘 남길 것을 저장했다: 한 문장·작은 실천을 했는지는 과마다 처음 한 번만. 글 내용은 보내지 않는다
+function usageKeep(sentence, action) {
+  if (!SB || (!sentence && !action)) return;
+  try {
+    const s = weekSel(), id = s.book + ':' + s.no;
+    usageLesson('keep');
+    if (sentence) UZ.track('keep-sentence', { once: 'ks:' + id });
+    if (action) UZ.track('keep-action', { once: 'ka:' + id });
+  } catch (e) { /* 기록 못 해도 앱은 그대로 */ }
+}
+// 그 기록을 남긴 뒤 지난 날 수(기록의 날짜로 센다. 못 읽으면 null)
+const usageAge = e => { const d = UZ.dayDiff(e.year + '-' + String(e.month).padStart(2, '0') + '-' + String(dayOf(e)).padStart(2, '0')); return d === null ? null : Math.max(0, d); };
+// 돌아보기를 남겼다
+function usageReflect(id) {
+  if (!SB) return;
+  try { const r = recById(id); UZ.track('reflect', { n: r ? usageAge(r) : null }); } catch (e) { /* 기록 못 해도 앱은 그대로 */ }
+}
+// 화면을 그릴 때마다: 앱 열기(하루 한 번), 내 기록의 달마다 보기·한 해 보기 열기(하루 한 번), 남긴 기록 다시 보기(기록마다 하루 한 번)
+function usageRoute(v, arg) {
+  if (!SB) return;
+  try {
+    UZ.open();
+    if (v !== 'record') return;
+    if (arg) { const e = recById(arg); if (e) UZ.track('record-again', { n: usageAge(e), daily: 'ra:' + arg }); }
+    else UZ.track(rec.year ? 'view-year' : 'view-month', { daily: rec.year ? 'vy' : 'vm' });
+  } catch (e) { /* 기록 못 해도 앱은 그대로 */ }
+}
 function putKeep(sentence, action) {
-  if (LIVE) return touchLive(thisLesson().id, { sentence, action });
-  if (sentence || action) return ls.set(K.keep, JSON.stringify({ sentence, action, ref: thisLesson().ref, at: Date.now() }));
-  ls.del(K.keep); return true;
+  const ok = LIVE ? touchLive(thisLesson().id, { sentence, action })
+    : (sentence || action) ? ls.set(K.keep, JSON.stringify({ sentence, action, ref: thisLesson().ref, at: Date.now() })) : (ls.del(K.keep), true);
+  if (ok) usageKeep(sentence, action);
+  return ok;
 }
 let keepT = 0;
 function saveKeepRead(fromBlur) {
@@ -4130,6 +4170,7 @@ window.addEventListener('resize', () => { if (currentView() === 'read') measureA
 if (document.fonts && document.fonts.ready) document.fonts.ready.then(() => { if (currentView() === 'read') measureAll(); });
 function readInit() {
   if (!G) return;
+  usageLesson('first');
   answers = readJson(K.answers); BM = readBm();
   if (BM && !allQs().concat(G.triple).some(q => q.id === BM.id)) BM = null;
   editing.clear(); expanded.clear();
@@ -4219,6 +4260,7 @@ function progHtml() {
 function tick() { if (R.on) $$('.tm').forEach(e => { e.textContent = elapsed(); }); }
 function clearTimers() { clearTimeout(autoT); clearTimeout(dimT); clearInterval(tickT); autoT = dimT = tickT = 0; }
 function startShare() {
+  usageLesson('first');
   R.steps = buildSteps(); R.pos = 0; R.on = true; t0 = Date.now(); clearInterval(tickT); tickT = setInterval(tick, 30000);
   stage.hidden = false; document.body.classList.add('sharing');
   stage.classList.toggle('big', R.view === 'big'); stage.classList.remove('dim');
@@ -4985,6 +5027,7 @@ function drawRoute(moved) {
     const h = $('h1', $('#view')); if (h) { h.setAttribute('tabindex', '-1'); h.focus({ preventScroll: true }); }
   }
   if (LIVE && entering) liveEnter(v);
+  usageRoute(v, arg);
   if (SB && D.entered) sbEnter(v, arg);
   if (v === 'wq') wqInit(); else if (v === 'read') readInit(); else if (v === 'share') shareInit(); else if (v === 'shelf') shelfInit(arg); else if (v === 'manage' || v === 'prepprint') ppFill();
   if (v === 'share' && shareAuto) { shareAuto = false; if (G) startShare(); }
@@ -5017,7 +5060,7 @@ const acts = {
   'walk-day'(e, el) { const days = ['월', '화', '수', '목', '금'], d = el.dataset.d; if (days.indexOf(d) > days.indexOf(walkToday())) { toast(walkNames[d] + '에 열려요'); return; } walkDay = d; walkRedraw(); },
   disp() { dispOpen = !dispOpen; rerender(); },
   a2hs() { a2hsSheet(); },
-  usageoff() { try { if (usageOff()) localStorage.removeItem(USAGE_OFF); else localStorage.setItem(USAGE_OFF, '1'); } catch (e) { /* 저장하지 못하면 그대로 */ } rerender(); },
+  usageoff() { try { if (usageOff()) localStorage.removeItem(USAGE_OFF); else { localStorage.setItem(USAGE_OFF, '1'); UZ.clear(); } } catch (e) { /* 저장하지 못하면 그대로 */ } rerender(); },
   a2hsos(e, el) {
     a2hsOs = el.dataset.v; a2hsSheet();
     $('#popSheet [data-act="a2hsos"].on').focus({ preventScroll: true });
@@ -5818,6 +5861,7 @@ document.addEventListener('submit', e => {
   const all = readJson(K.recRefl); all[id] = Array.isArray(all[id]) ? all[id] : [];
   all[id].push({ date: LIVE || SB ? `${new Date().getMonth() + 1}월 ${new Date().getDate()}일` : DATA.today.replace(/\(.*$/, '').trim(), text });
   const ok = recSave(K.recRefl, all); recRedraw(); recDone(ok);
+  if (ok) usageReflect(id);
 });
 // 공동체 관리 시트의 이름 칸에서 Enter는 [이름 바꾸기]와 같다(코이데의 form submit처럼)
 document.addEventListener('submit', e => {
