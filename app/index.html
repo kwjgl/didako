@@ -3639,7 +3639,7 @@ function roomsView() {
 // ── 관리(A-01): 코이데 부서 관리와 같은 짜임 ──
 // 데모는 보기와 단추까지만이고, 바뀐 것은 이 화면에서만 기억한다(새로 고치면 처음으로). 서버 호출은 없다.
 // 왼쪽은 할 일(연결 신청)과 편성, 오른쪽은 묶음마다 한 줄씩 접어 둔 메뉴다. 열린 줄은 여러 개 둘 수 있다.
-// 편성(사랑방 접었다 펴기, 가정 더하기 등)은 부서 관리 2에서 옮겼다. 교회 단위 메뉴(교회 초대, 교재 종류, 교회 밖 모임, 교회 관리자, 가정 다른 부서로 보내기)와 부서 카드는 따로 여는 교회 전체 관리(#church-admin)로 옮겼다(부서 관리 3).
+// 편성(사랑방 접었다 펴기, 가정 더하기 등)은 부서 관리 2에서 옮겼다. 교회 단위 메뉴(교회 초대, 교재 종류, 교회 관리자, 가정 다른 부서로 보내기, 부서 만들기·닫기)와 부서 카드는 따로 여는 교회 전체 관리(#church-admin)로 옮겼다(부서 관리 3).
 const AD = { tab: 'manage', ctab: 'manage', fold: {}, reqs: null, apAsk: false, people: null, roleOpen: -1, grp: '', unit: '', grpExtra: [], open: {}, sel: '', edit: null, ask: '', mv: null, cNew: null, cMv: null, hl: [], left: 0, rg: null, plan: null, rgAsk: false };
 const adReqs = () => AD.reqs || (AD.reqs = DATA.admin.requests.map(r => ({ ...r })));
 // 맡은 일 목록의 사람. 부서 관리자는 편성의 가정 스위치가 기준이다(adFamOf로 편성의 가정을 찾아 읽는다). 편성에 없는 사람만 목록에 적힌 '관리자'를 쓴다
@@ -4020,15 +4020,12 @@ const adRgRooms = () => { const m = {}; AD.rg.res.rows.forEach((r, i) => { (m[r.
 const adRgMissing = () => [...AD.rg.res.missing, ...AD.rg.res.rows.filter((r, i) => r.status === 'check' && AD.rg.dec[i] === 'new').map(r => r.ex)];
 // 단계를 바꿀 때: 맨 위로, 제목에 초점
 function adRgGo() { route(false); window.scrollTo(0, 0); const h = $('h1', $('#view')); if (h) { h.setAttribute('tabindex', '-1'); h.focus({ preventScroll: true }); } }
-// 교회 묶음(교회 초대, 교재 종류, 교회 밖 모임): 교회 전체 관리(#church-admin)의 오른쪽 메뉴가 쓴다
+// 교회 묶음(교회 초대, 교재 종류): 교회 전체 관리(#church-admin)의 오른쪽 메뉴가 쓴다
 const adChurchInviteBody = () => `<p class="lesson-title" style="font-size:1.3em;margin-top:0">${esc(DATA.admin.code)}</p>
   <div class="ad-acts">${adSay('초대 링크 복사하기', '데모에서는 복사하지 않아요', 'btn small')}${adSay('교회 코드 복사하기', '데모에서는 복사하지 않아요')}</div>
 `;
 const adKindsBody = () => `<ul class="ad-list">${DATA.admin.kinds.map(([name, desc, on]) => `<li><div class="ad-main"><b>${esc(name)}</b><small>${esc(desc)}</small></div>${on ? '<span class="chip">켜짐</span>' : '<span class="soft">다음에</span>'}</li>`).join('')}</ul>
   <p class="hint">켜고 끄기는 데모에서 바뀌지 않아요.</p>`;
-const adOutBody = () => `<ul class="ad-list">${DATA.admin.outKinds.map(([name, desc]) => `<li><div class="ad-main"><b>${esc(name)}</b><small>${esc(desc)}</small></div>${adSay('열기')}</li>`).join('')}</ul>
-  <p class="ad-sub">열린 모임</p>
-  <ul class="ad-list">${DATA.admin.outs.map(o => `<li><div class="ad-main"><b>${esc(o.name)}</b><small>${esc(o.kind)}, 목회 책임자 ${esc(o.pastor)}, 교회에 속한 모임</small></div></li>`).join('')}</ul>`;
 // 관리 화면 위쪽 탭 [관리 | 분석](부서 관리와 교회 전체가 같이 쓴다)
 const adTabs = (tab, church) => `<div class="seg2 admin-seg" role="tablist" aria-label="${church ? '교회 전체' : '관리 화면'}">${[['manage', '관리'], ['analysis', '분석']].map(([k, l]) => `<button type="button" class="${tab === k ? 'on' : ''}" role="tab" aria-selected="${tab === k}" data-act="${church ? 'ad-ctab' : 'ad-tab'}" data-v="${k}">${l}</button>`).join('')}</div>`;
 function adminView() {
@@ -4149,7 +4146,8 @@ function adminReorgView() {
 }
 
 // ── 교회 전체 관리(A-01): 코이데 churchView를 옮겼다. 부서 관리와 따로 열고, 데모 역할 관리자만 연다 ──
-// 왼쪽은 부서 카드와 부서 만들기, 오른쪽은 접어 둔 메뉴(교회 초대, 교재 종류, 교회 밖 모임 열기, 교회 관리자, 가정 다른 부서로 보내기).
+// 왼쪽은 부서 카드, 오른쪽은 접어 둔 메뉴: 교회(교회 초대, 교재 종류), 사람(교회 관리자, 가정 다른 부서로 보내기), 설정(부서 만들기·닫기, 코이데 설정 묶음을 본떴다).
+// 교회 밖 모임 열기는 뺐다(2026-11-20, 교회 밖 작은 모임은 디다코 공동체가 맡는다).
 // 서버 호출은 없고 바뀐 것은 DATA.admin에만 남는다(새로 고치면 처음으로). 데모의 부서 관리(#admin)는 청장년부만 열려서 다른 부서 카드는 안내만 한다.
 // 코이데에서 뺀 것: 의견과 설문 탭, 부서 닫기·다시 열기·기록 지우기(코이데 노트 쪽 일), 앱 상태 카드(부서 카드의 점으로 대신), 교회 관리자 초대 링크(데모라 안내만).
 // 바꾼 것: 다른 부서로 옮기기는 코이데에서 가정 줄에서 시작하지만 여기서는 교회 전체에서 부서와 가정을 골라 시작한다.
@@ -4194,13 +4192,16 @@ const adDeptCard = d => {
 };
 const adDeptForm = () => {
   const N = AD.cNew;
-  return `<form class="card ad-dept-form" data-adform="dept"><h2>부서 만들기</h2>
+  return `<form class="ad-dept-form" data-adform="dept">
     <label class="ad-label" for="adCname">새 부서 이름</label><input id="adCname" class="field" name="n" maxlength="12" placeholder="예) 청소년부" autocomplete="off" data-adin="cname" value="${esc(N.name)}">
     <p class="ad-label">소그룹 이름</p><div class="mchips" role="radiogroup" aria-label="소그룹 이름">${AD_GROUPS.map(g => `<button class="mchip${N.group === g ? ' on' : ''}" type="button" role="radio" aria-checked="${N.group === g}" data-act="ad-cgrp" data-v="${esc(g)}">${esc(g)}</button>`).join('')}</div>
     <p class="ad-label">단위</p><div class="seg seg-unit" style="--n:2" role="radiogroup" aria-label="단위">${[['family', '가정 (부부와 자녀)'], ['single', '개인 (한 사람씩)']].map(([k, l]) => `<button type="button" class="${N.unit === k ? 'on' : ''}" role="radio" aria-checked="${N.unit === k}" data-act="ad-cunit" data-v="${k}">${l}</button>`).join('')}</div>
     <div class="ad-acts" style="margin-top:.4em"><button class="btn small" type="submit">부서 만들기</button><button class="btn small ghost" type="button" data-act="ad-cnew-x">취소</button></div>
     <p class="hint">만든 뒤에 부서 관리자를 정하고 ${esc(N.group)}을 만들어요.</p></form>`;
 };
+// 설정 › 부서 만들기·닫기: 부서 목록(새 길에서만 닫기·다시 열기)과 그 아래 부서 만들기 단추 또는 만드는 칸
+const adDeptSetBody = () => `${ADL ? adlDeptCloseBody() : ''}
+  ${AD.cNew ? adDeptForm() : '<div class="ad-acts"><button class="btn small ghost" type="button" data-act="ad-cnew">+ 부서 만들기</button></div>'}`;
 function churchAdminView() {
   if (D.role !== 'admin') return `<div class="page-top"><h1>교회 전체</h1></div>
     <section class="card calm"><p class="calm-t">관리자만 여는 화면이에요</p>
@@ -4217,20 +4218,20 @@ function churchAdminView() {
     church: [
       adFold('cinvite', '교회 초대', '', adChurchInviteBody, '', '링크나 코드로 들어온 사람은 사랑방 리더가 연결을 승인해요.'),
       adFold('kinds', '교재 종류', '지금은 ' + esc(a.kinds.filter(k => k[2]).map(k => k[0]).join(', ')), adKindsBody),
-      adFold('out', '교회 밖 모임 열기', esc(a.outKinds.map(k => k[0]).join(', ')), adOutBody, '', '신우회, 캠퍼스처럼 교회 밖에서 모이는 모임도 이 교회에 속한 모임으로 열어요. 목사님도 열 수 있어요.'),
-      ...(ADL ? [adFold('cclose', '부서 닫기와 다시 열기', '', adlDeptCloseBody, '', '닫은 부서는 첫 접속에서 빠지고 그 부서 사람은 들어오지 못해요. 명단은 남아서 다시 열 수 있어요.')] : [])
     ],
     people: [
       adFold('cadmins', '교회 관리자', nAdm < 2 ? '한 명뿐이에요, 한 명 더 정해 주세요' : esc(a.churchAdmins.map(x => x.name).join(', ')), ADL ? adlChurchAdminBody : adChurchAdminBody, `<i class="ad-dot${nAdm < 2 ? ' bad' : ''}" aria-hidden="true"></i>`, '모든 부서를 꾸리고 부서를 만들어요. 앱을 쓰는 사람의 기록은 보이지 않아요. 한 사람이 빠져도 멈추지 않도록 두 명 이상을 권해요.'),
       adFold('csend', '가정 다른 부서로 보내기', '', adSendBody, '', '결혼과 상관없이 가정이 그대로 다른 부서의 사랑방으로 갈 때 써요(예: 나이가 차서 청년부 사람이 청장년부로).')
+    ],
+    set: [
+      adFold('cdept', ADL ? '부서 만들기 · 닫기' : '부서 만들기', `부서 ${a.depts.length}곳`, adDeptSetBody, '', ADL ? '새 부서를 만들거나 쓰지 않는 부서를 닫아요. 닫은 부서는 첫 접속에서 빠지고 그 부서 사람은 들어오지 못해요. 명단은 남아서 다시 열 수 있어요.' : '새 부서를 만들어요. 만든 뒤에 부서 관리자를 정하고 소그룹을 만들어요.')
     ]
   };
   return `${head}
     <div class="two-col"><div class="col">
       <p class="more-h">부서</p><div class="ch-grid">${a.depts.map(adDeptCard).join('')}</div>
-      ${AD.cNew ? adDeptForm() : '<div class="ad-foot ad-foot-btns"><button class="btn small ghost" type="button" data-act="ad-cnew">+ 부서 만들기</button></div>'}
     </div><div class="col side">
-      ${sec('교회', rows.church)}${sec('사람', rows.people)}
+      ${sec('교회', rows.church)}${sec('사람', rows.people)}${sec('설정', rows.set)}
     </div></div>
     <p class="soft">${ic('lock')} 앱을 쓰는 사람의 기록은 보이지 않아요.</p>`;
 }
@@ -4441,10 +4442,10 @@ function adlLoad(v) {
     .finally(() => { LA.work[v] = null; if (e === LV.epoch && (currentView() === v || (v === 'rooms' && currentView() === 'staff'))) adRedraw(); });   // 교역자 홈도 사랑방 자료(rooms)를 쓴다
   return LA.work[v];
 }
-// 데모에만 있는 칸(앱 상태·개인정보·변경 기록·의견함·교회 밖 모임 예시)은 비워 둔다
+// 데모에만 있는 칸(앱 상태·개인정보·변경 기록·의견함)은 비워 둔다
 function adlBase() {
   const A = DATA.admin;
-  Object.assign(A, { people: [], privacy: { later: 0, due: [], requests: [] }, changes: [], feedback: [], app: { version: '', errors: 0 }, outs: [] });
+  Object.assign(A, { people: [], privacy: { later: 0, due: [], requests: [] }, changes: [], feedback: [], app: { version: '', errors: 0 } });
   AD.people = null; AD.reqs = null;
 }
 function adlApplyCtx(ctx) {
