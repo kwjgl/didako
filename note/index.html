@@ -242,7 +242,22 @@ html.kg-on body.tabs-off .topbar, html.kg-on body.tabs-off .tabs { transform: no
 .vine-layers > img { position: absolute; left: 0; top: 0; width: 384px; height: 256px; }
 .vine-layers > span { position: absolute; }
 .vine-leaf { width: 22px; height: 20px; background: url('img/vine/scene/leaf.png') no-repeat; background-size: 132px 20px; }
-.vine-grape { display: inline-block; flex: none; width: 20px; height: 28px; background: url('img/vine/scene/grape.png') no-repeat; background-size: 100px 28px; image-rendering: pixelated; }
+.vine-berry { position: absolute; width: 6px; height: 6px; background: url('img/vine/scene/berry.png') no-repeat; background-size: 6px 6px; image-rendering: pixelated; }
+.vine-berry.ghost { opacity: .18; }
+.vine-cluster { position: relative; display: block; flex: none; width: 42px; height: 42px; overflow: hidden; }
+.vine-cluster-in { position: absolute; left: 0; top: 0; width: 21px; height: 21px; transform: scale(2); transform-origin: top left; image-rendering: pixelated; }
+/* 오늘의 질문 아래 포도나무 카드: 그림은 가로 384px 전체를 1배로 가운데에 두고 좁은 폭에서는 가장자리를 자른다. 카드가 그림보다 넓으면 질문 그림처럼 안쪽으로 들인다 */
+.vine-card { display: block; overflow: hidden; color: var(--ink); text-decoration: none; container-type: inline-size; }
+.vine-card .vine-stage { background: var(--surface); }
+.vine-card .vine-scene { --vine-scale: 1; }
+@container (min-width: 408px) { .vine-card .vine-stage { padding: 10px 10px 0; } .vine-card .vine-scene { border-radius: 10px; } }
+/* 넓은 화면(카드가 그림의 1.5배쯤 넘을 때)에는 그림을 왼쪽, 글을 오른쪽에 둔다 */
+@container (min-width: 600px) { .vine-card-in { display: flex; align-items: center; } .vine-card .vine-stage { width: auto; padding: 10px; flex: none; } .vine-card-row { flex: 1; padding: 10px 20px 10px 6px; } .vine-card-t { font-size: 1rem; } }
+.vine-card-row { display: flex; align-items: center; gap: 12px; padding: 6px 16px 8px; }
+.vine-card-t { flex: 1; min-width: 0; font-size: .9375rem; line-height: 1.4; }
+.vine-card-go { flex: none; color: var(--ink-2); }
+.vine-orchard { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 12px; }
+.vine-orchard img { display: block; width: 64px; height: 64px; }
 .vine-bg-night { display: none; }
 @media (prefers-color-scheme: dark) {
   :root:not([data-mode="light"]) .vine-bg-day { display: none; }
@@ -265,8 +280,6 @@ html.kg-on body.tabs-off .topbar, html.kg-on body.tabs-off .tabs { transform: no
 .vine-story .sm { font-size: .875rem; line-height: 1.6; }
 .vine-fruit { font: inherit; color: var(--ink); }
 .vine-badge-title { margin: 28px 0 4px; }
-.vine-badge-sub { margin: 0; }
-.vine-badge-empty { width: 56px; height: 56px; border: 2px solid var(--line-strong); border-radius: 50%; opacity: .45; }
 .mdiv { height: 1px; background: var(--line); margin: 8px 6px; }
 .toast { pointer-events: none; position: fixed; left: 50%; bottom: calc(96px + env(safe-area-inset-bottom, 0px)); transform: translateX(-50%); width: max-content; background: var(--ink); color: var(--page); padding: .6em 1em; border-radius: 10px; font-size: .875rem; z-index: 60; max-width: calc(100% - 32px); text-align: center; }
 @media (min-width: 1000px) { .toast { bottom: 40px; } }
@@ -1100,7 +1113,7 @@ body.fs .xw-top { padding-right: 52px; }   /* 시안 보기 설정(톱니)이 �
   <label class="sm" for="gearStart">처음 들어온 날</label>
   <div class="dategrp"><input class="field" id="gearStart" type="date" min="1900-01-01" max="2200-12-31" aria-label="처음 들어온 날"></div>
   <div class="ginfo sm" id="gearInfo" aria-live="polite"></div>
-  <div class="vine-demo" id="vineDemo" hidden><span class="sm">포도나무 머문 날</span><div class="vine-demo-days"><button class="btn ghost sm2" type="button" data-act="vine-demo" data-days="0">0일</button><button class="btn ghost sm2" type="button" data-act="vine-demo" data-days="23">23일</button><button class="btn ghost sm2" type="button" data-act="vine-demo" data-days="67">67일</button><button class="btn ghost sm2" type="button" data-act="vine-demo" data-days="90">90일</button></div><div class="vine-demo-days"><button class="btn ghost sm2" type="button" data-act="vine-demo" data-days="9">9일</button><button class="btn ghost sm2" type="button" data-act="vine-demo" data-days="89">89일</button></div></div>
+  <div class="vine-demo" id="vineDemo" hidden><span class="sm">포도나무 포도알</span><div class="vine-demo-days"><button class="btn ghost sm2" type="button" data-act="vine-demo" data-days="0">0알</button><button class="btn ghost sm2" type="button" data-act="vine-demo" data-days="7">7알</button><button class="btn ghost sm2" type="button" data-act="vine-demo" data-days="10">10알</button><button class="btn ghost sm2" type="button" data-act="vine-demo" data-days="45">45알</button></div><div class="vine-demo-days"><button class="btn ghost sm2" type="button" data-act="vine-demo" data-days="9">9알</button><button class="btn ghost sm2" type="button" data-act="vine-demo" data-days="89">89알</button><button class="btn ghost sm2" type="button" data-act="vine-demo" data-days="90">90알</button><button class="btn ghost sm2" type="button" data-act="vine-demo" data-days="95">95알</button></div></div>
   <div class="mdiv"></div>
   <div style="padding:0 6px 8px"><button class="btn ghost wide sm2" type="button" data-act="demo-fill">예시 기록 채우기</button></div>
   <div style="padding:0 6px 4px"><button class="btn ghost wide sm2" type="button" data-act="demo-reset">처음부터 다시(첫 접속부터)</button></div>
@@ -1358,43 +1371,52 @@ const FRUITS = [
 ];
 const VINE_FRUIT = { k: 'vine', name: '포도나무', story: '아홉 가지 열매가 한 나무에 맺혔어요. 열매는 가지가 애써 만든 것이 아니라 나무에 붙어 있을 때 맺혀요.', ref: '요한복음 15:4~5' };
 
-// 포도나무 기억 자리: start는 이 기능을 처음 연 날, days는 머문 날, dew는 발견을 남긴 날,
-// seen은 본 열매 장면(S-30용). 날짜는 'YYYY-MM-DD'이며 지운 기록과 별개로 남긴다.
+// 포도나무 기억 자리: start는 이 기능을 처음 연 날, grapes는 열린 포도알('YYYY-MM-DD|종류'를 정렬해 겹침 없이),
+// seen은 본 열매 장면(S-30용). 종류는 answer(대답하기)·write(남기기)·walk(질문으로 묵상하기 토막 마치기)·note(탐구 노트 쓰기)이고,
+// 같은 날 같은 종류는 한 알이다(철학 ③). 예전 판의 머문 날(days)은 하루 한 알('날짜|old')로 옮기고 이슬(dew)은 버린다.
 function normalizeVine(raw) {
   const v = raw && typeof raw === 'object' ? raw : {};
   const start = parseYmd(v.start) ? v.start : '';
-  const dates = list => [...new Set((Array.isArray(list) ? list : []).filter(d => typeof d === 'string' && parseYmd(d) && (!start || d >= start)))].sort();
-  const days = dates(v.days), dew = dates(v.dew).filter(d => days.includes(d));
+  const dayOk = d => typeof d === 'string' && parseYmd(d) && (!start || d >= start);
+  const keys = [];
+  (Array.isArray(v.grapes) ? v.grapes : []).forEach(g => { const [d, k] = typeof g === 'string' ? g.split('|') : []; if (dayOk(d) && /^[a-z]{1,12}$/.test(k || '')) keys.push(d + '|' + k); });
+  (Array.isArray(v.days) ? v.days : []).forEach(d => { if (dayOk(d)) keys.push(d + '|old'); });
+  const grapes = [...new Set(keys)].sort();
   const seen = [...new Set((Array.isArray(v.seen) ? v.seen : []).filter(s => typeof s === 'string'))].sort();
-  return { start, days, dew, seen };
+  return { start, grapes, seen };
 }
 let VN = normalizeVine(readJson(K.vine));
 let vineMoment = null, vineMomentTimer = 0, vineStoryFollow = false;
 const saveVine = () => { ls.set(K.vine, JSON.stringify(VN)); if (LIVE) scheduleSync(); };
 function ensureVineStart() { if (!VN.start) { VN.start = dnStr(demoDN()); saveVine(); } }
-function markStay({ dew = false } = {}) {
-  if (!me || TUT) return false;   // 연습 페이지에서는 포도나무 잎을 틔우지 않는다
+// 포도알 하나: 그날 같은 종류가 아직 없을 때만 연다. 열 알이 막 찼으면(첫 나무 안) 그 열매 이야기 장면을 예약한다
+function markGrape(kind) {
+  if (!me || TUT) return false;   // 연습 페이지에서는 포도알을 열지 않는다
   ensureVineStart();
-  const today = dnStr(demoDN());
+  const today = dnStr(demoDN()), key = today + '|' + kind;
   if (today < VN.start) return false;   // 데모 날짜를 되돌려도 시작 전 기록은 세지 않는다.
-  const fresh = !VN.days.includes(today);
-  if (fresh) { VN.days.push(today); VN.days.sort(); }
-  if (dew && !VN.dew.includes(today)) { VN.dew.push(today); VN.dew.sort(); }
-  if (fresh || dew) saveVine();
-  if (fresh) {
-    const n = vineDays(), fruit = n <= 90 && n % 10 === 0 ? FRUITS[n / 10 - 1] : null;
-    vineMoment = { day: today, key: fruit?.k || '' }; scheduleVineMoment();
-  }
-  return fresh;
+  if (VN.grapes.includes(key)) return false;
+  VN.grapes.push(key); VN.grapes.sort(); saveVine();
+  const n = vineGrapes();
+  if (n <= 90 && n % 10 === 0) { vineMoment = { day: today, key: FRUITS[n / 10 - 1].k }; scheduleVineMoment(); }
+  return true;
 }
-const vineDays = () => VN.days.length;
-const vineLeaves = i => Math.max(0, Math.min(10, vineDays() - (i - 1) * 10));
-const vineGrapeFrame = n => n === 10 ? 3 : n >= 4 && n <= 6 ? 0 : n >= 7 && n <= 8 ? 1 : n === 9 ? 2 : n === 0 ? 4 : null;
-function fillVineDemo(days) {
-  if (LIVE || ![0, 9, 23, 67, 89, 90].includes(days)) return;
+const vineGrapes = () => VN.grapes.length;   // 첫 나무부터 연 포도알 전체
+const vineTreeBase = () => vineGrapes() ? Math.floor((vineGrapes() - 1) / 90) * 90 : 0;   // 지금 자라는 나무가 시작하는 알 번호(90알이 차면 새 나무)
+const vineTreeG = () => vineGrapes() - vineTreeBase();   // 지금 나무의 알 수(0~90)
+const vineTrees = () => Math.floor(vineGrapes() / 90);   // 다 자란 나무
+const vineBerries = (i, g = vineTreeG()) => Math.max(0, Math.min(10, g - (i - 1) * 10));   // i번째 가지(송이)의 알 수
+// 송이 한 개의 알 자리(위가 넓고 아래로 좁은 4·3·2·1)를 채워 가는 차례. 좌표는 송이 그림(21×21) 안, 알은 6×6
+const BERRY_SLOTS = [[5, 0], [10, 0], [8, 5], [3, 5], [13, 5], [0, 0], [15, 0], [5, 10], [10, 10], [8, 15]];
+const BERRY_AT = [0, -1];   // 가지 grape 자리에서 송이 그림 왼쪽 위까지의 거리(1배 그림 기준)
+const vineBerry = (x, y, ghost = false) => `<span class="vine-berry${ghost ? ' ghost' : ''}" aria-hidden="true" style="left:${x}px;top:${y}px"></span>`;
+const vineCluster = n => `<span class="vine-cluster" aria-hidden="true"><span class="vine-cluster-in">${BERRY_SLOTS.map(([x, y], j) => vineBerry(x, y, j >= n)).join('')}</span></span>`;
+function fillVineDemo(grapes) {
+  if (LIVE || ![0, 7, 9, 10, 45, 89, 90, 95].includes(grapes)) return;
   clearVineMoments();
-  const today = demoDN(), end = today - ([9, 89].includes(days) ? 1 : 0), dates = Array.from({ length: days }, (_, i) => dnStr(end - days + i + 1));
-  VN = { start: dates[0] || dnStr(today), days: dates, dew: [3, 9, 17, 21, 33, 48, 60, 77, 85].filter(k => k <= days).map(k => dates[k - 1]), seen: [] };
+  const kinds = ['answer', 'write', 'walk', 'note'], today = demoDN(), days = Math.ceil(grapes / 4), first = today - days;   // 마지막 알은 어제 것: 오늘 새 알이 하나씩 열리는지 볼 수 있다
+  const list = Array.from({ length: grapes }, (_, i) => dnStr(first + Math.floor(i / 4)) + '|' + kinds[i % 4]);
+  VN = { start: grapes ? list[0].slice(0, 10) : dnStr(today), grapes: list.sort(), seen: [] };
   saveVine(); closeMenus(); render();
 }
 function clearVineMoments() { clearTimeout(vineMomentTimer); vineMomentTimer = 0; vineMoment = null; vineStoryFollow = false; }
@@ -1407,9 +1429,8 @@ function flushVineMoment() {
   if (vineMoment.day !== dnStr(demoDN())) { vineMoment = null; return; }
   // 저장 뒤 화면 이동·기존 확인 창·입력 중에는 끼어들지 않는다.
   if (routeKey() !== lastKey || !$('#pop').hidden || !$('#opening').hidden || editing()) return;
-  if (!$('#toast').hidden) return;   // 지금 보이는 안내가 끝난 뒤 잎·열매 알림을 보여 준다(S-62).
+  if (!$('#toast').hidden) return;   // 지금 보이는 안내가 끝난 뒤 열매 알림을 보여 준다(S-62).
   const moment = vineMoment; vineMoment = null;
-  if (!moment.key) { toast('오늘 잎 하나가 돋았어요'); return; }
   if (!VN.seen.includes(moment.key)) openFruitScene(moment.key, true);
 }
 
@@ -1593,7 +1614,7 @@ function saveTodayAnswer(key) {
   const area = $('#todayAnswerText'); if (!area) return;
   const text = area.value.slice(0, 1000), first = !thisAnswer(key) && !!text.trim();
   setMine(todayAnswerId(key), text);
-  if (first) { markStay(); UZ.track('answer', { once: 'a:' + todayAnswerId(key) }); }   // 사용 기록: 오늘의 질문에 처음 대답했다(글은 보내지 않는다)
+  if (first) { markGrape('answer'); UZ.track('answer', { once: 'a:' + todayAnswerId(key) }); }   // 사용 기록: 오늘의 질문에 처음 대답했다(글은 보내지 않는다)
   closeSheet();
   render();
   toast('저장했어요');
@@ -1644,6 +1665,7 @@ function viewToday() {
       <div class="t8-main"><div class="t8-in">
         ${pageHead('bubble', '오늘의 질문', `<div class="sm">${dateLine(demoDate())}</div>`)}
         ${qCard(q, true)}
+        ${vineCard()}
         ${mapCard()}
       </div></div>
     </div>`;
@@ -1653,6 +1675,7 @@ function viewToday() {
   return `<div class="col">
     ${pageHead('bubble', '오늘의 질문', `<div class="sm">${dateLine(demoDate())}</div>`)}
     ${qCard(q, true)}
+    ${vineCard()}
     <div class="past-h">지난 질문</div>
     ${pastBox}
     ${mapCard()}
@@ -2555,6 +2578,9 @@ function viewWalk(w) {
 // 한 토막(한 단계씩): 0 본문 읽기 → 1 보기 → 2 묵상(쓰는 칸) → 3 나의 해석(쓰는 칸) → 4 풀이 → 5 머묾. 본문 노트(원어·배경)는 위에 접혀 있고 언제든 편다.
 // 사실(본문 노트)은 먼저, 해석(풀이)은 내 묵상과 나의 해석 뒤에 둔다(철학 ⑪). 마친 토막은 머묾까지, 묵상이나 나의 해석만 적어 둔 토막은 풀이까지 펴진 채로 연다
 let WE = { key: '', max: 0, view: 0 };
+// 이 편을 연 때(사용 기록 note.walk-done의 머문 초용. 이 기기 메모리에만 두고, 다른 화면으로 가면 비운다)
+let WALK_AT = { key: '', at: 0 };
+function walkOpened(w, ep) { const k = w.id + '/' + ep.n; if (WALK_AT.key !== k) WALK_AT = { key: k, at: Date.now() }; }
 // 본문 노트: 첫 줄은 낱말(히브리어나 그리스어) 우리말 뜻, 그 아래 풀이. 낱말 번호·나오는 절·사전 뜻·같은 낱말은 접힌 "근거"에 모은다(S-43)
 const walkNoteRow = n => `<li class="wk-note"><div><b>${esc(n.w)}</b>(<span class="wk-heb" ${n.s.startsWith('G') ? 'lang="grc"' : 'lang="he" dir="rtl"'}>${esc(n.heb)}</span>) ${esc(n.ko)}</div><p>${esc(n.t)}</p><details class="wk-why"><summary class="sm">근거</summary><p class="sm">낱말 번호 ${esc(n.s)}. 이 편에서 나오는 절 ${esc(n.at.join(', '))}. 사전의 영어 뜻 ${esc(n.gloss)}.${n.see.length ? ` 같은 낱말이 나오는 곳 ${esc(n.see.join(', '))}.` : ''}</p></details></li>`;
 // 머묾은 두 읽는 방식에서 함께 쓴다. 단계 화면에서만 제목에 초점을 옮긴다(S-70)
@@ -2586,6 +2612,7 @@ function walkShareSheet(w, ep) {
 function viewWalkEp(w, ep) {
   const wide = isWide(), i = w.eps.indexOf(ep), key = w.id + '/' + ep.n, mine = getMine(walkMineId(w, ep)), mine2 = getMine(walkMine2Id(w, ep));
   const st = walkDone(w, ep) ? 5 : (mine || mine2) ? 4 : 0;   // 마친 토막은 머묾까지, 적어 두고 안 마친 토막은 풀이까지 펴 둔다(다음 →으로 머묾에 들어가야 마친 날이 남는다)
+  walkOpened(w, ep);
   if (WE.key !== key) {
     WE = { key, max: st, view: st };
     if (!walkDone(w, ep) && firstOpenToday(key)) setTimeout(() => showOpening(null), 0);   // 마치지 않은 편을 그날 처음 열면 말씀을 열며 한 장(S-60)
@@ -2627,6 +2654,7 @@ function viewWalkEp(w, ep) {
 // 통독은 한 편을 한 화면에 펴고, 마음에 남은 글만 접힌 칸에 적는다(S-70)
 function viewWalkRead(w, ep) {
   const wide = isWide(), i = w.eps.indexOf(ep), mine = getMine(walkMineId(w, ep));
+  walkOpened(w, ep);
   if (!walkDone(w, ep) && firstOpenToday(w.id + '/read')) setTimeout(() => showOpening(null), 0);   // 통독은 연재마다 하루 한 번만(S-71). 1일 1편은 편마다
   const head = `<div class="card xhead"><div class="xlb" style="margin:0 0 6px">${esc(walkName(w))} ${ep.n}편</div><div class="sf xwq">${esc(ep.title)}</div></div>`
     + (ep.img ? `<img class="q-img" src="${esc(ep.img)}" alt="${esc(ep.art || '')}" width="1200" height="675" decoding="async" style="margin-top:12px">` : '');
@@ -2741,7 +2769,7 @@ function commitStep(n, i, mark) {
   if (mark) n.ok[i] = true;
   if (i === 1) n.refs = refsOf(n.steps[1]);
   if (t) {
-    if (mark || X.dirty) { const now = Date.now(); n.last = i; n.touched = now; q.touched = now; markStay(); }
+    if (mark || X.dirty) { const now = Date.now(); n.last = i; n.touched = now; q.touched = now; markGrape('note'); }
     syncLines(n, q, n.steps[i]);
   }
   X.dirty = false; saveNotes();
@@ -2868,7 +2896,7 @@ function saveFree(sync) {
   clearTimeout(F.timer);
   if (F.ed && F.dirty) {
     const doc = cleanDoc(F.ed.json()), now = Date.now();
-    if (doc) { if (JSON.stringify(doc) !== JSON.stringify(n.free?.doc)) markStay(); n.free = { doc, touched: now }; n.touched = now; q.touched = now; F.dirty = false; F.warned = false; }
+    if (doc) { if (JSON.stringify(doc) !== JSON.stringify(n.free?.doc)) markGrape('note'); n.free = { doc, touched: now }; n.touched = now; q.touched = now; F.dirty = false; F.warned = false; }
     else if (!F.warned) { F.warned = true; toast('글이 너무 길어서 저장하지 못했어요'); }
   }
   if (sync && n.free && n.free.doc) syncLines(n, q, docLines(n.free.doc).join('\n'));
@@ -3169,8 +3197,14 @@ const walkWhen = n => (n === demoDN() + 1 ? '내일' : walkDay(n) + '에');   //
 // 머묾까지 오면 마친 것: 그날(데모는 고른 날)의 정오를 done에 남긴다. 처음 마친 날을 지킨다
 function markWalkDone(w, ep) {
   const id = walkMineId(w, ep), now = Date.now(), day = dnDate(demoDN()).getTime() + DAY / 2, m = N.wk.find(x => x.id === id);
-  if (m) { if (!m.done) { m.done = day; m.at = now; } } else N.wk.push({ id, mine: '', at: now, done: day });
+  let fresh = false;   // 이 토막을 처음 마치는 순간에만 포도알이 열린다
+  if (m) { if (!m.done) { m.done = day; m.at = now; fresh = true; } } else { N.wk.push({ id, mine: '', at: now, done: day }); fresh = true; }
   saveNotes();
+  if (fresh) {
+    markGrape('walk');
+    // 사용 기록: 질문으로 묵상하기 한 편을 끝까지 마쳤다(편마다 처음 한 번). 숫자는 이 편을 열고 마칠 때까지 머문 초(모르면 없음). 글·연재·편 이름은 보내지 않는다
+    UZ.track('walk-done', { n: WALK_AT.key === w.id + '/' + ep.n ? (Date.now() - WALK_AT.at) / 1000 : null });
+  }
 }
 const walkIsOpen = (w, ep) => Boolean(walkDone(w, ep)) || walkOpenDN(w, w.eps.indexOf(ep)) <= demoDN();
 const walkDay = n => { const d = dnDate(n); return `${mdLine(d)}(${DAYS[d.getDay()]})`; };   // "11월 13일(금)"
@@ -3301,11 +3335,13 @@ function saveWrite() {
   const now = Date.now(), today = W.mode === 'today', since = W.since && W.since <= ymNow() ? W.since : '', ref = W.ref;
   if (W.kind === 'q') {
     const q = { id: newId('q'), text, ref, since, from: today ? 'today' : '', place: W.place || '', at: now, touched: now, state: 'holding', parent: '', trail: [] };
-    N.qs.push(q); markStay(); saveNotes(); W = newDraft('', 'q');
+    N.qs.push(q); markGrape('write'); saveNotes(); W = newDraft('', 'q');
+    UZ.track('keep');   // 사용 기록: 남기기(? 질문 품어 두기)를 했다. 글은 보내지 않는다
     finishWrite(() => qDoneSheet(q));
   } else {
     const f = { id: newId('f'), text, ref, since, place: W.place || '', at: now, touched: now, q: '' };
-    N.fs.push(f); markStay({ dew: true }); saveNotes(); W = newDraft('', 'f');
+    N.fs.push(f); markGrape('write'); saveNotes(); W = newDraft('', 'f');
+    UZ.track('keep');   // 사용 기록: 남기기(! 발견)를 했다. 글은 보내지 않는다
     finishWrite(() => { const c = candQs(f, 1)[0]; c ? fPairSheet(f, c) : fNoneSheet(f); });
   }
 }
@@ -3419,57 +3455,54 @@ function loadVineAnchors() {
   vineAnchorsPending = fetch('img/vine/scene/anchors.json').then(r => { if (!r.ok) throw new Error('anchors'); return r.json(); }).then(a => {
     vineAnchors = a;
     if ($('#main .vine-scene')) render();
-    const tree = $('#popSheet .vine-story-tree'); if (tree) tree.innerHTML = vineScene();
+    const tree = $('#popSheet .vine-story-tree'); if (tree) tree.innerHTML = vineScene({ full: true });
   }).catch(() => { vineAnchorsPending = null; });
 }
-const vineGrape = (frame, style = '') => `<span class="vine-grape" aria-hidden="true" data-frame="${frame}" style="background-position:-${frame * 20}px 0;${style}"></span>`;
 function vineScene(opts = {}) {
   loadVineAnchors();
   const a = vineAnchors, box = opts.crop && a ? a.card.map(v => v / 2) : [0, 0, 384, 256];
-  const [x, y, w, h] = box, total = vineDays(), today = dnStr(demoDN());
+  const [x, y, w, h] = box, g = opts.full ? 90 : vineTreeG(), base = opts.full ? 0 : vineTreeBase(), today = dnStr(demoDN());   // full은 다 자란 첫 나무(나무 완성 장면)
   const image = (name, cls = '', style = '') => `<img class="${cls}" src="img/vine/scene/${name}.png" alt="" aria-hidden="true" style="${style}">`;
   let layers = image('bg-day', 'vine-bg-day') + image('bg-night', 'vine-bg-night');
   if (a) {
-    if (total) layers += image(total <= 40 ? 'trunk-0' : 'trunk-1', 'vine-trunk');
+    if (g) layers += image(g <= 40 ? 'trunk-0' : 'trunk-1', 'vine-trunk');
     a.branches.forEach(b => {
-      const n = vineLeaves(b.id); if (!n) return;
-      const base = b.base[0] / 2, tip = b.tip[0] / 2, cut = base + (tip - base) * n / 10;
-      const left = Math.max(0, Math.min(base, cut) - 2), right = Math.min(384, Math.max(base, cut) + 2);
+      const n = vineBerries(b.id, g); if (!n) return;
+      const bx = b.base[0] / 2, tip = b.tip[0] / 2, cut = bx + (tip - bx) * n / 10;
+      const left = Math.max(0, Math.min(bx, cut) - 2), right = Math.min(384, Math.max(bx, cut) + 2);
       layers += image('branch-' + b.id, 'vine-branch', n < 10 ? `clip-path:inset(0 ${384 - right}px 0 ${left}px)` : '');
     });
-    a.branches.forEach(b => b.leaves.slice(0, vineLeaves(b.id)).forEach((l, j) => {
-      const day = VN.days[(b.id - 1) * 10 + j], frame = VN.dew.includes(day) ? 5 : day === today ? 4 : l.frame;
+    a.branches.forEach(b => b.leaves.slice(0, vineBerries(b.id, g)).forEach((l, j) => {
+      const fresh = (VN.grapes[base + (b.id - 1) * 10 + j] || '').startsWith(today), frame = fresh ? 4 : l.frame;   // 오늘 열린 알의 잎은 갓 돋은 빛깔
       layers += `<span class="vine-leaf" aria-hidden="true" data-frame="${frame}" style="left:${l.x / 2}px;top:${l.y / 2}px;background-position:-${frame * 22}px 0;${l.flip ? 'transform:scaleX(-1)' : ''}"></span>`;
     }));
-    a.branches.forEach(b => {
-      const frame = vineGrapeFrame(vineLeaves(b.id));
-      if (frame !== null) layers += vineGrape(frame, `left:${b.grape[0] / 2}px;top:${b.grape[1] / 2}px`);
-    });
+    a.branches.forEach(b => BERRY_SLOTS.slice(0, vineBerries(b.id, g)).forEach(([sx, sy]) => {
+      layers += vineBerry(b.grape[0] / 2 + BERRY_AT[0] + sx, b.grape[1] / 2 + BERRY_AT[1] + sy);
+    }));
   }
   return `<div class="vine-scene" role="img" aria-label="포도나무" style="--vine-w:${w}px;--vine-h:${h}px"><div class="vine-zoom"><div class="vine-layers" style="left:${-x}px;top:${-y}px">${layers}</div></div></div>`;
 }
+// 열매 i 배지는 열 알이 찬 날, 포도나무 배지는 아홉 송이가 찬 날(첫 나무 기준). 날짜만 쓴다
 function vineBadgeDays() {
-  const days = Object.fromEntries(FRUITS.map((f, i) => [f.k, VN.days[(i + 1) * 10 - 1] || null]));
-  days.vine = VN.days[89] || null;
+  const day = i => (VN.grapes[i] || '').slice(0, 10) || null;
+  const days = Object.fromEntries(FRUITS.map((f, i) => [f.k, day((i + 1) * 10 - 1)]));
+  days.vine = day(89);
   return days;
 }
 const vineBadgeName = fruit => fruit.k === 'vine' ? '포도나무' : `${fruit.name}의 열매`;
 function vineBadgeGroups(days) {
   const fruits = [...FRUITS, VINE_FRUIT];
-  const future = (title, sub, names) => `<section class="vine-badge-group"><h2 class="xlb2 vine-badge-title">${title}</h2><p class="sm vine-badge-sub">${sub}</p><div class="badge-grid">${names.map(name => `<button class="badge-item" type="button" data-act="vine-unopened"><span class="badge-art locked"><span class="vine-badge-empty" aria-hidden="true"></span></span><span class="sm badge-name">${name}</span></button>`).join('')}</div></section>`;
-  return `<section class="vine-badge-group"><h2 class="xlb2 vine-badge-title">성령의 열매</h2><div class="badge-grid">${fruits.map(f => `<button class="badge-item${days[f.k] ? ' earned' : ''}" type="button" data-act="badge-open" data-badge="${f.k}">${badgeVisual(f.k, days[f.k], false)}<span class="sm badge-name">${vineBadgeName(f)}</span></button>`).join('')}</div></section>` +
-    future('포도원', '포도나무 다음에 열려요', ['포도원 일꾼', '두 아들', '포도원 농부', '무화과나무']) +
-    future('새 포도주', '포도원 다음에 열려요', ['가나의 잔치', '새 부대', '마지막 만찬', '나라의 잔치']);
+  return `<section class="vine-badge-group"><h2 class="xlb2 vine-badge-title">성령의 열매</h2><div class="badge-grid">${fruits.map(f => `<button class="badge-item${days[f.k] ? ' earned' : ''}" type="button" data-act="badge-open" data-badge="${f.k}">${badgeVisual(f.k, days[f.k], false)}<span class="sm badge-name">${vineBadgeName(f)}</span></button>`).join('')}</div></section>`;
 }
 function openVineBadge(k) {
   const fruit = k === 'vine' ? VINE_FRUIT : FRUITS.find(f => f.k === k); if (!fruit) return;
   const day = vineBadgeDays()[k], date = day && parseYmd(day);
-  openSheet(`<div class="badge-sheet">${badgeVisual(k, day, true)}<h2>${vineBadgeName(fruit)}</h2><p>${day ? esc(fruit.meaning || fruit.story) : '말씀에 머문 날이 쌓이면 맺혀요'}</p>${date ? `<p class="sm">${date.m}월 ${date.d}일에 받았어요</p><button class="btn" type="button" data-act="vine-story" data-key="${k}">이야기 다시 보기</button>` : ''}<button class="btn lt" type="button" data-act="sheet-x">닫기</button></div>`);
+  openSheet(`<div class="badge-sheet">${badgeVisual(k, day, true)}<h2>${vineBadgeName(fruit)}</h2><p>${day ? esc(fruit.meaning || fruit.story) : (k === 'vine' ? '아홉 열매가 다 맺히면 생겨요' : '포도알이 모이면 맺혀요')}</p>${date ? `<p class="sm">${date.m}월 ${date.d}일에 받았어요</p><button class="btn" type="button" data-act="vine-story" data-key="${k}">이야기 다시 보기</button>` : ''}<button class="btn lt" type="button" data-act="sheet-x">닫기</button></div>`);
 }
 function openFruitScene(k, earned = false) {
   const fruit = k === 'vine' ? VINE_FRUIT : FRUITS.find(f => f.k === k); if (!fruit || !vineBadgeDays()[k]) return;
   const isVine = k === 'vine', title = isVine ? '아홉 열매가 다 맺혔어요' : `${fruit.name}의 열매${earned ? '를 맺었어요' : ''}`;
-  const image = isVine ? `<div class="vine-story-tree">${vineScene()}</div>` : `<img class="vine-story-img" src="img/vine/stories/${k}.webp" width="1200" height="675" alt="${esc(fruit.name)}의 열매 이야기">`;
+  const image = isVine ? `<div class="vine-story-tree">${vineScene({ full: true })}</div>` : `<img class="vine-story-img" src="img/vine/stories/${k}.webp" width="1200" height="675" alt="${esc(fruit.name)}의 열매 이야기">`;
   openSheet(`<div class="vine-story" data-key="${k}">${image}<h2 class="sf">${title}</h2>${fruit.meaning ? `<p class="sm">${esc(fruit.meaning)}</p>` : ''}<p class="vine-story-text">${esc(fruit.story)}</p><p class="sm">${esc(fruit.ref)} · 나의 배지에 ‘${vineBadgeName(fruit)}’가 생겼어요</p><div class="rb2"><button class="btn" type="button" data-act="vine-story-go">포도나무 보기</button><button class="btn lt" type="button" data-act="vine-story-close">닫기</button></div></div>`);
   $('#popSheet').scrollTop = 0;
   vineStoryFollow = earned && k === 'fruit-09' && !VN.seen.includes('vine');
@@ -3483,13 +3516,23 @@ function closeFruitScene(goVine) {
   scheduleVineMoment();
 }
 function viewVine() {
-  return `<div class="col vine-page"><div class="vine-copy"><div class="back-row"><a class="bk" href="#/mine">← 내 기록</a></div><div class="vine-heading"><h1 class="tt">포도나무${DidakoTip.btn('잎은 무언가를 남긴 날마다 하나씩 돋아요. 며칠 쉬어도 시들지 않아요. 발견(!)을 남긴 날의 잎에는 이슬이 맺혀요.', '포도나무')}</h1><span class="sm">요 15:1~8</span></div><p class="sm">말씀에 머문 날마다 잎이 돋고, 성령의 열매가 맺혀요</p></div>
+  const trees = vineTrees();
+  const orchard = trees ? `<div class="vine-copy"><h2 class="xlb2 vine-badge-title">포도원</h2><div class="vine-orchard">${Array.from({ length: trees }, () => '<img src="img/vine/badges/vine.webp" alt="" width="64" height="64" decoding="async">').join('')}</div></div>` : '';
+  return `<div class="col vine-page"><div class="vine-copy"><div class="back-row"><a class="bk" href="#/today">← 오늘의 질문</a></div><div class="vine-heading"><h1 class="tt">포도나무${DidakoTip.btn('오늘의 질문에 대답하기, 남기기, 질문으로 묵상하기, 탐구 노트 쓰기를 그날 처음 하면 포도알이 하나씩 열려요. 열 알이 차면 성령의 열매 한 송이가 맺히고, 아홉 송이가 다 맺히면 포도원에 새 나무를 심어요. 쉬어도 시들지 않아요.', '포도나무')}</h1><span class="sm">요 15:1~8</span></div><p class="sm">포도알이 하나씩 열리고, 열 알이 차면 성령의 열매가 맺혀요</p></div>
     <div class="vine-stage">${vineScene()}</div><div class="vine-fruits">${FRUITS.map((fruit, i) => {
-      const n = vineLeaves(i + 1), state = n === 10 ? 'earned' : n ? 'growing' : 'waiting', tag = n === 10 ? 'button' : 'div';
-      return `<${tag} class="card vine-fruit ${state}"${n === 10 ? ` type="button" data-act="vine-story" data-key="${fruit.k}"` : ''}>${vineGrape(vineGrapeFrame(n) ?? 4)}<span class="vine-fruit-name">${fruit.name}</span></${tag}>`;
-    }).join('')}</div><div class="vine-copy vine-guide">${vineDays() >= 90 ? '<p class="sm">아홉 열매를 다 맺었어요. 다음 포도원은 준비하고 있어요.</p>' : ''}</div></div>`;
+      const n = vineBerries(i + 1), state = n === 10 ? 'earned' : n ? 'growing' : 'waiting', tag = n === 10 ? 'button' : 'div';
+      return `<${tag} class="card vine-fruit ${state}"${n === 10 ? ` type="button" data-act="vine-story" data-key="${fruit.k}"` : ''}>${vineCluster(n)}<span class="vine-fruit-name">${fruit.name}</span></${tag}>`;
+    }).join('')}</div>${orchard}</div>`;
 }
-const VINE_IC = '<svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M11 19c-3 0-5-2-7-5l4-1-3-5 5 1 2-6 3 5 5-2-1 6 3 2c-3 4-6 6-9 5M7 22l6-8M12 15l-2-4M13 14l4-3"/></svg>';
+// 오늘의 질문 카드 바로 아래 포도나무 카드: 그림(가지의 알)이 보이고, 한 줄 글이 지금 자라는 송이를 알려 준다. 숫자는 쓰지 않는다
+function vineCard() {
+  const n = vineGrapes(), g = vineTreeG();
+  const line = !n ? '대답하거나 남기면 포도알이 하나씩 열려요'
+    : n % 90 === 0 ? '아홉 열매가 다 맺혔어요'
+    : g % 10 === 0 ? `${FRUITS[g / 10 - 1].name}의 열매가 맺혔어요`
+    : `${FRUITS[Math.floor(g / 10)].name}의 열매가 자라고 있어요`;
+  return `<div class="past-h">포도나무</div><a class="card vine-card" href="#/mine/vine"><div class="vine-card-in"><div class="vine-stage">${vineScene({ crop: true })}</div><div class="vine-card-row"><span class="vine-card-t">${line}</span><span class="vine-card-go" aria-hidden="true">›</span></div></div></a>`;
+}
 
 function viewBadges() {
   const days = badgeDays(), vine = vineBadgeDays(), seen = badgeSeen([...B.seen, ...BADGES.filter(b => days[b.k]).map(b => b.k), ...Object.keys(vine).filter(k => vine[k])]);
@@ -3528,7 +3571,7 @@ function snQ(q, sel) {
 const snF = f => `<div class="sn y lf" data-act="pair-find" data-id="${f.id}"><span class="mk" aria-hidden="true">!</span><span class="tx4">${esc(f.text)}</span><span class="sft"><span class="mt" style="margin:0">${fDate(f)}</span><button class="tx" type="button" data-act="pair-find" data-id="${f.id}">질문에 잇기 ›</button></span></div>`;
 // 고른 해는 화면에서만 기억한다. 기기 보관이나 주소에는 넣지 않는다.
 function mineTools(search = true) {
-  return `<div style="display:flex;align-items:center"><a class="ib" href="#/mine/vine" aria-label="포도나무">${VINE_IC}</a><a class="ib" href="#/mine/journal" aria-label="묵상 모아 보기">${JOURNAL_IC}</a><a class="ib" href="#/mine/answers" aria-label="나의 대답">${ANSWERS_IC}</a>${badgeButton()}${search ? `<a class="ib" href="#/mine/search" aria-label="검색" style="margin-right:-10px">${SEARCH_IC}</a>` : ''}</div>`;
+  return `<div style="display:flex;align-items:center"><a class="ib" href="#/mine/journal" aria-label="묵상 모아 보기">${JOURNAL_IC}</a><a class="ib" href="#/mine/answers" aria-label="나의 대답">${ANSWERS_IC}</a>${badgeButton()}${search ? `<a class="ib" href="#/mine/search" aria-label="검색" style="margin-right:-10px">${SEARCH_IC}</a>` : ''}</div>`;
 }
 // ── 묵상 모아 보기(S-45): 질문으로 묵상하기의 묵상·나의 해석을 날짜순으로. 숫자(몇 개)는 보이지 않는다 ──
 // 날짜: 걷기는 그 토막을 마친 날(아직 안 마쳤으면 마지막으로 고친 때)
@@ -3960,7 +4003,7 @@ function render(fromHash, still) {
   if (window.DidakoTip) DidakoTip.close();   // 다시 그리기 전에 열린 ⓘ 말풍선을 닫는다
   const raw = routeKey(), key = guard(raw);
   if (key !== raw) { setHash(key, true); return; }
-  if (key !== lastKey) WE.key = '';   // 다시 열 때 저장된 묵상이나 마친 기록에 맞춰 단계를 연다
+  if (key !== lastKey) { WE.key = ''; WALK_AT.key = ''; }   // 다시 열 때 저장된 묵상이나 마친 기록에 맞춰 단계를 연다
   if (me) ensureVineStart();
   const fm = /^explore\/note\/([\w-]+)$/.exec(key), freeNow = fm && getEx(fm[1]) && getEx(fm[1]).mode === 'free' ? fm[1] : '';   // 자유롭게 쓰는 노트 화면이면 그 노트 id
   const wall = k => /^mine(\/q\/[\w-]+)?$/.test(k);
@@ -4052,7 +4095,6 @@ const acts = {
   'vine-story'(e, el) { openFruitScene(el.dataset.key); },
   'vine-story-close'() { closeFruitScene(false); },
   'vine-story-go'() { closeFruitScene(true); },
-  'vine-unopened'() { openSheet('<h2>아직 열리지 않았어요</h2><div class="ra"><button class="btn lt" type="button" data-act="sheet-x">닫기</button></div>'); },
   'vine-demo'(e, el) { fillVineDemo(Number(el.dataset.days)); },
   'badge-open'(e, el) { openBadge(el.dataset.badge); },
   'badge-go'() { closeSheet(true); },
@@ -4846,7 +4888,7 @@ function mergePayload(local, remote) {
   });
   const starts = [local.start, remote.start].filter(x => parseYmd(x)).sort();
   const av = normalizeVine(local.vine), bv = normalizeVine(remote.vine), vineStarts = [av.start, bv.start].filter(Boolean).sort();
-  const vine = normalizeVine({ start: vineStarts[0] || '', days: [...av.days, ...bv.days], dew: [...av.dew, ...bv.dew], seen: [...av.seen, ...bv.seen] });
+  const vine = normalizeVine({ start: vineStarts[0] || '', grapes: [...av.grapes, ...bv.grapes], seen: [...av.seen, ...bv.seen] });
   const gbsBase = { v: 1, data: readJson(GBS_BASE) };
   // 예전 판 노트가 올린 덩어리에는 gbs 칸이 없다. 그때는 서버 쪽이 바뀌지 않은 것으로 보고 이 기기 기록을 지킨다
   return { v: 1, name: local.name || remote.name || '', start: starts[0] || '', notes, badges, gone: [...removed], vine,

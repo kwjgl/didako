@@ -5,11 +5,13 @@
  * 아래 CACHE 번호는 남겨 둔 사본의 이름표다. 번호를 올리면 예전 사본을 지운다(AGENTS.md 서비스워커 캐시).
  * 데모에는 서버가 없다. 같은 주소의 파일만 다루고, 글꼴 같은 다른 주소의 요청은 건드리지 않는다.
  */
-const CACHE = 'didako-note-v115';
+const CACHE = 'didako-note-v117';
 const SHELL = ['./', 'index.html', 'config.js', 'splash.js', 'practice.js', 'design-styles.css', 'info-tip.js', 'guide.js', 'guide.css', 'usage.js', 'demo-data.js', 'questions-data.js', 'places.js', 'walks-data.js', 'map.html', 'map-places.js', 'words-ko.js', 'vendor/tiptap-2.27.3.js', 'manifest.webmanifest', 'icons/icon-192.png', 'icons/icon-512.png', 'icons/icon-maskable-512.png', 'icons/apple-touch-icon.png', 'icons/favicon-32.png'];
 // 나의 배지 그림은 처음 열 때 한꺼번에 받느라 늦게 떴다. 앱을 받을 때 함께 받아 둔다(S-60). 하나를 못 받아도 설치는 계속한다
 const PRE_IMG = ['a-home', 'a-style', 'a-sync', 'f-first', 'm-map', 'm-year', 'q-first', 'q-found', 't-hold', 'walk-first', 'x-first'].map(k => `img/badges/${k}.webp`)
-  .concat(['fruit-01', 'fruit-02', 'fruit-03', 'fruit-04', 'fruit-05', 'fruit-06', 'fruit-07', 'fruit-08', 'fruit-09', 'vine'].map(k => `img/vine/badges/${k}.webp`));
+  .concat(['fruit-01', 'fruit-02', 'fruit-03', 'fruit-04', 'fruit-05', 'fruit-06', 'fruit-07', 'fruit-08', 'fruit-09', 'vine'].map(k => `img/vine/badges/${k}.webp`))
+  // 포도나무 카드가 오늘의 질문 첫 화면에 있어서, 카드에 쓰는 그림과 자리 표도 함께 받아 둔다(D-77)
+  .concat(['bg-day', 'bg-night', 'trunk-0', 'trunk-1', 'leaf', 'berry', ...Array.from({ length: 9 }, (_, i) => `branch-${i + 1}`)].map(k => `img/vine/scene/${k}.png`), ['img/vine/scene/anchors.json']);
 
 self.addEventListener('install', e => {
   // GitHub Pages가 파일을 잠시 그대로 쓰라고 해도 새로 받도록 사본을 쓰지 않고 요청한다

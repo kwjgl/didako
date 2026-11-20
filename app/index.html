@@ -951,6 +951,35 @@ label.f { display: block; font-size: .85em; font-weight: 600; margin: 12px 0 4px
 @media (min-width: 760px) { .r-t { text-align: justify; } }   /* 읽을 글: 휴대폰은 왼쪽 정렬, 아이패드·PC는 양쪽 정렬 */
 
 .md > :first-child { margin-top: 0; }
+/* 디다코 교재 읽을 글의 앱 파일 그림(D-73) */
+.lesson-img { margin: .6em 0; }
+/* 그림마다 가로/세로(--r)를 지킨다. 화면은 글 칸 폭 가득·최대 가로 640px·최대 세로 560px(D-76) */
+.lesson-img img { display: block; margin: 0 auto; width: min(100%, 640px, calc(560px * var(--r, 1.7778))); height: auto; aspect-ratio: var(--r, 1.7778); border-radius: var(--card-radius, 16px); }
+.lesson-img figcaption { font-size: .82em; color: var(--ink-2); text-align: center; margin: .4em 0 0; word-break: keep-all; }
+/* 종이: 가로 12cm, 세로가 10cm를 넘으면 세로 10cm에 맞춘다(--mm는 종이의 1mm라 미리보기 종이에서도 같은 비율). 캡션과 함께 쪽을 넘긴다 */
+.paper .lesson-img { break-inside: avoid; page-break-inside: avoid; }
+.paper .lesson-img img { width: min(100%, calc(var(--mm) * 120), calc(var(--mm) * 100 * var(--r, 1.7778))); border-radius: 0; }
+.paper .lesson-img figcaption { font-size: .86em; color: #5B6965; }
+/* 그림을 누르면 크게 보기(화면만). 종이 미리보기 안의 그림은 단추 모양을 지운다 */
+.lesson-zoom { display: block; width: 100%; padding: 0; border: 0; background: none; cursor: zoom-in; border-radius: var(--card-radius, 16px); }
+.lesson-zoom:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+.paper .lesson-zoom { cursor: default; pointer-events: none; }
+.zoom { position: fixed; inset: 0; z-index: 200; display: flex; flex-direction: column; background: #0E1312; color: #F2F4F3; animation: pop-fade .2s ease-out; }
+.zoom[hidden] { display: none; }
+.zoom-bar { display: flex; align-items: center; gap: 8px; padding: max(8px, env(safe-area-inset-top)) 8px 4px 16px; flex: none; }
+.zoom-hint { flex: 1; font-size: .82em; color: #B9C4BF; }
+.zoom-x { width: 44px; height: 44px; display: grid; place-items: center; border: 0; border-radius: 50%; background: rgb(255 255 255 / .12); color: #FFFFFF; cursor: pointer; }
+.zoom-x .ic { width: 22px; height: 22px; stroke: currentColor; }
+.zoom-area { flex: 1; min-height: 0; overflow: auto; display: flex; overscroll-behavior: contain; }
+.zoom-area img { display: block; margin: auto; max-width: 100%; max-height: 100%; width: auto; height: auto; cursor: zoom-in; border-radius: 8px; }
+.zoom.big .zoom-area img { max-width: none; max-height: none; cursor: zoom-out; }
+.zoom-cap { flex: none; margin: 0; padding: 8px 16px max(14px, env(safe-area-inset-bottom)); font-size: .88em; color: #D5DCD9; text-align: center; word-break: keep-all; }
+@media (prefers-reduced-motion: reduce) { .zoom { animation: none; } }
+.mg-img-row { display: grid; grid-template-columns: auto 1fr; align-items: center; column-gap: 12px; row-gap: 6px; margin: .6em 0; }
+.mg-img-row img { display: block; grid-row: span 2; height: 72px; width: auto; max-width: 140px; aspect-ratio: var(--r, 1.7778); object-fit: contain; border-radius: var(--card-radius, 16px); }
+.mg-img-row .hint { margin: 0; align-self: end; }
+.mg-img-row .btn { justify-self: start; align-self: start; }
+
 .md p { margin: .6em 0 0; }
 .md .md-h { font-family: var(--f-display); font-size: 1em; font-weight: 700; margin: 1em 0 0; }
 .md .md-list { margin: .5em 0 0; padding-left: 1.3em; }
@@ -1554,6 +1583,11 @@ html.tutorial .demo-tag { display: none !important; }
   <div class="dimmer" id="dimmer" aria-hidden="true"><p class="dm-msg">서로의 이야기에 귀 기울이는 시간</p><p class="dm-sub">화면을 누르면 다시 밝아져요</p></div>
 </div>
 <div class="toast" id="toast" role="status" aria-live="polite" hidden></div>
+<div class="zoom" id="zoom" role="dialog" aria-modal="true" aria-label="그림 크게 보기" hidden>
+  <div class="zoom-bar"><span class="zoom-hint" id="zoomHint"></span><button class="zoom-x" type="button" aria-label="닫기"><svg class="ic" aria-hidden="true"><use href="#i-x"/></svg></button></div>
+  <div class="zoom-area" id="zoomArea"><img id="zoomImg" alt=""></div>
+  <p class="zoom-cap" id="zoomCap" hidden></p>
+</div>
 <div class="pop" id="pop" hidden>
   <div class="pop-scrim" data-act="pop-close"></div>
   <div class="pop-sheet card" id="popSheet" role="dialog" aria-modal="true" aria-labelledby="popT"></div>
@@ -1754,6 +1788,38 @@ function closeSheet() {
   if (sheetFrom && sheetFrom.focus) sheetFrom.focus();
   sheetFrom = null;
   if (shareSheet) { shareSheet = false; armDim(); }   // 나눔하기 중에 열었던 창이면 화면 내려놓기를 다시 건다
+}
+
+// ── 그림 크게 보기: 교재 그림을 누르면 화면 가득 열고, 그림을 다시 누르면 누른 자리를 중심으로 키운다(한 번 더 누르면 맞춤) ──
+// 교재 그림 파일은 공동체 폴더(community/img/books/) 하나를 교회 앱과 함께 쓴다(D-74)
+const BOOK_IMG = '../community/img/books/';
+let zoomFrom = null;
+const ZOOM_HINT = { fit: '그림을 누르면 더 크게 볼 수 있어요', big: '밀어서 보고, 누르면 다시 맞춰요' };
+function openZoom(el) {
+  const z = $('#zoom'), img = $('#zoomImg'), cap = $('#zoomCap'), pic = el.querySelector('img');
+  img.src = BOOK_IMG + el.dataset.src; img.alt = pic ? pic.alt : '';
+  img.dataset.w = el.dataset.w; img.dataset.h = el.dataset.h; img.style.width = '';
+  cap.textContent = el.dataset.cap || ''; cap.hidden = !el.dataset.cap;
+  z.classList.remove('big'); $('#zoomHint').textContent = ZOOM_HINT.fit;
+  z.hidden = false; document.body.classList.add('pop-open');
+  zoomFrom = el; z.querySelector('.zoom-x').focus();
+}
+function closeZoom() {
+  const z = $('#zoom'); if (z.hidden) return;
+  z.hidden = true; z.classList.remove('big'); $('#zoomImg').removeAttribute('src');
+  if ($('#pop').hidden) document.body.classList.remove('pop-open');
+  if (zoomFrom && zoomFrom.isConnected) zoomFrom.focus();
+  zoomFrom = null;
+}
+function toggleZoom(e) {
+  const z = $('#zoom'), area = $('#zoomArea'), img = $('#zoomImg');
+  if (z.classList.contains('big')) { z.classList.remove('big'); img.style.width = ''; $('#zoomHint').textContent = ZOOM_HINT.fit; return; }
+  const r = img.getBoundingClientRect(), a = area.getBoundingClientRect();
+  const rx = r.width ? (e.clientX - r.left) / r.width : .5, ry = r.height ? (e.clientY - r.top) / r.height : .5;
+  // 그림 픽셀의 60%(가로 2000px 그림이면 1200px), 그래도 맞춘 크기의 1.8배는 되게 키운다
+  const w = Math.round(Math.max(Number(img.dataset.w || 0) * .6, r.width * 1.8)), h = Math.round(w * Number(img.dataset.h || 1) / Number(img.dataset.w || 1));
+  z.classList.add('big'); img.style.width = w + 'px'; $('#zoomHint').textContent = ZOOM_HINT.big;
+  area.scrollLeft = Math.max(0, rx * w - (e.clientX - a.left)); area.scrollTop = Math.max(0, ry * h - (e.clientY - a.top));
 }
 
 // ── 설정 창: 화면 설정(한 번만 기억) + 데모용 ──
@@ -3026,9 +3092,14 @@ function ppBlocksHtml(src, o) {
       const vs = Array.isArray(q.vs) ? q.vs.filter(ppHas) : [];
       const help = vs.length ? `<p class="pp-help">관련 구절 ${vs.map(esc).join(', ')}</p>` : '';
       if (isRead(q)) {
-        const parts = mdBlocks(q.t);
+        const parts = readPieces(q).slice();
+        // 맨 위 그림은 첫 문단과 같은 조각으로 묶어 제목이 홀로 남지 않게 한다.
+        if (parts[0] && parts[0].type === 'image' && parts[1] && parts[1].type === 'text') {
+          parts.splice(0, 2, { type: 'html', html: readFigureHtml(parts[0]) + mdHtml(parts[1].text) });
+        }
         parts.forEach((part, pi) => {
-          blocks.push(`<div class="pp-blk${pi ? ' pp-more pp-cont' : i ? ' pp-more' : ''}">${pi || i ? '' : `<h4>${esc(st.name || '단계')}</h4>`}${pi ? '' : ppHas(q.h) ? `<p class="pp-q">${esc(q.h)}</p>` : ''}<div class="pp-intro pp-read md">${mdHtml(part)}</div>${pi === parts.length - 1 ? help : ''}</div>`);
+          const content = part.type === 'image' ? readFigureHtml(part) : part.type === 'html' ? part.html : mdHtml(part.text);
+          blocks.push(`<div class="pp-blk${pi ? ' pp-more pp-cont' : i ? ' pp-more' : ''}">${pi || i ? '' : `<h4>${esc(st.name || '단계')}</h4>`}${pi ? '' : ppHas(q.h) ? `<p class="pp-q">${esc(q.h)}</p>` : ''}<div class="pp-intro pp-read md">${content}</div>${pi === parts.length - 1 ? help : ''}</div>`);
         });
         return;
       }
@@ -3138,7 +3209,7 @@ function zipStore(files) {
   const u16 = n => [n & 255, (n >> 8) & 255], u32 = n => [n & 255, (n >>> 8) & 255, (n >>> 16) & 255, (n >>> 24) & 255];
   let off = 0;
   files.forEach(([name, text]) => {
-    const nm = enc.encode(name), data = enc.encode(text), crc = crc32(data);
+    const nm = enc.encode(name), data = text instanceof Uint8Array ? text : enc.encode(text), crc = crc32(data);
     const common = [...u16(0x0800), ...u16(0), ...u16(0), ...u16(33), ...u32(crc), ...u32(data.length), ...u32(data.length), ...u16(nm.length), ...u16(0)];
     out.push(new Uint8Array([0x50, 0x4b, 3, 4, ...u16(20), ...common]), nm, data);
     cen.push(new Uint8Array([0x50, 0x4b, 1, 2, ...u16(20), ...u16(20), ...common, ...u16(0), ...u16(0), ...u16(0), ...u32(0), ...u32(off)]), nm);
@@ -3181,7 +3252,17 @@ function wordUnder(o, key) {
   for (let k = 0; k < n; k++) ps.push(wPara('', { bot: ['B9C4BF', 4], left: 400, right: k * 8, line: 250, keep: k < n - 1 }));
   return ps.join('');
 }
-function wordLessonXml(src, o, brk) {
+// 그림은 읽을 글의 문단 사이에 둔다. Word는 앱에 있는 JPG·PNG만 문서에 붙인다.
+function wordImageXml(pic, media) {
+  const file = media.map[pic.src]; if (!file) return '';
+  // 종이와 같은 크기: 가로 12cm, 세로가 10cm를 넘으면 세로 10cm에 맞춘다(EMU, 1cm = 360000)
+  let cx = 4320000, cy = Math.round(cx * pic.h / pic.w);
+  if (cy > 3600000) { cy = 3600000; cx = Math.round(cy * pic.w / pic.h); }
+  const drawing = `<w:r><w:drawing><wp:inline xmlns:wp="http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing" distT="0" distB="0" distL="0" distR="0"><wp:extent cx="${cx}" cy="${cy}"/><wp:docPr id="${file.docId}" name="${esc(pic.src)}" descr="${esc(pic.alt)}"/><a:graphic xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main"><a:graphicData uri="http://schemas.openxmlformats.org/drawingml/2006/picture"><pic:pic xmlns:pic="http://schemas.openxmlformats.org/drawingml/2006/picture"><pic:nvPicPr><pic:cNvPr id="0" name="${esc(pic.src)}"/><pic:cNvPicPr/></pic:nvPicPr><pic:blipFill><a:blip r:embed="${file.rid}"/><a:stretch><a:fillRect/></a:stretch></pic:blipFill><pic:spPr><a:xfrm><a:off x="0" y="0"/><a:ext cx="${cx}" cy="${cy}"/></a:xfrm><a:prstGeom prst="rect"><a:avLst/></a:prstGeom></pic:spPr></pic:pic></a:graphicData></a:graphic></wp:inline></w:drawing></w:r>`;
+  if (!pic.cap) return wPara(drawing, { jc: 'center', keep: true, before: 80, after: 80 });
+  return wPara(drawing, { jc: 'center', keep: true, before: 80, after: 40 }) + wPara(wRun(pic.cap, { sz: 18, c: '5B6965' }), { jc: 'center', after: 120 });
+}
+function wordLessonXml(src, o, brk, media) {
   const on = ppBodyOn(src), ps = [];
   ps.push(wPara(wRun(`제${src.no}과${ppHas(src.name) ? ' ' + src.name : ''}`, { f: W_SERIF, b: true, sz: 52 }), { brk, before: 0, after: 80, line: 380 }));
   if (ppHas(src.ref)) ps.push(wPara(wRun(src.ref, { f: W_SERIF, b: true, sz: 24 }), { after: 120 }));
@@ -3205,15 +3286,18 @@ function wordLessonXml(src, o, brk) {
           const bold = part.startsWith('**') && part.endsWith('**');
           return wRun(bold ? part.slice(2, -2) : part, { f: W_SERIF, sz: 22, ...opt, b: bold || !!(opt && opt.b) });
         }).join('');
-        mdBlocks(q.t).forEach(block => {
-          if (block.type === 'h') ps.push(wPara(mdRuns(block.text, { b: true }), { keep: true, after: 80 }));
-          else if (block.type === 'p') ps.push(wPara(mdRuns(block.text), { jc: 'both', after: 80 }));
-          else if (block.items) block.items.forEach(item => ps.push(wPara(
-            wRun(block.type === 'ul' ? '· ' : item.marker, { f: W_SERIF, sz: 22 }) + mdRuns(item.text),
-            { left: 400, hang: 300, after: 80 })));
-          else if (block.type === 'quote') ps.push(wPara(mdRuns(block.text, { c: W_GRAY }), { left: 400, after: 80 }));
-          else if (block.type === 'table') [block.head, ...block.rows].forEach((row, ix) =>
-            ps.push(wPara(mdRuns(row.join(' · '), ix === 0 ? { b: true } : {}), { after: 80 })));
+        readPieces(q).forEach(piece => {
+          if (piece.type === 'image') { if (media) ps.push(wordImageXml(piece, media)); return; }
+          mdBlocks(piece.text).forEach(block => {
+            if (block.type === 'h') ps.push(wPara(mdRuns(block.text, { b: true }), { keep: true, after: 80 }));
+            else if (block.type === 'p') ps.push(wPara(mdRuns(block.text), { jc: 'both', after: 80 }));
+            else if (block.items) block.items.forEach(item => ps.push(wPara(
+              wRun(block.type === 'ul' ? '· ' : item.marker, { f: W_SERIF, sz: 22 }) + mdRuns(item.text),
+              { left: 400, hang: 300, after: 80 })));
+            else if (block.type === 'quote') ps.push(wPara(mdRuns(block.text, { c: W_GRAY }), { left: 400, after: 80 }));
+            else if (block.type === 'table') [block.head, ...block.rows].forEach((row, ix) =>
+              ps.push(wPara(mdRuns(row.join(' · '), ix === 0 ? { b: true } : {}), { after: 80 })));
+          });
         });
         if (vs.length) ps.push(wPara(wRun('관련 구절 ' + vs.join(', '), { c: W_GRAY, sz: 19 }), { keep: true }));
         return;
@@ -3242,7 +3326,8 @@ function wordLessonXml(src, o, brk) {
   return ps.join('');
 }
 // body는 이미 만든 본문 XML 글이다(과 하나, 교재 전체, 리더용이 같이 쓴다). A4, 아래 가운데 쪽 번호
-function buildDocxBlob(body) {
+function buildDocxBlob(body, media) {
+  media = media || { items: [] };
   const sect = '<w:sectPr><w:footerReference w:type="default" r:id="rId2"/><w:pgSz w:w="11906" w:h="16838"/><w:pgMar w:top="907" w:right="1020" w:bottom="907" w:left="1020" w:header="567" w:footer="567" w:gutter="0"/></w:sectPr>';
   const X = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>\n';
   const fr = c => `<w:r><w:rPr><w:color w:val="${W_GRAY}"/><w:sz w:val="16"/></w:rPr>${c}</w:r>`;
@@ -3250,12 +3335,13 @@ function buildDocxBlob(body) {
   const styles = `${X}<w:styles ${W_NS}><w:docDefaults><w:rPrDefault><w:rPr><w:rFonts w:ascii="Malgun Gothic" w:hAnsi="Malgun Gothic" w:eastAsia="Malgun Gothic" w:cs="Malgun Gothic"/><w:sz w:val="20"/><w:szCs w:val="20"/><w:lang w:val="ko-KR" w:eastAsia="ko-KR"/></w:rPr></w:rPrDefault></w:docDefaults><w:style w:type="paragraph" w:default="1" w:styleId="Normal"><w:name w:val="Normal"/><w:qFormat/></w:style></w:styles>`;
   const REL = 'http://schemas.openxmlformats.org/officeDocument/2006/relationships';
   return zipStore([
-    ['[Content_Types].xml', `${X}<Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types"><Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/><Default Extension="xml" ContentType="application/xml"/><Override PartName="/word/document.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml"/><Override PartName="/word/styles.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.styles+xml"/><Override PartName="/word/footer1.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.footer+xml"/></Types>`],
+    ['[Content_Types].xml', `${X}<Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types"><Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/><Default Extension="xml" ContentType="application/xml"/><Default Extension="jpg" ContentType="image/jpeg"/><Default Extension="png" ContentType="image/png"/><Override PartName="/word/document.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml"/><Override PartName="/word/styles.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.styles+xml"/><Override PartName="/word/footer1.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.footer+xml"/></Types>`],
     ['_rels/.rels', `${X}<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="${REL}/officeDocument" Target="word/document.xml"/></Relationships>`],
-    ['word/_rels/document.xml.rels', `${X}<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="${REL}/styles" Target="styles.xml"/><Relationship Id="rId2" Type="${REL}/footer" Target="footer1.xml"/></Relationships>`],
+    ['word/_rels/document.xml.rels', `${X}<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="${REL}/styles" Target="styles.xml"/><Relationship Id="rId2" Type="${REL}/footer" Target="footer1.xml"/>${media.items.map(f => `<Relationship Id="${f.rid}" Type="${REL}/image" Target="media/${f.src}"/>`).join('')}</Relationships>`],
     ['word/document.xml', `${X}<w:document ${W_NS}><w:body>${body}${sect}</w:body></w:document>`],
     ['word/styles.xml', styles],
-    ['word/footer1.xml', footer]
+    ['word/footer1.xml', footer],
+    ...media.items.map(f => ['word/media/' + f.src, f.data])
   ]);
 }
 function wordTocXml(b) {
@@ -3266,6 +3352,33 @@ function wordTocXml(b) {
   b.lessons.forEach(L => ps.push(wPara(wRun(`제${L.no}과${L.name ? ' ' + L.name : ''}`) + wTab + wRun(L.ref || L.date || '', { c: W_GRAY, sz: 19 }), { tab: true, bot: ['DDE4E0', 4], before: 60, after: 60 })));
   if (!b.lessons.length) ps.push(wPara(wRun('아직 과가 없어요', { c: W_GRAY })));
   return ps.join('');
+}
+// Word에는 외부 주소가 아닌 앱 JPG·PNG만 넣는다. 받지 못한 파일은 그 그림만 건너뛴다.
+async function wordMedia(sources) {
+  const names = [...new Set(sources.flatMap(src => src.stages.flatMap(st => st.qs.filter(isRead).flatMap(q => readImages(q).map(img => img.src)))))];
+  const fetched = await Promise.all(names.map(async src => {
+    if (!navigator.onLine) return null;
+    try {
+      const r = await fetch(BOOK_IMG + src, { cache: 'no-store' });
+      if (!r.ok) return null;
+      const data = new Uint8Array(await r.arrayBuffer());
+      const jpg = data.length > 3 && data[0] === 255 && data[1] === 216 && data[2] === 255;
+      const png = data.length > 8 && data[0] === 137 && data[1] === 80 && data[2] === 78 && data[3] === 71;
+      return (src.endsWith('.png') ? png : jpg) ? data : null;
+    } catch (e) { return null; }
+  }));
+  const media = { items: [], map: {}, failed: false };
+  fetched.forEach((data, i) => {
+    if (!data) { media.failed = true; return; }
+    const file = { src: names[i], data, rid: 'rId' + (media.items.length + 3), docId: media.items.length + 1 };
+    media.items.push(file); media.map[file.src] = file;
+  });
+  return media;
+}
+async function exportWord(sources, build, name) {
+  const media = await wordMedia(sources);
+  downloadDocx(buildDocxBlob(build(media), media), name);
+  if (media.failed) toast('그림 일부를 넣지 못했어요. 인터넷 연결을 확인해 주세요.');
 }
 function downloadDocx(blob, name) {
   const url = URL.createObjectURL(blob), a = document.createElement('a');
@@ -3393,7 +3506,8 @@ function mgWriteHtml(b, L, g) {
         ${isRead(q) ? `${field('q-h', '제목 (선택)', q.h, { id: 'mge-' + q.id + '-h', si, qi })}
           ${field('q-t', '글', q.t, { id: 'mge-' + q.id + '-t', ta: true, rows: 6, si, qi })}
           <div class="mg-md"><span class="mg-md-lbl">쓸 수 있는 꾸미기</span><code>**굵게**</code><code>### 소제목</code><code>- 목록</code><code>&gt; 인용</code><code>| 표 |</code></div>
-          ${field('q-vs', '관련 구절 (선택)', (q.vs || []).join(', '), { id: 'mge-' + q.id + '-vs', si, qi, placeholder: '예: 요한복음 3:16' })}` :
+          ${field('q-vs', '관련 구절 (선택)', (q.vs || []).join(', '), { id: 'mge-' + q.id + '-vs', si, qi, placeholder: '예: 요한복음 3:16' })}
+          ${readImages(q).map(img => `<div class="mg-img-row">${readImgTag(img, 'loading="lazy" onerror="this.parentElement.hidden=true"')}${img.cap ? `<p class="hint">${esc(img.cap)}</p>` : ''}<button class="btn ghost small" type="button" data-act="mg-img-remove" data-si="${si}" data-qi="${qi}" data-ii="${img.index}">그림 빼기</button></div>`).join('')}` :
           `${field('q-t', '질문', q.t, { id: 'mge-' + q.id + '-t', ta: true, si, qi, hint: key + ':' + q.id })}
           ${field('q-sub', '보조 설명', q.sub, { id: 'mge-' + q.id + '-sub', si, qi })}
           ${field('q-vs', '관련 구절', (q.vs || []).join(', '), { id: 'mge-' + q.id + '-vs', si, qi, placeholder: '예: 요한복음 10:11, 이사야 5:1~2' })}
@@ -4687,6 +4801,16 @@ function usageKeep(sentence, action) {
     if (action) UZ.track('keep-action', { once: 'ka:' + id });
   } catch (e) { /* 기록 못 해도 앱은 그대로 */ }
 }
+// 핵심 행동 둘(018): 오늘의 말씀 퀴즈를 풀었다(정답을 찾은 날, 그 퀴즈마다 하루 한 번) · 나눔하기를 끝까지 마쳤다(나눔을 시작할 때마다 한 번, n = 시작해서 마칠 때까지 지난 초). 글·퀴즈·과 이름은 보내지 않는다
+function usageQuiz(key) {
+  if (!LIVE) return;
+  try { UZ.track('quiz-done', { daily: 'qz:' + key }); } catch (e) { /* 기록 못 해도 앱은 그대로 */ }
+}
+function usageShareDone() {
+  if (!LIVE || R.doneSent) return;
+  R.doneSent = true;
+  try { UZ.track('share-done', { n: t0 ? (Date.now() - t0) / 1000 : null }); } catch (e) { /* 기록 못 해도 앱은 그대로 */ }
+}
 // 그 기록을 남긴 뒤 지난 날 수(기록의 날짜로 센다. 못 읽으면 null)
 const usageAge = e => { const d = UZ.dayDiff(e.year + '-' + String(e.month).padStart(2, '0') + '-' + String(dayOf(e)).padStart(2, '0')); return d === null ? null : Math.max(0, d); };
 // 돌아보기를 남겼다
@@ -4798,6 +4922,36 @@ function mdHtml(input) {
     return '';
   }).join('');
 }
+// 읽을 글의 빈 줄로 나눈 문단 번호에 그림을 배치한다. 주소는 파일 이름만 허용한다.
+function readImages(q) {
+  if (!isRead(q) || !Array.isArray(q.imgs)) return [];
+  return q.imgs.slice(0, 6).flatMap((img, index) => {
+    if (!img || typeof img.src !== 'string' || !/^[a-z0-9-]{1,60}\.(jpg|png)$/.test(img.src)) return [];
+    // 가로·세로 픽셀(100~4000 정수)이 없으면 비율을 알 수 없어 그리지 않는다(D-76)
+    const px = v => Number.isInteger(v) && v >= 100 && v <= 4000;
+    if (!px(img.w) || !px(img.h)) return [];
+    const after = typeof img.after === 'number' && Number.isFinite(img.after) ? Math.max(0, Math.trunc(img.after)) : 0;
+    return [{ src: img.src, w: img.w, h: img.h, alt: String(img.alt || '').slice(0, 200), cap: String(img.cap || '').trim().slice(0, 80), after, index }];
+  });
+}
+function readPieces(q) {
+  const paragraphs = String(q.t || '').replace(/\r\n?/g, '\n').split('\n\n');
+  const placed = new Map();
+  readImages(q).forEach(pic => {
+    const pos = Math.min(pic.after, paragraphs.length);
+    if (!placed.has(pos)) placed.set(pos, []);
+    placed.get(pos).push({ ...pic, type: 'image' });
+  });
+  const result = [];
+  for (let i = 0; i <= paragraphs.length; i++) {
+    if (i) result.push({ type: 'text', text: paragraphs[i - 1] });
+    if (placed.has(i)) result.push(...placed.get(i));
+  }
+  return result;
+}
+const readImgTag = (pic, more) => `<img src="${BOOK_IMG}${esc(pic.src)}" alt="${esc(pic.alt)}" width="${pic.w}" height="${pic.h}" style="--r: ${(pic.w / pic.h).toFixed(4)}" ${more}>`;
+const readFigureHtml = pic => `<figure class="lesson-img"><button class="lesson-zoom" type="button" data-act="img-zoom" data-src="${esc(pic.src)}" data-w="${pic.w}" data-h="${pic.h}" data-cap="${esc(pic.cap)}" aria-label="그림 크게 보기${pic.alt ? ': ' + esc(pic.alt) : ''}">${readImgTag(pic, 'loading="lazy" decoding="async" onerror="this.closest(\'figure\').hidden=true"')}</button>${pic.cap ? `<figcaption>${esc(pic.cap)}</figcaption>` : ''}</figure>`;
+const readBodyHtml = q => readPieces(q).map(part => part.type === 'image' ? readFigureHtml(part) : mdHtml(part.text)).join('');
 function mdPlain(text) {
   const clean = s => String(s).replace(/\*\*/g, '');
   return mdBlocks(text).map(b => b.type === 'table'
@@ -4808,7 +4962,7 @@ function mdPlain(text) {
 function readHtml(st, q) {
   return `<article class="card qcard rcard" id="q-${q.id}"><div class="q-meta"><span class="q-eyebrow mg-pills">${mgChips([st.name, '읽을 글'])}</span></div>
     ${String(q.h || '').trim() ? `<h3 class="q-t">${esc(q.h)}</h3>` : ''}
-    <div class="r-t md">${mdHtml(q.t)}</div>
+    <div class="r-t md">${readBodyHtml(q)}</div>
     ${Array.isArray(q.vs) && q.vs.length ? `<div class="verse-row"><span class="lab">관련 구절</span>${q.vs.map(verseChip).join('')}</div>` : ''}
     </article>`;
 }
@@ -5079,7 +5233,7 @@ function tick() { if (R.on) $$('.tm').forEach(e => { e.textContent = elapsed(); 
 function clearTimers() { clearTimeout(autoT); clearTimeout(dimT); clearInterval(tickT); autoT = dimT = tickT = 0; }
 function startShare() {
   usageLesson('first');
-  R.steps = buildSteps(); R.pos = 0; R.on = true; t0 = Date.now(); clearInterval(tickT); tickT = setInterval(tick, 30000);
+  R.steps = buildSteps(); R.pos = 0; R.on = true; R.doneSent = false; t0 = Date.now(); clearInterval(tickT); tickT = setInterval(tick, 30000);
   stage.hidden = false; document.body.classList.add('sharing');
   stage.classList.toggle('big', R.view === 'big'); stage.classList.remove('dim');
   requestWake(); renderStep();
@@ -5179,6 +5333,7 @@ function renderStep() {
     html = `<div class="st-in"><div class="bless" aria-live="polite"><div class="st-eyebrow bl-lead">함께 읽어요</div>${BLESS_LINES.map((l, i) => `<p class="${i === BLESS_LINES.length - 1 ? 'lastline' : ''}" style="--i:${i}">${esc(l)}</p>`).join('')}<span class="verse bl-ref">${esc(BLESS_REF)}</span></div></div>`;
     nav = prev + next();
   } else if (s.t === 'done') {
+    usageShareDone();
     if (LIVE) touchLive(thisLesson().id, { shared: true }); else ls.set(K.shareDone, '1');   // 나눔하기를 끝까지 넘겼다: 이때부터 내 기록에 이번 주 기록이 나타난다
     html = `<div class="st-in center">${bookmarkSvg()}<div class="center">${bookHtml(true)}</div><h1 class="h2d" style="margin:.5em 0 0;font-size:1.2em">오늘 나눈 말씀 · ${esc(L.ref)}</h1>
       <div class="done-btns"><button class="btn" type="button" data-act="pray">${ic('cord')}함께 기도하기 → 코이데로 이동</button><button class="btn ghost" type="button" data-act="finish">마치기</button></div></div>`;
@@ -5802,6 +5957,7 @@ function rerender() {
 
 // ── 눌림 처리 ──
 const acts = {
+  'img-zoom'(e, el) { if (!el.closest('.paper')) openZoom(el); },   // 종이 미리보기 안의 그림은 열지 않는다
   'wq-open'() { WQ = { max: 0, view: 0 }; wqOpenPending = true; location.hash = '#wq'; },
   'wq-next'() { const w = walkWeek(), ta = $('#wqTa'), md = $('#wqMed'); if (ta) { const thoughts = readJson(K.walkThought); thoughts[w.n] = ta.value; ls.set(K.walkThought, JSON.stringify(thoughts)); } if (md) { const meds = readJson(K.walkMeditate); meds[w.n] = md.value; ls.set(K.walkMeditate, JSON.stringify(meds)); } WQ.view = Math.min(4, WQ.view + 1); WQ.max = Math.max(WQ.max, WQ.view); if (WQ.view === 4) { const done = readJson(K.walkDone); if (done[w.n] !== true) { const h = HIDDEN.find(x => w.n >= x.from && w.n <= x.to); if (h && hiddenOpen(h) < HIDDEN_CELLS) hiddenNow = h.from + ':' + hiddenOrder[hiddenOpen(h)]; } done[w.n] = true; ls.set(K.walkDone, JSON.stringify(done)); } route(false); window.scrollTo(0, 0); const head = $('#xHead'); if (head) head.focus({ preventScroll: true }); },
   'wq-view'(e, el) { WQ.view = Math.min(WQ.max, Math.max(0, Number(el.dataset.i))); route(false); window.scrollTo(0, 0); const head = $('#xHead'); if (head) head.focus({ preventScroll: true }); },
@@ -5814,7 +5970,7 @@ const acts = {
     openSheet(`<h2 id="popT">올해의 그림</h2><img class="gallery-preview" src="${src}" alt="${esc(w ? w.alt : n + '주 그림')}"><p class="soft">${n}주</p>${w ? `<p class="lesson-title">${esc(w.q)}</p>` : ''}${n === D.walk ? '<button class="btn wide" type="button" data-act="wq-open">다시 펴 보기</button>' : ''}<button class="btn ghost wide" type="button" data-act="pop-close" data-focus>닫기</button>`);
   },
 
-  'walk-pick'(e, el) { const w = walkWeek(), d = walkDay || walkToday(), day = w.days.find(x => x.d === d), key = w.n + '-' + d, i = Number(el.dataset.i); if (i === day.answer) { const saved = readJson(K.walkRead); if (saved[key] !== true) { lampNow = key; const h = HIDDEN.find(x => w.n >= x.from && w.n <= x.to); if (h && hiddenOpen(h) < HIDDEN_CELLS) hiddenNow = h.from + ':' + hiddenOrder[hiddenOpen(h)]; } saved[key] = true; ls.set(K.walkRead, JSON.stringify(saved)); delete walkWrong[key]; } else walkWrong[key] = i; walkRedraw(); },
+  'walk-pick'(e, el) { const w = walkWeek(), d = walkDay || walkToday(), day = w.days.find(x => x.d === d), key = w.n + '-' + d, i = Number(el.dataset.i); if (i === day.answer) { const saved = readJson(K.walkRead); if (saved[key] !== true) { lampNow = key; usageQuiz(key); const h = HIDDEN.find(x => w.n >= x.from && w.n <= x.to); if (h && hiddenOpen(h) < HIDDEN_CELLS) hiddenNow = h.from + ':' + hiddenOrder[hiddenOpen(h)]; } saved[key] = true; ls.set(K.walkRead, JSON.stringify(saved)); delete walkWrong[key]; } else walkWrong[key] = i; walkRedraw(); },
   'walk-day'(e, el) { const days = ['월', '화', '수', '목', '금'], d = el.dataset.d; if (days.indexOf(d) > days.indexOf(walkToday())) { toast(walkNames[d] + '에 열려요'); return; } walkDay = d; walkRedraw(); },
   'ad-tab'(e, el) { AD.tab = el.dataset.v === 'analysis' ? 'analysis' : 'manage'; AD.apAsk = false; adRedraw(`[data-act="ad-tab"][data-v="${AD.tab}"]`); },
   'ad-fold'(e, el) { const k = el.dataset.v; AD.fold[k] = !AD.fold[k]; adRedraw(`[data-act="ad-fold"][data-v="${k}"]`); },
@@ -6092,6 +6248,17 @@ const acts = {
   'mg-stage-del-do'(e, el) { closeSheet(); mgStageDelete(Number(el.dataset.si)); },
   'mg-q-add'(e, el) { mgQuestionChange(el, 'add'); },
   'mg-read-add'(e, el) { mgQuestionChange(el, 'read-add'); },
+  'mg-img-remove'(e, el) {
+    const c = mgEditCurrent(), st = c && c.g.stages[Number(el.dataset.si)], q = st && st.qs[Number(el.dataset.qi)], ix = Number(el.dataset.ii);
+    if (!isRead(q) || !Array.isArray(q.imgs) || !q.imgs[ix]) return;
+    openSheet(sheetHead('그림 빼기') + '<p>이 그림을 읽을 글에서 뺄까요?</p><p class="hint">그림 파일은 앱에 남아 있어요. 다시 넣으려면 앱 관리자에게 알려 주세요.</p><div class="set-btns"><button class="btn ghost" type="button" data-act="pop-close">그만두기</button><button class="btn" type="button" data-act="mg-img-remove-do" data-si="' + Number(el.dataset.si) + '" data-qi="' + Number(el.dataset.qi) + '" data-ii="' + ix + '">빼기</button></div>');
+  },
+  'mg-img-remove-do'(e, el) {
+    const c = mgEditCurrent(), st = c && c.g.stages[Number(el.dataset.si)], q = st && st.qs[Number(el.dataset.qi)], ix = Number(el.dataset.ii);
+    if (!isRead(q) || !Array.isArray(q.imgs) || !q.imgs[ix]) return;
+    q.imgs.splice(ix, 1); c.b.edited = true; mgDirty(c.b, c.L);
+    closeSheet(); mgEditRedraw();
+  },
   'mg-q-dup'(e, el) { mgQuestionChange(el, 'dup'); },
   'mg-q-up'(e, el) { mgQuestionChange(el, 'up'); },
   'mg-q-down'(e, el) { mgQuestionChange(el, 'down'); },
@@ -6188,19 +6355,20 @@ const acts = {
   later() { toast('다음 단계에서 열려요'); },
   // 인쇄: PDF는 기기의 인쇄 창, 대상·답변 공간을 바꾸면 종이를 다시 그린다
   'pp-pdf'() { window.print(); },
-  'pp-word-book'() {
+  async 'pp-word-book'() {
     const b = mgBook((parseHash().arg || '').slice(4)); if (!b) return;
-    const o = { leader: PP.leader, space: PP.space, memo: null };
-    downloadDocx(buildDocxBlob(wordTocXml(b) + b.lessons.map(L => wordLessonXml(ppSource(b, L), o, true)).join('')), `${b.title} 전체${PP.leader ? ' (리더용)' : ''}`);
+    const o = { leader: PP.leader, space: PP.space, memo: null }, sources = b.lessons.map(L => ppSource(b, L));
+    await exportWord(sources, media => wordTocXml(b) + sources.map(src => wordLessonXml(src, o, true, media)).join(''), `${b.title} 전체${PP.leader ? ' (리더용)' : ''}`);
   },
-  'pp-word-prep'() {
+  async 'pp-word-prep'() {
     if (!isLead() || !(G = readyGuide())) return;
     const src = prepSource();
-    downloadDocx(buildDocxBlob(wordLessonXml(src, prepPrintOpts(), false)), `${src.book} 제${src.no}과 ${src.name} (${PP.leader ? '리더용 · 내 메모' : '회원용'})`);
+    await exportWord([src], media => wordLessonXml(src, prepPrintOpts(), false, media), `${src.book} 제${src.no}과 ${src.name} (${PP.leader ? '리더용 · 내 메모' : '회원용'})`);
   },
-  'pp-word'() {
+  async 'pp-word'() {
     const m = /^mx-([\w-]+)\.(\d+)$/.exec(parseHash().arg || ''), b = m && mgBook(m[1]), L = b && b.lessons.find(l => l.no === Number(m[2])); if (!L) return;
-    downloadDocx(buildDocxBlob(wordLessonXml(ppSource(b, L), { leader: PP.leader, space: PP.space, memo: null }, false)), `${b.title} 제${L.no}과 ${L.name || ''}${PP.leader ? ' (리더용)' : ''}`);
+    const src = ppSource(b, L);
+    await exportWord([src], media => wordLessonXml(src, { leader: PP.leader, space: PP.space, memo: null }, false, media), `${b.title} 제${L.no}과 ${L.name || ''}${PP.leader ? ' (리더용)' : ''}`);
   },
   'pp-target'(e, el) { PP.leader = el.dataset.v === '1'; recRedraw(); },
   'pp-space'(e, el) { PP.space = ['none', 'mid', 'wide'].includes(el.dataset.v) ? el.dataset.v : 'mid'; recRedraw(); },
@@ -6577,6 +6745,11 @@ document.addEventListener('click', e => {
   }
   const sview = e.target.closest('[data-sview]');
   if (sview) { R.view = sview.dataset.sview; renderStart(); return; }
+  if (e.target.closest('#zoom')) {
+    if (e.target.id === 'zoomImg') toggleZoom(e);
+    else if (e.target.closest('.zoom-x') || e.target.id === 'zoomArea') closeZoom();
+    return;
+  }
   const el = e.target.closest('[data-act]');
   if (el && acts[el.dataset.act]) { e.preventDefault(); acts[el.dataset.act](e, el); return; }
   const menu = $('#settings');
@@ -6592,6 +6765,7 @@ document.addEventListener('keydown', e => {
   // 책장의 카드(button이 아닌 칸)를 키보드로 열기
   if ((e.key === 'Enter' || e.key === ' ') && e.target.classList && e.target.classList.contains('sh-card')) { e.preventDefault(); e.target.click(); return; }
   if (e.key !== 'Escape') return;
+  if (!$('#zoom').hidden) { closeZoom(); return; }
   if (!$('#pop').hidden) closeSheet(); else if (!$('#opening').hidden) hideOpening(); else closeMenu();
 });
 // 책장 카드의 표지 그림을 못 불러오면 그 자리를 숨긴다(카드는 그대로)

@@ -4,7 +4,7 @@
  * 아래 CACHE 번호는 남겨 둔 사본의 이름표다. 번호를 올리면 예전 사본을 지운다(AGENTS.md 서비스워커 캐시).
  * 데모에는 서버가 없다. 같은 주소의 파일만 다루고, 글꼴 같은 다른 주소의 요청은 건드리지 않는다.
  */
-const CACHE = 'didako-v136';
+const CACHE = 'didako-v137';
 const SHELL = ['./', 'index.html', 'config.js', 'sb.js', 'church-api.js', 'design-styles.css', 'info-tip.js', 'covers.js', 'demo-data.js', 'book-gospel.js', 'book-prophets.js', '../community/book-trinity.js', '../community/book-family.js', '../community/book-jesus-walk.js', '../note/places.js', '../note/splash.js', '../note/guide.js', '../note/guide.css', '../note/usage.js', 'practice.js', 'manifest.webmanifest', 'icons/icon-192.png', 'icons/icon-512.png', 'icons/icon-maskable-512.png', 'icons/apple-touch-icon.png', 'icons/favicon-32.png'];
 
 self.addEventListener('install', e => {
@@ -22,7 +22,8 @@ self.addEventListener('fetch', e => {
   if (/\.(mp4|webm|mov)$/i.test(url.pathname) || req.headers.has('range')) return;
   // 그림(표지, 이번 주의 질문 그림 등)은 남겨 둔 사본을 바로 보이고, 새 그림은 뒤에서 받아 바꿔 둔다.
   //  화면을 다시 그릴 때마다 서버에 물어보느라 그림이 비었다가 들어오는(반짝이는) 것을 막는다(2026-11-10). note/ 그림도 같은 주소라 함께 다룬다
-  if (req.destination === 'image') {
+  //  디다코 교재 그림(../community/img/books/)은 Word 내려받기가 fetch로 받아도(destination이 비어 있음) 그림처럼 다룬다(D-74)
+  if (req.destination === 'image' || url.pathname.startsWith(new URL('../community/img/books/', location).pathname)) {
     e.respondWith(caches.open(CACHE).then(c => c.match(req, { ignoreSearch: true }).then(hit => {
       const net = fetch(req).then(res => { if (res.ok) c.put(req, res.clone()); return res; });
       if (hit) { e.waitUntil(net.catch(() => {})); return hit; }
