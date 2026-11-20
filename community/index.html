@@ -905,6 +905,13 @@ label.f { display: block; font-size: .85em; font-weight: 600; margin: 12px 0 4px
 @media (min-width: 1000px) { .read-wrap { max-width: 968px; } }
 .back-link { display: inline-flex; align-items: center; gap: .3em; min-height: 44px; margin: -8px 0 0 -4px; padding: 0 4px; color: var(--ink-2); text-decoration: none; font-size: .92em; }
 .back-link:hover { color: var(--ink); }
+/* 계정과 동기화 화면(디다코 교회 앱과 같은 모양, 2026-11-20) */
+.acct-page { max-width: 640px; }
+.acct-li { display: flex; align-items: center; gap: 10px; padding: .55em 0; border-top: 1px solid var(--line); }
+.acct-li:first-of-type { border-top: 0; }
+.acct-logo { width: 30px; height: 30px; flex: none; display: grid; place-items: center; border-radius: 50%; border: 1px solid var(--line); background: var(--surface-2); color: var(--ink); }
+.acct-logo svg { width: 16px; height: 16px; }
+.logout.danger { color: var(--warn); }
 .read-grid { display: grid; grid-template-columns: minmax(0, 1fr); gap: 12px; align-items: start; margin-top: 4px; }
 .read-grid > * { min-width: 0; }
 .rg-head { grid-area: head; } .rg-toc { grid-area: toc; } .rg-body { grid-area: body; }
@@ -2055,7 +2062,7 @@ function closeMenu() { const m = $('#settings'); m.hidden = true; $('#gearBtn').
 // 이름표와 어느 탭이 켜지는지는 여기에 모아 둔다. 아직 만들지 않은 화면은 차분한 안내 한 장으로 연다(막다른 길이 없게 이번 주로 가는 링크를 둔다)
 const PLACE = {
   wq: ['이번 주의 질문', 'week'], read: ['펼치기', 'week'], share: ['나눔하기', 'share'], shelf: ['책장', 'shelf'], record: ['내 기록', 'record'], records: ['모든 기록', 'record'], found: ['찾은 말씀', 'record'], gallery: ['올해의 그림', 'record'], more: ['더보기', 'more'],
-  church: ['우리 공동체', 'more'], prep: ['진행 준비', 'share'], prepprint: ['인쇄', 'share'], manage: ['교재 관리', 'more'], 'admin/books': ['디다코 교재 만들기', 'more'], about: ['디다코 소개', 'more'], guide: ['사용법', 'more'], feedback: ['의견 보내기', 'more']
+  church: ['우리 공동체', 'more'], prep: ['진행 준비', 'share'], prepprint: ['인쇄', 'share'], manage: ['교재 관리', 'more'], 'admin/books': ['디다코 교재 만들기', 'more'], about: ['디다코 소개', 'more'], account: ['계정과 동기화', 'more'], guide: ['사용법', 'more'], feedback: ['의견 보내기', 'more']
 };
 const VIEWS = ['start', 'week'].concat(Object.keys(PLACE));
 // 책 안(#book-교재)과 기록 상세(#rec-기록)는 책장·내 기록 안의 화면이다
@@ -3030,6 +3037,7 @@ function moreView() {
         ${dispOpen ? `<div id="dispEx" style="padding:4px 0 14px">${displayControls()}</div>` : ''}
         ${HOME_APP ? '' : `<button class="gr" type="button" data-act="a2hs"><span class="gt"><b>홈 화면에 앱처럼 두기</b></span>${chevron}</button>`}
         <div class="gr" style="cursor:default"><span class="gt"><b>이용 통계 보내기</b>${DidakoTip.btn('앱을 좋게 만들기 위해 이름 없는 사용 기록을 보내요. 누른 것, 연 때와 머문 시간 같은 숫자만이고 이름과 내가 쓴 글은 보내지 않아요. 끄면 이 기기에서는 더 보내지 않아요.', '이용 통계 보내기')}</span><button type="button" class="switch${usageOff() ? '' : ' on'}" role="switch" aria-checked="${!usageOff()}" aria-label="이용 통계 보내기" data-act="usageoff"><span></span></button></div>
+        ${SB ? `<a class="gr" href="#account"><span class="gt"><b>계정과 동기화</b><span class="gd">${syncInfo().on ? '동기화 켜짐' : '동기화 꺼짐'}</span></span>${chevron}</a>` : ''}
       </div>
       <div class="gl">디다코</div><div class="gc">
         <a class="gr" href="#about"><span class="gt"><b>디다코 소개</b></span>${chevron}</a>
@@ -3038,7 +3046,6 @@ function moreView() {
         <a class="gr" href="https://koinobia.com/privacy/" target="_blank" rel="noopener"><span class="gt"><b>개인정보 처리방침</b></span>${chevron}</a>
       </div>
       ${isAppAdmin() ? `<div class="gl">앱 관리</div><div class="gc">${linkRow('디다코 교재 만들기', '', '#admin/books')}</div>` : ''}
-      ${SB ? '<button class="logout" type="button" data-act="sb-logout">이 기기에서 로그아웃</button>' : ''}
     </div></div>`;
 }
 
@@ -3108,6 +3115,36 @@ function guideView() {
   </div>`;
 }
 const feedbackState = { kind:'이랬으면', named:false, text:'' };
+// ── 계정과 동기화(더보기 › 앱 설정 › 계정과 동기화, 2026-11-20): 로그인한 방법, 동기화 상태, 이 기기에서 로그아웃 ──
+// 동기화는 디다코 노트에서 켜고 끈다(노트가 남긴 보관함 표시를 읽어 상태만 보여 준다). 계정 탈퇴도 노트의 같은 화면에서 한다
+const SB_NAME = { kakao: '카카오', google: '구글', apple: '애플' };
+let ACCT_IDS;   // undefined=아직 안 읽음, null=불러오는 중, []=보여 줄 것 없음
+function syncInfo() {
+  let v = null; try { v = JSON.parse(ls.get('didako-note-vault') || 'null'); } catch (e) { v = null; }
+  const on = !!(v && v.on), d = on && v.last ? new Date(v.last) : null;
+  const at = d ? ` · 마지막으로 맡긴 때 ${d.getMonth() + 1}월 ${d.getDate()}일 ${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}` : '';
+  return { on, at };
+}
+function acctLoad() {
+  const idsOf = u => { const ids = ((u && u.identities) || []).map(i => i.provider), md = (u && u.app_metadata) || {};
+    return (ids.length ? ids : md.providers || (md.provider ? [md.provider] : [])).filter((k, i, a) => k && a.indexOf(k) === i); };
+  try { const raw = ls.get('didako-note-sb'); ACCT_IDS = raw ? idsOf(JSON.parse(raw).user) : null; } catch (e) { ACCT_IDS = null; }
+  const done = ids => { ACCT_IDS = ids; if (currentView() === 'account') route(false); };
+  window.DidakoSb.session().then(se => done(se && se.user ? idsOf(se.user) : []), () => done(ACCT_IDS || []));
+}
+function accountView() {
+  if (ACCT_IDS === undefined) acctLoad();
+  const L = ACCT_IDS === undefined ? null : ACCT_IDS, logos = (window.DidakoSb && window.DidakoSb.logos) || {}, i = syncInfo();
+  const card = L === null ? '<section class="card"><p class="mlabel">로그인 계정</p><p class="hint">불러오는 중…</p></section>'
+    : L.length ? `<section class="card"><p class="mlabel">로그인 계정</p>${L.map(k => `<div class="acct-li"><span class="acct-logo">${logos[k] || ''}</span><b>${esc(SB_NAME[k] || k)}</b></div>`).join('')}</section>` : '';
+  return `<div class="feedback-page acct-page"><a class="back-link" href="#more">${ic('back')}<span>더보기</span></a>
+    <div class="page-top" style="margin-top:8px"><h1>계정과 동기화</h1></div>${card}
+    <section class="card"><p class="mlabel">동기화</p><p><b>${i.on ? '켜짐' : '꺼짐'}</b>${esc(i.at)}</p>
+      <p class="hint">${i.on ? '기록은 잠가서 맡겨져요. 운영자도 볼 수 없어요.' : '켜면 기기를 바꿔도 기록이 이어져요.'}</p>
+      <p style="margin:.4em 0 0"><a href="../note/#/more/sync">디다코 노트에서 켜고 끄기 ›</a></p></section>
+    <button class="logout" type="button" data-act="sb-logout">이 기기에서 로그아웃</button>
+    <a class="logout danger" href="../note/#/more/sync" style="text-decoration:none;display:flex;align-items:center;justify-content:center">계정 탈퇴는 디다코 노트에서 해요 ›</a></div>`;
+}
 function feedbackView() {
   const s = feedbackState;
   return `<div class="feedback-page"><a class="back-link" href="#more">${ic('back')}<span>더보기</span></a>
@@ -5166,6 +5203,7 @@ function drawRoute(moved) {
   if (!v) v = D.entered ? 'week' : 'start';
   else if (v !== 'start' && !D.entered) v = 'start';
   if (v === 'admin/books' && !isAppAdmin()) v = 'more';
+  if (v === 'account' && !SB) v = 'more';   // 계정과 동기화는 실제 서버(로그인)에서만
   if (!LIVE && v === 'manage' && /^(mb|me|mp|mx|mxb)-db/.test(arg || '') && !isAppAdmin()) v = 'more';   // 디다코 교재(id가 db로 시작)를 고치는 화면은 앱 관리자만
   // 공동체의 첫 접속 걸음(내 공동체·만들기·초대 링크로 들어오기·신청 뒤)은 데모로 들어온 뒤에만 연다
   if (!LIVE && v === 'start' && !(D.entered && ['list', 'new', 'join', 'wait'].includes(arg))) arg = '';
@@ -5194,7 +5232,7 @@ function drawRoute(moved) {
   $('#topbar').classList.toggle('bare', start);
   $('#topnav').hidden = start; $('#tabs').hidden = start;
   document.body.dataset.view = v;
-  $('#view').innerHTML = start ? startView(arg) : v === 'week' ? weekView() : v === 'wq' ? wqView() : v === 'read' ? readView() : v === 'share' ? shareView() : v === 'shelf' ? shelfView(arg) : v === 'record' ? recordView(arg) : v === 'records' ? recordsView() : v === 'found' ? foundView() : v === 'gallery' ? galleryView() : v === 'more' ? moreView() : v === 'admin/books' ? baseBooksView() : v === 'about' ? aboutView() : v === 'guide' ? guideView() : v === 'feedback' ? feedbackView() : v === 'prep' ? prepView() : v === 'prepprint' ? prepPrintView() : v === 'church' ? churchView() : v === 'manage' ? manageView(arg) : placeView(v);
+  $('#view').innerHTML = start ? startView(arg) : v === 'week' ? weekView() : v === 'wq' ? wqView() : v === 'read' ? readView() : v === 'share' ? shareView() : v === 'shelf' ? shelfView(arg) : v === 'record' ? recordView(arg) : v === 'records' ? recordsView() : v === 'found' ? foundView() : v === 'gallery' ? galleryView() : v === 'more' ? moreView() : v === 'admin/books' ? baseBooksView() : v === 'about' ? aboutView() : v === 'guide' ? guideView() : v === 'feedback' ? feedbackView() : v === 'account' ? accountView() : v === 'prep' ? prepView() : v === 'prepprint' ? prepPrintView() : v === 'church' ? churchView() : v === 'manage' ? manageView(arg) : placeView(v);
   reuseImgs($('#view'));
   const film = start && !!$('#view .welcome');   // 첫 화면(로그인 전)일 때만 영상. 첫 접속의 다음 걸음들에는 없다
   document.body.classList.toggle('wl-on', film); wlFilm(film);
