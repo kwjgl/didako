@@ -3224,7 +3224,7 @@ function zipStore(files) {
 const W_NS = 'xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships"';
 const wRun = (t, o) => {
   o = o || {};
-  const pr = (o.f ? `<w:rFonts w:ascii="${o.f}" w:hAnsi="${o.f}" w:eastAsia="${o.f}"/>` : '') + (o.b ? '<w:b/>' : '') + (o.c ? `<w:color w:val="${o.c}"/>` : '') + (o.sz ? `<w:sz w:val="${o.sz}"/><w:szCs w:val="${o.sz}"/>` : '');
+  const pr = (o.f ? `<w:rFonts w:ascii="${o.f}" w:hAnsi="${o.f}" w:eastAsia="${o.f}"/>` : '') + (o.b ? '<w:b/>' : '') + (o.i ? '<w:i/>' : '') + (o.c ? `<w:color w:val="${o.c}"/>` : '') + (o.sz ? `<w:sz w:val="${o.sz}"/><w:szCs w:val="${o.sz}"/>` : '');
   return `<w:r><w:rPr>${pr}</w:rPr>${String(t).split('\n').map(x => `<w:t xml:space="preserve">${esc(x)}</w:t>`).join('<w:br/>')}</w:r>`;
 };
 const wTab = '<w:r><w:tab/></w:r>';
@@ -3284,10 +3284,7 @@ function wordLessonXml(src, o, brk, media) {
       const vs = Array.isArray(q.vs) ? q.vs.filter(ppHas) : [];
       if (isRead(q)) {
         if (ppHas(q.h)) ps.push(wPara(wRun(q.h, { f: W_SERIF, b: true, sz: 22 }), { keep: true, before: 40 }));
-        const mdRuns = (text, opt) => String(text).split(/(\*\*[^\n*]+\*\*)/g).filter(Boolean).map(part => {
-          const bold = part.startsWith('**') && part.endsWith('**');
-          return wRun(bold ? part.slice(2, -2) : part, { f: W_SERIF, sz: 22, ...opt, b: bold || !!(opt && opt.b) });
-        }).join('');
+        const mdRuns = (text, opt) => mdSpans(text).map(x => wRun(x.t, { f: W_SERIF, sz: 22, ...opt, b: x.b || !!(opt && opt.b), i: x.i })).join('');
         readPieces(q).forEach(piece => {
           if (piece.type === 'image') { if (media) ps.push(wordImageXml(piece, media)); return; }
           mdBlocks(piece.text).forEach(block => {
@@ -3507,7 +3504,7 @@ function mgWriteHtml(b, L, g) {
       ${st.qs.map((q, qi) => `<div class="gr" data-mg-question="${q.id}"><div class="gt"><p class="q-eyebrow mg-pills"><span class="walk-tag" data-mg-stage-label="${si}">${esc(st.name || '단계')}</span><span class="walk-tag">${isRead(q) ? '읽을 글' : qNo(st, qi)}</span></p><div class="keep-form">
         ${isRead(q) ? `${field('q-h', '제목 (선택)', q.h, { id: 'mge-' + q.id + '-h', si, qi })}
           ${field('q-t', '글', q.t, { id: 'mge-' + q.id + '-t', ta: true, rows: 6, si, qi })}
-          <div class="mg-md"><span class="mg-md-lbl">쓸 수 있는 꾸미기</span><code>**굵게**</code><code>### 소제목</code><code>- 목록</code><code>&gt; 인용</code><code>| 표 |</code></div>
+          <div class="mg-md"><span class="mg-md-lbl">쓸 수 있는 꾸미기</span><code>**굵게**</code><code>*기울임*</code><code>### 소제목</code><code>- 목록</code><code>&gt; 인용</code><code>| 표 |</code></div>
           ${field('q-vs', '관련 구절 (선택)', (q.vs || []).join(', '), { id: 'mge-' + q.id + '-vs', si, qi, placeholder: '예: 요한복음 3:16' })}
           ${readImages(q).map(img => `<div class="mg-img-row">${readImgTag(img, 'loading="lazy" onerror="this.parentElement.hidden=true"')}${img.cap ? `<p class="hint">${esc(img.cap)}</p>` : ''}<button class="btn ghost small" type="button" data-act="mg-img-remove" data-si="${si}" data-qi="${qi}" data-ii="${img.index}">그림 빼기</button></div>`).join('')}` :
           `${field('q-t', '질문', q.t, { id: 'mge-' + q.id + '-t', ta: true, si, qi, hint: key + ':' + q.id })}
@@ -4907,9 +4904,23 @@ function mdBlocks(text) {
   }
   return blocks;
 }
+// 줄 안 꾸미기: **굵게**와 *기울임*(2026-11-20). 기울임 별표는 바로 안쪽에 빈칸이 없고 바깥이 영문·숫자·별표가 아닐 때만 꾸미기로 본다(3 * 4 같은 곱하기는 그대로)
+//  옛 아이폰 사파리가 정규식 뒤돌아보기를 못 읽어서 쓰지 않는다
+function mdSpans(text) {
+  const s = String(text), out = [], re = /\*\*([^\n*]+)\*\*|(^|[^\w*])\*([^\s*](?:[^\n*]*[^\s*])?)\*(?![\w*])/g;
+  let last = 0, m;
+  while ((m = re.exec(s))) {
+    const start = m[1] !== undefined ? m.index : m.index + m[2].length;
+    if (start > last) out.push({ t: s.slice(last, start) });
+    out.push(m[1] !== undefined ? { t: m[1], b: true } : { t: m[3], i: true });
+    last = re.lastIndex;
+  }
+  if (last < s.length) out.push({ t: s.slice(last) });
+  return out;
+}
 function mdHtml(input) {
   const blocks = Array.isArray(input) ? input : input && typeof input === 'object' ? [input] : mdBlocks(input);
-  const inline = s => esc(s).replace(/\*\*([^\n*]+)\*\*/g, '<strong>$1</strong>');
+  const inline = s => mdSpans(s).map(x => x.b ? `<strong>${esc(x.t)}</strong>` : x.i ? `<em>${esc(x.t)}</em>` : esc(x.t)).join('');
   const withBreaks = s => inline(s).replace(/\n/g, '<br>');
   return blocks.map(b => {
     if (b.type === 'h') return '<h4 class="md-h">' + inline(b.text) + '</h4>';
@@ -4955,7 +4966,7 @@ const readImgTag = (pic, more) => `<img src="${BOOK_IMG}${esc(pic.src)}" alt="${
 const readFigureHtml = pic => `<figure class="lesson-img"><button class="lesson-zoom" type="button" data-act="img-zoom" data-src="${esc(pic.src)}" data-w="${pic.w}" data-h="${pic.h}" data-cap="${esc(pic.cap)}" aria-label="그림 크게 보기${pic.alt ? ': ' + esc(pic.alt) : ''}">${readImgTag(pic, 'loading="lazy" decoding="async" onerror="this.closest(\'figure\').hidden=true"')}</button>${pic.cap ? `<figcaption>${esc(pic.cap)}</figcaption>` : ''}</figure>`;
 const readBodyHtml = q => readPieces(q).map(part => part.type === 'image' ? readFigureHtml(part) : mdHtml(part.text)).join('');
 function mdPlain(text) {
-  const clean = s => String(s).replace(/\*\*/g, '');
+  const clean = s => mdSpans(s).map(x => x.t).join('');
   return mdBlocks(text).map(b => b.type === 'table'
     ? [b.head, ...b.rows].map(row => row.map(clean).join(' · ')).join('\n')
     : b.items ? b.items.map(x => clean(x.text)).join('\n') : clean(b.text)).join('\n');
