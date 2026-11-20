@@ -422,7 +422,6 @@ html.kg-on body.tabs-off .topbar, html.kg-on body.tabs-off .tabs { transform: no
 .gr[aria-disabled="true"] { cursor: default; }
 .gr .gt { flex: 1; min-width: 0; }
 .gr b { font-weight: 700; }
-.gr b.mhead { font-size: .97rem; font-weight: 600; }   /* 화면 설정 제목: 톱니 메뉴의 제목과 같은 크기 · 굵기 */
 .gr .gd { display: block; font-size: .8em; color: var(--ink-2); }
 .gr .ch { flex: 0 0 auto; color: var(--ink-2); }
 .gr-end { display: flex; align-items: center; gap: .5em; flex: none; color: var(--ink-2); }
@@ -1601,7 +1600,7 @@ function qCard(q, hold = false, holdHref = '#/today/write') {
     ${img}
     <div class="q-bg"><div class="sm b">이 질문의 배경</div><p>${esc(q.bg)}</p></div>
     ${map}
-    ${hold ? `${answerBox}<div class="q-actions"><button class="btn" type="button" data-act="today-answer" data-key="${esc(key)}">${current ? '대답 고치기' : '대답하기'}</button><a class="btn ol" href="${esc(holdHref)}">품기</a></div>` : ''}
+    ${hold ? `${answerBox}<div class="q-actions"><button class="btn" type="button" data-act="today-answer" data-key="${esc(key)}">${current ? '생각 고치기' : '생각 쓰기'}</button><a class="btn ol" href="${esc(holdHref)}">품기</a></div>` : ''}
   </article>`;
 }
 function openTodayAnswer(key) {
@@ -1856,10 +1855,10 @@ function viewMore() {
       <button class="gr" type="button" data-act="community"><span class="gt"><b>디다코 교회</b></span><span class="ch" aria-hidden="true">›</span></button>
     </div>`;
   const account = `<div class="gl">계정과 동기화</div><div class="gc">
-      <a class="gr" href="#/more/sync"><span class="gt"><b>계정과 동기화</b><span class="gd">${on ? `동기화 켜짐${syncLine() ? ' · ' + syncLine() : ''}` : '켜면 기기를 바꿔도 기록이 이어져요'}</span></span><span class="ch" aria-hidden="true">›</span></a>
+      <a class="gr" href="#/more/sync"><span class="gt"><b>계정과 동기화</b><span class="gd">${on ? `연결됨${syncLine() ? ' · 마지막으로 맡긴 때 ' + syncLine() : ''}` : '켜면 기기를 바꿔도 기록이 이어져요'}</span></span><span class="ch" aria-hidden="true">›</span></a>
     </div>`;
   const set1 = `<div class="gl">앱 설정</div><div class="gc">
-      <button class="gr${dispOpen ? ' open' : ''}" type="button" data-act="disp" aria-expanded="${dispOpen}" aria-controls="dispEx"><span class="gt"><b class="mhead">화면 설정</b></span>${dispOpen ? CHEV_DOWN_S : '<span class="ch" aria-hidden="true">›</span>'}</button>
+      <button class="gr${dispOpen ? ' open' : ''}" type="button" data-act="disp" aria-expanded="${dispOpen}" aria-controls="dispEx"><span class="gt"><b>화면 설정</b></span>${dispOpen ? CHEV_DOWN_S : '<span class="ch" aria-hidden="true">›</span>'}</button>
       ${dispOpen ? displayEx() : ''}
       ${HOME_APP ? '' : `<button class="gr" type="button" data-act="a2hs"><span class="gt"><b>홈 화면에 앱처럼 두기</b></span><span class="ch" aria-hidden="true">›</span></button>`}
       <div class="gr" style="cursor:default"><span class="gt"><b>이용 통계 보내기</b>${DidakoTip.btn('앱을 좋게 만들기 위해 이름 없는 사용 기록을 보내요. 누른 것, 연 때와 머문 시간 같은 숫자만이고 이름과 내가 쓴 글은 보내지 않아요. 끄면 이 기기에서는 더 보내지 않아요.', '이용 통계 보내기')}</span><button type="button" class="switch${usageOff() ? '' : ' on'}" role="switch" aria-checked="${!usageOff()}" aria-label="이용 통계 보내기" data-act="usageoff"><span></span></button></div>
@@ -3531,7 +3530,7 @@ function closeFruitScene(goVine) {
 function viewVine() {
   const trees = vineTrees();
   const orchard = trees ? `<div class="vine-copy"><h2 class="xlb2 vine-badge-title">포도원</h2><div class="vine-orchard">${Array.from({ length: trees }, () => '<img src="img/vine/badges/vine.webp" alt="" width="64" height="64" decoding="async">').join('')}</div></div>` : '';
-  return `<div class="col vine-page"><div class="vine-copy"><div class="back-row"><a class="bk" href="#/today">← 오늘의 질문</a></div><div class="vine-heading"><h1 class="tt">포도나무${DidakoTip.btn('오늘의 질문에 대답하기, 남기기, 질문으로 묵상하기, 탐구 노트 쓰기를 그날 처음 하면 포도알이 하나씩 열려요. 열 알이 차면 성령의 열매 한 송이가 맺히고, 아홉 송이가 다 맺히면 포도원에 새 나무를 심어요. 쉬어도 시들지 않아요.', '포도나무')}</h1><span class="sm">요 15:1~8</span></div><p class="sm">포도알이 하나씩 열리고, 열 알이 차면 성령의 열매가 맺혀요</p></div>
+  return `<div class="col vine-page"><div class="vine-copy"><div class="back-row"><a class="bk" href="#/today">← 오늘의 질문</a></div><div class="vine-heading"><h1 class="tt">포도나무${DidakoTip.btn('오늘의 질문에 생각 쓰기, 남기기, 질문으로 묵상하기, 탐구 노트 쓰기를 그날 처음 하면 포도알이 하나씩 열려요. 열 알이 차면 성령의 열매 한 송이가 맺히고, 아홉 송이가 다 맺히면 포도원에 새 나무를 심어요. 쉬어도 시들지 않아요.', '포도나무')}</h1><span class="sm">요 15:1~8</span></div><p class="sm">포도알이 하나씩 열리고, 열 알이 차면 성령의 열매가 맺혀요</p></div>
     <div class="vine-stage">${vineScene()}</div><div class="vine-fruits">${FRUITS.map((fruit, i) => {
       const n = vineBerries(i + 1), state = n === 10 ? 'earned' : n ? 'growing' : 'waiting', tag = n === 10 ? 'button' : 'div';
       return `<${tag} class="card vine-fruit ${state}"${n === 10 ? ` type="button" data-act="vine-story" data-key="${fruit.k}"` : ''}>${vineCluster(n)}<span class="vine-fruit-name">${fruit.name}</span></${tag}>`;
@@ -3540,7 +3539,7 @@ function viewVine() {
 // 오늘의 질문 카드 바로 아래 포도나무 카드: 그림(가지의 알)이 보이고, 한 줄 글이 지금 자라는 송이를 알려 준다. 숫자는 쓰지 않는다
 function vineCard() {
   const n = vineGrapes(), g = vineTreeG();
-  const line = !n ? '대답하거나 남기면 포도알이 하나씩 열려요'
+  const line = !n ? '생각을 쓰거나 남기면 포도알이 하나씩 열려요'
     : n % 90 === 0 ? '아홉 열매가 다 맺혔어요'
     : g % 10 === 0 ? `${FRUITS[g / 10 - 1].name}의 열매가 맺혔어요`
     : `${FRUITS[Math.floor(g / 10)].name}의 열매가 자라고 있어요`;
