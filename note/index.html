@@ -1200,6 +1200,25 @@ const ls = {
 const readJson = k => { try { return JSON.parse(ls.get(k) || '{}') || {}; } catch (e) { return {}; } };
 const K = { display: 'didako-note-display', session: 'didako-note-session', demo: 'didako-note-demo', notes: 'didako-note-notes', badges: 'didako-note-badges', vine: 'didako-note-vine' };
 const pick = (v, list, d) => (list.includes(v) ? v : d);
+// ── 계정 탈퇴 뒤 이 기기의 그 계정 노트 지우기(2026-11-20) ──
+// 교회 앱(app/)에서 탈퇴하면 그 계정의 id 해시({h})를 표시(didako-wipe-note)에 남긴다. 노트가 열릴 때(기억해 둔 노트를 읽기 전에) 이 기기의 노트 주인이 그 계정('sb:'+해시)일 때만 그 노트를 지우고 표시를 치운다.
+// 같은 기기의 다른 계정 노트(보관해 둔 사본 포함)는 그대로 두고, 화면 설정과 이용 통계 끔은 남긴다. 표시가 올바르지 않으면 아무것도 지우지 않고 치우기만 한다.
+(function wipeAfterErase() {
+  const raw = ls.get('didako-wipe-note');
+  if (raw == null) return;
+  ls.del('didako-wipe-note');
+  let w = null; try { w = JSON.parse(raw); } catch (e) { w = null; }
+  const h = w && typeof w.h === 'string' && /^[0-9a-f]{16}$/.test(w.h) ? w.h : '';
+  if (!h) return;
+  const owner = 'sb:' + h;
+  if (ls.get('didako-note-owner') === owner) {
+    [K.notes, K.badges, K.session, K.demo, K.vine, 'didako-note-vault', 'didako-note-lock', 'didako-note-gone', 'didako-note-guide', 'didako-note-walk-open', 'didako-note-owner',
+      'didako-read-answers', 'didako-share-memo', 'didako-live-records', 'didako-record-reflections', 'didako-record-answers', 'didako-record-edits', 'didako-weekwalk-thought', 'didako-weekwalk-meditate', 'didako-weekwalk-done',
+      'didako-read-bookmark', 'didako-gbs-base', 'didako-weekwalk-read', 'didako-share-lesson', 'didako-my-book'].forEach(k => ls.del(k));
+  }
+  ls.del('didako-note-stash.' + owner);
+  if (ls.get('didako-note-sbh') === h) ls.del('didako-note-sbh');
+})();
 
 // ── 화면 설정(화면 모드·색 테마·디자인·큰 글씨): GBS 앱과 같은 값, 기억 자리만 따로 ──
 const MODES = ['auto', 'light', 'dark'], ACCENTS = ['green', 'amber', 'blue', 'rose', 'ink', 'paper'], STYLES = ['basic', 'neu', 'skeu', 'glass'];
