@@ -2521,7 +2521,7 @@ function viewExplore() {
   const walkCard = !wn ? ''
     : wn.ep ? `<div class="card xcard wk-card">${wGo}${walkCover(wn.w)}<div class="sm">${esc(walkName(wn.w))} ${wn.ep.n}편</div><div class="sf xct" style="margin-top:4px">${esc(wn.ep.title)}</div><div class="sm" style="margin-top:4px">${esc(wn.ep.ref)}</div><a class="btn${wbtn}" href="#/explore/walk/${wn.w.id}/${wn.ep.n}" style="margin-top:12px">읽기</a>${wLinks}</div>`
     : wn.next ? `<div class="card xcard wk-card">${wGo}${walkCover(wn.w)}<div class="sm">${walkWhen(wn.nextDN)} 열려요</div><div class="sf xct" style="margin-top:4px">${esc(wn.next.title)}</div><div class="sm" style="margin-top:4px">${esc(wn.next.ref)}</div>${wLinks}</div>`
-    : wn.all ? `<div class="card xcard wk-card">${wGo}${walkCover(wn.w)}<div class="sm">${esc(walkName(wn.w))}</div><div class="sf xct" style="margin-top:4px">${esc(wn.w.title)}</div><div class="sm" style="margin-top:6px;line-height:1.55;word-break:keep-all">모든 편을 마쳤어요. 언제든 다시 읽을 수 있어요.</div>${wLinks}</div>`
+    : wn.all ? `<div class="card xcard wk-card">${wGo}${walkCover(wn.w)}<div class="sm">${esc(walkName(wn.w))}</div><div class="sf xct" style="margin-top:4px">${esc(wn.w.title)}</div><div class="sm" style="margin-top:6px;line-height:1.55;word-break:keep-all">모든 편을 마쳤어요. 언제든 다시 읽을 수 있어요.</div>${walkAfterLine(wn.w)}${wLinks}</div>`
     : '';
   const curCard = (n, i) => `<div class="card xcard"${i ? ' style="margin-top:10px"' : ''}><div class="sf xct">${esc(getQ(n.q).text)}</div><div style="margin-top:10px">${n.mode === 'free' ? `<span class="sm">자유롭게 쓰기 · ${startLine(n)}</span>` : dotsHtml(n, false, startLine(n))}</div><button class="btn${wide ? '' : ' wide'}" type="button" data-act="past-open" data-id="${n.q}">이어서 쓰기</button></div>`;
   const curHtml = cur.length
@@ -3239,6 +3239,18 @@ function walkNow() {
   if (ep) return { w, ep };
   const i = w.eps.findIndex(e => !walkDone(w, e));
   return i < 0 ? { w, all: true } : { w, next: w.eps[i], nextDN: walkOpenDN(w, i) };
+}
+// 다 마친 연재 다음에 이어 읽어 볼 연재(2026-11-20): 성경 순서에서 이 연재 뒤에 있는 것 가운데 아직 다 안 마친 첫 연재, 뒤에 없으면 앞쪽의 첫 연재. 모두 마쳤으면 null. 완독·진도 표시는 두지 않는다(철학 ③)
+function walkAfter(w) {
+  const pos = x => { const i = BOOKS.findIndex(([n]) => n === x.book); return (i < 0 ? BOOKS.length : i) * 100 + walkPart(x); };
+  const rest = (window.WALKS || []).filter(x => x.id !== w.id && x.eps.some(e => !walkDone(x, e))).sort((a, b) => pos(a) - pos(b));
+  return rest.find(x => pos(x) > pos(w)) || rest[0] || null;
+}
+// 마친 연재 카드의 한 줄: 이어 읽을 연재가 있으면 그 연재로 가는 링크, 없으면 준비 중 안내
+function walkAfterLine(w) {
+  const n = walkAfter(w);
+  return n ? `<div class="wk-links" style="justify-content:flex-start"><a class="tx" href="#/explore/walk/${n.id}" style="margin-left:-6px">이어서 ${esc(walkName(n))} 읽기 ›</a></div>`
+    : '<div class="sm" style="margin-top:6px;line-height:1.55;word-break:keep-all">다음 연재를 준비하고 있어요.</div>';
 }
 // 지금 주소가 열린 토막(explore/walk/<id>/<번호>)이면 { w, ep }
 function walkEpOfRoute() {
