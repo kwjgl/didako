@@ -1604,6 +1604,7 @@ html.tutorial .demo-tag { display: none !important; }
 <script src="../community/book-trinity.js"></script>
 <script src="../community/book-family.js"></script>
 <script src="../community/book-jesus-walk.js"></script>
+<script src="../community/book-hebrew-eyes.js"></script>
 <script src="../note/guide.js"></script>
 <script src="../note/places.js"></script>
 <script src="../note/usage.js"></script>
@@ -1627,16 +1628,17 @@ const clone = x => JSON.parse(JSON.stringify(x));
 // 디다코 기본 교재(공동체와 같은 디다코 교재 세 권: 《삼위일체 하나님》·가정예배·《예수님과 함께 걷기》, 2026-11-19 사용자 결정). 자료는 ../community/book-*.js에 있고
 //  그 파일들이 DIDAKO_DEMO.books·guides에 더하는 것을 여기서 바로 떼어 낸다. 그래서 교회 데모 책장(DATA.books)과 데모 화면은 예전 그대로다(복음서·12소예언서 파일도 데모에서 그대로 쓴다).
 //  교재 관리의 "디다코 기본 교재"에서 [가져오기]를 누르면 우리 교회 교재로 복제된다(서버 basicImport). 실제 모드에서는 DATA.books를 서버 교재로 바꾸니 떼어 둔 것이 따로 남는다
-const BASIC_IDS = ['trinity', 'family', 'jesus-walk'];
+const BASIC_IDS = ['trinity', 'family', 'jesus-walk', 'hebrew-eyes'];
 const BASIC_FILE = { books: DATA.books.filter(b => BASIC_IDS.includes(b.id)), guides: {} };
 DATA.books = DATA.books.filter(b => !BASIC_IDS.includes(b.id));
 Object.keys(DATA.guides).forEach(k => { if (BASIC_IDS.includes(k.split(':')[0])) { BASIC_FILE.guides[k] = DATA.guides[k]; delete DATA.guides[k]; } });
 // 예전 길(Apps Script)은 앱 파일 판 세 권을 그대로 쓴다. 새 길(CHURCH_ON)은 서버에서 앱 관리자의 숨김·삭제·고친 판을 받아(liveEnsureBasic) 맞추고, 못 받으면 앱 파일 판으로 둔다. 받기 전에는 비어 있다
-const BASIC = LIVE && !CHURCH_ON ? { books: BASIC_FILE.books, guides: BASIC_FILE.guides } : { books: [], guides: {} };
+// 앱 파일에서 "처음엔 숨김"(startHidden)인 교재는 앱 관리자가 공개한 기록(서버의 숨김이 아닌 줄)이 있어야 가져오기 목록에 보인다(감수 전 교재, 2026-11-20)
+const BASIC = LIVE && !CHURCH_ON ? { books: BASIC_FILE.books.filter(b => b.startHidden !== true), guides: BASIC_FILE.guides } : { books: [], guides: {} };
 // 서버(didako_base_list)가 알려 준 것을 앱 파일 판에 맞춘다: 숨기거나 지운 교재는 빼고, 고친 판이 있으면 그 판을 쓴다. r이 없으면(못 받았으면) 앱 파일 판 그대로
 function basicApply(r) {
-  const hide = r ? new Set([...r.hidden, ...r.removed]) : new Set();
-  BASIC.books = BASIC_FILE.books.filter(b => !hide.has(b.id)).map(b => (r && r.books.find(o => o.id === b.id)) || b);
+  const hide = r ? new Set([...r.hidden, ...r.removed]) : new Set(), shown = new Set(r && Array.isArray(r.shown) ? r.shown : []);
+  BASIC.books = BASIC_FILE.books.filter(b => !hide.has(b.id) && (b.startHidden !== true || shown.has(b.id))).map(b => (r && r.books.find(o => o.id === b.id)) || b);
   BASIC.guides = Object.assign({}, BASIC_FILE.guides, r ? r.guides : {});
 }
 

@@ -1618,6 +1618,7 @@ html.tutorial .demo-tag { display: none !important; }
 <script src="book-trinity.js"></script>
 <script src="book-family.js"></script>
 <script src="book-jesus-walk.js"></script>
+<script src="book-hebrew-eyes.js"></script>
 <script src="../note/guide.js"></script>
 <script src="../note/places.js"></script>
 <script src="../note/usage.js"></script>
@@ -1782,8 +1783,13 @@ function baseHiddenList() {
   return Array.isArray(hidden) ? hidden.filter(id => typeof id === 'string') : [];
 }
 // 실제 서버(SB)는 서버가 알려 준 숨김 목록(BASE_SB_HIDDEN)을 읽는다. 데모는 이 기기 저장, LIVE는 없다
-let BASE_SB_HIDDEN = [], BASE_SB_REMOVED = [];
-const baseHidden = id => LIVE ? false : SB ? BASE_SB_HIDDEN.includes(id) : baseHiddenList().includes(id);
+let BASE_SB_HIDDEN = [], BASE_SB_REMOVED = [], BASE_SB_SHOWN = [];
+// 앱 파일에서 "처음엔 숨김"(startHidden)인 교재(감수 전 교재, 2026-11-20): 공개한 기록(실제 서버는 숨김이 아닌 줄 BASE_SB_SHOWN, 데모는 이 기기의 shown)이 없으면 숨긴다
+const BASE_START_HIDDEN = new Set(((window.DIDAKO_DEMO && window.DIDAKO_DEMO.books) || []).filter(b => b && b.startHidden === true).map(b => b.id));
+const baseShownList = () => { const { shown } = readJson(BASE_BOOKS_KEY); return Array.isArray(shown) ? shown.filter(id => typeof id === 'string') : []; };
+const baseHidden = id => LIVE ? BASE_START_HIDDEN.has(id)
+  : SB ? BASE_SB_HIDDEN.includes(id) || (BASE_START_HIDDEN.has(id) && !BASE_SB_SHOWN.includes(id))
+  : baseHiddenList().includes(id) || (BASE_START_HIDDEN.has(id) && !baseShownList().includes(id));
 // 삭제한 앱 교재는 파일에 남아 있어도 목록과 새 교재 선택에서 제외한다
 const baseRemovedList = () => { const { removed } = readJson(BASE_BOOKS_KEY); return Array.isArray(removed) ? removed.filter(id => typeof id === 'string') : []; };
 const baseRemoved = id => LIVE ? false : SB ? BASE_SB_REMOVED.includes(id) : baseRemovedList().includes(id);
@@ -1794,9 +1800,9 @@ function baseSetRemoved(id, on) {
 }
 // 숨김을 바꿀 때 앱 관리자가 쓴 교재(books)와 질문 자료(guides)는 그대로 둔다
 function baseSetHidden(id, on) {
-  const hidden = baseHiddenList().filter(x => x !== id);
-  if (on) hidden.push(id);
-  return ls.set(BASE_BOOKS_KEY, JSON.stringify({ ...readJson(BASE_BOOKS_KEY), hidden }));
+  const hidden = baseHiddenList().filter(x => x !== id), shown = baseShownList().filter(x => x !== id);
+  if (on) hidden.push(id); else shown.push(id);   // 공개한 기록(shown)이 있어야 "처음엔 숨김" 교재가 보인다
+  return ls.set(BASE_BOOKS_KEY, JSON.stringify({ ...readJson(BASE_BOOKS_KEY), hidden, shown }));
 }
 // 실제 서버(SB)의 디다코 교재 사본: 마지막으로 받은 목록을 이 기기에 둔다(didako-base-books-sb.계정해시). 다음에 열 때 먼저 그린다
 const BASE_SB_COPY = 'didako-base-books-sb.';
@@ -1805,7 +1811,7 @@ const BASE_OWN = (() => {
   if (SB) {
     const h = ls.get(SBH), v = h ? readJson(BASE_SB_COPY + h) : {};
     const own = Array.isArray(v.rows) ? DidakoCm.toBase(v.rows) : { books: [], guides: {}, hidden: [], removed: [] };
-    BASE_SB_HIDDEN = own.hidden; BASE_SB_REMOVED = own.removed;
+    BASE_SB_HIDDEN = own.hidden; BASE_SB_REMOVED = own.removed; BASE_SB_SHOWN = own.shown || [];
     return { books: own.books, guides: own.guides };
   }
   const v = !LIVE ? readJson(BASE_BOOKS_KEY) : {};
@@ -3582,6 +3588,7 @@ function baseBookVisibility(id, hidden) {
 async function baseHideServer(id, hidden) {
   await DidakoCm.baseHide(id, hidden);
   BASE_SB_HIDDEN = BASE_SB_HIDDEN.filter(x => x !== id).concat(hidden ? [id] : []);
+  BASE_SB_SHOWN = BASE_SB_SHOWN.filter(x => x !== id).concat(hidden ? [] : [id]);
   baseKeep();
   if (hidden) closeSheet();
   roomRedraw();
@@ -6394,11 +6401,23 @@ function sbBookForget(cid, id) {
 // 받기에 실패해도(서버 함수가 아직 없거나 인터넷이 없을 때) 토스트 없이 있던 것(사본 또는 앱에 들어 있는 교재)으로 돈다. 로그인이 끝난 경우만 알린다
 const baseCopyKeys = () => { const out = []; try { for (let i = 0; i < localStorage.length; i++) { const k = localStorage.key(i); if (k && k.startsWith(BASE_SB_COPY)) out.push(k); } } catch (e) { /* 저장소를 못 쓰면 사본도 없다 */ } return out; };
 // 마지막으로 받은(또는 고친) 디다코 교재 목록을 기기에 사본으로 둔다(1.5MB를 넘으면 사본을 두지 않는다). 줄 차례는 오래된 것이 앞이다(toBase가 새 교재를 앞에 놓는다)
+// 앱 관리자가 목록을 받으면, 서버에 아직 줄이 없는 "처음엔 숨김" 교재에 숨김 줄을 한 번 만든다.
+//  그래야 그 교재를 고쳐 서버에 판이 생겨도(didako_base_save는 앱 교재 줄을 숨김 아님으로 만든다) 공개하기 전까지 숨김이 유지된다. 못 만들면 다음에 다시 한다
+let baseStartPinning = false;
+function baseStartHiddenPin() {
+  if (baseStartPinning) return;
+  const todo = [...BASE_START_HIDDEN].filter(id => !BASE_SB_HIDDEN.includes(id) && !BASE_SB_SHOWN.includes(id) && !BASE_SB_REMOVED.includes(id));
+  if (!todo.length) return;
+  baseStartPinning = true;
+  Promise.all(todo.map(id => DidakoCm.baseHide(id, true).then(() => { BASE_SB_HIDDEN = BASE_SB_HIDDEN.filter(x => x !== id).concat([id]); }).catch(() => {})))
+    .then(() => { baseKeep(); }).finally(() => { baseStartPinning = false; });
+}
 function baseKeep() {
   const h = ls.get(SBH); if (!h) return;
   const rows = BASE_OWN.books.slice().reverse().map(b => ({ id: b.id, updatedAt: b.updatedAt || '', hidden: BASE_SB_HIDDEN.includes(b.id), removed: false, data: sbBookOut(BASE_CID, b) }));
   BASE_SB_HIDDEN.filter(id => !BASE_OWN.books.some(b => b.id === id) && !BASE_SB_REMOVED.includes(id)).forEach(id => rows.push({ id, updatedAt: '', hidden: true, removed: false, data: null }));
   BASE_SB_REMOVED.forEach(id => rows.push({ id, updatedAt: '', hidden: false, removed: true, data: null }));
+  BASE_SB_SHOWN.filter(id => !BASE_OWN.books.some(b => b.id === id) && !BASE_SB_HIDDEN.includes(id) && !BASE_SB_REMOVED.includes(id)).forEach(id => rows.push({ id, updatedAt: '', hidden: false, removed: false, data: null }));
   const txt = JSON.stringify({ rows });
   if (txt.length > 1500000 || !ls.set(BASE_SB_COPY + h, txt)) ls.del(BASE_SB_COPY + h);
 }
@@ -6407,7 +6426,7 @@ function baseSbReset(keep) {
   baseCopyKeys().filter(k => !keep || k !== BASE_SB_COPY + keep).forEach(k => ls.del(k));
   const v = keep ? readJson(BASE_SB_COPY + keep) : {};
   const own = Array.isArray(v.rows) ? DidakoCm.toBase(v.rows) : { books: [], guides: {}, hidden: [], removed: [] };
-  BASE_OWN.books = own.books; BASE_OWN.guides = own.guides; BASE_SB_HIDDEN = own.hidden; BASE_SB_REMOVED = own.removed; SB_ADMIN = false;
+  BASE_OWN.books = own.books; BASE_OWN.guides = own.guides; BASE_SB_HIDDEN = own.hidden; BASE_SB_REMOVED = own.removed; BASE_SB_SHOWN = own.shown || []; SB_ADMIN = false;
   baseSync();
 }
 // 서버에서 받은 목록으로 바꾼다. 바뀌었으면 true
@@ -6420,9 +6439,10 @@ function baseSbSet(rows) {
   BS.raw[BASE_CID] = key;
   Object.keys(BS.st).filter(k => k.startsWith(BASE_CID + ':') && BS.st[k].restored).forEach(k => { delete BS.st[k]; });
   const r = DidakoCm.toBase(rows);
-  BASE_OWN.books = r.books; BASE_OWN.guides = r.guides; BASE_SB_HIDDEN = r.hidden; BASE_SB_REMOVED = r.removed;
+  BASE_OWN.books = r.books; BASE_OWN.guides = r.guides; BASE_SB_HIDDEN = r.hidden; BASE_SB_REMOVED = r.removed; BASE_SB_SHOWN = r.shown || [];
   if (isAppAdmin()) sbRestoreStash(BASE_CID, true);
   baseSync(); baseKeep();
+  if (isAppAdmin()) baseStartHiddenPin();
   return true;
 }
 // 앱 관리자 여부와 디다코 교재 목록을 함께 받는다. 바뀌었으면 true
