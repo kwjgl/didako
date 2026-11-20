@@ -42,6 +42,8 @@ window.DidakoCm = (() => {
   function toQuestion(q) {
     const o = { id: safeId(q.id, freshId()), t: str(q.t), vs: strs(q.vs) };
     if (q.kind === 'read') { o.kind = 'read'; o.h = str(q.h); } else { o.sub = str(q.sub); o.lead = str(q.lead); }
+    // 읽을 글의 앱 파일 그림 칸(D-73·D-76): 그대로 들고 온다. 그릴 때(readImages) 파일 이름·크기 규칙으로 다시 거른다
+    if (o.kind === 'read' && Array.isArray(q.imgs)) o.imgs = q.imgs.filter(isObj).slice(0, 6);
     return o;
   }
   function toGuide(g) {
@@ -86,6 +88,8 @@ window.DidakoCm = (() => {
     out.books.forEach(b => { b.group = 'didako'; b.baseOwn = true; });
     out.hidden = list(rows).filter(row => isObj(row) && row.hidden === true && /^[a-z0-9][a-z0-9-]{0,63}$/.test(str(row.id))).map(row => str(row.id));
     out.removed = list(rows).filter(row => isObj(row) && row.removed === true && /^[a-z0-9][a-z0-9-]{0,63}$/.test(str(row.id))).map(row => str(row.id));
+    // 숨김이 아닌 줄이 있는 교재(앱 관리자가 공개했거나 고친 교재). 앱 파일에서 "처음엔 숨김"인 교재는 이 줄이 있어야 보인다
+    out.shown = list(rows).filter(row => isObj(row) && row.hidden === false && row.removed !== true && /^[a-z0-9][a-z0-9-]{0,63}$/.test(str(row.id))).map(row => str(row.id));
     return out;
   }
   return {

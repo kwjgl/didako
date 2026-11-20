@@ -58,15 +58,18 @@ window.didakoChurchApi = (() => {
   function baseQ(q, d) {
     const o = { id: qid(q.id, d), t: str(q.t), vs: vsOf(q.vs) };
     if (q.kind === 'read') { o.kind = 'read'; o.h = str(q.h); } else { o.sub = str(q.sub); o.lead = str(q.lead); }
+    // 읽을 글의 앱 파일 그림 칸(D-74): 그대로 들고 온다. 그릴 때(readImages)와 교회 서버(018)가 규칙으로 다시 거른다
+    if (o.kind === 'read' && Array.isArray(q.imgs)) o.imgs = q.imgs.filter(isObj).slice(0, 6);
     return o;
   }
   function baseOf(rows) {
-    const out = { hidden: [], removed: [], books: [], guides: {} };
+    const out = { hidden: [], removed: [], shown: [], books: [], guides: {} };
     arr(rows).filter(isObj).forEach(row => {
       const id = bid(row.id);
       if (!id) return;
       if (row.hidden === true) out.hidden.push(id);
       if (row.removed === true) out.removed.push(id);
+      if (row.hidden === false && row.removed !== true) out.shown.push(id);   // 공개했거나 고친 교재(앱 파일의 "처음엔 숨김" 교재는 이 줄이 있어야 보인다)
       if (!isObj(row.data)) return;
       const d = row.data, cv = isObj(d.cover) ? d.cover : {}, gm = isObj(d.guides) ? d.guides : {};
       const lessons = arr(d.lessons).filter(isObj).slice(0, 100).map(L => ({ no: Number(L.no), name: str(L.name), ref: str(L.ref), intro: str(L.intro), body: str(L.body), wrap: str(L.wrap) }))
