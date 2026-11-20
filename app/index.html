@@ -1431,6 +1431,11 @@ button.gallery-cell { display: block; width: 100%; padding: 0; cursor: pointer; 
 /* 따라 하기(guide.js) 중에는 위·아래 막대를 항상 보이게 한다. */
 html.kg-on .topbar, html.kg-on .tabs { transform: none !important; }
 /* 더보기 › 사용법: 디다코 노트의 펼치는 질문과 같은 짜임. */
+.tg-tip { display: flex; align-items: center; gap: 12px; margin: 10px 0 8px; padding: .75em .9em; border-radius: 14px; background: var(--accent-soft); color: var(--ink); }   /* 처음이세요? 띠: 코이데와 같은 모양(2026-11-20) */
+.tg-tip p { margin: 0; flex: 1; font-size: .86em; line-height: 1.55; word-break: keep-all; }
+.tg-tip b { color: var(--accent); margin-right: .4em; }
+.tg-tip .btn { flex: none; }
+@media (max-width: 420px) { .tg-tip { flex-direction: column; align-items: stretch; } .tg-tip .btn { align-self: flex-end; } }
 .fq { display: flex; align-items: center; justify-content: space-between; gap: 12px; width: 100%; min-height: 56px; padding: 8px 0; border: 0; border-top: 1px solid var(--line); background: none; text-align: left; font: 700 1rem var(--f-body); color: var(--ink); cursor: pointer; }
 .fq:first-of-type { border-top: 0; }
 .fa { padding: 0 0 14px; }
@@ -2964,24 +2969,20 @@ function aboutView() {
       <div class="about-credit"><div><b>그림</b><p>이번 주의 질문의 그림은 AI로 만들고, 사람이 성경과 맞는지 확인한 뒤 내보내요.</p></div>
       <div><b>글꼴</b><p>고운바탕, IBM Plex Sans KR (SIL Open Font License)</p></div></div></section></div>`;
 }
-const GUIDE_CARDS = [
-  ['week','이번 주','교회가 함께 이번 주의 질문 하나를 한 주 동안 품어요. 월요일부터 금요일까지 하루 한 곳씩 오늘의 말씀을 펴서, 물음의 답을 본문에서 찾아봐요.'],
-  ['shelf','책장','교회가 낸 교재 가운데 지금 읽을 책 한 권을 골라요. 책 안에서 과를 펼쳐 모임 전에 미리 읽고 생각을 남길 수 있어요. 남기는 것은 원할 때만 해요.'],
-  ['share','나눔하기','지금 읽는 책의 과로 함께 모여 질문 하나씩 나눠요. 사랑방에서는 사랑방 교재로, 가정에서는 함께 쓰는 교재로 바꿔서 해요. 이야기하는 동안에는 화면을 내려놓아요.'],
-  ['log','내 기록','모임 뒤에 마음에 남은 한 문장과 작은 실천을 남겨요. 달마다 간직한 말씀과 묵상을 모아 보고, 기록 상세에서 돌아보기를 남겨요.'],
-  ['more','더보기','화면 모드와 색, 글씨 크기를 바꿔요. 기록을 잠가서 맡기는 동기화는 디다코 노트 더보기에서 해요.']
+// 사용법의 "궁금한 것 찾아보기": 코이데처럼 "~는 어떻게 해요?" 질문과 풀이, 그 화면으로 가는 링크(2026-11-20). 글은 실제 동작과 같게 쓴다
+const GUIDE_FAQ = [
+  ['이번 주의 질문은 어떻게 해요?', '교회가 함께 이번 주의 질문 하나를 한 주 동안 품어요. 월요일부터 금요일까지 하루 한 곳씩 오늘의 말씀을 펴서, 물음의 답을 본문에서 찾아봐요.', '이번 주로 가기', '#week'],
+  ['읽을 교재는 어떻게 골라요?', '책장에서 교회가 낸 교재 가운데 지금 읽을 책 한 권을 골라요. 책 안에서 과를 펼쳐요.', '책장으로 가기', '#shelf'],
+  ['모임 전에 미리 읽고 생각을 남기려면 어떻게 해요?', '책장에서 과를 펼치면 모임 전에 미리 읽고 생각을 남길 수 있어요. 남기는 것은 원할 때만 해요.', '책장으로 가기', '#shelf'],
+  ['나눔하기는 어떻게 해요?', '지금 읽는 책의 과로 함께 모여 질문 하나씩 나눠요. 사랑방에서는 사랑방 교재로, 가정에서는 함께 쓰는 교재로 바꿔서 해요. 이야기하는 동안에는 화면을 내려놓아요.', '나눔하기로 가기', '#share'],
+  ['모임 뒤 기록은 어떻게 남겨요?', '모임 뒤에 마음에 남은 한 문장과 작은 실천을 남겨요. 내 기록은 나만 봐요.', '내 기록으로 가기', '#record'],
+  ['지난 기록은 어디서 봐요?', '내 기록에서 달마다 간직한 말씀과 묵상을 모아 볼 수 있어요. 기록 상세에서 돌아보기를 남겨요.', '내 기록으로 가기', '#record'],
+  ['화면 모드나 글씨 크기는 어떻게 바꿔요?', '더보기의 화면 설정에서 화면 모드와 색, 글씨 크기를 바꿔요. 기록을 잠가서 맡기는 동기화는 디다코 노트 더보기에서 해요.', '더보기로 가기', '#more']
 ];
 
 let faqOpen = new Set();
 function guideView() {
-  const faqItems = [
-    ['이번 주는 어떻게 써요?', '이번 주 ›', '#week'],
-    ['책장에는 무엇이 있어요?', '책장 ›', '#shelf'],
-    ['나눔하기는 언제 써요?', '나눔하기 ›', '#share'],
-    ['내 기록에는 무엇이 남아요?', '내 기록 ›', '#record'],
-    ['더보기에서는 무엇을 해요?', '디다코 소개 ›', '#about']
-  ];
-  const faq = faqItems.map(([q, label, url], i) => `<button class="fq" type="button" data-act="faq" data-i="${i}" aria-expanded="${faqOpen.has(i)}" aria-controls="fa${i}"><span>${q}</span><span data-chev aria-hidden="true">${faqOpen.has(i) ? '⌃' : '⌄'}</span></button><div class="fa" id="fa${i}"${faqOpen.has(i) ? '' : ' hidden'}><p class="pg">${esc(GUIDE_CARDS[i][2])}</p><a class="lk" href="${url}">${label}</a></div>`).join('');
+  const faq = GUIDE_FAQ.map(([q, text, label, url], i) => `<button class="fq" type="button" data-act="faq" data-i="${i}" aria-expanded="${faqOpen.has(i)}" aria-controls="fa${i}"><span>${q}</span><span data-chev aria-hidden="true">${faqOpen.has(i) ? '⌃' : '⌄'}</span></button><div class="fa" id="fa${i}"${faqOpen.has(i) ? '' : ' hidden'}><p class="pg">${esc(text)}</p><a class="lk" href="${url}">${label} ›</a></div>`).join('');
   return `<div class="feedback-page guide-page"><a class="back-link" href="#more">${ic('back')}<span>더보기</span></a>
     <div class="page-top" style="margin-top:8px"><h1>사용법</h1></div>
     <section class="card" style="margin-top:18px"><h2>처음처럼 따라 해 보기</h2><p class="pg">예시 화면에서 이번 주, 책장, 나눔하기, 내 기록을 한 걸음씩 눌러 보며 익혀요. 연습한 것은 저장되지 않아요.</p>
@@ -2989,6 +2990,27 @@ function guideView() {
     <section class="card"><h2>궁금한 것 찾아보기</h2>${faq}</section>
     ${true ? `<section class="card"><h2>의견 보내기</h2><p class="pg">불편한 점이나 바라는 점, 고마운 점을 보내 주세요.</p><a class="lk" href="#feedback">의견 보내기 ›</a></section>` : ''}
   </div>`;
+}
+// ── 처음이세요? 띠(2026-11-20): 교역자·리더·관리자 화면을 처음 열면 제목 아래에 한 번 나오고 "알겠어요"로 닫는다. 코이데와 같은 방식 ──
+// 이 기기에 사람(소유자)별로 기억한다. 따라 하기 연습(TUT)과 도움말 투어가 도는 중에는 띄우지 않는다. 회원 화면은 따라 하기가 처음을 맡는다.
+const STAFF_TIPS = {
+  staff: [() => D.role === 'pastor', '우리 부서의 합계와 사랑방별 이번 주 과를 보는 곳이에요. 묵상 기록과 답변은 잠겨 있어서 보이지 않고, 사랑방끼리 견주지도 않아요.'],
+  church: [() => D.role === 'leader' || (LIVE && liveLeads()), '우리 사랑방의 연결을 챙기는 곳이에요. 새로 들어온 사람의 연결 요청을 승인하거나 거절하고, 연결된 사람을 해제할 수 있어요. 묵상 기록은 리더도 볼 수 없어요.'],
+  rooms: [() => D.role === 'pastor', '우리 부서의 사랑방을 한눈에 보는 곳이에요. 사랑방을 누르면 명단과 연결 상태가 보여요. 묵상 기록은 잠겨 있어서 목사님도 볼 수 없어요.'],
+  manage: [() => canManage(), '교재를 꾸리는 곳이에요. 원본은 그대로 두고 복사본만 고쳐요. 공개 범위도 여기서 바꿔요.'],
+  admin: [() => D.role === 'admin', '우리 부서 전체를 꾸리는 곳이에요. 할 일과 편성, 사람·앱과 요청·설정이 있어요. 한 해 개편은 연도 개편에서 미리 예약해요. 앱을 쓰는 사람의 기록은 보이지 않아요.'],
+  'church-admin': [() => D.role === 'admin', '교회 전체 화면이에요. 앱 상태와 변경 기록을 보고, 교회 관리자와 부서를 정해요. 앱을 쓰는 사람의 기록은 보이지 않아요.']
+};
+const tipsKey = () => 'didako-tips:' + (ls.get('didako-note-owner') || '');
+const tipsSeen = () => { try { return JSON.parse(ls.get(tipsKey()) || '{}'); } catch (e) { return {}; } };
+function placeStaffTip(v) {
+  const t = STAFF_TIPS[v];
+  if (!t || TUT || tipsSeen()[v] || !t[0]()) return;
+  if (window.DidakoGuide && DidakoGuide.running()) return;
+  const view = $('#view'), top = $('.page-top', view);
+  if (!top || $('.card.calm', view) && !$('.more-grid, .two-col, .sf-stat, .gc', view)) return;   // 맡은 사람이 아니라 안내만 있는 화면에는 띄우지 않는다
+  const html = `<aside class="tg-tip" role="note"><p><b>처음이세요?</b>${esc(t[1])}</p><button class="btn small ghost" type="button" data-act="tipok" data-v="${v}">알겠어요</button></aside>`;
+  top.insertAdjacentHTML('afterend', html);
 }
 const feedbackState = { kind:'이랬으면', named:false, text:'' };
 function feedbackView() {
@@ -6012,6 +6034,7 @@ function drawRoute(moved) {
   $('#topnav').hidden = start; $('#tabs').hidden = start;
   document.body.dataset.view = v;
   $('#view').innerHTML = start ? startView(arg) : v === 'week' ? weekView() : v === 'staff' ? staffHomeView() : v === 'wq' ? wqView() : v === 'read' ? readView() : v === 'share' ? shareView() : v === 'shelf' ? shelfView(arg) : v === 'record' ? recordView(arg) : v === 'records' ? recordsView() : v === 'found' ? foundView() : v === 'gallery' ? galleryView() : v === 'more' ? moreView() : v === 'admin' ? adminView() : v === 'admin-reorg' ? adminReorgView() : v === 'church-admin' ? churchAdminView() : v === 'about' ? aboutView() : v === 'guide' ? guideView() : v === 'feedback' ? feedbackView() : v === 'prep' ? prepView() : v === 'prepprint' ? prepPrintView() : v === 'church' ? churchView() : v === 'rooms' ? roomsView() : v === 'manage' ? manageView(arg) : placeView(v);
+  placeStaffTip(v);
   if (adv && !adShown) { adShown = adv; showAdSplash(adv === 'admin' ? DATA.church.dept + ' 관리' : '교회 전체'); }
   reuseImgs($('#view'));
   const film = start && !!$('#view .welcome');   // 첫 화면(로그인 전)일 때만 영상. 첫 접속의 다음 걸음들에는 없다
@@ -6168,6 +6191,7 @@ const acts = {
     $('#popSheet [data-act="a2hsos"].on').focus({ preventScroll: true });
   },
   guidere() { ChGuide.goTutorial(false); },
+  tipok(e, el) { const t = tipsSeen(); t[el.dataset.v] = 1; ls.set(tipsKey(), JSON.stringify(t)); const tip = el.closest('.tg-tip'); if (tip) tip.remove(); },
   faq(e, el) { const i = Number(el.dataset.i), open = !faqOpen.has(i); open ? faqOpen.add(i) : faqOpen.delete(i); el.setAttribute('aria-expanded', String(open)); $('#fa' + i).hidden = !open; $('[data-chev]', el).textContent = open ? '⌃' : '⌄'; },
   'fb-kind'(e,el) { feedbackState.kind = el.dataset.kind; route(false); },
   'fb-named'() { feedbackState.named = !feedbackState.named; route(false); },
