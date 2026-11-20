@@ -14,7 +14,7 @@
   --raise-card: -6px -6px 14px var(--neu-hi), 8px 8px 20px var(--neu-lo), 0 0 0 1px color-mix(in srgb, var(--line) 55%, transparent);
 }
 :root[data-style="neu"] .fam-grid, :root[data-style="neu"] .col { gap: 18px; }
-:root[data-style="neu"] .card, :root[data-style="neu"] .notice { background-color: var(--card); border-color: transparent; box-shadow: var(--raise-card); }
+:root[data-style="neu"] .card, :root[data-style="neu"] .gc, :root[data-style="neu"] .notice { background-color: var(--card); border-color: transparent; box-shadow: var(--raise-card); }
 :root[data-style="neu"] .card.today { background: linear-gradient(180deg, var(--accent-soft) 0%, var(--card) 100%); box-shadow: inset 0 4px 0 var(--accent), var(--raise-card); }
 :root[data-style="neu"] .topbar { background: var(--page); border-bottom-color: transparent; box-shadow: 0 4px 12px -6px var(--neu-lo); }
 :root[data-style="neu"] .tabs { background: var(--page); border-top-color: transparent; box-shadow: 0 -4px 12px -6px var(--neu-lo); }
@@ -73,7 +73,7 @@
   --bevel: inset 0 1px 0 rgba(255,255,255,.45), inset 0 -1px 0 rgba(0,0,0,.18), 0 1px 2px rgba(0,0,0,.25);
 }
 :root[data-style="skeu"] body { background-image: repeating-linear-gradient(45deg, rgba(0,0,0,.025) 0 2px, transparent 2px 4px), repeating-linear-gradient(-45deg, rgba(255,255,255,.035) 0 2px, transparent 2px 4px); }
-:root[data-style="skeu"] .card, :root[data-style="skeu"] .notice, :root[data-style="skeu"] .menu {
+:root[data-style="skeu"] .card, :root[data-style="skeu"] .gc, :root[data-style="skeu"] .notice, :root[data-style="skeu"] .menu {
   background: linear-gradient(180deg, var(--paper-hi), var(--paper-lo)); border: 1px solid color-mix(in srgb, var(--line-strong) 70%, transparent);
   box-shadow: inset 0 1px 0 rgba(255,255,255,.6), 0 1px 1px rgba(0,0,0,.08), 0 4px 0 -2px color-mix(in srgb, var(--paper-lo) 85%, #000), 0 8px 18px -8px rgba(0,0,0,.3); }
 :root[data-style="skeu"] .card.today { background: linear-gradient(180deg, color-mix(in srgb, var(--accent-soft) 70%, var(--paper-hi)), var(--paper-lo));
@@ -128,7 +128,7 @@
     radial-gradient(38% 34% at 88% 30%, color-mix(in srgb, #F2A65A 45%, transparent), transparent 72%),
     radial-gradient(46% 40% at 70% 92%, color-mix(in srgb, var(--leader) 36%, transparent), transparent 72%),
     radial-gradient(36% 30% at 20% 85%, color-mix(in srgb, var(--accent-mid) 55%, transparent), transparent 72%); }
-:root[data-style="glass"] .card, :root[data-style="glass"] .notice {
+:root[data-style="glass"] .card, :root[data-style="glass"] .gc, :root[data-style="glass"] .notice {
   background: var(--glass); -webkit-backdrop-filter: var(--glass-blur); backdrop-filter: var(--glass-blur); border: var(--glass-edge); box-shadow: var(--glass-shadow); }
 :root[data-style="glass"] .card.today { background: linear-gradient(160deg, color-mix(in srgb, var(--accent-soft) 70%, transparent), var(--glass-soft)); box-shadow: inset 0 4px 0 var(--accent), var(--glass-shadow); }
 :root[data-style="glass"] .topbar, :root[data-style="glass"] .tabs { background: var(--glass); -webkit-backdrop-filter: var(--glass-blur); backdrop-filter: var(--glass-blur); border-color: color-mix(in srgb, var(--surface) 60%, transparent); }
