@@ -2,7 +2,7 @@
 <html lang="ko">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>말씀 지도</title>
 <meta name="theme-color" content="#6B4A2E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -20,6 +20,8 @@ try {
 } catch (e) {}
 </script>
 <style>
+/* 두 손가락 확대는 허용한다(viewport에서 maximum-scale 뺌). 아이폰은 16px보다 작은 입력칸을 누르면 화면이 저절로 커지므로, 입력칸 글자는 16px 밑으로 내려가지 않게 한다 */
+@supports (-webkit-touch-callout: none) { input, textarea, select { font-size: max(16px, 1em) !important; } }
 /* 말씀 지도 시안을 노트에 옮겼다. 색 변수·글꼴·카드·칩·단추·장소 창·화면 모드·큰 글씨는 디다코 노트의 것을 그대로 쓴다(새 색·새 글꼴 없음).
    색 테마도 노트의 저장값을 그대로 따른다. 디자인 스타일(basic·new·classic·glass)은 note/design-styles.css를 그대로 불러 쓴다. 이름과 내용은 모두 지어낸 예시·AI 초안이다. */
 :root {

@@ -2,7 +2,7 @@
 <html lang="ko">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>디다코 노트</title>
 <meta name="theme-color" content="#6B4A2E">
 <!-- 홈 화면 앱(PWA): 노트 아이콘은 종이(고동색) 세 겹 책갈피(icons/icon.svg) -->
@@ -29,6 +29,8 @@ try {
 } catch (e) {}
 </script>
 <style>
+/* 두 손가락 확대는 허용한다(viewport에서 maximum-scale 뺌). 아이폰은 16px보다 작은 입력칸을 누르면 화면이 저절로 커지므로, 입력칸 글자는 16px 밑으로 내려가지 않게 한다 */
+@supports (-webkit-touch-callout: none) { input, textarea, select { font-size: max(16px, 1em) !important; } }
 /* 디다코 노트 데모(note/). 색 변수·글꼴은 GBS 앱(app/index.html)과 코이데 값을 그대로 옮겼고, 화면 모양은 디자인 캔버스(prototype/mulpyo/)를 따른다.
    쪽지 종이·쪽지 글·나무색·진한 포인트는 코이데에 없는 색이라 캔버스 보드 값 그대로 더했다(결정 기록 2026-10-24). 이름과 내용은 모두 지어낸 예시다. */
 :root {
@@ -1746,7 +1748,7 @@ function viewTodayQ(season, item) {
 let dispOpen = false;
 const RADIO = (key, opts) => opts.map(([v, l]) => `<button type="button" role="radio" aria-checked="false" data-set="${key}:${v}">${l}</button>`).join('');
 const MODE_OPTS = [['auto', '기기 설정'], ['light', '밝게'], ['dark', '어둡게']];
-const SWATCHES = [['green', '#2B6A62', '초록'], ['amber', '#A9561B', '주황'], ['blue', '#2F5D95', '파랑'], ['rose', '#A8435C', '장미'], ['ink', '#33332F', '먹색'], ['paper', '#6B4A2E', '종이(기본)']];
+const SWATCHES = [['green', '#2B6A62', '초록'], ['amber', '#A9561B', '주황'], ['blue', '#2F5D95', '파랑'], ['rose', '#A8435C', '장미'], ['ink', '#33332F', '먹색'], ['paper', '#6B4A2E', '종이']];
 const STYLE_OPTS = [['basic', 'basic'], ['neu', 'new'], ['skeu', 'classic'], ['glass', 'glass']];
 function displayEx(id = 'dispEx') {
   return `<div class="ex" id="${id}">
@@ -1925,7 +1927,7 @@ function viewGuide() {
     <h1 class="tt" style="margin-top:14px">사용법</h1>
     <div class="sc" style="margin-top:18px"><div class="sl">처음처럼 따라 해 보기</div><p class="pg">예시로 질문 남기기와 탐구하기를 직접 눌러 보며 한 걸음씩 익혀요. 연습한 것은 저장되지 않아요.</p><div style="margin-top:16px"><button class="btn lg wide" type="button" data-act="guidere"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M6 3.5v17l14-8.5z"/></svg>따라 하기 시작</button></div></div>
     <div class="sc"><div class="sl">궁금한 것 찾아보기</div>${faq}</div>
-    <div class="sc"><div class="sl">만든 곳 · 의견 보내기</div><p class="pg">허그 공동체가 함께 만들어 가고 있어요. 불편한 점이나 바라는 점, 고마운 점을 보내 주세요.</p><div style="margin-top:6px"><a class="lk" href="#/more/feedback">의견 보내기 ›</a></div></div>
+    <div class="sc"><div class="sl">만든 곳 · 의견 보내기</div><p class="pg">${LIVE && !sbMode() && ls.get('didako-church-name') ? '우리 교회(' + esc(ls.get('didako-church-name')) + ')가' : '쓰는 분들이'} 함께 만들어 가고 있어요. 불편한 점이나 바라는 점, 고마운 점을 보내 주세요.</p><div style="margin-top:6px"><a class="lk" href="#/more/feedback">의견 보내기 ›</a></div></div>
     <div class="sc"><div class="sl">쓴 것들</div><div class="ls">
       <div><b>그림</b><p>오늘의 질문의 장면 그림은 AI로 만들고, 사람이 성경과 맞는지 확인한 뒤 내보내요.</p></div>
       <div><b>글꼴</b><p>고운바탕, IBM Plex Sans KR (SIL Open Font License)</p></div>

@@ -1412,6 +1412,10 @@ button.gallery-cell { display: block; width: 100%; padding: 0; cursor: pointer; 
 .about-page .about-card { margin-top: 14px; padding: 20px; }
 .about-page .about-card h2 { margin-bottom: 12px; }
 .about-page .about-card p { line-height: 1.75; margin: 0; }
+.about-page .about-credit { display: flex; flex-direction: column; }
+.about-page .about-credit > div { display: grid; grid-template-columns: 4em 1fr; gap: .6em; padding: .6em 0; border-top: 1px solid var(--line); font-size: .9em; word-break: keep-all; }
+.about-page .about-credit > div:first-child { border-top: 0; padding-top: 0; }
+.about-page .about-credit b { font-weight: 600; }
 .about-page .about-step { display: grid; grid-template-columns: 27px 1fr; gap: 10px; padding: 13px 0; border-top: 1px solid var(--line); }
 .about-page .about-step:first-of-type { border-top: 0; }
 .about-page .about-step .step-no { color: var(--accent); font-weight: 700; }
@@ -1835,14 +1839,14 @@ function toggleZoom(e) {
 }
 
 // ── 설정 창: 화면 설정(한 번만 기억) + 데모용 ──
-const seg = (key, opts, cur) => `<div class="seg" style="--n:${opts.length}">${opts.map(([v, l]) => `<button type="button" data-set="${key}:${v}" class="${String(cur) === String(v) ? 'on' : ''}" aria-pressed="${String(cur) === String(v)}">${l}</button>`).join('')}</div>`;
+const seg = (key, opts, cur) => `<div class="seg" role="radiogroup" style="--n:${opts.length}">${opts.map(([v, l]) => `<button type="button" role="radio" data-set="${key}:${v}" class="${String(cur) === String(v) ? 'on' : ''}" aria-checked="${String(cur) === String(v)}">${l}</button>`).join('')}</div>`;
 const onoff = (key, cur) => seg(key, [['0', '끄기'], ['1', '켜기']], cur ? 1 : 0);
 const DISPLAY_KEYS = ['mode', 'accent', 'style', 'big'];
 function displayControls() {
-  const sw = [['green', '#2B6A62', '초록'], ['amber', '#A9561B', '주황'], ['blue', '#2F5D95', '파랑'], ['rose', '#A8435C', '장미'], ['ink', '#33332F', '먹색'], ['paper', '#6B4A2E', '종이(기본)']];
+  const sw = [['green', '#2B6A62', '초록'], ['amber', '#A9561B', '주황'], ['blue', '#2F5D95', '파랑'], ['rose', '#A8435C', '장미'], ['ink', '#33332F', '먹색'], ['paper', '#6B4A2E', '종이']];
   return `
-    <p class="mlabel" style="margin-top:.3em">화면 모드</p>${seg('mode', [['auto', '기기'], ['light', '밝게'], ['dark', '어둡게']], S.mode)}
-    <p class="mlabel">색 테마</p><div class="swatches">${sw.map(([k, c, n]) => `<button type="button" class="swatch ${S.accent === k ? 'on' : ''}" data-set="accent:${k}" aria-label="${n}" aria-pressed="${S.accent === k}"><i style="background:${c}"></i></button>`).join('')}</div>
+    <p class="mlabel" style="margin-top:.3em">화면 모드</p>${seg('mode', [['auto', '기기 설정'], ['light', '밝게'], ['dark', '어둡게']], S.mode)}
+    <p class="mlabel">색 테마</p><div class="swatches" role="radiogroup" aria-label="색 테마">${sw.map(([k, c, n]) => `<button type="button" role="radio" class="swatch ${S.accent === k ? 'on' : ''}" data-set="accent:${k}" aria-label="${n}" aria-checked="${S.accent === k}"><i style="background:${c}"></i></button>`).join('')}</div>
     <p class="mlabel">디자인</p>${seg('style', [['basic', 'basic'], ['neu', 'new'], ['skeu', 'classic'], ['glass', 'glass']], S.style)}
     <p class="mlabel">큰 글씨</p>${seg('big', [['0', '보통'], ['1', '크게'], ['2', '아주 크게']], S.big)}
 `;
@@ -2046,10 +2050,10 @@ function staffLesson() {
 }
 function staffHomeView() {
   const head = `<p class="eyebrow top-eyebrow">${esc(groupName())} 전체</p><div class="page-top"><h1>교역자 홈 ${HEAD_ICON.calendar}</h1></div>${staffSeg('staff')}`;
-  if (ADL) {   // 새 길: 사랑방·리더·가정·연결은 서버(didako_ch_dept_rooms)가 준다. 받기 전에는 "불러오고 있어요"
+  if (ADL) {   // 새 길: 사랑방·리더·가정·연결은 서버(didako_ch_dept_rooms)가 준다. 받기 전에는 "불러오는 중…"
     if (!LA.ready.rooms) {
       if (!LA.work.rooms && !LA.err.rooms) adlLoad('rooms');
-      return `${head}<section class="card calm" style="margin-top:12px"><p class="calm-t">${LA.err.rooms ? '불러오지 못했어요' : '불러오고 있어요'}</p>${LA.err.rooms ? `<p class="soft" style="margin:0">${esc(LA.err.rooms)}</p><button class="btn ghost" type="button" data-act="adl-reload" data-v="rooms">다시 불러오기</button>` : ''}</section>`;
+      return `${head}<section class="card calm" style="margin-top:12px"><p class="calm-t">${LA.err.rooms ? '잠시 문제가 생겼어요' : '불러오는 중…'}</p>${LA.err.rooms ? `<p class="soft" style="margin:0">${esc(LA.err.rooms)}</p><button class="btn ghost" type="button" data-act="adl-reload" data-v="rooms">다시 불러오기</button>` : ''}</section>`;
     }
   }
   const d = adDept() || { name: '', group: '사랑방', unit: 'family', rooms: [] }, rooms = d.rooms, g = d.group || '사랑방', solo = adSolo(d);
@@ -2643,8 +2647,8 @@ function liveStartView(arg) {
       <button class="link" type="button" data-act="lv-logout">로그아웃</button>
     </form>`;
   if (arg === 'loading') return `<div class="col-n"><section class="card calm">${LV.err
-      ? `<p class="calm-t">불러오지 못했어요</p><p class="soft" style="margin:0">${esc(LV.err)}</p><button class="btn" type="button" data-act="lv-reload">다시 불러오기</button>`
-      : '<p class="calm-t">불러오고 있어요</p><p class="soft" style="margin:0">잠시만 기다려 주세요.</p>'}</section>
+      ? `<p class="calm-t">잠시 문제가 생겼어요</p><p class="soft" style="margin:0">${esc(LV.err)}</p><button class="btn" type="button" data-act="lv-reload">다시 불러오기</button>`
+      : '<p class="calm-t">불러오는 중…</p><p class="soft" style="margin:0">잠시만 기다려 주세요.</p>'}</section>
       ${LV.err ? '<button class="link" type="button" data-act="lv-logout">로그아웃</button>' : ''}</div>`;
   if (arg === 'dept') {
     const depts = LV.depts || [];
@@ -2814,7 +2818,7 @@ function liveChurchView() {
   const me = LV.me || {}, d = PEND.data;
   const head = `<a class="back-link" href="#more">${ic('back')}<span>더보기</span></a>
     <p class="eyebrow top-eyebrow">${esc(me.roomName)} · ${esc(roleName())}</p><div class="page-top"><h1>우리 사랑방</h1></div>`;
-  if (!d) return head + `<section class="card calm"><p class="calm-t">${PEND.err ? '불러오지 못했어요' : '불러오고 있어요'}</p>${PEND.err ? `<p class="soft" style="margin:0">${esc(PEND.err)}</p><button class="btn ghost" type="button" data-act="lv-pend">다시 불러오기</button>` : ''}</section>`;
+  if (!d) return head + `<section class="card calm"><p class="calm-t">${PEND.err ? '잠시 문제가 생겼어요' : '불러오는 중…'}</p>${PEND.err ? `<p class="soft" style="margin:0">${esc(PEND.err)}</p><button class="btn ghost" type="button" data-act="lv-pend">다시 불러오기</button>` : ''}</section>`;
   const reqs = d.requests, solo = !!(me.dept && me.dept.unit === '개인');
   const linked = d.families.reduce((n, f) => n + f.linked.length, 0);
   const people = d.families.flatMap(f => f.linked.length
@@ -2955,7 +2959,10 @@ function aboutView() {
     <section class="card about-card"><h2>보상 대신 흔적</h2><p>디다코에는 점수나 상이 없어요. 대신 흔적이 남아요. 다 읽은 교재는 교재 목록에 남고, 교재가 끝나면 그동안 남긴 한 문장이 한 장에 모여요. 이번 주의 질문을 끝까지 펴 본 주의 그림은 내 기록의 올해의 그림에 한 장씩 담겨요. 이번 주 문답에서 찾은 말씀은 내 기록의 찾은 말씀에 모여요. 몇 개인지는 세지 않아요.</p></section>
     <section class="card about-card"><h2>디다코는 말씀을 이렇게 이해해요</h2>
       ${steps.map(([title,desc,label,target],i)=>`<div class="about-step"><span class="step-no">${i+1}.</span><div><b>${title}</b><p>${desc}</p><a href="${target}">${label}</a></div></div>`).join('')}
-    </section></div>`;
+    </section>
+    <section class="card about-card"><h2>쓴 것들</h2>
+      <div class="about-credit"><div><b>그림</b><p>이번 주의 질문의 그림은 AI로 만들고, 사람이 성경과 맞는지 확인한 뒤 내보내요.</p></div>
+      <div><b>글꼴</b><p>고운바탕, IBM Plex Sans KR (SIL Open Font License)</p></div></div></section></div>`;
 }
 const GUIDE_CARDS = [
   ['week','이번 주','교회가 함께 이번 주의 질문 하나를 한 주 동안 품어요. 월요일부터 금요일까지 하루 한 곳씩 오늘의 말씀을 펴서, 물음의 답을 본문에서 찾아봐요.'],
@@ -2987,16 +2994,16 @@ const feedbackState = { kind:'이랬으면', named:false, text:'' };
 function feedbackView() {
   const s = feedbackState;
   return `<div class="feedback-page"><a class="back-link" href="#more">${ic('back')}<span>더보기</span></a>
-    <p class="eyebrow">디다코를 함께 만들어요</p><div class="page-top"><h1>의견 보내기${DidakoTip.btn('우리 교회 관리자가 읽어요. 답장은 따로 오지 않아요.', '의견 보내기')}</h1></div>
+    <p class="eyebrow">디다코를 함께 만들어요</p><div class="page-top"><h1>의견 보내기${DidakoTip.btn('부서 관리자와 교회 관리자가 읽어요. 이야기가 필요하면 리더에게 카톡으로 알려 주세요.', '의견 보내기')}</h1></div>
     <section class="card feedback-card"><div class="seg" role="radiogroup" aria-label="의견 종류">
       ${['불편해요','이랬으면','고마워요'].map(k=>`<button type="button" role="radio" aria-checked="${s.kind===k}" class="${s.kind===k?'on':''}" data-act="fb-kind" data-kind="${k}">${k}</button>`).join('')}</div>
       <p class="warning">내 답변과 기록은 여기 쓰지 말아 주세요.</p>
       <textarea class="field" id="feedbackText" rows="6" maxlength="500" aria-label="의견" placeholder="불편한 점, 바라는 점, 고마운 점 무엇이든 좋아요.">${esc(s.text)}</textarea>
       <p class="feedback-count"><span id="feedbackCount">${s.text.length}</span>/500</p>
-      <div class="set-row"><span><b>이름 밝히기</b><small class="hint">끄면 누가 보냈는지 남기지 않아요.</small></span>
+      <div class="set-row"><span><b>이름 밝히기</b><small class="hint">${s.named ? '관리자가 보낸 사람(이름)을 봐요.' : '끄면 누가 보냈는지 남기지 않아요.'}</small></span>
         <button class="switch${s.named?' on':''}" type="button" role="switch" aria-label="이름 밝히기" aria-checked="${s.named}" data-act="fb-named"><span></span></button></div>
       <button class="btn wide" id="feedbackSend" type="button" data-act="fb-send" ${s.text.trim()?'':'disabled'}>보내기</button>
-      </section></div>`;
+      <p class="hint">답장은 따로 오지 않아요.</p></section></div>`;
 }
 
 // ── 교재 관리(P-01): 원본과 회원 화면은 건드리지 않고 복사본만 고친다 ──
@@ -4449,14 +4456,14 @@ function adlAnalysisView(church) {
 }
 const adlNick = (f, p) => { const l = (f.links || []).find(x => x.person === p); return l ? l.nick : ''; };
 const adlName = v => String(v == null ? '' : v);
-// 화면을 그리기 전에 그 화면 자료가 준비됐는지 본다. 아직이면 받으러 가고 "불러오고 있어요"(못 받았으면 까닭과 다시 불러오기)를 그린다
+// 화면을 그리기 전에 그 화면 자료가 준비됐는지 본다. 아직이면 받으러 가고 "불러오는 중…"(못 받았으면 까닭과 다시 불러오기)를 그린다
 function adlGate(v) {
   if (LA.ready[v]) return '';
   if (!LA.work[v] && !LA.err[v]) adlLoad(v);
   const back = v === 'church-admin' && prevV === 'admin' ? ['#admin', '관리'] : ['#more', '더보기'];
   return `<a class="back-link" href="${back[0]}">${ic('back')}<span>${back[1]}</span></a>
     <div class="page-top"><h1>${v === 'church-admin' ? '교회 전체' : v === 'rooms' ? '사랑방 전체 보기' : '관리'}</h1></div>
-    <section class="card calm"><p class="calm-t">${LA.err[v] ? '불러오지 못했어요' : '불러오고 있어요'}</p>${LA.err[v] ? `<p class="soft" style="margin:0">${esc(LA.err[v])}</p><button class="btn ghost" type="button" data-act="adl-reload" data-v="${v}">다시 불러오기</button>` : ''}</section>`;
+    <section class="card calm"><p class="calm-t">${LA.err[v] ? '잠시 문제가 생겼어요' : '불러오는 중…'}</p>${LA.err[v] ? `<p class="soft" style="margin:0">${esc(LA.err[v])}</p><button class="btn ghost" type="button" data-act="adl-reload" data-v="${v}">다시 불러오기</button>` : ''}</section>`;
 }
 // 화면에 들어올 때마다 새로 받는다(받는 동안은 앞서 받은 것을 그대로 보인다)
 function adlEnter(v) { if (!LA.work[v]) adlLoad(v); }
@@ -5976,7 +5983,7 @@ function drawRoute(moved) {
   $('#view').classList.remove(...VT_CLASSES);
   teardown();
   if (window.DidakoTip) DidakoTip.close();   // 다시 그리기 전에 열린 ⓘ 말풍선을 닫는다
-  // 실제 모드: 교재를 받기 전에 열려던 화면은 기억해 두었다가, 다 받으면 그 화면으로 간다(받는 동안은 "불러오고 있어요")
+  // 실제 모드: 교재를 받기 전에 열려던 화면은 기억해 두었다가, 다 받으면 그 화면으로 간다(받는 동안은 "불러오는 중…")
   if (LIVE && D.entered && LV.booksOk && LV.want) { const w = LV.want; LV.want = ''; if ((!/^#start/.test(w) || w === '#start/done') && /^#start\/loading$/.test(location.hash)) history.replaceState(null, '', w); }
   let { v, arg } = parseHash();
   // 모르는 주소이거나 데모로 들어오기 전이면 첫 화면(들어온 뒤의 빈 주소는 이번 주)
