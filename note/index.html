@@ -244,8 +244,9 @@ html.kg-on body.tabs-off .topbar, html.kg-on body.tabs-off .tabs { transform: no
 .vine-leaf { width: 22px; height: 20px; background: url('img/vine/scene/leaf.png') no-repeat; background-size: 132px 20px; }
 .vine-berry { position: absolute; width: 6px; height: 6px; background: url('img/vine/scene/berry.png') no-repeat; background-size: 6px 6px; image-rendering: pixelated; }
 .vine-berry.ghost { opacity: .18; }
-.vine-cluster { position: relative; display: block; flex: none; width: 42px; height: 42px; overflow: hidden; }
-.vine-cluster-in { position: absolute; left: 0; top: 0; width: 21px; height: 21px; transform: scale(2); transform-origin: top left; image-rendering: pixelated; }
+.vine-stem { position: absolute; width: 20px; height: 28px; background: url('img/vine/scene/cluster-stem.png') no-repeat; background-size: 20px 28px; image-rendering: pixelated; }
+.vine-cluster { position: relative; display: block; flex: none; width: 40px; height: 56px; overflow: hidden; }
+.vine-cluster-in { position: absolute; left: 0; top: 0; width: 20px; height: 28px; transform: scale(2); transform-origin: top left; image-rendering: pixelated; }
 /* 오늘의 질문 아래 포도나무 카드: 그림은 가로 384px 전체를 1배로 가운데에 두고 좁은 폭에서는 가장자리를 자른다. 카드가 그림보다 넓으면 질문 그림처럼 안쪽으로 들인다 */
 .vine-card { display: block; overflow: hidden; color: var(--ink); text-decoration: none; container-type: inline-size; }
 .vine-card .vine-stage { background: var(--surface); }
@@ -1406,11 +1407,13 @@ const vineTreeBase = () => vineGrapes() ? Math.floor((vineGrapes() - 1) / 90) * 
 const vineTreeG = () => vineGrapes() - vineTreeBase();   // 지금 나무의 알 수(0~90)
 const vineTrees = () => Math.floor(vineGrapes() / 90);   // 다 자란 나무
 const vineBerries = (i, g = vineTreeG()) => Math.max(0, Math.min(10, g - (i - 1) * 10));   // i번째 가지(송이)의 알 수
-// 송이 한 개의 알 자리(위가 넓고 아래로 좁은 4·3·2·1)를 채워 가는 차례. 좌표는 송이 그림(21×21) 안, 알은 6×6
-const BERRY_SLOTS = [[5, 0], [10, 0], [8, 5], [3, 5], [13, 5], [0, 0], [15, 0], [5, 10], [10, 10], [8, 15]];
-const BERRY_AT = [0, -1];   // 가지 grape 자리에서 송이 그림 왼쪽 위까지의 거리(1배 그림 기준)
+// 송이 한 개: 꼭지·뼈대 그림(cluster-stem.png, 20×28) 위에 알(6×6)을 올린다. 좌표는 뼈대 그림 왼쪽 위 기준이고 알이 열리는 차례다(위쪽 가운데부터). 자리 표는 note/img/vine/scene/cluster.json과 같다
+const BERRY_SLOTS = [[5, 9], [9, 9], [1, 9], [13, 9], [7, 13], [3, 13], [11, 13], [5, 17], [9, 17], [7, 21]];
+const BERRY_AT = [0, 0];   // 가지 grape 자리(÷2)에서 송이 뼈대 그림 왼쪽 위까지의 거리(1배 그림 기준)
+const STEM_NUDGE = { 2: [0, -1], 4: [0, -1], 6: [0, -1], 7: [0, -2] };   // 꼭지가 가지 잎에서 1~3px 떠 보이던 가지만 { 가지번호: [가로, 세로] }로 옮긴다(1배 그림 기준). 잎이 다 돋았을 때 꼭지와 잎 사이가 1px 이하가 된다
+const vineStem = (x = 0, y = 0) => `<span class="vine-stem" aria-hidden="true" style="left:${x}px;top:${y}px"></span>`;
 const vineBerry = (x, y, ghost = false) => `<span class="vine-berry${ghost ? ' ghost' : ''}" aria-hidden="true" style="left:${x}px;top:${y}px"></span>`;
-const vineCluster = n => `<span class="vine-cluster" aria-hidden="true"><span class="vine-cluster-in">${BERRY_SLOTS.map(([x, y], j) => vineBerry(x, y, j >= n)).join('')}</span></span>`;
+const vineCluster = n => `<span class="vine-cluster" aria-hidden="true"><span class="vine-cluster-in">${vineStem()}${BERRY_SLOTS.map(([x, y], j) => vineBerry(x, y, j >= n)).join('')}</span></span>`;
 function fillVineDemo(grapes) {
   if (LIVE || ![0, 7, 9, 10, 45, 89, 90, 95].includes(grapes)) return;
   clearVineMoments();
@@ -3458,6 +3461,15 @@ function loadVineAnchors() {
     const tree = $('#popSheet .vine-story-tree'); if (tree) tree.innerHTML = vineScene({ full: true });
   }).catch(() => { vineAnchorsPending = null; });
 }
+// 잎이 돋는 차례: 송이 꼭지 위끝([8,0])에 가까운 잎부터. 그래야 첫 알부터 송이가 잎에 매달려 보인다. 가지마다 한 번만 정한다
+const STEM_TOP = [8, 0];
+const vineLeafOrderCache = {};
+function vineLeafOrder(b) {
+  if (vineLeafOrderCache[b.id]) return vineLeafOrderCache[b.id];
+  const [nx, ny] = STEM_NUDGE[b.id] || [0, 0], tx = b.grape[0] / 2 + BERRY_AT[0] + nx + STEM_TOP[0], ty = b.grape[1] / 2 + BERRY_AT[1] + ny + STEM_TOP[1];
+  const dist = l => (l.x / 2 + 11 - tx) ** 2 + (l.y / 2 + 10 - ty) ** 2;   // 잎 그림 22×20의 가운데까지
+  return (vineLeafOrderCache[b.id] = b.leaves.slice().sort((p, q) => dist(p) - dist(q)));
+}
 function vineScene(opts = {}) {
   loadVineAnchors();
   const a = vineAnchors, box = opts.crop && a ? a.card.map(v => v / 2) : [0, 0, 384, 256];
@@ -3467,18 +3479,19 @@ function vineScene(opts = {}) {
   if (a) {
     if (g) layers += image(g <= 40 ? 'trunk-0' : 'trunk-1', 'vine-trunk');
     a.branches.forEach(b => {
-      const n = vineBerries(b.id, g); if (!n) return;
-      const bx = b.base[0] / 2, tip = b.tip[0] / 2, cut = bx + (tip - bx) * n / 10;
-      const left = Math.max(0, Math.min(bx, cut) - 2), right = Math.min(384, Math.max(bx, cut) + 2);
-      layers += image('branch-' + b.id, 'vine-branch', n < 10 ? `clip-path:inset(0 ${384 - right}px 0 ${left}px)` : '');
+      if (!vineBerries(b.id, g)) return;   // 알이 열리기 시작한 가지는 처음부터 다 보인다(잎과 알은 하나씩)
+      layers += image('branch-' + b.id, 'vine-branch');
     });
-    a.branches.forEach(b => b.leaves.slice(0, vineBerries(b.id, g)).forEach((l, j) => {
+    a.branches.forEach(b => vineLeafOrder(b).slice(0, vineBerries(b.id, g)).forEach((l, j) => {
       const fresh = (VN.grapes[base + (b.id - 1) * 10 + j] || '').startsWith(today), frame = fresh ? 4 : l.frame;   // 오늘 열린 알의 잎은 갓 돋은 빛깔
       layers += `<span class="vine-leaf" aria-hidden="true" data-frame="${frame}" style="left:${l.x / 2}px;top:${l.y / 2}px;background-position:-${frame * 22}px 0;${l.flip ? 'transform:scaleX(-1)' : ''}"></span>`;
     }));
-    a.branches.forEach(b => BERRY_SLOTS.slice(0, vineBerries(b.id, g)).forEach(([sx, sy]) => {
-      layers += vineBerry(b.grape[0] / 2 + BERRY_AT[0] + sx, b.grape[1] / 2 + BERRY_AT[1] + sy);
-    }));
+    a.branches.forEach(b => {
+      const n = vineBerries(b.id, g); if (!n) return;   // 잎이 돋은 가지에만 꼭지·뼈대와 알을 그린다
+      const [nx, ny] = STEM_NUDGE[b.id] || [0, 0], ox = b.grape[0] / 2 + BERRY_AT[0] + nx, oy = b.grape[1] / 2 + BERRY_AT[1] + ny;
+      layers += vineStem(ox, oy);
+      BERRY_SLOTS.slice(0, n).forEach(([sx, sy]) => { layers += vineBerry(ox + sx, oy + sy); });
+    });
   }
   return `<div class="vine-scene" role="img" aria-label="포도나무" style="--vine-w:${w}px;--vine-h:${h}px"><div class="vine-zoom"><div class="vine-layers" style="left:${-x}px;top:${-y}px">${layers}</div></div></div>`;
 }
