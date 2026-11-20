@@ -18,6 +18,7 @@
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Gowun+Batang:wght@400;700&family=IBM+Plex+Sans+KR:wght@400;500;600&display=swap">
 <script src="config.js"></script>
 <script src="info-tip.js"></script>
+<script src="account-delete.js"></script>
 <script>
 // 저장된 화면 설정을 그림이 그려지기 전에 먼저 입힌다(밝은 화면이 잠깐 번쩍이지 않게). 읽을 수 없으면 기기 설정을 따른다
 try {
@@ -433,6 +434,22 @@ html.kg-on body.tabs-off .topbar, html.kg-on body.tabs-off .tabs { transform: no
 .gr.open { border-bottom: 1px solid var(--line); }   /* 화면 설정을 펼치면 머리줄 아래 구분선 */
 .gr.off b { color: var(--ink-2); font-weight: 500; }
 .logout { display: block; margin: 20px auto 0; min-height: 44px; padding: 0 16px; background: none; border: 0; color: var(--ink-2); font: 500 .9375rem var(--f-body); }
+/* 계정 화면과 계정 탈퇴(교회 앱 app/index.html의 계정 화면과 같은 모양, 2026-11-20) */
+.logout.danger { margin-top: 6px; color: var(--warn); }
+.acct-li { display: flex; align-items: center; gap: 10px; padding: .55em 0; }
+.acct-li + .acct-li { border-top: 1px solid var(--line); }
+.acct-logo { width: 30px; height: 30px; flex: none; display: grid; place-items: center; border-radius: 50%; border: 1px solid var(--line); background: var(--surface-2); color: var(--ink); }
+.acct-logo svg { width: 16px; height: 16px; }
+.erase-ask { background: var(--warn-soft); border-radius: 12px; padding: 10px 12px; margin-top: 14px; }
+.erase-ask p { margin: 0 0 .5em; }
+.erase-ask .erase-warn { margin-bottom: .8em; }
+.erase-ask .sl { display: flex; align-items: center; gap: 4px; margin-bottom: 4px; }
+.erase-steps { margin: .1em 0 .9em; padding-left: 1.3em; font-size: .94em; line-height: 1.6; }
+.erase-steps li { margin: .2em 0; }
+.erase-ask .field { margin: .3em 0 .7em; }
+.erase-ask .ra { justify-content: flex-start; flex-wrap: wrap; }
+.erase-ask .warn-text { color: var(--warn); }
+.btn.danger { background: var(--warn); border-color: var(--warn); color: var(--on-accent); }
 .ex { padding: 4px 0 14px; }
 .cdw { display: flex; gap: 4px; margin: 10px 0 10px -2px; }
 .cd { width: 48px; height: 48px; border: 0; background: none; padding: 0; display: flex; align-items: center; justify-content: center; }
@@ -1203,13 +1220,7 @@ const pick = (v, list, d) => (list.includes(v) ? v : d);
 // ── 계정 탈퇴 뒤 이 기기의 그 계정 노트 지우기(2026-11-20) ──
 // 교회 앱(app/)에서 탈퇴하면 그 계정의 id 해시({h})를 표시(didako-wipe-note)에 남긴다. 노트가 열릴 때(기억해 둔 노트를 읽기 전에) 이 기기의 노트 주인이 그 계정('sb:'+해시)일 때만 그 노트를 지우고 표시를 치운다.
 // 같은 기기의 다른 계정 노트(보관해 둔 사본 포함)는 그대로 두고, 화면 설정과 이용 통계 끔은 남긴다. 표시가 올바르지 않으면 아무것도 지우지 않고 치우기만 한다.
-(function wipeAfterErase() {
-  const raw = ls.get('didako-wipe-note');
-  if (raw == null) return;
-  ls.del('didako-wipe-note');
-  let w = null; try { w = JSON.parse(raw); } catch (e) { w = null; }
-  const h = w && typeof w.h === 'string' && /^[0-9a-f]{16}$/.test(w.h) ? w.h : '';
-  if (!h) return;
+function wipeAccountNote(h) {
   const owner = 'sb:' + h;
   if (ls.get('didako-note-owner') === owner) {
     [K.notes, K.badges, K.session, K.demo, K.vine, 'didako-note-vault', 'didako-note-lock', 'didako-note-gone', 'didako-note-guide', 'didako-note-walk-open', 'didako-note-owner',
@@ -1218,6 +1229,15 @@ const pick = (v, list, d) => (list.includes(v) ? v : d);
   }
   ls.del('didako-note-stash.' + owner);
   if (ls.get('didako-note-sbh') === h) ls.del('didako-note-sbh');
+}
+// 교회 앱에서 탈퇴한 표시가 남아 있으면 지금 지운다(노트에서 탈퇴할 때는 아래 acctErased가 같은 함수를 바로 부른다)
+(function wipeAfterErase() {
+  const raw = ls.get('didako-wipe-note');
+  if (raw == null) return;
+  ls.del('didako-wipe-note');
+  let w = null; try { w = JSON.parse(raw); } catch (e) { w = null; }
+  const h = w && typeof w.h === 'string' && /^[0-9a-f]{16}$/.test(w.h) ? w.h : '';
+  if (h) wipeAccountNote(h);
 })();
 
 // ── 화면 설정(화면 모드·색 테마·디자인·큰 글씨): GBS 앱과 같은 값, 기억 자리만 따로 ──
@@ -1883,13 +1903,14 @@ function viewMore() {
       ${dispOpen ? displayEx() : ''}
       ${HOME_APP ? '' : `<button class="gr" type="button" data-act="a2hs"><span class="gt"><b>홈 화면에 앱처럼 두기</b></span><span class="ch" aria-hidden="true">›</span></button>`}
       <div class="gr" style="cursor:default"><span class="gt"><b>이용 통계 보내기</b>${DidakoTip.btn('앱을 좋게 만들기 위해 이름 없는 사용 기록을 보내요. 누른 것, 연 때와 머문 시간 같은 숫자만이고 이름과 내가 쓴 글은 보내지 않아요. 끄면 이 기기에서는 더 보내지 않아요.', '이용 통계 보내기')}</span><button type="button" class="switch${usageOff() ? '' : ' on'}" role="switch" aria-checked="${!usageOff()}" aria-label="이용 통계 보내기" data-act="usageoff"><span></span></button></div>
+      <a class="gr" href="#/more/account"><span class="gt"><b>계정</b></span><span class="ch" aria-hidden="true">›</span></a>
     </div>`;
   const app1 = `<div class="gl">디다코</div><div class="gc">
       <a class="gr" href="#/more/about"><span class="gt"><b>디다코 소개</b></span><span class="ch" aria-hidden="true">›</span></a>
       <a class="gr" href="#/more/guide"><span class="gt"><b>사용법</b></span><span class="ch" aria-hidden="true">›</span></a>
       <a class="gr" href="#/more/feedback"><span class="gt"><b>의견 보내기</b></span><span class="ch" aria-hidden="true">›</span></a>
       <a class="gr" href="https://koinobia.com/privacy/" target="_blank" rel="noopener"><span class="gt"><b>개인정보 처리방침</b></span><span class="ch" aria-hidden="true">›</span></a>
-    </div><button class="logout" type="button" data-act="logout">이 기기에서 로그아웃</button>`;
+    </div>`;
   return `<div class="col more">${pageHead('', '더보기')}
     ${LIVE && !sbMode() && ls.get('didako-church-name') ? `<div class="sm" style="margin:-4px 0 12px">${esc((ls.get('didako-church-name') || '') + (ls.get('didako-church-kind') === 'test' ? ' · 테스트' : ''))}</div>` : ''}
     <div class="more-grid"><div>${places}${account}</div><div>${set1}${app1}</div></div></div>`;
@@ -1991,6 +2012,53 @@ function viewSync() {
       <div class="act">${on ? `${LIVE && sbRelogin ? '<button class="btn sm2" type="button" data-act="sb-relogin">다시 로그인</button>' : ''}<button class="btn ghost sm2" type="button" data-act="sync-now">${SYNC_IC}지금 동기화</button><button class="ql" type="button" data-act="cut-sheet">연결 끊기</button>` : '<button class="btn sm2" type="button" data-act="keep-start">켜기</button>'}</div></div>
     ${secret}${file}${how}
     <div class="ft"><div class="sl">알아 두세요</div><p>· 브라우저의 인터넷 기록·사이트 데이터를 지우면 이 기기의 사본과 화면 설정이 지워질 수 있어요.</p><p>· 맡긴 기록은 비밀 문구로 다시 열 수 있어요.</p>${on ? '' : '<p>· 아이폰은 홈 화면에 두지 않고 7일 넘게 열지 않으면 이 기기의 기록이 지워질 수 있어요.</p>'}</div>`);
+}
+
+// ── 계정(더보기 › 앱 설정 › 계정, 2026-11-20): 로그인한 방법, 이 기기에서 로그아웃, 계정 탈퇴(교회 앱의 계정 화면과 같은 모양) ──
+// 탈퇴는 새 길(Supabase)로 로그인한 노트에서만 한다. 문구와 서버 부르기는 account-delete.js(DidakoAcctDel, 교회 앱과 같은 파일). 단계 AD.step = check(확인 중) · block(막힘·불러오기 실패) · ask(확인 글)
+const SB_NAME = { kakao: '카카오', google: '구글', apple: '애플' };
+let ACCT_IDS, AD = null;   // ACCT_IDS: undefined=아직 안 읽음, null=불러오는 중, []=보여 줄 것 없음
+const canErase = () => LIVE && sbMode() && liveReady && !!me;
+const idsOf = u => { const ids = ((u && u.identities) || []).map(i => i.provider), md = (u && u.app_metadata) || {};
+  return (ids.length ? ids : md.providers || (md.provider ? [md.provider] : [])).filter((k, i, a) => k && a.indexOf(k) === i); };
+// 새 길은 기기에 남은 세션(didako-note-sb)을 먼저 읽어 바로 보이고, 그다음 로그인 도구로 확인한다. 예전 길은 카카오, 데모는 없음
+function acctLoad() {
+  if (!LIVE) { ACCT_IDS = []; return; }
+  if (!sbMode()) { ACCT_IDS = oldLogin() ? ['kakao'] : []; return; }
+  try { const raw = ls.get(SB_STORE); ACCT_IDS = raw ? idsOf(JSON.parse(raw).user) : null; } catch (e) { ACCT_IDS = null; }
+  const done = ids => { ACCT_IDS = ids; if (routeKey() === 'more/account') render(); };
+  sbSession().then(se => done(se && se.user ? idsOf(se.user) : []), () => done(ACCT_IDS || []));
+}
+function viewAccount() {
+  AD = null;   // 계정 화면에 들어올 때마다 탈퇴 확인은 처음부터
+  if (ACCT_IDS === undefined) acctLoad();
+  const L = ACCT_IDS === undefined ? null : ACCT_IDS, logos = Object.assign({ kakao: BUBBLE }, SB_LOGO);
+  const card = L === null ? '<div class="sc"><div class="sl">로그인 계정</div><p class="sm" style="margin:0">불러오는 중…</p></div>'
+    : L.length ? `<div class="sc"><div class="sl">로그인 계정</div>${L.map(k => `<div class="acct-li"><span class="acct-logo">${logos[k] || ''}</span><b>${esc(SB_NAME[k] || k)}</b></div>`).join('')}</div>` : '';
+  return colWrap(`${back}
+    <h1 class="tt" style="margin-top:14px">계정</h1>${card}
+    <button class="logout" type="button" data-act="logout">이 기기에서 로그아웃</button>
+    ${canErase() ? '<button class="logout danger" type="button" data-act="acct-del-open">계정 탈퇴</button>' : ''}`);
+}
+function viewAcctDel() {
+  const A = AD || (AD = { step: 'check' }), D2 = window.DidakoAcctDel;
+  const head = `<a class="bk" href="#/more/account">${CHEV_L}계정</a>
+    <h1 class="tt" style="margin-top:14px">계정 탈퇴</h1>
+    <p class="sm" style="margin:8px 0 0">계정 삭제는 탈퇴로 해요. 먼저 지워지는 것을 확인해요.</p>`;
+  if (A.step === 'check') return colWrap(`${head}<div class="sc"><p class="sm" style="margin:0">확인하는 중이에요…</p></div>`);
+  if (A.step === 'block') {
+    const bl = (A.res && A.res.blockers) || [];
+    return colWrap(`${head}<div class="sc">${bl.map(x => `<p style="margin:0 0 6px"><b>${esc(x.msg || '')}</b></p>${D2.todo(x.code) ? `<p class="sm" style="margin:0 0 10px">${esc(D2.todo(x.code))}</p>` : ''}`).join('') || '<p style="margin:0 0 10px">지금은 탈퇴할 수 없어요.</p>'}
+      <div class="ra" style="justify-content:flex-start"><a class="btn ghost sm2" href="#/more/account">돌아가기</a></div></div>`);
+  }
+  const L = A.res.lines || [];
+  return colWrap(`${head}<div class="erase-ask"><p class="erase-warn"><b>되돌릴 수 없어요.</b> 탈퇴하면 계정과 아래 기록이 모두 삭제돼요.</p>
+    <p class="sl">삭제되는 것${DidakoTip.btn('공동체의 모임장은 가장 먼저 들어온 분께 넘어가고, 마지막 사람이면 공동체도 지워져요. 관리자 화면의 변경 기록에는 탈퇴 한 줄이 남아요(기록 내용은 없어요).', '삭제되는 것')}</p>
+    <ul class="erase-steps">${L.map(x => `<li>${esc(x)}</li>`).join('')}</ul>
+    <label class="sl" for="ad-t" style="display:block">확인하려면 "탈퇴"라고 써 주세요</label>
+    <input id="ad-t" class="field" maxlength="10" placeholder="탈퇴" autocomplete="off" value="${esc(A.typed || '')}">
+    ${A.err ? `<p class="sm warn-text" role="alert">${esc(A.err)}</p>` : ''}
+    <div class="ra"><button class="btn sm2 danger" type="button" data-act="acct-del-go"${A.busy ? ' disabled' : ''}>${A.busy ? '지우는 중…' : '탈퇴하기'}</button><a class="btn ghost sm2" href="#/more/account"${A.busy ? ' aria-disabled="true"' : ''}>그만두기</a></div></div>`);
 }
 
 // ── 창 안의 글(비밀 문구 창 · 복구용 낱말 창 · 확인 창은 prototype/more.html의 글을 따른다) ──
@@ -3895,7 +3963,7 @@ const VIEWS = {
   'start': viewStart, 'start/church': viewChurch, 'start/name': viewName, 'start/consent': viewConsent,
   'today': viewToday, 'today/past': viewPast, 'today/all': viewAll, 'today/write': viewWrite,
   'explore': viewExplore, 'explore/walks': viewWalks, 'write': viewWrite, 'mine': () => viewMine(), 'mine/search': viewSearch, 'mine/badges': viewBadges, 'mine/journal': viewJournal, 'mine/answers': viewAnswers, 'mine/vine': viewVine,
-  'more': viewMore, 'more/about': viewAbout, 'more/guide': viewGuide, 'more/feedback': viewFeedback, 'more/sync': viewSync
+  'more': viewMore, 'more/about': viewAbout, 'more/guide': viewGuide, 'more/feedback': viewFeedback, 'more/sync': viewSync, 'more/account': viewAccount, 'more/account/delete': viewAcctDel
 };
 const MENU_OF = k => (WALK_WRITE.test(k) ? 'write' : k.startsWith('today') ? (TODAY_WRITE.test(k) ? 'write' : 'today') : k.startsWith('more') ? 'more' : k.startsWith('mine') ? 'mine' : k.startsWith('explore') ? 'explore' : k);
 // 질문 하나(mine/q/<id>), 짝 찾기(mine/pair/<발견 id>), 직접 고르기(mine/pick/<발견 id>)는 주소에 id가 들어간다
@@ -3946,6 +4014,7 @@ function guard(key) {
     return key;
   }
   if (key.startsWith('start')) return 'today';
+  if (key === 'more/account/delete' && !(AD && canErase())) return 'more/account';   // 계정 탈퇴 확인은 계정 화면의 단추로만 들어온다(주소로 바로 열리지 않는다)
   return key;
 }
 const VT_CLASSES = ['vt-in-r', 'vt-in-l', 'vt-fade', 'vt-push', 'vt-pop'];
@@ -5089,8 +5158,41 @@ if (LIVE) {
     // 새 길 로그인도 함께 끊는다(예전 길 기기가 새 보관함에 쓰던 로그인 포함). 기기의 기록은 남는다
     if (SB_CFG) { ls.del(SBH); ls.del(SB_RESUME); if (ls.get(SB_STORE)) await sbSignOut(); }
     if (CIRCLE_REAL) { circleForget(); paintPlaces(); }   // 내 공동체 목록 사본도 지운다
-    sbRelogin = false; me = null; words = []; ob.kakao = ob.church = false; ob.name = ''; closeSheet(true); go('start');
+    sbRelogin = false; me = null; words = []; ACCT_IDS = undefined; ob.kakao = ob.church = false; ob.name = ''; closeSheet(true); go('start');
   };
+  // 계정 탈퇴(새 길 노트만): 지워지는 것을 먼저 보여 주고, "탈퇴"라고 쓰면 서버가 계정과 기록을 지운다. 끝나면 이 기기를 정리하고 처음 화면으로 돌아간다
+  const acctRpc = async (name, args) => (await sbFetch('/rest/v1/rpc/' + encodeURIComponent(name), { method: 'POST', body: JSON.stringify(args || {}) })).body;
+  acts['acct-del-open'] = async () => {
+    if (!canErase()) return;
+    const A = AD = { step: 'check' };
+    go('more/account/delete');
+    try { const r = await window.DidakoAcctDel.check(acctRpc); if (AD !== A) return; A.res = r; A.step = r.ok ? 'ask' : 'block'; }
+    catch (e) { if (AD !== A || (e && e.cancelled)) return; A.res = { ok: false, blockers: [{ code: '', msg: (e && e.message) || '서버가 답하지 않아요. 잠시 뒤 다시 해 주세요.' }] }; A.step = 'block'; }
+    if (routeKey() === 'more/account/delete') render();
+  };
+  acts['acct-del-go'] = async () => {
+    const A = AD; if (!A || A.busy || A.step !== 'ask' || !canErase()) return;
+    const t = $('#ad-t'); A.typed = t ? t.value : A.typed || '';
+    if (A.typed !== '탈퇴') { A.err = '확인하려면 칸에 "탈퇴"라고 정확히 써 주세요.'; return render(); }
+    A.err = ''; A.busy = true; render();
+    let who;
+    try { who = await sbMe(); } catch (e) { if (AD === A && !(e && e.cancelled)) { A.busy = false; A.err = (e && e.message) || '로그인이 필요해요. 다시 로그인한 뒤 해 주세요.'; render(); } return; }
+    try { await window.DidakoAcctDel.run(acctRpc, '탈퇴'); }
+    catch (e) { if (e && e.cancelled) return; A.busy = false; A.err = (e && e.message) || '탈퇴하지 못했어요. 잠시 뒤 다시 해 주세요.'; if (AD === A) render(); return; }
+    acctErased(who.h);
+  };
+  // 서버에서 계정이 지워진 뒤 이 기기 정리: 더 맡기지 않게 멈추고, 이 계정의 노트 자리만 지우고(다른 계정 노트는 그대로), 로그인을 끊고, 화면을 처음부터 다시 연다.
+  //  어느 한 곳이 실패해도 나머지는 계속한다. 다시 열면 메모리의 노트·보관함 상태도 함께 사라진다
+  async function acctErased(h) {
+    clearTimeout(syncTimer); liveReady = false; epoch++; AD = null; ACCT_IDS = undefined;
+    try { UZ.clear(); } catch (_) { /* 사용 기록 대기열을 못 비워도 계속 */ }
+    try { wipeAccountNote(h); } catch (_) { /* 무시 */ }
+    try { if (CIRCLE_REAL) circleForget(); } catch (_) { /* 무시 */ }
+    try { await sbSignOut(); } catch (_) { /* 계정이 이미 없어서 실패해도 계속 */ }
+    [SB_STORE, SB_RESUME, SBH, 'didako-note-circles'].forEach(k => ls.del(k));
+    try { sessionStorage.setItem('didako-note-erased', '1'); } catch (_) { /* 알림만 못 띄운다 */ }
+    history.replaceState(null, '', location.pathname + '#/start'); location.reload();
+  }
   // 동기화가 꺼진 채 더보기·동기화 화면에 들어오면 맡긴 기록이 있는지 미리 물어 둔다. [켜기]를 누를 때 이 답을 쓴다(60초 지나면 다시 묻는다, S-68)
   let noteProbe = null, noteProbeAt = 0;
   const probeNote = () => {
@@ -5287,6 +5389,7 @@ applySettings();
 if (!location.hash) setHash(me ? 'today' : 'start', true);
 render(true);
 window.didakoSplash && window.didakoSplash.hide();   // 첫 화면을 그렸으면 시작 화면을 닫는다(S-34)
+try { if (sessionStorage.getItem('didako-note-erased')) { sessionStorage.removeItem('didako-note-erased'); toast('탈퇴했어요. 그동안 함께해 주셔서 고마워요.'); } } catch (e) { /* 알림만 못 띄운다 */ }   // 노트에서 계정 탈퇴를 마치고 다시 열렸을 때
 if (!TUT && me) window.didakoPlace && window.didakoPlace.used('note');   // 마지막에 쓴 곳(D-59)
 if (TUT) setTimeout(() => { if (!NoteGuide.begun()) NoteGuide.fail(); }, 6000);   // 연습 페이지에서 안내가 시작되지 않으면 진짜 노트로 돌려보낸다
 if (LIVE) {
