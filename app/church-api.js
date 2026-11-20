@@ -25,6 +25,7 @@
 //    · adFind(합칠·옮길 사람 찾기) → didako_ch_dept_find · adDeptMove·adMoveUndo·adMoveRecent → didako_ch_dept_move·dept_move_undo·move_recent
 //    · adMoveView(교회 전체의 가정 다른 부서로 보내기 목록) → didako_ch_move_view · adMarry·adMarryUndo·adMarryRecent → didako_ch_marry_save·marry_undo·marry_recent
 //   기록과 요청(3단계-4다, supabase/014): adChanges → didako_ch_changes(부서, all이면 교회 전체) · adOpsView → didako_ch_ops_view(앱 상태·개인정보 요청·의견함)
+//    · lessonOpen(연결된 사람이 과를 펼쳤다고 알림, 분석의 "이번 과를 연 사람" 합계용, supabase/019) → didako_ch_lesson_open
 //    · adFeedbackRead → didako_ch_feedback_read · adEraseFamily·adKeepFamily → didako_ch_erase_family·keep_family · adAnalysis → didako_ch_analysis(명단 숫자만)
 //    · feedbackSend(더보기 › 의견 보내기) → didako_ch_feedback_send · eraseAsked·eraseRequest → didako_ch_erase_asked·erase_request · churchLeave → didako_ch_leave
 //    (eraseAsked·eraseRequest는 더보기 사랑방 카드 아래 "기록 지우기 요청" 줄이 쓴다(2026-11-19). churchLeave는 서버만 있고 화면 단추는 두지 않는다: 코이데도 단추가 없다.
@@ -221,6 +222,7 @@ window.didakoChurchApi = (() => {
       case 'adFeedbackRead': return rpc('didako_ch_feedback_read', { p_dept: dept(body), p_id: uuid(body.id, '의견을 찾지 못했어요.'), p_read: body.read !== false });
       case 'adEraseFamily': return rpc('didako_ch_erase_family', { p_dept: dept(body), p_household: fam(body), p_name: str(body.name).slice(0, 40) });
       case 'adKeepFamily': return rpc('didako_ch_keep_family', { p_dept: dept(body), p_household: fam(body) });
+      case 'lessonOpen': return rpc('didako_ch_lesson_open', { p_book: uuid(body.bookId, '교재를 찾지 못했어요.'), p_no: lessonNo(body.no) });
       case 'adAnalysis': return rpc('didako_ch_analysis', body.all === true ? { p_dept: null, p_all: true } : { p_dept: dept(body), p_all: false });
       case 'feedbackSend': return rpc('didako_ch_feedback_send', { p_kind: str(body.kind), p_text: str(body.text).slice(0, 500), p_named: body.named === true,
         p_ver: str(body.ver).slice(0, 20), p_width: str(body.width) });

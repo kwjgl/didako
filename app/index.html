@@ -828,6 +828,8 @@ label.f { display: block; font-size: .85em; font-weight: 600; margin: 12px 0 4px
 .an-v { font-size: .72em; color: var(--ink-2); font-variant-numeric: tabular-nums; }
 .an-col.now .an-v { color: var(--ink); font-weight: 600; }
 .an-x { font-size: .72em; color: var(--ink-2); padding-bottom: .2em; }
+.an-cols.w8 { grid-template-columns: repeat(8, minmax(0, 1fr)); }   /* 주별 8주(2026-11-20) */
+.an-cols.w8 .an-bar { width: 52%; min-height: 3px; }
 /* 관리 전환 화면: 화면 전체를 덮고 세 겹 끈이 엮이며 나타난다 */
 .ad-splash { position: fixed; inset: 0; z-index: 50; background: var(--page); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: .5em; padding: 24px; text-align: center; transition: opacity .25s ease-out; }
 .ad-splash.out { opacity: 0; pointer-events: none; }
@@ -4232,8 +4234,17 @@ const adKv = rows => `<div class="ops-rows an-rows">${rows.map(([k, v]) => `<div
 const adKids = names => names.length ? `<span class="kids">${names.map(n => `<span class="kid">${esc(n)}</span>`).join('')}</span>` : '없어요';
 function adTrend(vals, months, label) {
   return `<div class="an-mini"><div class="row"><span>${label}</span><small class="hint">최근 6개월, %</small></div>
-    <div class="an-cols" role="img" aria-label="${esc(label)}: ${months.map((m, i) => `${m}월 ${vals[i]}%`).join(', ')}">${vals.map((v, i) => `<div class="an-col${i === vals.length - 1 ? ' now' : ''}"><span class="an-v">${v}</span><span class="an-bar" style="height:${(v / 100 * 4.2).toFixed(2)}em"></span><span class="an-x">${months[i]}월</span></div>`).join('')}</div></div>`;
+    <div class="an-cols" role="img" aria-label="${esc(label)}: ${months.map((m, i) => `${m}월 ${vals[i] == null ? '가림' : vals[i] + '%'}`).join(', ')}">${vals.map((v, i) => `<div class="an-col${i === vals.length - 1 ? ' now' : ''}"><span class="an-v">${v == null ? '·' : v}</span><span class="an-bar" style="height:${((v || 0) / 100 * 4.2).toFixed(2)}em"></span><span class="an-x">${months[i]}월</span></div>`).join('')}</div></div>`;
 }
+// 달마다 흐름 카드(코이데 analysisView의 "달마다 흐름" 카드 자리). vals는 달마다 %(가린 달은 null), months는 달 숫자
+const adTrendCard = (title, vals, months, label) => `<section class="card an-sec"><h2>${esc(title)} · 달마다 흐름</h2>${adTrend(vals, months, label)}</section>`;
+// 주별 8주(코이데의 "주별 기도했어요" 자리): 그 주에 앱에 들어온 사람 수. 막대는 8주 가운데 가장 많은 주를 기준으로, 이번 주는 진하게. ws = [{d: '9/27', n}], 마지막이 이번 주
+function adWeeks(ws, label) {
+  const mx = Math.max(1, ...ws.map(w => w.n)), last = ws.length - 1;
+  return `<div class="an-mini"><div class="row"><span>${label}</span><small class="hint">최근 8주</small></div>
+    <div class="an-cols w8" role="img" aria-label="${esc(label)}: ${ws.map((w, i) => `${i === last ? '이번 주' : w.d + ' 주'} ${w.n}명`).join(', ')}">${ws.map((w, i) => `<div class="an-col${i === last ? ' now' : ''}"><span class="an-v">${w.n}</span><span class="an-bar" style="height:${(w.n / mx * 3.2).toFixed(2)}em"></span><span class="an-x">${i === last ? '이번 주' : esc(w.d)}</span></div>`).join('')}</div></div>`;
+}
+const AD_LESSON_TIP = '이번 과는 지금 쓰는 교재에서 모두에게 공개한 가장 늦은 과예요. 앱에서 그 과를 펼친 사람을 세요. 종이로 하시는 분은 열지 않아도 괜찮아요. 누가 열었는지는 아무도 볼 수 없어요.';
 const adDateKey = L => { const m = /(\d+)월\s*(\d+)일/.exec(L.date || ''); return m ? Number(m[1]) * 100 + Number(m[2]) : Infinity; };
 // 교재 진행: 지금 열린 교재마다 모두에게 공개한 과까지와 다음 과 날짜, 다가오는 과 세 개. 교재 관리가 쓰는 자료(mg())에서 읽는다
 function adBookCard(names, church) {
@@ -4267,11 +4278,17 @@ function adAnalysisView(church) {
   const sum = k => S.reduce((n, s) => n + s[k], 0), N = sum('people'), L = sum('linked');
   const an = church ? A.church : A.depts[depts[0].name], M = Math.min(L, Math.round(N * (an ? an.visit : 0) / 100));
   const trend = an ? an.trend.slice(0, -1).concat(adPct(M, N)) : [], title = church ? '교회 전체' : depts[0].name;
-  const glance = `<section class="card ov"><div class="row"><h2>${esc(title)} 한눈에</h2><span class="hint" style="margin:0">${A.months[A.months.length - 1]}월</span></div>
+  // 주별 8주와 이번 과를 연 사람(지어낸 값, 비율 %): 사람 수로 바꾸되 이번 주와 이번 과는 이번 달 들어온 사람을 넘지 않게 한다
+  const sun = new Date(2026, A.today[0] - 1, A.today[1]); sun.setDate(sun.getDate() - sun.getDay());
+  const wks = an && an.weeks ? an.weeks.map((w, i, a) => { const d = new Date(sun); d.setDate(d.getDate() - 7 * (a.length - 1 - i)); return { d: `${d.getMonth() + 1}/${d.getDate()}`, n: Math.min(M, Math.round(N * w / 100)) }; }) : [];
+  const les = an && an.lesson != null ? Math.min(M, Math.round(N * an.lesson / 100)) : null;
+  const glance = `<section class="card ov"><div class="row"><h2>${esc(title)} 한눈에</h2><span class="hint" style="margin:0">${A.months[A.months.length - 1]}월 · ${A.today[1]}일까지</span></div>
     ${adBar('이번 달 앱에 들어온 사람', M, N)}
     ${adBar('연결된 사람', L, N)}
-    <p class="hint">${ic('lock')} 기록은 잠겨 있어서 누가 무엇을 썼는지는 아무도 볼 수 없어요.</p>
-    ${trend.length ? adTrend(trend, A.months, '앱에 들어온 사람, 달마다') : ''}</section>`;
+    ${les == null ? '' : adBar(`이번 과를 연 사람${DidakoTip.btn(AD_LESSON_TIP, '이번 과를 연 사람')}`, les, N, '이번 과를 연 사람')}
+    ${wks.length ? adWeeks(wks, '주별 앱에 들어온 사람') : ''}
+    <p class="hint">${ic('lock')} 기록은 잠겨 있어서 누가 무엇을 썼는지는 아무도 볼 수 없어요.</p></section>
+    ${trend.length ? adTrendCard(title, trend, A.months, '앱에 들어온 사람, 달마다') : ''}`;
   const compOf = s => {
     const solo = adSolo(s.d), g = s.d.group;
     return [[esc(g), `${s.rooms}곳`], [solo ? '사람' : '가정', solo ? `${s.fams}명` : `${s.fams}가정<small>사람 ${s.people}명</small>`], ['연결 대기', `${s.reqs}건`], [`리더가 없는 ${esc(g)}`, adKids(s.noLead)]];
@@ -4337,20 +4354,37 @@ const adlFeedbackBody = () => {
   const L = LA.ops && LA.ops.feedback; if (!L) return adlNoData();
   return L.length ? `<ul class="ad-list fb">${L.map(x => `<li><div class="ad-main"><span class="ad-l1"><span class="fb-kind">${esc(adlName(x.kind))}</span><small>${esc(adlName(x.at))}${x.person ? ' · ' + esc(adlName(x.person)) : ''}</small></span><p>${esc(adlName(x.text))}</p></div>${x.read ? '' : `<button class="btn small ghost" type="button" data-act="adl-fb-read" data-v="${esc(x.id)}">읽음</button>`}</li>`).join('')}</ul>` : '<p class="hint">아직 받은 의견이 없어요. 회원은 더보기 › 의견 보내기에서 보내요.</p>';
 };
-// 분석(명단 숫자만, 사용자 결정 2026-11-19). 서버(didako_ch_analysis)가 센 숫자를 데모 분석과 같은 짜임으로 그린다. 가정이 3곳보다 적은 부서의 사람·연결 수는 가려서(null) 온다
+// 분석(명단 숫자, 사용자 결정 2026-11-19, 앱에 들어온 사람·이번 과를 연 사람은 2026-11-20 supabase/019). 서버(didako_ch_analysis)가 센 숫자를 데모 분석과 같은 짜임으로 그린다. 가정이 3곳보다 적은 부서의 숫자는 모두 가려서(null) 온다
 function adlAnalysisView(church) {
   const L = church ? LA.an.church : LA.an.admin;
   if (!L) return `<section class="card calm"><p class="calm-t">분석을 불러오지 못했어요</p><p class="soft" style="margin:0">화면을 다시 열어 주세요.</p></section>`;
   const S = L.map(x => ({ d: { name: adlName(x.name), group: adlName(x.group) || '사랑방', unit: adlUnit(x.unit), rooms: (x.roomNames || []).map(n => ({ name: adlName(n) })) },
     rooms: Number(x.rooms) || 0, fams: Number(x.fams) || 0, people: x.people == null ? null : Number(x.people), linked: x.linked == null ? null : Number(x.linked),
-    reqs: Number(x.reqs) || 0, noLead: (x.noLead || []).map(adlName), moreUnlinked: (x.moreUnlinked || []).map(adlName), waiting: (x.waiting || []).map(adlName), admins: Number(x.admins) || 0 }));
+    reqs: Number(x.reqs) || 0, noLead: (x.noLead || []).map(adlName), moreUnlinked: (x.moreUnlinked || []).map(adlName), waiting: (x.waiting || []).map(adlName), admins: Number(x.admins) || 0,
+    // 019(2026-11-20): 이번 달 들어온 사람 수, 8주 주별 [{d, n}], 6개월 달별 [{m, pct}], 이번 과를 연 사람 {open}. 가린 부서와 옛 서버는 null
+    visit: x.visit == null ? null : Number(x.visit), weeks: Array.isArray(x.weeks) ? x.weeks.map(w => ({ d: adlName(w.d), n: Number(w.n) || 0 })) : null,
+    trend: Array.isArray(x.trend) ? x.trend.map(m => ({ m: adlName(m.m), pct: m.pct == null ? null : Number(m.pct) })) : null, lesson: x.lesson && x.lesson.open != null ? Number(x.lesson.open) : null }));
   const open = S.filter(s => s.people != null), N = open.reduce((n, s) => n + s.people, 0), Lk = open.reduce((n, s) => n + s.linked, 0);
+  const vOpen = open.filter(s => s.visit != null), Vk = vOpen.reduce((n, s) => n + s.visit, 0);   // 앱에 들어온 사람(서버가 새 숫자를 줄 때만)
+  const lOpen = open.filter(s => s.lesson != null), Lsn = lOpen.reduce((n, s) => n + s.lesson, 0), LsnN = lOpen.reduce((n, s) => n + s.people, 0);
+  const wOpen = open.filter(s => s.weeks && s.weeks.length === 8);
+  const wks = wOpen.length && wOpen.length === open.length ? wOpen[0].weeks.map((w, i) => ({ d: w.d, n: wOpen.reduce((n, s) => n + s.weeks[i].n, 0) })) : [];
+  const tOpen = open.filter(s => s.trend && s.trend.length === 6);
+  // 교회 전체 달마다 %: 부서마다 사람 수로 가중해서 합친다(사람 수가 0이거나 가린 부서는 뺀다)
+  const trendVals = tOpen.length && tOpen.length === open.length ? tOpen[0].trend.map((_, i) => { const w = tOpen.filter(s => s.people > 0); const tot = w.reduce((n, s) => n + s.people, 0);
+    return tot ? Math.round(w.reduce((n, s) => n + (s.trend[i].pct || 0) * s.people, 0) / tot) : null; }) : [];
+  const trendMonths = tOpen.length ? tOpen[0].trend.map(m => Number(String(m.m).slice(5))) : [];
   const title = church ? '교회 전체' : (S[0] ? S[0].d.name : DATA.church.dept);
   const hide = '<p class="hint" style="margin:.3em 0">가정이 3곳보다 적어서 숫자는 가려요.</p>';
-  const glance = `<section class="card ov"><div class="row"><h2>${esc(title)} 한눈에</h2></div>
-    ${open.length ? adBar('연결된 사람', Lk, N) : hide}
-    <p class="hint">이번 달 앱에 들어온 사람과 달마다 흐름은 사용 기록을 붙인 뒤에 보여요.</p>
-    <p class="hint">${ic('lock')} 기록은 잠겨 있어서 누가 무엇을 썼는지는 아무도 볼 수 없어요.</p></section>`;
+  const glance = `<section class="card ov"><div class="row"><h2>${esc(title)} 한눈에</h2><span class="hint" style="margin:0">${new Date().getMonth() + 1}월 · ${new Date().getDate()}일까지</span></div>
+    ${open.length ? '' : hide}
+    ${vOpen.length ? adBar('이번 달 앱에 들어온 사람', Vk, N) : ''}
+    ${open.length ? adBar('연결된 사람', Lk, N) : ''}
+    ${lOpen.length ? adBar(`이번 과를 연 사람${DidakoTip.btn(AD_LESSON_TIP, '이번 과를 연 사람')}`, Lsn, LsnN, '이번 과를 연 사람') : ''}
+    ${wks.length ? adWeeks(wks, '주별 앱에 들어온 사람') : ''}
+    ${open.length && !vOpen.length ? '<p class="hint">이번 달 앱에 들어온 사람은 서버를 새로 맞춘 뒤에 보여요.</p>' : ''}
+    <p class="hint">${ic('lock')} 기록은 잠겨 있어서 누가 무엇을 썼는지는 아무도 볼 수 없어요.</p></section>
+    ${trendVals.length && trendVals.some(v => v != null) ? adTrendCard(title, trendVals, trendMonths, '앱에 들어온 사람, 달마다') : ''}`;
   const compOf = s => {
     const solo = adSolo(s.d), g = s.d.group;
     return [[esc(g), `${s.rooms}곳`], [solo ? '사람' : '가정', solo ? `${s.fams}명` : `${s.fams}가정${s.people == null ? '' : `<small>사람 ${s.people}명</small>`}`], ['연결 대기', `${s.reqs}건`], [`리더가 없는 ${esc(g)}`, adKids(s.noLead)]];
@@ -4750,8 +4784,20 @@ function readKeep() {
 }
 // 사용 기록 도우미. 모두 LIVE일 때만 하고, 기록 못 해도 앱은 그대로다. 과는 모임 날(과의 날짜)로, 기록은 남긴 날로 날 수를 센다
 // 지금 보는 과를 처음 열었다(first) · 그 과의 기록을 처음 남겼다(keep): 과마다 이 기기에서 처음 한 번만. 모임 날 전이면 -before(남은 날 수), 당일이거나 뒤면 -after(지난 날 수)
+// 과 열람 표시(2026-11-20 supabase/019): 연결된 사람이 과를 펼치면 서버에 "열었다"만 알린다(누가 몇 번이 아니라 과마다 한 번). 분석의 "이번 과를 연 사람" 합계로만 쓰이고 이름은 어디에도 보이지 않는다. 못 보내도 앱은 그대로
+const LESSON_SEEN = new Set();
+function lessonSeen() {
+  if (!CHURCH_ON || !LIVE) return;
+  try {
+    const s = weekSel(), k = s.book + ':' + s.no;
+    if (!/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(s.book) || LESSON_SEEN.has(k)) return;   // 앱에 들어 있는 교재(번호가 uuid가 아닌 것)는 보내지 않는다
+    LESSON_SEEN.add(k);
+    api('lessonOpen', { bookId: s.book, no: s.no }).catch(() => LESSON_SEEN.delete(k));
+  } catch (e) { /* 보내지 못해도 앱은 그대로 */ }
+}
 function usageLesson(base) {
   if (!LIVE) return;
+  if (base === 'first') lessonSeen();
   try { const s = weekSel(), b = DATA.books.find(x => x.id === s.book), l = b && b.lessons.find(x => x.no === s.no); if (l) UZ.timed(base, l.iso || l.date, s.book + ':' + s.no); }
   catch (e) { /* 기록 못 해도 앱은 그대로 */ }
 }
