@@ -1161,25 +1161,33 @@ body.fs .xw-top { padding-right: 52px; }   /* 시안 보기 설정(톱니)이 �
   if (C.NOTE_BACKEND !== 'supabase' || !C.SUPABASE_URL || !C.SUPABASE_KEY || q.has('demo') || q.has('tutorial')) return;
   let mine = !C.HUB_URL;
   try { mine = mine || !!localStorage.getItem('didako-note-sb-go'); localStorage.removeItem('didako-note-sb-go'); } catch (e) { /* 표시를 못 읽으면 설정만 본다 */ }
+  // 로그인 방법 더하기(linkIdentity)에서 돌아온 길인지: 더보기 › 계정과 동기화에서 시작할 때 적어 둔 표시('방법|시각')가 15분 안에 있을 때만. 결과는 sessionStorage에 남기고 노트가 열린 뒤 알려 준다
+  let LK = ''; try { const t = (localStorage.getItem('didako-note-link') || '').split('|'); if (t[0] && Date.now() - Number(t[1] || 0) < 15 * 60 * 1000) { LK = t[0]; mine = true; } } catch (e) { /* 일반 로그인으로 본다 */ }
   if (!mine) return;
   window.__didakoSbReturn = true;
+  const linkEnd = r => { try { sessionStorage.setItem('didako-note-link-res', JSON.stringify({ p: LK, r })); localStorage.removeItem('didako-note-link'); } catch (e) { /* 표시를 못 남겨도 돌아간다 */ } };
+  const linkKind = (c, d) => { const t = String(c || '') + ' ' + String(d || ''); return /identity_already_exists|already.?linked|already exists/i.test(t) ? 'exists' : /manual_linking_disabled|manual linking/i.test(t) ? 'manual' : /access_denied/i.test(t) ? 'cancel' : 'fail'; };
   let gone = false;
   const back = () => {
     if (gone) return; gone = true;
     ['code', 'state', 'error', 'error_code', 'error_description'].forEach(k => q.delete(k));
     const s = q.toString().replace(/=(&|$)/g, '$1'); location.replace(location.pathname + (s ? '?' + s : ''));
   };
-  const fail = m => { try { sessionStorage.setItem('didako-note-sb-err', m || 'fail'); } catch (e) { /* 표시를 못 남겨도 돌아간다 */ } back(); };
+  const fail = (m, d) => { if (LK) linkEnd(linkKind(m, d)); else { try { sessionStorage.setItem('didako-note-sb-err', m || 'fail'); } catch (e) { /* 표시를 못 남겨도 돌아간다 */ } } back(); };
   const pick = k => q.get(k) || hq.get(k) || '';
-  if (q.has('error_code') || q.has('error') || hq.has('error_code') || hq.has('error')) return fail(pick('error_code') || pick('error'));
+  if (q.has('error_code') || q.has('error') || hq.has('error_code') || hq.has('error')) return fail(pick('error_code') || pick('error'), pick('error_description') || pick('error'));
   setTimeout(() => fail('timeout'), 20000);
   const run = async () => {
     try {
       const c = window.supabase.createClient(String(C.SUPABASE_URL).replace(/\/+$/, ''), C.SUPABASE_KEY, { auth: { flowType: 'pkce', detectSessionInUrl: true, persistSession: true, autoRefreshToken: true, storageKey: 'didako-note-sb' } });
       const r = await c.auth.getSession(), s = r && r.data && r.data.session;
       if (!s) return fail('nosession');
+      // 더하기에서 돌아왔는데 서버가 그 방법을 이은 기록이 없으면(코드 교환이 실패해 예전 세션이 읽힌 때) 성공이라 알리지 않는다
+      if (LK && !(s.user.identities || []).some(i => i.provider === LK)) return fail('nolink');
       const h = [...new Uint8Array(await crypto.subtle.digest('SHA-256', new TextEncoder().encode(String(s.user.id))))].map(x => x.toString(16).padStart(2, '0')).join('').slice(0, 16);
+      // 더하기 성공: 사용자 id가 그대로라 해시도 같다(저장 자리·보관함 불변)
       try { localStorage.setItem('didako-note-sbh', h); } catch (e) { return fail('storage'); }
+      if (LK) linkEnd('ok');
       back();
     } catch (e) { fail('error'); }
   };
@@ -1524,6 +1532,20 @@ function toast(msg, o) {
   if (o.undo) { const b = document.createElement('button'); b.type = 'button'; b.dataset.act = 'undo'; b.textContent = '되돌리기'; t.append(' · ', b); }
   t.hidden = false; clearTimeout(toastT); toastT = setTimeout(() => { t.hidden = true; scheduleVineMoment(); }, o.undo ? 7000 : 2600);
 }
+let restoreFile = null;   // 고른 기록 파일(합치기 확인을 누를 때까지)
+document.addEventListener('change', e => {
+  const inp = e.target;
+  if (!inp || inp.id !== 'restore-file' || !inp.files || !inp.files[0]) return;
+  const r = new FileReader();
+  r.onload = () => {
+    let x = null; try { x = JSON.parse(r.result); } catch (_) { /* 아래에서 안내 */ }
+    if (!x || x.app !== 'didako-note' || !x.notes || typeof x.notes !== 'object') { toast('디다코 노트 기록 파일이 아니에요'); return; }
+    restoreFile = x;
+    const d = x.saved ? new Date(x.saved) : null;
+    confirmSheet('저장한 기록을 합칠까요?', `${d && !isNaN(d) ? mdLine(d) + '에 저장한 기록이에요. ' : ''}지금 이 휴대폰의 기록에 합쳐요. 지워지는 것은 없고, 같은 글이 둘 다 있으면 더 최근에 고친 쪽이 남아요.`, '취소', '합치기', 'restore-go');
+  };
+  r.readAsText(inp.files[0]); inp.value = '';
+});
 const SOON = '다음 단계에서 열려요';   // 데모: 아직 만들지 않은 곳의 안내
 let sheetFrom = null, sheetLock = false;
 function openSheet(html, lock) {
@@ -1600,7 +1622,7 @@ function viewConsent() {
 const KEEP_ROWS = `<div class="kv"><b>무엇을</b><span>내가 남긴 질문과 발견, 탐구 노트. 카카오 회원번호</span></div>
   <div class="kv"><b>어디에</b><span>교회가 관리하는 비공개 구글 시트. 휴대폰에서 잠근 덩어리로만 보내요</span></div>
   <div class="kv"><b>누가 보나</b><span>나만 봐요. 잠가서 보내기 때문에 교회와 운영자도 읽을 수 없어요</span></div>
-  <div class="kv"><b>얼마나</b><span>교회를 떠나면 바로 지워요. 남겨 두고 싶으면 떠나기 전에 더보기의 '내 기록 내려받기'로 저장해 두세요. 언제든 내 기록을 지워 달라고 할 수 있어요.</span></div>
+  <div class="kv"><b>얼마나</b><span>교회를 떠나면 바로 지워요. 남겨 두고 싶으면 떠나기 전에 더보기 › 계정과 동기화의 '기록 저장하기'로 저장해 두세요. 언제든 내 기록을 지워 달라고 할 수 있어요.</span></div>
   <div class="kv"><b>사용 기록</b><span>앱을 좋게 만들기 위해 이름 없는 사용 기록을 남겨요. '탐구하기를 열었다'처럼 누른 것과 숫자만이고, 이름과 질문·발견은 넣지 않아요.</span></div>`;
 
 // 새 길(Supabase 로그인과 보관함, docs/setup.md 3-4)에서 보이는 글. 교회 서버와 구글 시트를 쓰지 않으니 그에 맞게 적는다. 사용 기록 줄은 D-65(2026-11-18)에 더했다. 보내는 기능은 아직 없다
@@ -1999,11 +2021,11 @@ function viewSync() {
       <button class="gr${on ? '' : ' dm'}" type="button" data-act="${on ? 'forgot-sheet' : 'need-sync'}"><span class="gt"><b>비밀 문구를 잊었어요</b></span><span class="ch" aria-hidden="true">›</span></button>
       <button class="gr${on ? '' : ' dm'}" type="button" data-act="${on ? 'rec-new' : 'need-sync'}"><span class="gt"><b>복구용 낱말 새로 만들기</b></span><span class="ch" aria-hidden="true">›</span></button>
       <p class="nt2" style="padding-top:2px">비밀 문구와 복구용 낱말을 둘 다 잃으면 기록을 되살릴 수 없어요.</p></div>`;
-  const dl = `<button class="gr" type="button" data-act="soon"${on ? '' : ' style="border-top:0"'}><span class="gt"><b>내 기록 내려받기</b></span><span class="ch" aria-hidden="true">›</span></button>`;
-  const file = `<div class="cg"><div class="sl" style="padding-top:16px;margin-bottom:0;font-size:.84375rem">내 기록 파일</div>${on ? `
-      <button class="gr" type="button" data-act="soon" style="border-top:0"><span class="gt"><b>기록 저장하기</b></span></button>
-      <button class="gr" type="button" data-act="soon"><span class="gt"><b>불러오기</b></span></button>` : ''}
-      ${dl}</div>`;
+  // 기록 파일: 동기화를 켜지 않아도 쓴다(코이데 노트와 같다). 서버에 문제가 생겼을 때의 마지막 안전판
+  const file = `<div class="cg"><div class="sl" style="padding-top:16px;margin-bottom:0;font-size:.84375rem">내 기록 파일</div>
+      <button class="gr" type="button" data-act="backup" style="border-top:0"><span class="gt"><b>기록 저장하기</b></span></button>
+      <button class="gr" type="button" data-act="restore"><span class="gt"><b>불러오기</b></span></button>
+      <input type="file" id="restore-file" accept="application/json,.json" hidden></div>`;
   const how = on ? '' : `<div class="ft"><div class="sl">켜는 순서</div><ol class="os"><li>비밀 문구를 두 번 적어요</li><li>복구용 낱말 여섯 개를 보고 적어 둬요</li><li>기록이 암호화되어 맡겨져요</li></ol></div>`;
   return colWrap(`${back}
     <div class="sm" style="margin-top:6px;font-size:.875rem">${esc(me.name)}</div>
@@ -2022,6 +2044,7 @@ function viewSync() {
 // 탈퇴는 새 길(Supabase)로 로그인한 노트에서만 한다. 문구와 서버 부르기는 account-delete.js(DidakoAcctDel, 교회 앱과 같은 파일). 단계 AD.step = check(확인 중) · block(막힘·불러오기 실패) · ask(확인 글)
 const SB_NAME = { kakao: '카카오', google: '구글', apple: '애플' };
 let ACCT_IDS, AD = null;   // ACCT_IDS: undefined=아직 안 읽음, null=불러오는 중, []=보여 줄 것 없음
+let ACCT_PROV, ACCT_BUSY = false, ACCT_ERR = '';   // 로그인 방법 더하기: ACCT_PROV undefined=아직 안 물음, null=불러오는 중, 배열=켜 둔 방법
 const canErase = () => LIVE && sbMode() && liveReady && !!me;
 const idsOf = u => { const ids = ((u && u.identities) || []).map(i => i.provider), md = (u && u.app_metadata) || {};
   return (ids.length ? ids : md.providers || (md.provider ? [md.provider] : [])).filter((k, i, a) => k && a.indexOf(k) === i); };
@@ -2037,9 +2060,37 @@ function acctLoad() {
 function acctCard() {
   if (ACCT_IDS === undefined) acctLoad();
   const L = ACCT_IDS === undefined ? null : ACCT_IDS, logos = Object.assign({ kakao: BUBBLE }, SB_LOGO);
-  return L === null ? '<div class="sc" style="margin-top:14px"><div class="sl">로그인 계정</div><p class="sm" style="margin:0">불러오는 중…</p></div>'
-    : L.length ? `<div class="sc" style="margin-top:14px"><div class="sl">로그인 계정</div>${L.map(k => `<div class="acct-li"><span class="acct-logo">${logos[k] || ''}</span><b>${esc(SB_NAME[k] || k)}</b></div>`).join('')}</div>` : '';
+  if (L === null) return '<div class="sc" style="margin-top:14px"><div class="sl">로그인 계정</div><p class="sm" style="margin:0">불러오는 중…</p></div>';
+  if (!L.length) return '';
+  // 로그인 방법 더하기(코이데 노트와 같다): 지금 계정에 카카오·구글·애플을 더 이어, 어느 쪽으로 들어와도 같은 노트가 되게 한다. 새 길로 로그인한 노트에서만
+  let add = '';
+  if (canLink()) {
+    if (ACCT_PROV === undefined) { ACCT_PROV = null; sbProviders().then(l => { ACCT_PROV = l; if (routeKey() === 'more/sync') render(); }); }
+    const more = ACCT_PROV ? ACCT_PROV.filter(k => !L.includes(k)) : null;
+    add = `<div class="sl" style="margin-top:14px">로그인 방법 더하기${DidakoTip.btn('로그인 방법을 더해 두면 어느 방법으로 들어와도 같은 기록을 볼 수 있어요.', '로그인 방법 더하기')}</div>`
+      + (more === null ? '<p class="sm" style="margin:0">불러오는 중…</p>'
+        : more.length ? `<div style="display:flex;flex-direction:column;gap:8px;margin-top:8px">${more.map(k => `<button class="kakao sso-${k}" type="button" data-act="acct-link" data-v="${k}"${ACCT_BUSY ? ' disabled' : ''}>${k === 'kakao' ? BUBBLE : SB_LOGO[k]}${SB_START[k]}</button>`).join('')}</div>`
+        : '<p class="sm" style="margin:0">더할 수 있는 로그인 방법이 더는 없어요.</p>')
+      + (ACCT_ERR ? `<p class="sm warn" role="alert" style="margin:8px 0 0">${esc(ACCT_ERR)}</p>` : '');
+  }
+  return `<div class="sc" style="margin-top:14px"><div class="sl">로그인 계정</div>${L.map(k => `<div class="acct-li"><span class="acct-logo">${logos[k] || ''}</span><b>${esc(SB_NAME[k] || k)}</b></div>`).join('')}${add}</div>`;
 }
+const canLink = () => LIVE && sbMode() && liveReady && !!me;
+// 로그인 방법 더하기에서 돌아왔을 때 결과를 알린다(결과는 맨 위 스크립트가 sessionStorage에 남겼다). 이은 결과를 보게 계정과 동기화 화면으로 간다
+function acctResult() {
+  let r = null; try { r = JSON.parse(sessionStorage.getItem('didako-note-link-res') || 'null'); sessionStorage.removeItem('didako-note-link-res'); } catch (_) { /* 없음 */ }
+  if (!r) return;
+  const n = SB_NAME[r.p] || '이';
+  go('more/sync');
+  setTimeout(() => {
+    if (r.r === 'ok') toast(n + ' 로그인 방법을 더했어요');
+    else if (r.r === 'exists') openSheet(`<h2>${esc(n)} 계정은 이미 쓰이고 있어요</h2><p>이 ${esc(n)} 계정은 이미 다른 계정으로 쓰이고 있어요. 그 계정을 먼저 지워야 이쪽에 이을 수 있어요. 그 계정에 쓴 노트는 함께 지워지니, 남기고 싶으면 먼저 기록 파일로 저장해 주세요.</p><div class="ra"><button class="btn" type="button" data-act="sheet-x">닫기</button></div>`);
+    else if (r.r === 'manual') acctManualSheet();
+    else if (r.r === 'cancel') toast('취소했어요.');
+    else toast('연결하지 못했어요. 다시 해 주세요.');
+  }, 300);
+}
+const acctManualSheet = () => openSheet('<h2>계정 연결이 꺼져 있어요</h2><p>서버 설정에서 계정 연결을 켜야 해요. 운영하는 분께 알려 주세요.</p><div class="ra"><button class="btn" type="button" data-act="sheet-x">닫기</button></div>');
 function viewAcctDel() {
   const A = AD || (AD = { step: 'check' }), D2 = window.DidakoAcctDel;
   const head = `<a class="bk" href="#/more/sync">${CHEV_L}계정과 동기화</a>
@@ -4221,6 +4272,36 @@ const acts = {
   'past-month'(e, el) { const l = el.getAttribute('aria-label'); after = () => { const b = $(`[data-act="past-month"][aria-label="${l}"]`); if (b && !b.disabled) b.focus({ preventScroll: true }); }; setHash('today/past/' + el.dataset.ym); },
   'date-today'() { setDemoDate(''); },
   'soon'() { toast(SOON); },
+  // 기록 파일(코이데 노트의 기록 저장하기·불러오기와 같다): 서버에 문제가 생겼을 때의 마지막 안전판. 노트와 교회 기록이 한 파일로 나간다.
+  //  파일은 잠기지 않은 글이라 내 휴대폰 밖으로 내보낼 때만 조심하면 된다. 불러오기는 지금 기록에 합친다(지우지 않는다)
+  'backup'() {
+    if (F.id && F.dirty) saveFree(false); if (X.id && X.dirty) flushNote();
+    const text = JSON.stringify(Object.assign({ app: 'didako-note', saved: new Date().toISOString() }, payload()), null, 1), fname = `디다코-노트-${new Date().toLocaleDateString('sv-SE')}.json`;
+    const download = () => {
+      const u = URL.createObjectURL(new Blob([text], { type: 'application/json' })), l = document.createElement('a'); l.href = u; l.download = fname; document.body.appendChild(l); l.click(); l.remove(); setTimeout(() => URL.revokeObjectURL(u), 1000);
+      toast('기록을 저장했어요');
+    };
+    // 공유 창(카카오톡·드라이브 등)을 쓸 수 있으면 파일로 공유하고, 안 되면 내려받는다
+    let file = null; try { file = new File([text], fname, { type: 'application/json' }); } catch (_) { /* 파일을 만들 수 없는 브라우저 */ }
+    if (file && navigator.canShare && navigator.canShare({ files: [file] })) {
+      navigator.share({ files: [file], title: '디다코 노트' }).then(() => toast('기록을 저장했어요'), err => { if (!err || err.name !== 'AbortError') download(); });
+      return;
+    }
+    download();
+  },
+  'restore'() { const f = $('#restore-file'); if (f) f.click(); },
+  'restore-go'() {
+    const x = restoreFile; restoreFile = null;
+    if (!x) return closeSheet();
+    try {
+      if (F.id && F.dirty) saveFree(false); if (X.id && X.dirty) flushNote();
+      const m = mergePayload(payload(), x);
+      // 파일에 없는 교회 기록을 지우지 않게, 마지막 맞춤 기준점 없이 합친다(양쪽에 있는 것만 최근 쪽을 고른다)
+      m.gbs = mergeGbs(readGbs(), x.gbs || { v: 1, data: {} }, { v: 1, data: {} });
+      takeMerged(m);
+    } catch (_) { closeSheet(true); toast('불러오지 못했어요. 파일을 확인해 주세요'); return; }
+    closeSheet(true); render(); scheduleSync(); toast('기록을 합쳤어요');
+  },
   guidere() { NoteGuide.goTutorial(false); },   // 더보기 › 사용법 › 따라 하기 시작: 기록이 있어도, 마쳤어도 연다
   koinonia() { location.href = '../community/'; },   // 디다코 공동체: 같은 주소 아래 공동체 층 앱(community/)으로 간다. 설정이 비어 있으면 그쪽이 데모로 연다
   community() { location.href = '../app/'; },   // 디다코 교회: 같은 주소 아래 교회 층 앱(app/)으로 간다
@@ -4766,7 +4847,7 @@ const SB_LOGO = {
 // 로그인 화면으로 보내기: 돌아와서 이어 갈 일(after)과 새 길 표시를 적어 둔다. 돌아오는 주소는 지금 열린 노트 주소
 async function sbOauth(provider, after) {
   if (!['kakao', 'google', 'apple'].includes(provider)) throw { code: 'bad', message: '로그인 방법을 고를 수 없어요.' };
-  ls.set('didako-note-sb-go', '1');
+  ls.set('didako-note-sb-go', '1'); ls.del('didako-note-link');   // 더하기 표시가 남아 있으면 일반 로그인이 더하기로 읽히지 않게
   if (after) ls.set(SB_RESUME, after); else ls.del(SB_RESUME);
   const q = new URLSearchParams(location.search); ['code', 'state', 'error', 'error_code', 'error_description'].forEach(k => q.delete(k));
   const qs = q.toString().replace(/=(&|$)/g, '$1');
@@ -4900,7 +4981,7 @@ async function bootSb() {
   if (!h) return;
   switchOwner('sb:' + h); liveReady = true; ob.kakao = ob.church = true;
   ensureStart(); go(me ? (!liveEntryRoute || liveEntryRoute.startsWith('start') ? 'today' : liveEntryRoute) : 'start/name');
-  if (me) syncLive();
+  if (me) { syncLive(); acctResult(); }
 }
 // 예전 길 기기가 새 보관함 로그인에서 돌아왔으면 하던 일을 잇는다. 이었으면 true
 function sbResume() {
@@ -5125,6 +5206,24 @@ if (LIVE) {
     }
   };
   acts['sb-relogin'] = () => sbLoginOpen('sync');
+  // 로그인 방법 더하기(linkIdentity): 사용자 id가 그대로라 보관함·저장 자리가 바뀌지 않는다. 이미 다른 계정으로 쓰이는 로그인은 이을 수 없고 안내만 한다
+  acts['acct-link'] = async (ev, el) => {
+    const k = el && el.dataset.v;
+    if (!k || ACCT_BUSY || !canLink() || !['kakao', 'google', 'apple'].includes(k)) return;
+    ACCT_BUSY = true; ACCT_ERR = ''; render();
+    const q = new URLSearchParams(location.search); ['code', 'state', 'error', 'error_code', 'error_description'].forEach(x => q.delete(x));
+    const qs = q.toString().replace(/=(&|$)/g, '$1');
+    try {
+      ls.set('didako-note-sb-go', '1'); ls.set('didako-note-link', k + '|' + Date.now());
+      const r = await (await sbClient()).auth.linkIdentity({ provider: k, options: { redirectTo: location.origin + location.pathname + (qs ? '?' + qs : '') } });
+      if (r && r.error) throw r.error;
+    } catch (e) {
+      ls.del('didako-note-sb-go'); ls.del('didako-note-link'); ACCT_BUSY = false;
+      const t = String((e && (e.code || '')) + ' ' + (e && e.message || ''));
+      if (/manual_linking_disabled|manual linking/i.test(t)) { render(); acctManualSheet(); return; }
+      ACCT_ERR = e && e.code === 'net' ? e.message : '연결하지 못했어요. 다시 해 주세요.'; render();
+    }
+  };
   acts.pray = () => {
     const n = curEx(), q = n && getQ(n.q);
     const we = walkEpOfRoute(), text = we ? we.ep.ask : q?.text;

@@ -3016,7 +3016,7 @@ function acctDelView() {
   return `<div class="feedback-page acct-page">${head}<div class="erase-ask"><p class="erase-warn"><b>되돌릴 수 없어요.</b> 탈퇴하면 계정과 아래 기록이 모두 삭제돼요.</p>
     <div class="tip-line"><p class="mlabel">삭제되는 것</p>${DidakoTip.btn('공동체의 모임장은 가장 먼저 들어온 분께 넘어가고, 마지막 사람이면 공동체도 지워져요. 관리자 화면의 변경 기록에는 탈퇴 한 줄이 남아요(기록 내용은 없어요).', '삭제되는 것')}</div>
     <ul class="erase-steps">${L.map(x => `<li>${esc(x)}</li>`).join('')}</ul>
-    <p class="hint" style="margin-bottom:.2em">지우기 전에 기록을 내려받아 둘 수 있어요.</p><p class="rec-line" style="margin:0 0 1em"><a class="quiet-link" href="../note/">디다코 노트 열기</a></p>
+    <p class="hint" style="margin-bottom:.2em">지우기 전에 기록을 파일로 저장해 둘 수 있어요.</p><p class="rec-line" style="margin:0 0 1em"><a class="quiet-link" href="../note/#/more/sync">디다코 노트에서 기록 저장하기</a></p>
     <label class="mlabel" for="ad-t">확인하려면 "탈퇴"라고 써 주세요</label>
     <input id="ad-t" class="field" maxlength="10" placeholder="탈퇴" autocomplete="off" value="${esc(A.typed || '')}">
     ${A.err ? `<p class="hint warn-text" role="alert">${esc(A.err)}</p>` : ''}
