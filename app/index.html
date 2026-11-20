@@ -1874,7 +1874,8 @@ function displayControls() {
 }
 function renderSettings() {
   // 실제 모드에는 데모용 설정(역할 바꾸기 등)이 없다. 화면 설정만 연다
-  if (LIVE || TUT) { $('#settings').innerHTML = displayControls(); return; }
+  // 실제 모드의 톱니 메뉴 맨 아래에는 코이데처럼 로그아웃 줄이 있다(2026-11-20). 따라 하기(TUT)에서는 로그아웃하지 않는다
+  if (LIVE || TUT) { $('#settings').innerHTML = displayControls() + (LIVE && !TUT && D.entered ? '<div class="mdiv"></div><button class="mitem" type="button" role="menuitem" data-act="more-logout"><span>이 기기에서 로그아웃</span></button>' : ''); return; }
   const inApp = currentView() !== 'start';
   $('#settings').innerHTML = `${displayControls()}    <div class="mdiv"></div>
     <p class="mlabel">데모용 <span class="demo-tag static">데모</span></p>
@@ -2935,6 +2936,7 @@ function moreView() {
       <div class="gl">앱 설정</div><div class="gc">
         <button class="gr${dispOpen ? ' open' : ''}" type="button" data-act="disp" aria-expanded="${dispOpen}" aria-controls="dispEx"><span class="gt"><b class="mhead">화면 설정</b></span>${ic('chevr', 'ch')}</button>
         ${dispOpen ? `<div id="dispEx" style="padding:4px 0 14px">${displayControls()}</div>` : ''}
+        <button class="gr" type="button" data-act="a2hs"><span class="gt"><b>홈 화면에 앱처럼 두기</b></span>${ic('chevr', 'ch')}</button>
         <div class="gr" style="cursor:default"><span class="gt"><b>이용 통계 보내기</b>${DidakoTip.btn('앱을 좋게 만들기 위해 이름 없는 사용 기록을 보내요. 누른 것, 연 때와 머문 시간 같은 숫자만이고 이름과 내가 쓴 글은 보내지 않아요. 끄면 이 기기에서는 더 보내지 않아요.', '이용 통계 보내기')}</span><button type="button" class="switch${usageOff() ? '' : ' on'}" role="switch" aria-checked="${!usageOff()}" aria-label="이용 통계 보내기" data-act="usageoff"><span></span></button></div>
         <a class="gr" href="#account"><span class="gt"><b>계정</b></span>${chevron}</a>
       </div>
@@ -6730,6 +6732,7 @@ if (LIVE) {
     }),
     // 로그아웃: 확인 한 번. 디다코 노트에서도 로그아웃된다
     'more-logout'() {
+      closeMenu();   // 톱니 메뉴에서 눌렀을 때 메뉴를 먼저 닫는다
       openSheet(sheetHead('로그아웃') + `<p>로그아웃할까요?</p><p class="hint">다시 들어올 때는 처음에 쓴 방법으로 로그인해요.<br>디다코 노트에서도 로그아웃돼요.</p><div class="set-btns"><button class="btn ghost" type="button" data-act="pop-close" data-focus>그만두기</button><button class="btn" type="button" data-act="lv-logout">로그아웃</button></div>`);
     },
     // 계정 탈퇴(새 길 교회 앱만): 지워지는 것을 먼저 보여 주고, "탈퇴"라고 쓰면 서버가 계정과 기록을 지운다. 끝나면 이 기기를 정리하고 로그아웃한다
