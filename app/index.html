@@ -105,6 +105,8 @@ button, a, label, summary, select, input, [role="button"], [data-act], .brand { 
 .icon-btn[aria-expanded="true"] { background: var(--surface-2); }
 .menu { position: absolute; top: calc(100% + 6px); right: max(16px, env(safe-area-inset-right, 0px)); width: min(300px, calc(100vw - 32px)); background: var(--surface); border: 1px solid var(--line); border-radius: 16px; box-shadow: 0 16px 40px -12px var(--shadow); padding: .5em; display: flex; flex-direction: column; gap: .1em; z-index: 25; }
 .mlabel { font-size: .72em; font-weight: 600; color: var(--ink-2); margin: .6em .7em .3em; }
+/* 톱니 메뉴의 '화면 설정' 제목: 코이데와 같은 크기 · 굵기(2026-11-20) */
+.mhead, .menu .mhead { font-size: calc(var(--base) * .97); font-weight: 600; color: var(--ink); }
 .place-row { display: flex; align-items: center; justify-content: space-between; width: 100%; gap: 8px; min-height: 44px; padding: 10px 6px; border: 0; border-radius: 10px; background: none; color: var(--ink); font: 500 .875rem var(--f-body); text-align: left; text-decoration: none; cursor: pointer; }
 .place-row .role-tag { margin-left: 6px; }
 .place-row:hover, .place-row:focus-visible { background: var(--surface-2); }
@@ -1541,7 +1543,7 @@ html.tutorial .demo-tag { display: none !important; }
     <symbol id="i-share" viewBox="0 0 24 24"><circle cx="9" cy="9" r="3.4"/><circle cx="16.5" cy="10" r="2.8"/><path d="M3.5 19c.5-3.2 2.7-5 5.5-5s5 1.8 5.5 5M15 14.4c2.6-.3 4.8 1.2 5.5 4.6"/></symbol>
     <symbol id="i-log" viewBox="0 0 24 24"><path d="M6 4h11a1.5 1.5 0 0 1 1.5 1.5v13A1.5 1.5 0 0 1 17 20H6z"/><path d="M6 4v16M10 9h5M10 13h4"/></symbol>
     <symbol id="i-more" viewBox="0 0 24 24"><circle cx="6" cy="12" r="1.3"/><circle cx="12" cy="12" r="1.3"/><circle cx="18" cy="12" r="1.3"/></symbol>
-    <symbol id="i-gear" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M12 3.5v2.2M12 18.3v2.2M3.5 12h2.2M18.3 12h2.2M6 6l1.6 1.6M16.4 16.4L18 18M18 6l-1.6 1.6M7.6 16.4L6 18"/></symbol>
+    <symbol id="i-gear" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.9l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.9-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1-1.5 1.7 1.7 0 0 0-1.9.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.9 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1 1.7 1.7 0 0 0-.3-1.9l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.9.3 1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.9-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.9 1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></symbol>
     <symbol id="i-lock" viewBox="0 0 24 24"><rect x="5" y="11" width="14" height="9" rx="2.5"/><path d="M8.5 11V8a3.5 3.5 0 0 1 7 0v3"/></symbol>
     <symbol id="i-check" viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5"/></symbol>
     <symbol id="i-gallery" viewBox="0 0 24 24"><rect x="3.5" y="4" width="17" height="16" rx="2.5"/><circle cx="16.7" cy="8.7" r="1.6"/><path d="M5.5 17.4l4.6-5.1 3.1 3.1 2.2-2.3 3.1 4.3"/></symbol>
@@ -1875,9 +1877,9 @@ function displayControls() {
 function renderSettings() {
   // 실제 모드에는 데모용 설정(역할 바꾸기 등)이 없다. 화면 설정만 연다
   // 실제 모드의 톱니 메뉴 맨 아래에는 코이데처럼 로그아웃 줄이 있다(2026-11-20). 따라 하기(TUT)에서는 로그아웃하지 않는다
-  if (LIVE || TUT) { $('#settings').innerHTML = displayControls() + (LIVE && !TUT && D.entered ? '<div class="mdiv"></div><button class="mitem" type="button" role="menuitem" data-act="more-logout"><span>이 기기에서 로그아웃</span></button>' : ''); return; }
+  if (LIVE || TUT) { $('#settings').innerHTML = '<p class="mlabel mhead">화면 설정</p>' + displayControls() + (LIVE && !TUT && D.entered ? '<div class="mdiv"></div><button class="mitem" type="button" role="menuitem" data-act="more-logout"><span>이 기기에서 로그아웃</span></button>' : ''); return; }
   const inApp = currentView() !== 'start';
-  $('#settings').innerHTML = `${displayControls()}    <div class="mdiv"></div>
+  $('#settings').innerHTML = `<p class="mlabel mhead">화면 설정</p>${displayControls()}    <div class="mdiv"></div>
     <p class="mlabel">데모용 <span class="demo-tag static">데모</span></p>
     <p class="set-note">실제 앱에는 없는 설정이에요. 이 기기에만 기억해요.</p>
     <p class="mlabel">역할</p>${seg('role', ROLES, D.role)}

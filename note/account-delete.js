@@ -1,4 +1,4 @@
-// 계정 탈퇴(더보기 › 앱 설정 › 계정 › 계정 탈퇴)의 서버 부르기와 문구. 화면 그리기는 index.html이 하고, 글은 모두 이 파일 한 곳에 둔다(2026-11-20, 코이데 app/account-delete.js를 본떴다).
+// 계정 탈퇴(노트: 더보기 › 계정과 동기화 › 계정 탈퇴, 교회 앱: 더보기 › 앱 설정 › 계정 › 계정 탈퇴)의 서버 부르기와 문구. 화면 그리기는 index.html이 하고, 글은 모두 이 파일 한 곳에 둔다(2026-11-20, 코이데 app/account-delete.js를 본떴다).
 //  서버 함수는 코이데 supabase/029(account_delete_check·account_delete)와 033이다. 디다코와 코이데는 같은 계정을 써서 한 번에 함께 지워진다.
 //  디다코 쪽 요약은 디다코 supabase/008·010의 didako_account_check가 will.didako에 싣는다(noteVault·communities·leaderOf·church{link, admin}).
 //  rpc는 DidakoSb.rpc 모양(rpc(이름, 인자) → 값, 실패하면 {code, message}를 던진다)을 넘겨 받는다.

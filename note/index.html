@@ -434,7 +434,7 @@ html.kg-on body.tabs-off .topbar, html.kg-on body.tabs-off .tabs { transform: no
 .gr.open { border-bottom: 1px solid var(--line); }   /* 화면 설정을 펼치면 머리줄 아래 구분선 */
 .gr.off b { color: var(--ink-2); font-weight: 500; }
 .logout { display: block; margin: 20px auto 0; min-height: 44px; padding: 0 16px; background: none; border: 0; color: var(--ink-2); font: 500 .9375rem var(--f-body); }
-/* 계정 화면과 계정 탈퇴(교회 앱 app/index.html의 계정 화면과 같은 모양, 2026-11-20) */
+/* 로그인 계정 카드와 계정 탈퇴(교회 앱 app/index.html의 계정 화면과 같은 모양, 2026-11-20) */
 .logout.danger { margin-top: 6px; color: var(--warn); }
 .acct-li { display: flex; align-items: center; gap: 10px; padding: .55em 0; }
 .acct-li + .acct-li { border-top: 1px solid var(--line); }
@@ -1903,7 +1903,6 @@ function viewMore() {
       ${dispOpen ? displayEx() : ''}
       ${HOME_APP ? '' : `<button class="gr" type="button" data-act="a2hs"><span class="gt"><b>홈 화면에 앱처럼 두기</b></span><span class="ch" aria-hidden="true">›</span></button>`}
       <div class="gr" style="cursor:default"><span class="gt"><b>이용 통계 보내기</b>${DidakoTip.btn('앱을 좋게 만들기 위해 이름 없는 사용 기록을 보내요. 누른 것, 연 때와 머문 시간 같은 숫자만이고 이름과 내가 쓴 글은 보내지 않아요. 끄면 이 기기에서는 더 보내지 않아요.', '이용 통계 보내기')}</span><button type="button" class="switch${usageOff() ? '' : ' on'}" role="switch" aria-checked="${!usageOff()}" aria-label="이용 통계 보내기" data-act="usageoff"><span></span></button></div>
-      <a class="gr" href="#/more/account"><span class="gt"><b>계정</b></span><span class="ch" aria-hidden="true">›</span></a>
     </div>`;
   const app1 = `<div class="gl">디다코</div><div class="gc">
       <a class="gr" href="#/more/about"><span class="gt"><b>디다코 소개</b></span><span class="ch" aria-hidden="true">›</span></a>
@@ -1992,6 +1991,7 @@ function viewFeedback() {
 }
 // 동기화(M8g 꺼짐 · M8f 켜짐): 데모라 실제 잠금은 없다
 function viewSync() {
+  AD = null;   // 계정과 동기화에 들어올 때마다 탈퇴 확인은 처음부터
   const on = D.sync === 'on';
   const secret = `<div class="cg">${LIVE && canMoveVault() ? `
       <button class="gr" type="button" data-act="vault-move"><span class="gt"><b>새 보관함으로 옮기기</b><span class="gd">기록은 휴대폰에서 잠긴 그대로 옮겨요</span></span><span class="ch" aria-hidden="true">›</span></button>` : ''}
@@ -2007,15 +2007,18 @@ function viewSync() {
   const how = on ? '' : `<div class="ft"><div class="sl">켜는 순서</div><ol class="os"><li>비밀 문구를 두 번 적어요</li><li>복구용 낱말 여섯 개를 보고 적어 둬요</li><li>기록이 암호화되어 맡겨져요</li></ol></div>`;
   return colWrap(`${back}
     <div class="sm" style="margin-top:6px;font-size:.875rem">${esc(me.name)}</div>
-    <h1 class="tt" style="margin-top:2px">동기화</h1>
+    <h1 class="tt" style="margin-top:2px">계정과 동기화</h1>
+    ${acctCard()}
     <div class="sc sy" style="margin-top:14px"><div class="hd"><h2>동기화 켜기</h2><button class="switch${on ? ' on' : ''}" type="button" role="switch" aria-checked="${on}" aria-label="동기화 켜기" data-act="${on ? 'cut-sheet' : 'keep-start'}"><span></span></button></div>
       <p class="stt${on ? '' : ' off'}"><i aria-hidden="true"></i><span>${on ? `연결됨 · 마지막으로 맡긴 때 ${syncLine()}` : '켜면 기기를 바꿔도 기록이 이어져요'}</span></p>
       <div class="act">${on ? `${LIVE && sbRelogin ? '<button class="btn sm2" type="button" data-act="sb-relogin">다시 로그인</button>' : ''}<button class="btn ghost sm2" type="button" data-act="sync-now">${SYNC_IC}지금 동기화</button><button class="ql" type="button" data-act="cut-sheet">연결 끊기</button>` : '<button class="btn sm2" type="button" data-act="keep-start">켜기</button>'}</div></div>
     ${secret}${file}${how}
-    <div class="ft"><div class="sl">알아 두세요</div><p>· 브라우저의 인터넷 기록·사이트 데이터를 지우면 이 기기의 사본과 화면 설정이 지워질 수 있어요.</p><p>· 맡긴 기록은 비밀 문구로 다시 열 수 있어요.</p>${on ? '' : '<p>· 아이폰은 홈 화면에 두지 않고 7일 넘게 열지 않으면 이 기기의 기록이 지워질 수 있어요.</p>'}</div>`);
+    <div class="ft"><div class="sl">알아 두세요</div><p>· 브라우저의 인터넷 기록·사이트 데이터를 지우면 이 기기의 사본과 화면 설정이 지워질 수 있어요.</p><p>· 맡긴 기록은 비밀 문구로 다시 열 수 있어요.</p>${on ? '' : '<p>· 아이폰은 홈 화면에 두지 않고 7일 넘게 열지 않으면 이 기기의 기록이 지워질 수 있어요.</p>'}</div>
+    <button class="logout" type="button" data-act="logout">이 기기에서 로그아웃</button>
+    ${canErase() ? '<button class="logout danger" type="button" data-act="acct-del-open">계정 탈퇴</button>' : ''}`);
 }
 
-// ── 계정(더보기 › 앱 설정 › 계정, 2026-11-20): 로그인한 방법, 이 기기에서 로그아웃, 계정 탈퇴(교회 앱의 계정 화면과 같은 모양) ──
+// ── 계정(더보기 › 계정과 동기화 맨 아래, 2026-11-20): 로그인한 방법, 이 기기에서 로그아웃, 계정 탈퇴. 코이데 노트의 "계정과 동기화"와 같은 자리 ──
 // 탈퇴는 새 길(Supabase)로 로그인한 노트에서만 한다. 문구와 서버 부르기는 account-delete.js(DidakoAcctDel, 교회 앱과 같은 파일). 단계 AD.step = check(확인 중) · block(막힘·불러오기 실패) · ask(확인 글)
 const SB_NAME = { kakao: '카카오', google: '구글', apple: '애플' };
 let ACCT_IDS, AD = null;   // ACCT_IDS: undefined=아직 안 읽음, null=불러오는 중, []=보여 줄 것 없음
@@ -2027,30 +2030,26 @@ function acctLoad() {
   if (!LIVE) { ACCT_IDS = []; return; }
   if (!sbMode()) { ACCT_IDS = oldLogin() ? ['kakao'] : []; return; }
   try { const raw = ls.get(SB_STORE); ACCT_IDS = raw ? idsOf(JSON.parse(raw).user) : null; } catch (e) { ACCT_IDS = null; }
-  const done = ids => { ACCT_IDS = ids; if (routeKey() === 'more/account') render(); };
+  const done = ids => { ACCT_IDS = ids; if (routeKey() === 'more/sync') render(); };
   sbSession().then(se => done(se && se.user ? idsOf(se.user) : []), () => done(ACCT_IDS || []));
 }
-function viewAccount() {
-  AD = null;   // 계정 화면에 들어올 때마다 탈퇴 확인은 처음부터
+// 로그인 계정 카드(계정과 동기화 맨 위): 로그인한 방법을 보여 준다. 로그아웃·계정 탈퇴는 같은 화면 맨 아래에 있다
+function acctCard() {
   if (ACCT_IDS === undefined) acctLoad();
   const L = ACCT_IDS === undefined ? null : ACCT_IDS, logos = Object.assign({ kakao: BUBBLE }, SB_LOGO);
-  const card = L === null ? '<div class="sc"><div class="sl">로그인 계정</div><p class="sm" style="margin:0">불러오는 중…</p></div>'
-    : L.length ? `<div class="sc"><div class="sl">로그인 계정</div>${L.map(k => `<div class="acct-li"><span class="acct-logo">${logos[k] || ''}</span><b>${esc(SB_NAME[k] || k)}</b></div>`).join('')}</div>` : '';
-  return colWrap(`${back}
-    <h1 class="tt" style="margin-top:14px">계정</h1>${card}
-    <button class="logout" type="button" data-act="logout">이 기기에서 로그아웃</button>
-    ${canErase() ? '<button class="logout danger" type="button" data-act="acct-del-open">계정 탈퇴</button>' : ''}`);
+  return L === null ? '<div class="sc" style="margin-top:14px"><div class="sl">로그인 계정</div><p class="sm" style="margin:0">불러오는 중…</p></div>'
+    : L.length ? `<div class="sc" style="margin-top:14px"><div class="sl">로그인 계정</div>${L.map(k => `<div class="acct-li"><span class="acct-logo">${logos[k] || ''}</span><b>${esc(SB_NAME[k] || k)}</b></div>`).join('')}</div>` : '';
 }
 function viewAcctDel() {
   const A = AD || (AD = { step: 'check' }), D2 = window.DidakoAcctDel;
-  const head = `<a class="bk" href="#/more/account">${CHEV_L}계정</a>
+  const head = `<a class="bk" href="#/more/sync">${CHEV_L}계정과 동기화</a>
     <h1 class="tt" style="margin-top:14px">계정 탈퇴</h1>
     <p class="sm" style="margin:8px 0 0">계정 삭제는 탈퇴로 해요. 먼저 지워지는 것을 확인해요.</p>`;
   if (A.step === 'check') return colWrap(`${head}<div class="sc"><p class="sm" style="margin:0">확인하는 중이에요…</p></div>`);
   if (A.step === 'block') {
     const bl = (A.res && A.res.blockers) || [];
     return colWrap(`${head}<div class="sc">${bl.map(x => `<p style="margin:0 0 6px"><b>${esc(x.msg || '')}</b></p>${D2.todo(x.code) ? `<p class="sm" style="margin:0 0 10px">${esc(D2.todo(x.code))}</p>` : ''}`).join('') || '<p style="margin:0 0 10px">지금은 탈퇴할 수 없어요.</p>'}
-      <div class="ra" style="justify-content:flex-start"><a class="btn ghost sm2" href="#/more/account">돌아가기</a></div></div>`);
+      <div class="ra" style="justify-content:flex-start"><a class="btn ghost sm2" href="#/more/sync">돌아가기</a></div></div>`);
   }
   const L = A.res.lines || [];
   return colWrap(`${head}<div class="erase-ask"><p class="erase-warn"><b>되돌릴 수 없어요.</b> 탈퇴하면 계정과 아래 기록이 모두 삭제돼요.</p>
@@ -2059,7 +2058,7 @@ function viewAcctDel() {
     <label class="sl" for="ad-t" style="display:block">확인하려면 "탈퇴"라고 써 주세요</label>
     <input id="ad-t" class="field" maxlength="10" placeholder="탈퇴" autocomplete="off" value="${esc(A.typed || '')}">
     ${A.err ? `<p class="sm warn-text" role="alert">${esc(A.err)}</p>` : ''}
-    <div class="ra"><button class="btn sm2 danger" type="button" data-act="acct-del-go"${A.busy ? ' disabled' : ''}>${A.busy ? '지우는 중…' : '탈퇴하기'}</button><a class="btn ghost sm2" href="#/more/account"${A.busy ? ' aria-disabled="true"' : ''}>그만두기</a></div></div>`);
+    <div class="ra"><button class="btn sm2 danger" type="button" data-act="acct-del-go"${A.busy ? ' disabled' : ''}>${A.busy ? '지우는 중…' : '탈퇴하기'}</button><a class="btn ghost sm2" href="#/more/sync"${A.busy ? ' aria-disabled="true"' : ''}>그만두기</a></div></div>`);
 }
 
 // ── 창 안의 글(비밀 문구 창 · 복구용 낱말 창 · 확인 창은 prototype/more.html의 글을 따른다) ──
@@ -3964,7 +3963,7 @@ const VIEWS = {
   'start': viewStart, 'start/church': viewChurch, 'start/name': viewName, 'start/consent': viewConsent,
   'today': viewToday, 'today/past': viewPast, 'today/all': viewAll, 'today/write': viewWrite,
   'explore': viewExplore, 'explore/walks': viewWalks, 'write': viewWrite, 'mine': () => viewMine(), 'mine/search': viewSearch, 'mine/badges': viewBadges, 'mine/journal': viewJournal, 'mine/answers': viewAnswers, 'mine/vine': viewVine,
-  'more': viewMore, 'more/about': viewAbout, 'more/guide': viewGuide, 'more/feedback': viewFeedback, 'more/sync': viewSync, 'more/account': viewAccount, 'more/account/delete': viewAcctDel
+  'more': viewMore, 'more/about': viewAbout, 'more/guide': viewGuide, 'more/feedback': viewFeedback, 'more/sync': viewSync, 'more/sync/delete': viewAcctDel
 };
 const MENU_OF = k => (WALK_WRITE.test(k) ? 'write' : k.startsWith('today') ? (TODAY_WRITE.test(k) ? 'write' : 'today') : k.startsWith('more') ? 'more' : k.startsWith('mine') ? 'mine' : k.startsWith('explore') ? 'explore' : k);
 // 질문 하나(mine/q/<id>), 짝 찾기(mine/pair/<발견 id>), 직접 고르기(mine/pick/<발견 id>)는 주소에 id가 들어간다
@@ -4015,7 +4014,7 @@ function guard(key) {
     return key;
   }
   if (key.startsWith('start')) return 'today';
-  if (key === 'more/account/delete' && !(AD && canErase())) return 'more/account';   // 계정 탈퇴 확인은 계정 화면의 단추로만 들어온다(주소로 바로 열리지 않는다)
+  if (key === 'more/sync/delete' && !(AD && canErase())) return 'more/sync';   // 계정 탈퇴 확인은 계정과 동기화의 단추로만 들어온다(주소로 바로 열리지 않는다)
   return key;
 }
 const VT_CLASSES = ['vt-in-r', 'vt-in-l', 'vt-fade', 'vt-push', 'vt-pop'];
@@ -5166,10 +5165,10 @@ if (LIVE) {
   acts['acct-del-open'] = async () => {
     if (!canErase()) return;
     const A = AD = { step: 'check' };
-    go('more/account/delete');
+    go('more/sync/delete');
     try { const r = await window.DidakoAcctDel.check(acctRpc); if (AD !== A) return; A.res = r; A.step = r.ok ? 'ask' : 'block'; }
     catch (e) { if (AD !== A || (e && e.cancelled)) return; A.res = { ok: false, blockers: [{ code: '', msg: (e && e.message) || '서버가 답하지 않아요. 잠시 뒤 다시 해 주세요.' }] }; A.step = 'block'; }
-    if (routeKey() === 'more/account/delete') render();
+    if (routeKey() === 'more/sync/delete') render();
   };
   acts['acct-del-go'] = async () => {
     const A = AD; if (!A || A.busy || A.step !== 'ask' || !canErase()) return;
