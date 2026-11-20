@@ -4044,7 +4044,7 @@ function adminView() {
     ops: [
       adFold('app', '앱 상태', ADL ? adlAppSum() : probs.length ? esc(probs.join(', ')) : `모두 괜찮아요, 화면 ${esc(a.app.version)}`, ADL ? adlAppBody : adAppBody, ADL ? adlAppDot() : `<i class="ad-dot${probs.length ? ' bad' : ''}" aria-hidden="true"></i>`),
       adFold('privacy', '개인정보 요청', ADL ? adlPrivacySum() : adLater() ? `떠난 가정 ${adLater()}곳, 1년이 되면 올라와요` : '지울 기록이 없어요', ADL ? adlPrivacyBody : adPrivacyBody, '', ADL ? AD_PRIVACY_TIP_LIVE : '회원의 기록은 잠겨 있어서 아무도 읽을 수 없어요. 떠난 지 1년이 된 가정과 기록을 지워 달라고 한 사람이 여기 올라와요. 지우면 그 사람의 잠긴 기록 덩어리를 지워요.'),
-      adFold('changes', '변경 기록', '', ADL ? adlChangesBody : adChangesBody, '', '누가 언제 무엇을 바꿨는지만 남아요. 회원의 기록 내용은 남기지 않아요.'),
+      adFold('changes', '변경 기록', '', ADL ? adlChangesBody : adChangesBody, '', AD_CHG_TIP),
       adFold('feedback', '의견함', ADL ? adlFeedbackSum() : a.feedback.length ? `받은 의견 ${a.feedback.length}` : '아직 없어요', ADL ? adlFeedbackBody : adFeedbackBody, '', '이름을 밝힌 의견에만 보낸 사람이 나와요.')
     ],
     set: [
@@ -4146,7 +4146,8 @@ function adminReorgView() {
 // 교회 초대와 교재 종류 줄은 뺐다(2026-11-20): 둘 다 눌러도 바뀌는 것이 없는 안내용이었다.
 // 교회 밖 모임 열기는 뺐다(2026-11-20, 교회 밖 작은 모임은 디다코 공동체가 맡는다). 가정 다른 부서로 보내기도 뺐다(2026-11-20): 받는 부서 관리의 편성에서 "다른 부서에서 옮겨 오기"로 한다.
 // 서버 호출은 없고 바뀐 것은 DATA.admin에만 남는다(새로 고치면 처음으로). 데모의 부서 관리(#admin)는 청장년부만 열려서 다른 부서 카드는 안내만 한다.
-// 코이데에서 뺀 것: 의견과 설문 탭, 부서 닫기·다시 열기·기록 지우기(코이데 노트 쪽 일), 앱 상태 카드(부서 카드의 점으로 대신), 교회 관리자 초대 링크(데모라 안내만).
+// 코이데에서 뺀 것: 의견과 설문 탭, 부서 닫기·다시 열기·기록 지우기(코이데 노트 쪽 일), 교회 관리자 초대 링크(데모라 안내만).
+// 앱과 요청(앱 상태, 모든 부서 변경 기록)은 코이데와 같이 오른쪽 맨 위에 둔다(2026-11-20).
 const adChurchAdminBody = () => {
   const L = DATA.admin.churchAdmins, n = L.length;
   return `<ul class="ad-list">${L.map(x => `<li><div class="ad-main"><span class="ad-l1"><b>${esc(x.name)}</b><span class="role-tag admin">교회 관리자</span></span><small>${adDot(x.linked)}${x.linked ? '연결됨' : '아직 연결 없음'}</small></div></li>`).join('')}</ul>
@@ -4188,6 +4189,10 @@ function churchAdminView() {
   const nAdm = a.churchAdmins.length;
   const sec = (h, list) => `<p class="more-h">${h}</p><section class="card mrows folds">${list.join('')}</section>`;
   const rows = {
+    ops: [
+      adFold('capp', '앱 상태', ADL ? adlCAppSum() : esc(`모두 괜찮아요, 화면 ${a.app.version}`), ADL ? adlCAppBody : adCAppBody, ADL ? adlCAppDot() : '<i class="ad-dot" aria-hidden="true"></i>'),
+      adFold('cchg', '변경 기록', '모든 부서', ADL ? adlCChangesBody : adChangesBody, '', AD_CHG_TIP)
+    ],
     people: [
       adFold('cadmins', '교회 관리자', nAdm < 2 ? '한 명뿐이에요, 한 명 더 정해 주세요' : esc(a.churchAdmins.map(x => x.name).join(', ')), ADL ? adlChurchAdminBody : adChurchAdminBody, `<i class="ad-dot${nAdm < 2 ? ' bad' : ''}" aria-hidden="true"></i>`, '모든 부서를 꾸리고 부서를 만들어요. 앱을 쓰는 사람의 기록은 보이지 않아요. 한 사람이 빠져도 멈추지 않도록 두 명 이상을 권해요. 마지막 남은 관리자는 자리를 넘겨준 뒤에 교회를 나갈 수 있어요.')
     ],
@@ -4199,7 +4204,7 @@ function churchAdminView() {
     <div class="two-col"><div class="col">
       <p class="more-h">부서</p><div class="ch-grid">${a.depts.map(adDeptCard).join('')}</div>
     </div><div class="col side">
-      ${sec('사람', rows.people)}${sec('설정', rows.set)}
+      ${sec('앱과 요청', rows.ops)}${sec('사람', rows.people)}${sec('설정', rows.set)}
     </div></div>
     <p class="soft">${ic('lock')} 앱을 쓰는 사람의 기록은 보이지 않아요.</p>`;
 }
@@ -4319,7 +4324,7 @@ function adShowHl() {
 // 사랑방·가정 id는 서버 uuid다. 연결은 가정마다 사람 이름(on)과 연결 줄(links: id·person·nick)을 함께 두어 해제가 연결 줄 id로 간다.
 // 결혼 합치기·부서 옮기기·연도 개편은 3-4나, 앱 상태·개인정보 요청·변경 기록·의견함·분석은 3-4다(supabase/014)에서 이었다.
 function adlFresh() { return { dept: '', ready: {}, work: {}, err: {}, busy: false, left: [], moves: [], marries: [], wait: [], all: false, allPeople: false,
-  ops: null, changes: null, an: {}, erase: '' }; }   // ops·changes·an: 3-4다(앱 상태·개인정보 요청·의견함, 변경 기록, 분석). erase: 이름을 한 번 더 적는 중인 가정
+  ops: null, changes: null, an: {}, erase: '', cstat: null, cchanges: null, chgN: 20 }; }   // ops·changes·an: 3-4다(앱 상태·개인정보 요청·의견함, 변경 기록, 분석). erase: 이름을 한 번 더 적는 중인 가정. cstat·cchanges: 교회 전체의 앱 상태·모든 부서 변경 기록(020). chgN: 변경 기록에 보이는 줄 수
 const adlSoonCard = what => `<section class="card calm"><p class="calm-t">${esc(what)}은 곧 열려요</p><p class="soft" style="margin:0">${esc(AD_SOON)}</p></section>`;
 const adlSoonBody = () => `<p class="hint" style="margin:0">${esc(AD_SOON)}</p>`;
 // ── 3-4다: 앱 상태·개인정보 요청·변경 기록·의견함·분석(supabase/014). 못 받았으면 접은 줄 안에 까닭만 보인다 ──
@@ -4345,10 +4350,37 @@ const adlPrivacyBody = () => {
   return `${n ? `<ul class="ad-list">${P.requests.map(f => li(f, adlName(f.at) + ' 기록 지우기 요청', false)).join('')}${P.due.map(f => li(f, (f.kept ? '1년 더 둔 뒤 ' : '') + '떠난 지 1년이 지났어요', true)).join('')}</ul>` : '<p class="hint">지울 기록이 없어요.</p>'}
     <p class="hint">저절로 지우지 않아요.${P.later ? ` 떠난 가정 ${P.later}곳은 1년이 되면 올라와요.` : ''}</p>`;
 };
-const adlChangesBody = () => {
-  const L = LA.changes; if (!L) return adlNoData();
-  return L.length ? `<ul class="ad-list chg">${L.map(x => `<li><div class="ad-main"><small>${esc(adlName(x.at))}</small><span><b>${esc(adlName(x.kind))}</b> ${esc(adlName(x.target))}</span>${x.extra ? `<small>${esc(adlName(x.extra))}</small>` : ''}<small>${esc(adlName(x.role))} ${esc(adlName(x.who))}</small></div></li>`).join('')}</ul>` : '<p class="hint">아직 기록이 없어요.</p>';
+// 변경 기록 목록: 최근 것부터 20줄씩(코이데와 같다). all이면 부서 이름도 보인다(교회 전체)
+const adlChgList = (L, all) => {
+  if (!L) return adlNoData();
+  const n = LA.chgN || 20, list = L.slice(0, n);
+  return list.length ? `<ul class="ad-list chg">${list.map(x => `<li><div class="ad-main"><small>${esc(adlName(x.at))}${all && x.dept ? ' · ' + esc(adlName(x.dept)) : ''}</small><span><b>${esc(adlName(x.kind))}</b> ${esc(adlName(x.target))}</span>${x.extra ? `<small>${esc(adlName(x.extra))}</small>` : ''}<small>${esc(adlName(x.role))} ${esc(adlName(x.who))}</small></div></li>`).join('')}</ul>
+    ${L.length > n ? `<button class="btn small ghost" type="button" data-act="adl-chgmore">${L.length - n}개 더 보기</button>` : ''}` : '<p class="hint">아직 기록이 없어요.</p>';
 };
+const adlChangesBody = () => adlChgList(LA.changes, false);
+// ── 교회 전체(supabase/020 + 014): 앱 상태(서버 번호, 한 줄로 접힘)와 모든 부서 변경 기록. 코이데 교회 전체의 "앱과 요청" 묶음과 같은 짜임 ──
+// 서버 번호가 AD_NEED_SQL보다 낮거나 못 받았으면(020 SQL이 없음) 점이 빨갛고 처음부터 펼친다. 부서 관리자 수는 부서 카드의 점이 보여 주므로 여기서는 개수만 알린다
+const AD_NEED_SQL = 20;
+const adlSqlNo = v => { const m = /(\d+)\s*$/.exec(String(v || '')); return m ? Number(m[1]) : 0; };
+const adlCOld = () => { const c = LA.cstat; return !!c && (!!c.err || adlSqlNo(c.version) < AD_NEED_SQL); };
+const adlCFew = () => DATA.admin.depts.filter(d => !d.closed && d.stat && d.stat.admins < 2).length;
+const adlCAppSum = () => { const c = LA.cstat; if (!c) return ''; return c.err ? '서버 번호를 받지 못했어요' : adlCOld() ? 'SQL을 더 넣어 주세요' : `모두 괜찮아요, 서버 ${esc(String(c.version).slice(0, 10))}`; };
+const adlCAppDot = () => (LA.cstat ? `<i class="ad-dot${adlCOld() ? ' bad' : ''}" aria-hidden="true"></i>` : '');
+const adlCAppBody = () => {
+  const c = LA.cstat; if (!c) return adlNoData();
+  const row = (k, v) => `<div class="ops-row"><span class="ops-k">${k}</span><div>${v}</div></div>`, few = adlCFew();
+  return `<div class="ops-rows">${row('버전', c.err ? '<span class="warn-text">서버 번호를 받지 못했어요. 서버에 SQL 020을 넣으면 볼 수 있어요(docs/setup.md 3-16).</span>'
+      : `<span>서버 <b>${esc(String(c.version))}</b></span>${adlCOld() ? '<p class="warn-text">SQL을 더 넣어 주세요(docs/setup.md 3-16).</p>' : ''}`)}
+    ${row('관리자', few ? `관리자가 한 명뿐인 부서 ${few}곳<p class="warn-text">부서 카드에서 확인해 한 명 더 정해 주세요.</p>` : '모든 부서에 둘 이상이에요')}</div>`;
+};
+const adlCChangesBody = () => adlChgList(LA.cchanges, true);
+// 데모: 서버가 없어 화면 번호만 보이고, 변경 기록은 데모의 한 부서 줄이다
+const adCAppBody = () => {
+  const app = DATA.admin.app, row = (k, v) => `<div class="ops-row"><span class="ops-k">${k}</span><div>${v}</div></div>`;
+  return `<div class="ops-rows">${row('버전', `<span>화면 <b>${esc(app.version)}</b></span><small>데모라 서버는 없어요</small>`)}
+    ${row('최근 오류', app.errors ? `7일 동안 ${app.errors}번` : '7일 동안 없어요')}</div>`;
+};
+const AD_CHG_TIP = '누가 언제 무엇을 바꿨는지만 남아요. 회원의 기록 내용은 남기지 않아요.';
 const adlFeedbackSum = () => { const L = LA.ops && LA.ops.feedback; if (!L) return ''; const u = L.filter(x => !x.read).length; return L.length ? `받은 의견 ${L.length}${u ? `, 새 의견 ${u}` : ''}` : '아직 없어요'; };
 const adlFeedbackBody = () => {
   const L = LA.ops && LA.ops.feedback; if (!L) return adlNoData();
@@ -4427,10 +4459,13 @@ function adlLoad(v) {
       LA.moves = Array.isArray(mv) ? mv.map(x => ({ id: x.id, name: adlName(x.name), from: adlName(x.from), to: adlName(x.to) })) : [];
       LA.marries = Array.isArray(mr) ? mr.map(x => ({ id: x.id, name: adlName(x.name), room: adlName(x.room), olds: (x.olds || []).map(adlName) })) : [];
     } else if (v === 'church-admin') {
-      const [ov, mvw, an] = await Promise.all([api('adOverview'), api('adMoveView').catch(() => null), api('adAnalysis', { all: true }).catch(() => null)]);
+      const [ov, mvw, an, st, cg] = await Promise.all([api('adOverview'), api('adMoveView').catch(() => null), api('adAnalysis', { all: true }).catch(() => null),
+        api('adAppStatus').catch(() => null), api('adChanges', { all: true }).catch(() => null)]);   // 020·014: 못 받으면 그 접은 줄만 까닭을 보인다
       if (e !== LV.epoch) return;
       LA.an.church = an && Array.isArray(an.depts) ? an.depts : null;
+      LA.cstat = st && typeof st === 'object' && st.version ? st : { err: true }; LA.cchanges = Array.isArray(cg) ? cg : null;
       adlApplyOverview(ov); adlApplyMoveView(mvw);
+      if (AD.fold.capp === undefined && adlCOld()) AD.fold.capp = true;   // 문제가 있으면 처음부터 펼친다(누르면 접고 펼침)
     } else if (v === 'rooms') {
       const rr = await api('adRooms', {});
       if (e !== LV.epoch) return;
@@ -6857,6 +6892,7 @@ function adInput(t) {
 }
 // 새 길 관리 화면의 누름(3단계-4가, 위 adlRun 등). 데모 누름을 서버를 부르는 것으로 바꾼다
 if (ADL) Object.assign(acts, {
+  'adl-chgmore'() { LA.chgN = (LA.chgN || 20) + 20; adRedraw(); },
   'adl-reload'(e, el) { const v = el.dataset.v; LA.err[v] = ''; adlLoad(v); adRedraw(); },
   'ad-approve'(e, el) { adlRun('adDecide', { link: el.dataset.v, ok: true }, '승인했어요'); },
   'ad-reject'(e, el) { adlRun('adDecide', { link: el.dataset.v, ok: false }, '거절했어요'); },
