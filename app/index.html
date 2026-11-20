@@ -241,9 +241,17 @@ body.pop-open { overflow: hidden; }
 .more-grid .gr { justify-content: space-between; gap: 10px; min-height: 0; padding: .8em 0; cursor: pointer; }
 .more-grid .gr b { display: inline; font-size: 1em; }
 .more-grid .gr b.mhead { font-size: calc(var(--base) * .97); font-weight: 600; }   /* 화면 설정 제목: 톱니 메뉴의 제목과 같은 크기 · 굵기 */
-.more-grid .gr .gd { font-size: .8em; margin-top: 0; }
+.more-grid .gr .gt { display: flex; flex-wrap: wrap; align-items: center; gap: .15em .5em; }   /* 제목 바로 옆에 역할 표, 아래에 작은 글(코이데 더보기와 같다) */
+.more-grid .gr .gd { flex-basis: 100%; font-size: .85em; margin-top: 0; }
 .more-grid .gr .ch { font-size: 1em; }
+.more-grid .gr[aria-expanded] .ch { transform: rotate(90deg); transition: transform .2s; }
+.more-grid .gr[aria-expanded="true"] .ch { transform: rotate(-90deg); }   /* 펼치는 줄의 화살표는 아래, 펼치면 위(코이데와 같다) */
+#dispEx .mlabel { font-size: .84em; margin: .8em 0 .4em .2em; }   /* 화면 설정 안쪽 이름표: 코이데와 같은 크기 */
 .gr.open { border-bottom: 1px solid var(--line); }   /* 화면 설정을 펼치면 머리줄 아래 구분선 */
+/* 더보기 맨 위 카드: 작은 이름표 + 굵은 이름(코이데 "우리 가정 정보" 카드와 같다) */
+.more-grid .room-card { padding-top: 14px; padding-bottom: 14px; }
+.room-card .rc-label { display: flex; align-items: center; gap: .3em; font-size: .8em; font-weight: 600; color: var(--ink-2); margin: 0; }
+.room-card .rc-name { font-size: 1.02em; font-weight: 600; margin: .5em 0 .8em; }
 .logout { display: block; margin: 20px auto 0; min-height: 44px; padding: 0 16px; background: none; border: 0; color: var(--ink-2); font: 500 .9375rem var(--f-body); }
 .chip { display: inline-block; padding: 4px 12px; border-radius: 999px; background: var(--accent-soft); color: var(--accent-deep); font-size: .8125rem; font-weight: 500; }
 .kids { display: flex; flex-wrap: wrap; gap: .4em; }
@@ -2780,8 +2788,8 @@ function liveRoomCard() {
   const me = LV.me || {};
   if (!me.roomName) return '';
   const names = liveLeads() && PEND.data ? PEND.data.families.flatMap(f => f.linked.map(l => l.person)) : null;
-  return `<div class="gc" style="margin:14px 0;padding-top:14px;padding-bottom:14px">
-        <b>우리 사랑방${DidakoTip.btn('사랑방이 바뀌면 리더나 관리자에게 알려 주세요.', '우리 사랑방')}</b><p>${esc(me.roomName)}</p>
+  return `<div class="gl">나</div><div class="gc room-card">
+        <p class="rc-label">우리 사랑방${DidakoTip.btn('사랑방이 바뀌면 리더나 관리자에게 알려 주세요.', '우리 사랑방')}</p><h3 class="rc-name">${esc(me.roomName)}</h3>
         ${names ? `<p class="mlabel">함께하는 사람</p><div class="kids">${names.map(n => `<span class="kid">${esc(n)}</span>`).join('')}</div>` : ''}
         <p class="hint">이름만 보여요. 서로 얼마나 썼는지는 보이지 않아요.</p>
       </div>`;
@@ -2866,19 +2874,29 @@ let roomState = null;
 const myRoom = () => roomState || (roomState = { members: DATA.rooms.mine.members.slice(), pending: DATA.rooms.mine.pending.map(p => ({ ...p })) });
 function moreView() {
   const room = LIVE ? null : DATA.rooms.mine;
-  const chevron = '<span class="ch" aria-hidden="true">›</span>';
-  const jobRow = (title, desc, target, tag) => `<a class="gr" href="${target}"><span class="gt"><b>${title}</b></span><span class="role-tag ${!tag && D.role === 'leader' ? 'leader' : 'admin'}">${esc(tag || roleName())}</span>${chevron}</a>`;
+  const chevron = ic('chevr', 'ch');
+  // 맡은 일 줄(코이데 더보기와 같은 모양): 제목 바로 옆에 역할 표, 아래에 작은 글(꼭 알릴 때만)
+  const jobRow = (title, target, tag, kind, sub) => `<a class="gr" href="${target}"><span class="gt"><b>${title}</b><span class="role-tag ${kind}">${esc(tag)}</span>${sub ? `<small class="gd">${esc(sub)}</small>` : ''}</span>${chevron}</a>`;
+  const me = (LIVE && LV.me) || {};
+  // 새 길(Supabase)은 코이데처럼 가진 역할만 보인다: 부서 관리자는 "○○부 관리", 교회 관리자는 "교회 관리", 운영 지원은 "운영 지원". 데모와 옛 길은 관리자에게 모두 보인다
+  const sbRoles = LIVE && CHURCH_ON;
+  const opsNames = !LIVE ? [DATA.church.dept] : ((me.ops && me.ops.depts) || []).filter(d => d && !d.fam).map(d => d.name).filter(Boolean);
   let jobs = '';
-  if (D.role === 'leader') jobs = jobRow('우리 사랑방', '함께하는 사람 · 연결 승인', '#church');
-  else if (D.role === 'pastor') jobs = jobRow('교재 관리', '교재와 과를 꾸리고 배포해요', '#manage') + jobRow('사랑방 전체 보기', '모든 사랑방의 명단과 연결 상태', '#rooms');
-  else if (D.role === 'admin') jobs = jobRow('교재 관리', '교재와 과를 꾸리고 배포해요', '#manage') + jobRow('관리', '부서와 사랑방, 명단을 꾸려요', '#admin') + jobRow('교회 전체 관리', '부서와 교회 설정을 꾸려요', '#church-admin');
-  if (LIVE && D.role === 'admin' && liveLeads()) jobs = jobRow('우리 사랑방', '함께하는 사람 · 연결 승인', '#church') + jobs;
+  if (D.role === 'leader') jobs = jobRow('우리 사랑방', '#church', roleName(), 'leader');
+  else if (D.role === 'pastor') jobs = jobRow('교재 관리', '#manage', roleName(), 'admin') + jobRow('사랑방 전체 보기', '#rooms', roleName(), 'admin');
+  else if (D.role === 'admin') {
+    jobs = jobRow('교재 관리', '#manage', roleName(), 'admin');
+    if (!sbRoles || me.admin) jobs += jobRow(`${esc(deptLabel() || '부서')} 관리`, '#admin', '부서 관리자', 'admin');
+    if (!sbRoles || (me.ops && me.ops.all)) jobs += jobRow('교회 관리', '#church-admin', '교회 관리자', 'admin', opsNames.join(' · '));
+    else if (me.ops) jobs += jobRow('운영 지원', '#admin', '지원', 'admin', opsNames.join(' · '));
+  }
+  if (LIVE && D.role === 'admin' && liveLeads()) jobs = jobRow('우리 사랑방', '#church', me.role, 'leader') + jobs;
   // 맡은 일이 '교재 담당'인 회원·리더에게도 교재 관리가 열린다(서버가 알려 준 writer)
-  if (LIVE && LV.writer && (D.role === 'member' || D.role === 'leader')) jobs += jobRow('교재 관리', '교재와 과를 꾸리고 배포해요', '#manage', '교재 담당');
+  if (LIVE && LV.writer && (D.role === 'member' || D.role === 'leader')) jobs += jobRow('교재 관리', '#manage', '교재 담당', 'admin');
   return `<div class="page-top"><h1>더보기</h1></div>
     <div class="more-grid"><div>
-      ${LIVE ? liveRoomCard() + eraseLine() : `<div class="gc" style="margin:14px 0;padding-top:14px;padding-bottom:14px">
-        <b>우리 사랑방${DidakoTip.btn('사랑방이 바뀌면 리더나 관리자에게 알려 주세요.', '우리 사랑방')}</b><p>${esc(room.name)}</p>
+      ${LIVE ? liveRoomCard() + eraseLine() : `<div class="gl">나</div><div class="gc room-card">
+        <p class="rc-label">우리 사랑방${DidakoTip.btn('사랑방이 바뀌면 리더나 관리자에게 알려 주세요.', '우리 사랑방')}</p><h3 class="rc-name">${esc(room.name)}</h3>
         <p class="mlabel">리더</p><div class="kids"><span class="kid lead">${esc(room.leader)}</span><span class="kid lead">${esc(room.coLeader)} · 코리더</span></div>
         <p class="mlabel">함께하는 사람</p><div class="kids">${myRoom().members.map(n => `<span class="kid">${esc(n)}</span>`).join('')}</div>
         <p class="hint">이름만 보여요. 서로 얼마나 썼는지는 보이지 않아요.</p>
@@ -2890,7 +2908,7 @@ function moreView() {
     </div><div>
       ${jobs ? `<div class="gl">맡은 일</div><div class="gc">${jobs}</div>` : ''}
       <div class="gl">앱 설정</div><div class="gc">
-        <button class="gr${dispOpen ? ' open' : ''}" type="button" data-act="disp" aria-expanded="${dispOpen}" aria-controls="dispEx"><span class="gt"><b class="mhead">화면 설정</b></span>${dispOpen ? ic('chev', 'ch') : chevron}</button>
+        <button class="gr${dispOpen ? ' open' : ''}" type="button" data-act="disp" aria-expanded="${dispOpen}" aria-controls="dispEx"><span class="gt"><b class="mhead">화면 설정</b></span>${ic('chevr', 'ch')}</button>
         ${dispOpen ? `<div id="dispEx" style="padding:4px 0 14px">${displayControls()}</div>` : ''}
         <div class="gr" style="cursor:default"><span class="gt"><b>이용 통계 보내기</b>${DidakoTip.btn('앱을 좋게 만들기 위해 이름 없는 사용 기록을 보내요. 누른 것, 연 때와 머문 시간 같은 숫자만이고 이름과 내가 쓴 글은 보내지 않아요. 끄면 이 기기에서는 더 보내지 않아요.', '이용 통계 보내기')}</span><button type="button" class="switch${usageOff() ? '' : ' on'}" role="switch" aria-checked="${!usageOff()}" aria-label="이용 통계 보내기" data-act="usageoff"><span></span></button></div>
       </div>
