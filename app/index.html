@@ -3410,7 +3410,7 @@ function downloadDocx(blob, name) {
   const url = URL.createObjectURL(blob), a = document.createElement('a');
   a.href = url; a.download = String(name).replace(/[\\/:*?"<>|]/g, '').trim() + '.docx'; document.body.appendChild(a); a.click(); a.remove();
   setTimeout(() => URL.revokeObjectURL(url), 4000);
-  toast('Word 파일을 내려받았어요');
+  toast('Word 파일을 내려받았어요.');
 }
 // 교재 제작 순서(2026-11-10): 글만 있던 네 줄을 그림 단계표로. 동그라미 기호를 선으로 잇고, 배포 단계에는 공개 순서(준비 중 → 리더까지 → 모두)를 작은 알약으로 보인다
 const MG_STEP_IC = {
@@ -3527,7 +3527,7 @@ function mgWriteHtml(b, L, g) {
       ${field('name', '과 제목', L.name, { hint: key + ':name' })}${field('date', '날짜', mgDateInput(L.date, L), { type: 'date' })}${field('ref', '본문 장절', L.ref, { placeholder: '예: 요한복음 15:1~8' })}${field('intro', '소개', L.intro, { ta: true })}
     </div></section>
     <section class="card"><div class="keep-form">${field('guide', '전체 진행 안내 <span class="hint">리더에게만 보여요</span>', g.guide, { ta: true })}</div></section>
-    ${g.stages.map((st, si) => `<section class="card" data-mg-stage="${si}"><div class="keep-form mg-stage-row">${field('stage-name', '단계 이름', st.name, { id: 'mge-stage-' + si, si })}${g.stages.length > 1 ? `<button class="btn ghost small mg-stage-del" type="button" data-act="mg-stage-del" data-si="${si}" aria-label="${esc(st.name)} 단계 삭제" title="단계 삭제">${ic('trash')}</button>` : ''}</div>
+    ${g.stages.map((st, si) => `<section class="card" data-mg-stage="${si}"><div class="keep-form mg-stage-row">${field('stage-name', '단계 이름', st.name, { id: 'mge-stage-' + si, si })}${g.stages.length > 1 ? `<button class="btn ghost small mg-stage-del" type="button" data-act="mg-stage-del" data-si="${si}" aria-label="${esc(st.name)} 단계 지우기" title="단계 지우기">${ic('trash')}</button>` : ''}</div>
       ${st.qs.map((q, qi) => `<div class="gr" data-mg-question="${q.id}"><div class="gt"><p class="q-eyebrow mg-pills"><span class="walk-tag" data-mg-stage-label="${si}">${esc(st.name || '단계')}</span><span class="walk-tag">${isRead(q) ? '읽을 글' : qNo(st, qi)}</span></p><div class="keep-form">
         ${isRead(q) ? `${field('q-h', '제목 (선택)', q.h, { id: 'mge-' + q.id + '-h', si, qi })}
           ${field('q-t', '글', q.t, { id: 'mge-' + q.id + '-t', ta: true, rows: 6, si, qi })}
@@ -3538,7 +3538,7 @@ function mgWriteHtml(b, L, g) {
           ${field('q-sub', '보조 설명', q.sub, { id: 'mge-' + q.id + '-sub', si, qi })}
           ${field('q-vs', '관련 구절', (q.vs || []).join(', '), { id: 'mge-' + q.id + '-vs', si, qi, placeholder: '예: 요한복음 10:11, 이사야 5:1~2' })}
           ${field('q-lead', '리더 해설 <span class="hint">리더에게만 보여요</span>', q.lead, { id: 'mge-' + q.id + '-lead', ta: true, si, qi })}`}
-        <div class="mg-tools">${[['up', '위로', 'up'], ['down', '아래로', 'down'], ['dup', '복제', 'copy'], ['del', '삭제', 'trash']].map(([act, label, symbol]) => `<button class="btn ghost small" type="button" data-act="mg-q-${act}" data-si="${si}" data-qi="${qi}" aria-label="${esc(st.name)} ${isRead(q) ? '읽을 글' : qNo(st, qi) + '번 질문'} ${label}" title="${label}"${act === 'up' && qi === 0 || act === 'down' && qi === st.qs.length - 1 ? ' disabled' : ''}>${ic(symbol)}</button>`).join('')}</div>
+        <div class="mg-tools">${[['up', '위로', 'up'], ['down', '아래로', 'down'], ['dup', '복제', 'copy'], ['del', '지우기', 'trash']].map(([act, label, symbol]) => `<button class="btn ghost small" type="button" data-act="mg-q-${act}" data-si="${si}" data-qi="${qi}" aria-label="${esc(st.name)} ${isRead(q) ? '읽을 글' : qNo(st, qi) + '번 질문'} ${label}" title="${label}"${act === 'up' && qi === 0 || act === 'down' && qi === st.qs.length - 1 ? ' disabled' : ''}>${ic(symbol)}</button>`).join('')}</div>
       </div></div></div>`).join('')}
       <button class="btn ghost small" type="button" data-act="mg-q-add" data-si="${si}">질문 추가</button>
       <button class="btn ghost small" type="button" data-act="mg-read-add" data-si="${si}">읽을 글 추가</button></section>`).join('')}
@@ -3576,7 +3576,7 @@ async function mgSaveNow() {
     if (LS.timers[k] || LS.busy[k] || (L.saveState && L.saveState.err)) { L.saveState = { busy: true }; mgSaveNoteShow(b, L); await liveSaveLesson(b, L); }
     if (L.saveState && L.saveState.err) return;
   }
-  toast('저장했어요');
+  toast('저장했어요.');
 }
 function mgEditRedraw() { clearTimeout(mgPvTimer); const y = window.scrollY; route(false); window.scrollTo(0, y); }
 function mgEditInput(t) {
@@ -3683,7 +3683,7 @@ function adPeople() {
 const adDept = () => DATA.admin.depts.find(d => d.name === DATA.church.dept);
 // 연결된 사람 수는 가정마다 연결된 사람을 더해서 센다. 우리 사랑방은 리더 화면에서 승인·해제한 만큼 더하고 뺀다
 const adRoomN = r => r.fams.reduce((n, f) => n + f.on.length, 0) + (!ADL && r.name === DATA.rooms.mine.name ? myRoom().members.length - DATA.rooms.mine.members.length : 0);
-const AD_NOCHANGE = '데모에서는 바뀌지 않아요';
+const AD_NOCHANGE = '데모에서는 바뀌지 않아요.';
 const AD_SOON = '교회 새 서버에서는 아직 쓸 수 없는 기능이에요. 곧 열려요.';
 const AD_ROLES = ['리더', '코리더', '교재 담당', '관리자'];
 const AD_GROUPS = ['사랑방', '셀', '목장', '순', '구역', '조', '소그룹'];
@@ -3912,14 +3912,14 @@ function adMvGo() {
   if (M.kind === 'move') {
     const x = adFamById(M.a.id); if (!x) return;
     x.r.fams = x.r.fams.filter(f => f.id !== x.f.id); x.f.role = ''; x.f.admin = false; to.fams.push(x.f); adSync(x.r); adSync(to);
-    AD.open[to.id] = true; AD.hl = [x.f.id]; AD.mv = null; toast('옮겼어요'); adRedraw(); return;
+    AD.open[to.id] = true; AD.hl = [x.f.id]; AD.mv = null; toast('옮겼어요.'); adRedraw(); return;
   }
   const olds = adMvOlds(M), names = adMvNames(M), on = [...new Set(adMvLinks(M).map(l => adMvMapped(M, l)).filter(Boolean))];
   let role = '', admin = false;
   if (M.inherit) olds.forEach(o => { if (o.roomId === to.id && o.role === '리더') role = '리더'; else if (o.roomId === to.id && o.role === '코리더' && role !== '리더') role = '코리더'; if (o.admin) admin = true; });
   olds.forEach(o => { const x = adFamById(o.id); if (x) { x.r.fams = x.r.fams.filter(f => f.id !== o.id); adSync(x.r); } });
   const nf = { id: adNewId('f'), name: names.join(', '), role, admin, on };
-  to.fams.push(nf); adSync(to); AD.open[to.id] = true; AD.hl = [nf.id]; AD.mv = null; toast('새 가정으로 합쳤어요'); adRedraw();
+  to.fams.push(nf); adSync(to); AD.open[to.id] = true; AD.hl = [nf.id]; AD.mv = null; toast('새 가정으로 합쳤어요.'); adRedraw();
 }
 const adStaffBody = () => {
   const st = DATA.admin.staff;
@@ -3928,7 +3928,7 @@ const adStaffBody = () => {
 `;
 };
 const adInviteBody = () => {
-  const I = DATA.admin.invites, row = label => `<li><div class="ad-main"><b>${esc(label)}</b></div><span class="ad-btns">${adSay('복사', '데모에서는 복사하지 않아요')}${adSay('QR 보기', '데모에서는 QR을 만들지 않아요')}</span></li>`;
+  const I = DATA.admin.invites, row = label => `<li><div class="ad-main"><b>${esc(label)}</b></div><span class="ad-btns">${adSay('복사', '데모에서는 복사하지 않아요.')}${adSay('QR 보기', '데모에서는 QR을 만들지 않아요.')}</span></li>`;
   return `<ul class="ad-list">${row(I.dept)}${I.rooms.map(n => row(n)).join('')}</ul>
 `;
 };
@@ -3952,7 +3952,7 @@ const adAppBody = () => {
     ${row('관리자', `${n}명${n < 2 ? '<p class="warn-text">한 사람이 빠져도 멈추지 않게 관리자를 한 명 더 정해 주세요.</p>' : ''}`)}</div>`;
 };
 const adPrivacyBody = () => {
-  const P = DATA.admin.privacy, li = (f, why) => `<li><div class="ad-main"><b>${esc(f.name)}</b><small>${esc(why)}</small></div>${adSay('지우기', '데모에서는 지우지 않아요')}</li>`;
+  const P = DATA.admin.privacy, li = (f, why) => `<li><div class="ad-main"><b>${esc(f.name)}</b><small>${esc(why)}</small></div>${adSay('지우기', '데모에서는 지우지 않아요.')}</li>`;
   const n = P.requests.length + P.due.length;
   return `${n ? `<ul class="ad-list">${P.requests.map(f => li(f, f.at + ' 기록 지우기 요청')).join('')}${P.due.map(f => li(f, '떠난 지 1년이 지났어요')).join('')}</ul>` : '<p class="hint">지울 기록이 없어요.</p>'}
     <p class="hint">저절로 지우지 않아요.${adLater() ? ` 떠난 가정 ${adLater()}곳은 1년이 되면 올라와요.` : ''}</p>`;
@@ -4177,7 +4177,7 @@ const adChurchAdminBody = () => {
   const L = DATA.admin.churchAdmins, n = L.length;
   return `<ul class="ad-list">${L.map(x => `<li><div class="ad-main"><span class="ad-l1"><b>${esc(x.name)}</b><span class="role-tag admin">교회 관리자</span></span><small>${adDot(x.linked)}${x.linked ? '연결됨' : '아직 연결 없음'}</small></div></li>`).join('')}</ul>
     ${n < 2 ? '<p class="warn-text" style="margin:0">한 사람이 빠져도 멈추지 않게 관리자를 한 명 더 정해 주세요.</p>' : ''}
-    <div class="ad-acts">${adSay('교회 관리자 더하기', '데모에서는 초대 링크를 만들지 않아요', 'btn small')}${adSay('내 자리 넘겨주기')}</div>
+    <div class="ad-acts">${adSay('교회 관리자 더하기', '데모에서는 초대 링크를 만들지 않아요.', 'btn small')}${adSay('내 자리 넘겨주기')}</div>
     <p class="soft" style="margin:0">마지막 남은 관리자는 자리를 넘겨준 뒤에 교회를 나갈 수 있어요.</p>`;
 };
 const adDeptCard = d => {
@@ -4682,7 +4682,7 @@ async function adlSubmit(kind, f) {
     const force = !!(AD.edit && AD.edit.force && AD.edit.forceKey === a + '|' + b);
     const r = await adlRun('adPersonAdd', { room: f.dataset.v, a, b, force }, null);
     if (r && r.code === 'same') { if (AD.edit) { AD.edit.force = true; AD.edit.forceKey = a + '|' + b; } toast('같은 이름이 이미 있어요. 그래도 더하려면 한 번 더 눌러 주세요.'); return; }
-    if (r) { AD.edit = null; toast('더했어요'); adRedraw(); }
+    if (r) { AD.edit = null; toast('더했어요.'); adRedraw(); }
     return;
   }
   if (kind === 'staff') {
@@ -4911,7 +4911,7 @@ function saveKeepRead(fromBlur) {
   const sentence = a.value.trim(), action = b.value.trim(), st = $('#kStatus');
   const ok = putKeep(sentence, action);
   st.hidden = ok;
-  if (ok && (sentence || action) && fromBlur) toast('저장했어요');
+  if (ok && (sentence || action) && fromBlur) toast('저장했어요.');
 }
 
 // ══ 펼치기(#read) ══
@@ -5738,7 +5738,7 @@ function listHtml() {
 // 기록 상세(M-06): 교재·과·날짜·장절, 한 문장, 작은 실천, 깊이 묵상하기 답(그때 질문과 함께), 미리 쓴 답, 돌아보기, 기록 지우기
 function detailHtml(e) {
   const ans = answersOf(e), has = Object.keys(e.threads || {}).length;
-  const ansHtml = ans.length ? `<section class="card"><h2>미리 쓴 답</h2>${ans.map((a, i) => `<div class="report-line"><b>${esc(a.q)}</b><p>${esc(a.a)}</p><div class="set-btns"><button type="button" class="btn ghost small" data-act="rec-ans-edit" data-i="${i}" data-id="${e.id}">수정하기</button><button type="button" class="delete-answer" data-act="rec-ans-del" data-i="${i}" data-id="${e.id}">삭제</button></div></div>`).join('')}</section>` : '';
+  const ansHtml = ans.length ? `<section class="card"><h2>미리 쓴 답</h2>${ans.map((a, i) => `<div class="report-line"><b>${esc(a.q)}</b><p>${esc(a.a)}</p><div class="set-btns"><button type="button" class="btn ghost small" data-act="rec-ans-edit" data-i="${i}" data-id="${e.id}">수정하기</button><button type="button" class="delete-answer" data-act="rec-ans-del" data-i="${i}" data-id="${e.id}">지우기</button></div></div>`).join('')}</section>` : '';
   const thr = has ? Object.entries(e.threads).map(([k, vs]) => `<div class="report-line"><b>${esc(k)}${e.tq && e.tq[k] ? ` · ${esc(e.tq[k])}` : ''}</b><p>${vs.map(esc).join('<br>')}</p></div>`).join('') : '';
   return `<div class="record-wrap">
     <a class="back-link" href="${recFrom === 'records' ? '#records' : '#record'}">${ic('back')}<span>${recFrom === 'records' ? '모든 기록' : '내 기록'}</span></a>
@@ -5826,7 +5826,7 @@ function galleryView() {
 // 다시 그리되 보던 자리를 지킨다
 function recRedraw() { const y = window.scrollY; route(false); window.scrollTo(0, y); }
 const recSave = (key, val) => ls.set(key, JSON.stringify(val));
-const recDone = ok => toast(ok ? '저장했어요' : '저장하지 못했어요 · 다시 시도');
+const recDone = ok => toast(ok ? '저장했어요.' : '저장하지 못했어요 · 다시 시도.');
 function recStep(d) {
   const ps = recPeriods(recRows()), p = curPeriod(ps); if (!p) return;
   if (rec.year) {
@@ -5852,7 +5852,7 @@ function answerSheet(kind, id, i) {
   rec.action = { kind, id, i };
   openSheet(kind === 'edit'
     ? `<h2 id="popT">답변 수정</h2><p class="hint">${esc(a.q)}</p><textarea class="field" id="recAnsEdit" style="margin-top:10px;min-height:100px" aria-label="답변" data-focus>${esc(a.a)}</textarea><div class="set-btns"><button type="button" class="btn ghost" data-act="pop-close">취소</button><button type="button" class="btn" data-act="rec-ans-save">저장</button></div>`
-    : `<h2 id="popT">이 답을 지울까요?</h2><div class="ps-topics" style="margin-top:12px;color:var(--ink-2)">${esc(a.a)}</div><div class="set-btns"><button type="button" class="btn ghost" data-act="pop-close" data-focus>취소</button><button type="button" class="btn" data-act="rec-ans-del-ok">삭제</button></div>`);
+    : `<h2 id="popT">이 답을 지울까요?</h2><div class="ps-topics" style="margin-top:12px;color:var(--ink-2)">${esc(a.a)}</div><div class="set-btns"><button type="button" class="btn ghost" data-act="pop-close" data-focus>취소</button><button type="button" class="btn" data-act="rec-ans-del-ok">지우기</button></div>`);
 }
 function deleteSheet(id) {
   rec.action = { kind: 'record', id };
@@ -6048,7 +6048,7 @@ const acts = {
   'wq-open'() { WQ = { max: 0, view: 0 }; wqOpenPending = true; location.hash = '#wq'; },
   'wq-next'() { const w = walkWeek(), ta = $('#wqTa'), md = $('#wqMed'); if (ta) { const thoughts = readJson(K.walkThought); thoughts[w.n] = ta.value; ls.set(K.walkThought, JSON.stringify(thoughts)); } if (md) { const meds = readJson(K.walkMeditate); meds[w.n] = md.value; ls.set(K.walkMeditate, JSON.stringify(meds)); } WQ.view = Math.min(4, WQ.view + 1); WQ.max = Math.max(WQ.max, WQ.view); if (WQ.view === 4) { const done = readJson(K.walkDone); if (done[w.n] !== true) { const h = HIDDEN.find(x => w.n >= x.from && w.n <= x.to); if (h && hiddenOpen(h) < HIDDEN_CELLS) hiddenNow = h.from + ':' + hiddenOrder[hiddenOpen(h)]; } done[w.n] = true; ls.set(K.walkDone, JSON.stringify(done)); } route(false); window.scrollTo(0, 0); const head = $('#xHead'); if (head) head.focus({ preventScroll: true }); },
   'wq-view'(e, el) { WQ.view = Math.min(WQ.max, Math.max(0, Number(el.dataset.i))); route(false); window.scrollTo(0, 0); const head = $('#xHead'); if (head) head.focus({ preventScroll: true }); },
-  'wq-pray'() { toast('데모라 넘어가지 않아요'); },
+  'wq-pray'() { toast('데모라 넘어가지 않아요.'); },
   'gallery-open'(e, el) {
     const n = Number(el.dataset.week), w = DATA.weekWalk.find(x => x.n === n);
     const done = readJson(K.walkDone), shown = done[n] === true || (D.galleryDemo && n >= 3 && n <= 20 && ![7, 12, 16].includes(n));
@@ -6061,11 +6061,11 @@ const acts = {
   'walk-day'(e, el) { const days = ['월', '화', '수', '목', '금'], d = el.dataset.d; if (days.indexOf(d) > days.indexOf(walkToday())) { toast(walkNames[d] + '에 열려요'); return; } walkDay = d; walkRedraw(); },
   'ad-tab'(e, el) { AD.tab = el.dataset.v === 'analysis' ? 'analysis' : 'manage'; AD.apAsk = false; adRedraw(`[data-act="ad-tab"][data-v="${AD.tab}"]`); },
   'ad-fold'(e, el) { const k = el.dataset.v; AD.fold[k] = !AD.fold[k]; adRedraw(`[data-act="ad-fold"][data-v="${k}"]`); },
-  'ad-approve'(e, el) { AD.reqs = adReqs().filter(q => q.id !== el.dataset.v); if (AD.reqs.length < 2) AD.apAsk = false; toast('승인했어요'); adRedraw(); },
-  'ad-reject'(e, el) { AD.reqs = adReqs().filter(q => q.id !== el.dataset.v); if (AD.reqs.length < 2) AD.apAsk = false; toast('거절했어요'); adRedraw(); },
+  'ad-approve'(e, el) { AD.reqs = adReqs().filter(q => q.id !== el.dataset.v); if (AD.reqs.length < 2) AD.apAsk = false; toast('승인했어요.'); adRedraw(); },
+  'ad-reject'(e, el) { AD.reqs = adReqs().filter(q => q.id !== el.dataset.v); if (AD.reqs.length < 2) AD.apAsk = false; toast('거절했어요.'); adRedraw(); },
   'ad-apall'() { AD.apAsk = true; adRedraw('[data-act="ad-apall-do"]'); },
   'ad-apall-no'() { AD.apAsk = false; adRedraw('[data-act="ad-apall"]'); },
-  'ad-apall-do'() { AD.reqs = []; AD.apAsk = false; toast('모두 승인했어요'); adRedraw(); },
+  'ad-apall-do'() { AD.reqs = []; AD.apAsk = false; toast('모두 승인했어요.'); adRedraw(); },
   'ad-role'(e, el) { const i = Number(el.dataset.i); AD.roleOpen = AD.roleOpen === i ? -1 : i; adRedraw(`[data-act="ad-role"][data-i="${i}"]`); },
   'ad-toggle'(e, el) { const p = adPeople()[Number(el.dataset.i)], role = el.dataset.role; if (!p) return; const x = role === '관리자' && adFamOf(p.name); if (x) x.f.admin = !x.f.admin; else p.roles = p.roles.includes(role) ? p.roles.filter(r => r !== role) : p.roles.concat(role); adRedraw(`[data-act="ad-toggle"][data-i="${el.dataset.i}"][data-role="${role}"]`); },
   'ad-grp'(e, el) { AD.grp = el.dataset.v; adRedraw(`[data-act="ad-grp"][data-v="${AD.grp}"]`); },
@@ -6074,7 +6074,7 @@ const acts = {
   'ad-say'(e, el) { toast(el.dataset.msg || AD_NOCHANGE); },
   // 교회 전체 관리(#church-admin): 탭, 부서 카드, 부서 만들기
   'ad-ctab'(e, el) { AD.ctab = el.dataset.v === 'analysis' ? 'analysis' : 'manage'; adRedraw(`[data-act="ad-ctab"][data-v="${AD.ctab}"]`); },
-  'ad-deptgo'(e, el) { const d = DATA.admin.depts.find(x => x.id === el.dataset.v); if (!d) return; if (d.name === DATA.church.dept) location.hash = '#admin'; else toast(`데모에서는 ${DATA.church.dept}만 열어요`); },
+  'ad-deptgo'(e, el) { const d = DATA.admin.depts.find(x => x.id === el.dataset.v); if (!d) return; if (d.name === DATA.church.dept) location.hash = '#admin'; else toast(`데모에서는 ${DATA.church.dept}만 열어요.`); },
   'ad-cnew'() { AD.cNew = { name: '', group: '순', unit: 'single' }; adRedraw(); const f = $('#adCname'); if (f) f.focus({ preventScroll: true }); },
   'ad-cnew-x'() { AD.cNew = null; adRedraw('[data-act="ad-cnew"]'); },
   'ad-cgrp'(e, el) { if (AD.cNew) AD.cNew.group = el.dataset.v; adRedraw(`[data-act="ad-cgrp"][data-v="${el.dataset.v}"]`); },
@@ -6086,7 +6086,7 @@ const acts = {
   'ad-bprev'() {
     const E = AD.edit; if (!E) return;
     E.text = ($('#adBkText') || {}).value || ''; E.res = adBulkParse(E.text);
-    if (!E.res.rows.length && !E.res.noise.length) { E.res = null; toast('붙여 넣은 글이 없어요'); return; }
+    if (!E.res.rows.length && !E.res.noise.length) { E.res = null; toast('붙여 넣은 글이 없어요.'); return; }
     adRedraw();
   },
   'ad-bback'() { if (AD.edit) AD.edit.res = null; adRedraw('#adBkText'); },
@@ -6103,12 +6103,12 @@ const acts = {
     if (role) x.r.fams.forEach(f => { if (f !== x.f && f.role === role) f.role = ''; });
     x.f.role = role; adSync(x.r); AD.hl = [x.f.id]; toast(adJ(k, '으로/로') + ' 정했어요'); adRedraw(`[data-act="ad-rrole"][data-v="${k}"]`);
   },
-  'ad-radmin'() { const x = adFamById(AD.sel); if (!x) return; x.f.admin = !x.f.admin; toast(x.f.admin ? '부서 관리자로 정했어요' : '부서 관리자에서 뺐어요'); adRedraw('[data-act="ad-radmin"]'); },
+  'ad-radmin'() { const x = adFamById(AD.sel); if (!x) return; x.f.admin = !x.f.admin; toast(x.f.admin ? '부서 관리자로 정했어요.' : '부서 관리자에서 뺐어요.'); adRedraw('[data-act="ad-radmin"]'); },
   'ad-rmove'() {
     const x = adFamById(AD.sel), to = adDept().rooms.find(r => r.id === (($('#adMoveTo') || {}).value)); if (!x || !to) return;
     x.r.fams = x.r.fams.filter(f => f.id !== x.f.id);
     if (x.f.role) { x.f.role = ''; }
-    to.fams.push(x.f); adSync(x.r); adSync(to); AD.open[to.id] = true; AD.hl = [x.f.id]; toast('옮겼어요'); adRedraw();
+    to.fams.push(x.f); adSync(x.r); adSync(to); AD.open[to.id] = true; AD.hl = [x.f.id]; toast('옮겼어요.'); adRedraw();
   },
   'ad-runlink'(e, el) { AD.ask = 'unlink:' + el.dataset.v; adRedraw('[data-act="ad-ask-yes"]'); },
   'ad-rleave'() { AD.ask = 'leave'; adRedraw('[data-act="ad-ask-yes"]'); },
@@ -6116,9 +6116,9 @@ const acts = {
   'ad-ask-no'() { AD.ask = ''; adRedraw(); },
   'ad-ask-yes'() {
     const i = AD.ask.indexOf(':'), kind = i < 0 ? AD.ask : AD.ask.slice(0, i), v = i < 0 ? '' : AD.ask.slice(i + 1); AD.ask = '';
-    if (kind === 'unlink') { const x = adFamById(AD.sel); if (x) { x.f.on = x.f.on.filter(p => p !== v); toast('연결을 해제했어요'); } }
-    else if (kind === 'leave') { const x = adFamById(AD.sel); if (x) { x.r.fams = x.r.fams.filter(f => f.id !== x.f.id); adSync(x.r); AD.left++; AD.sel = ''; toast('편성에서 뺐어요'); } }
-    else if (kind === 'drop') { const d = adDept(), r = d.rooms.find(x => x.id === v); if (r && !r.fams.length) { d.rooms = d.rooms.filter(x => x.id !== v); DATA.admin.invites.rooms = DATA.admin.invites.rooms.filter(n => n !== r.name); delete AD.open[v]; toast('지웠어요'); } }
+    if (kind === 'unlink') { const x = adFamById(AD.sel); if (x) { x.f.on = x.f.on.filter(p => p !== v); toast('연결을 해제했어요.'); } }
+    else if (kind === 'leave') { const x = adFamById(AD.sel); if (x) { x.r.fams = x.r.fams.filter(f => f.id !== x.f.id); adSync(x.r); AD.left++; AD.sel = ''; toast('편성에서 뺐어요.'); } }
+    else if (kind === 'drop') { const d = adDept(), r = d.rooms.find(x => x.id === v); if (r && !r.fams.length) { d.rooms = d.rooms.filter(x => x.id !== v); DATA.admin.invites.rooms = DATA.admin.invites.rooms.filter(n => n !== r.name); delete AD.open[v]; toast('지웠어요.'); } }
     adRedraw();
   },
   'ad-mvstart'(e, el) { adMvStart(el.dataset.v === 'move' ? 'move' : 'marry', el.dataset.fam || ''); },
@@ -6139,7 +6139,7 @@ const acts = {
   'ad-rgquit'() { AD.rg = null; location.hash = '#admin'; },
   'ad-rgask'() { AD.rgAsk = true; adRedraw('[data-act="ad-rgyes"]'); },
   'ad-rgno'() { AD.rgAsk = false; adRedraw('[data-act="ad-rgask"]'); },
-  'ad-rgyes'() { AD.plan = null; AD.rgAsk = false; toast('예약을 취소했어요'); adRedraw('[data-act="ad-rgopen"]'); },
+  'ad-rgyes'() { AD.plan = null; AD.rgAsk = false; toast('예약을 취소했어요.'); adRedraw('[data-act="ad-rgopen"]'); },
   'ad-rgsample'() { AD.rg.text = AD_RG_SAMPLE; AD.rg.msg = ''; adRedraw('#adRgText'); },
   'ad-rgback'() { AD.rg.step--; AD.rg.msg = ''; adRgGo(); },
   'ad-rgmatch'() {
@@ -6158,7 +6158,7 @@ const acts = {
   'ad-rgsave'() {
     const rg = AD.rg;
     AD.plan = { start: rg.start, lf: rg.lf, mf: rg.mf, text: rg.text, dec: { ...rg.dec }, miss: { ...rg.miss }, leaders: { ...rg.leaders }, co: { ...rg.co }, nRooms: Object.keys(adRgRooms()).length, nFams: rg.res.rows.length };
-    AD.rg = null; AD.rgAsk = false; AD.fold.reorg = true; adNote = '예약했어요'; location.hash = '#admin';
+    AD.rg = null; AD.rgAsk = false; AD.fold.reorg = true; adNote = '예약했어요.'; location.hash = '#admin';
   },
   disp() { dispOpen = !dispOpen; rerender(); },
   a2hs() { a2hsSheet(); },
@@ -6177,12 +6177,12 @@ const acts = {
       const b = $('#feedbackSend'); if (b) b.disabled = true;
       const w = innerWidth < 600 ? 'phone' : innerWidth < 1000 ? 'tablet' : 'pc';
       api('feedbackSend', { kind: feedbackState.kind, text: feedbackState.text, named: feedbackState.named, ver: '', width: w })
-        .then(() => { feedbackState.text = ''; const t = $('#feedbackText'); if (t) t.value = ''; const n = $('#feedbackCount'); if (n) n.textContent = '0'; toast('보냈어요. 고마워요'); })
+        .then(() => { feedbackState.text = ''; const t = $('#feedbackText'); if (t) t.value = ''; const n = $('#feedbackCount'); if (n) n.textContent = '0'; toast('보냈어요. 고마워요.'); })
         .catch(err => { if (b) b.disabled = false; if (err && !err.cancelled) toast(err.code && err.message ? err.message : '서버가 답하지 않아요. 잠시 뒤 다시 해 주세요.'); });
       return;
     }
-    feedbackState.text = ''; const t = $('#feedbackText'); if (t) t.value = ''; const n = $('#feedbackCount'); if (n) n.textContent='0'; const b = $('#feedbackSend'); if (b) b.disabled = true; toast('데모라 보내지 않았어요. 고마워요'); },
-  'more-logout'() { toast('데모에서는 로그아웃하지 않아요'); },
+    feedbackState.text = ''; const t = $('#feedbackText'); if (t) t.value = ''; const n = $('#feedbackCount'); if (n) n.textContent='0'; const b = $('#feedbackSend'); if (b) b.disabled = true; toast('데모라 보내지 않았어요. 고마워요.'); },
+  'more-logout'() { toast('데모에서는 로그아웃하지 않아요.'); },
   home() { location.hash = '#' + homeV(); },
   'staff-go'(e, el) { location.hash = '#' + (el.dataset.v === 'week' ? 'week' : 'staff'); },
   gear(e, el) { closePlaceMenu(); const m = $('#settings'); m.hidden = !m.hidden; el.setAttribute('aria-expanded', String(!m.hidden)); if (!m.hidden) renderSettings(); },
@@ -6213,7 +6213,7 @@ const acts = {
   'read-go'(e, el) { readResume = el.dataset.resume === '1'; readFrom = el.dataset.from || ''; if (location.hash === '#read') route(true); else location.hash = '#read'; },
   // 책장
   'open-book'(e, el) { shelfLesson = el.dataset.lesson || ''; location.hash = '#book-' + el.dataset.book; },
-  'book-pick'(e, el) { if (!bookById(el.dataset.book)) return; ls.set(K.myBook, el.dataset.book); ls.del(K.shareLesson); toast('지금 읽는 책을 바꿨어요. 전에 읽던 책은 교재 목록으로 돌아가요'); rerender(); },
+  'book-pick'(e, el) { if (!bookById(el.dataset.book)) return; ls.set(K.myBook, el.dataset.book); ls.del(K.shareLesson); toast('지금 읽는 책을 바꿨어요. 전에 읽던 책은 교재 목록으로 돌아가요.'); rerender(); },
   // 머리의 돋보기: 검색 칸을 열고 바로 입력하게 한다. 칸이 비어 있을 때 다시 누르면 접는다
   'shelf-search'(e, el) {
     const box = $('#shelfSearch'), q = $('#shelfQ'); if (!box || !q) return;
@@ -6221,7 +6221,7 @@ const acts = {
     else if (!q.value.trim()) { q.value = ''; box.hidden = true; el.setAttribute('aria-expanded', 'false'); }
     else q.focus();
   },
-  'lesson-other'() { toast('데모에서는 이번 주 과만 펼칠 수 있어요'); },
+  'lesson-other'() { toast('데모에서는 이번 주 과만 펼칠 수 있어요.'); },
   // 내 기록
   'rec-prev'() { recStep(-1); }, 'rec-next'() { recStep(1); },
   'rec-period'() { periodSheet(); },
@@ -6267,10 +6267,10 @@ const acts = {
     }
     else { const d = recDeleted(); if (!d.includes(id)) d.push(id); recSave(K.recDel, d); }
     [K.recRefl, K.recAns, K.recEdit].forEach(k => { const o = readJson(k); if (o[id]) { delete o[id]; recSave(k, o); } });
-    closeSheet(); history.replaceState(null, '', '#record'); route(false); window.scrollTo(0, 0); toast('기록을 지웠어요');
+    closeSheet(); history.replaceState(null, '', '#record'); route(false); window.scrollTo(0, 0); toast('기록을 지웠어요.');
   },
-  'rec-restore'() { ls.del(K.recDel); ls.del(K.recHide); rerender(); toast('예시 기록을 되살렸어요'); },
-  'rec-hide'() { ls.set(K.recHide, '1'); rerender(); toast('기록을 비웠어요'); },
+  'rec-restore'() { ls.del(K.recDel); ls.del(K.recHide); rerender(); toast('예시 기록을 되살렸어요.'); },
+  'rec-hide'() { ls.set(K.recHide, '1'); rerender(); toast('기록을 비웠어요.'); },
   // 배포 확인 창. 실제 회원 자료가 아닌 교재 관리 복사본만 바꾼다.
   'mg-pub'(e, el) {
     const c = mgPublishCurrent(); if (!c || mgPublishMissing(c.b, c.L).length) return;
@@ -6286,7 +6286,7 @@ const acts = {
     const v = el.dataset.v, st = mgStatus(c.b, c.L);
     if (!['leader', 'all', 'both'].includes(v) || (st !== 'draft' && !(st === 'leader' && v === 'all')) || (st === 'draft' && v === 'all')) return;
     setMgStatus(c.b, c.L, v === 'leader' ? 'leader' : 'all');
-    closeSheet(); route(false); toast(v === 'leader' ? '리더에게 배포했어요' : '회원에게 배포했어요');
+    closeSheet(); route(false); toast(v === 'leader' ? '리더에게 배포했어요.' : '회원에게 배포했어요.');
   },
   'mg-unpub'() {
     const c = mgPublishCurrent(); if (!c || mgStatus(c.b, c.L) === 'draft') return;
@@ -6294,7 +6294,7 @@ const acts = {
   },
   'mg-unpub-do'() {
     const c = mgPublishCurrent(); if (!c || mgStatus(c.b, c.L) === 'draft') return;
-    setMgStatus(c.b, c.L, 'draft'); closeSheet(); route(false); toast('배포를 멈췄어요');
+    setMgStatus(c.b, c.L, 'draft'); closeSheet(); route(false); toast('배포를 멈췄어요.');
   },
   // 과 편집과 미리보기
   'mg-save-now'() { mgSaveNow(); },
@@ -6320,7 +6320,7 @@ const acts = {
     const st = c.g.stages[si], qs = st.qs.filter(q => !isRead(q)).length, reads = st.qs.filter(isRead).length;
     if (!qs && !reads) { mgStageDelete(si); return; }
     const parts = [qs ? '질문 ' + qs + '개' : '', reads ? '읽을 글 ' + reads + '개' : ''].filter(Boolean).join('와 ');
-    openSheet(sheetHead('단계 삭제') + `<p>'${esc(st.name)}' 단계를 지울까요? 안에 있는 ${parts}도 함께 지워져요.</p><div class="set-btns"><button class="btn ghost" type="button" data-act="pop-close">취소</button><button class="btn" type="button" data-act="mg-stage-del-do" data-si="${si}">삭제</button></div>`);
+    openSheet(sheetHead('단계 지우기') + `<p>'${esc(st.name)}' 단계를 지울까요? 안에 있는 ${parts}도 함께 지워져요.</p><div class="set-btns"><button class="btn ghost" type="button" data-act="pop-close">취소</button><button class="btn" type="button" data-act="mg-stage-del-do" data-si="${si}">지우기</button></div>`);
   },
   'mg-stage-del-do'(e, el) { closeSheet(); mgStageDelete(Number(el.dataset.si)); },
   'mg-q-add'(e, el) { mgQuestionChange(el, 'add'); },
@@ -6349,7 +6349,7 @@ const acts = {
     const { b, L, g } = c, no = Math.max(0, ...b.lessons.map(l => l.no)) + 1, copy = JSON.parse(JSON.stringify(L)), guide = JSON.parse(JSON.stringify(g));
     copy.no = no; copy.state = 'prep'; delete copy.status; delete copy.pubAt;
     guide.stages.forEach(st => st.qs.forEach(q => { q.id = mgQuestionId(); })); guide.triple.forEach(t => { t.id = mgQuestionId(); });
-    b.lessons.push(copy); mg().guides[b.id + ':' + no] = guide; b.edited = true; mgGo('me-' + b.id + '.' + no, '과를 복제했어요');
+    b.lessons.push(copy); mg().guides[b.id + ':' + no] = guide; b.edited = true; mgGo('me-' + b.id + '.' + no, '과를 복제했어요.');
   },
   'mg-lesson-del'() {
     const c = mgEditCurrent(); if (!c || mgStatus(c.b, c.L) !== 'draft') return;
@@ -6357,7 +6357,7 @@ const acts = {
   },
   'mg-lesson-del-do'() {
     const c = mgEditCurrent(); if (!c || mgStatus(c.b, c.L) !== 'draft') return;
-    c.b.lessons = c.b.lessons.filter(l => l !== c.L); delete mg().guides[c.key]; c.b.edited = true; closeSheet(); mgGo('mb-' + c.b.id, '과를 지웠어요');
+    c.b.lessons = c.b.lessons.filter(l => l !== c.L); delete mg().guides[c.key]; c.b.edited = true; closeSheet(); mgGo('mb-' + c.b.id, '과를 지웠어요.');
   },
   // 교재 관리 복사본의 편집
   'mg-tab'(e, el) { if (!canManage()) return; mgTab = el.dataset.v; route(false); },
@@ -6368,8 +6368,8 @@ const acts = {
     const title = $('#mgTitle').value.trim(); $('#mgTitleHint').hidden = !!title; if (!title) { $('#mgTitle').focus(); return; }
     const b = mgEditing && mgBook(mgEditing), start = $('#mgStart').value;
     const fields = { title, coverName: $('#mgCoverName').value.trim(), kind: $('#mgKind').value, cover: { motif: $('#mgMotif').value, color: $('#mgColor').value }, target: $('#mgTarget').value, start, period: start ? `${Number(start.slice(0, 4))}년 ${Number(start.slice(5, 7))}월부터` : b ? b.period : '', edited: true };
-    if (b) { Object.assign(b, fields); closeSheet(); route(false); toast('저장했어요'); }
-    else { const id = mgId(); mg().books.unshift({ id, ...fields, closed: false, lessons: [] }); mgTab = 'now'; closeSheet(); mgGo('mb-' + id, '교재를 만들었어요'); }
+    if (b) { Object.assign(b, fields); closeSheet(); route(false); toast('저장했어요.'); }
+    else { const id = mgId(); mg().books.unshift({ id, ...fields, closed: false, lessons: [] }); mgTab = 'now'; closeSheet(); mgGo('mb-' + id, '교재를 만들었어요.'); }
   },
   'mg-lesson-add'() {
     const b = canManage() && mgCurrent(); if (!b || b.closed) return;
@@ -6386,14 +6386,14 @@ const acts = {
       const guide = mg().guides[source.id + ':' + L.no];
       if (guide) { const g = JSON.parse(JSON.stringify(guide)); g.stages.forEach((st, si) => st.qs.forEach((q, qi) => { q.id = `${id}-${L.no}-${si}-${qi}`; })); g.triple.forEach((t, i) => { t.id = `${id}-${L.no}-tri-${i}`; }); mg().guides[id + ':' + L.no] = g; }
     });
-    mg().books.unshift(b); mgTab = 'now'; mgGo('mb-' + id, '복제했어요. 배포 이력은 가져오지 않아요');
+    mg().books.unshift(b); mgTab = 'now'; mgGo('mb-' + id, '복제했어요. 배포 이력은 가져오지 않아요.');
   },
   'mg-close'() {
     const b = canManage() && mgCurrent(); if (!b || b.closed) return;
     openSheet(sheetHead('교재 닫기') + '<p>오늘 날짜로 교재를 닫아요. 닫은 교재는 지난 교재로 옮겨지고 교재 목록에 놓여요.</p><div class="set-btns"><button class="btn ghost" type="button" data-act="pop-close">그만두기</button><button class="btn" type="button" data-act="mg-close-do">교재 닫기</button></div>');
   },
-  'mg-close-do'() { const b = canManage() && mgCurrent(); if (!b) return; b.closed = true; b.end = DATA.today; b.edited = true; closeSheet(); route(false); toast('교재를 닫았어요'); },
-  'mg-reopen'() { const b = canManage() && mgCurrent(); if (!b) return; b.closed = false; delete b.end; b.edited = true; route(false); toast('다시 열었어요'); },
+  'mg-close-do'() { const b = canManage() && mgCurrent(); if (!b) return; b.closed = true; b.end = DATA.today; b.edited = true; closeSheet(); route(false); toast('교재를 닫았어요.'); },
+  'mg-reopen'() { const b = canManage() && mgCurrent(); if (!b) return; b.closed = false; delete b.end; b.edited = true; route(false); toast('다시 열었어요.'); },
   // 사랑방 전체 명단은 보기만 한다
   'rooms-open'(e, el) {
     if (D.role !== 'pastor') return;
@@ -6409,12 +6409,12 @@ const acts = {
   'room-approve'(e, el) {
     if (D.role !== 'leader') return;
     const room = myRoom(), i = Number(el.dataset.i), p = room.pending[i]; if (!p) return;
-    room.pending.splice(i, 1); room.members.push(p.name); roomRedraw(); toast(`${p.name} 님의 연결을 승인했어요`);
+    room.pending.splice(i, 1); room.members.push(p.name); roomRedraw(); toast(`${p.name} 님의 연결을 승인했어요.`);
   },
   'room-reject'(e, el) {
     if (D.role !== 'leader') return;
     const room = myRoom(), i = Number(el.dataset.i), p = room.pending[i]; if (!p) return;
-    room.pending.splice(i, 1); roomRedraw(); toast(`${p.name} 님의 요청을 거절했어요`);
+    room.pending.splice(i, 1); roomRedraw(); toast(`${p.name} 님의 요청을 거절했어요.`);
   },
   'room-dc'(e, el) {
     if (D.role !== 'leader') return;
@@ -6424,12 +6424,12 @@ const acts = {
   'room-dc-do'(e, el) {
     if (D.role !== 'leader') return;
     const room = myRoom(), i = Number(el.dataset.i), name = room.members[i]; if (!name || name.endsWith('(나)')) return;
-    room.members.splice(i, 1); closeSheet(); roomRedraw(); toast('연결을 해제했어요');
+    room.members.splice(i, 1); closeSheet(); roomRedraw(); toast('연결을 해제했어요.');
   },
   prep() { location.hash = '#prep'; },
   'prep-start'() { shareAuto = true; location.hash = '#share'; },
   'prep-member'() { readAsMember = true; readFrom = ''; if (location.hash === '#read') route(true); else location.hash = '#read'; },
-  later() { toast('다음 단계에서 열려요'); },
+  later() { toast('다음 단계에서 열려요.'); },
   // 인쇄: PDF는 기기의 인쇄 창, 대상·답변 공간을 바꾸면 종이를 다시 그린다
   'pp-pdf'() { window.print(); },
   async 'pp-word-book'() {
@@ -6449,8 +6449,8 @@ const acts = {
   },
   'pp-target'(e, el) { PP.leader = el.dataset.v === '1'; recRedraw(); },
   'pp-space'(e, el) { PP.space = ['none', 'mid', 'wide'].includes(el.dataset.v) ? el.dataset.v : 'mid'; recRedraw(); },
-  'keep-fill'() { ls.set(K.keep, JSON.stringify(Object.assign({ at: Date.now() }, DATA.sampleKeep))); rerender(); toast('예시를 채웠어요'); },
-  'keep-clear'() { ls.del(K.keep); rerender(); toast('비웠어요'); },
+  'keep-fill'() { ls.set(K.keep, JSON.stringify(Object.assign({ at: Date.now() }, DATA.sampleKeep))); rerender(); toast('예시를 채웠어요.'); },
+  'keep-clear'() { ls.del(K.keep); rerender(); toast('비웠어요.'); },
   // 펼치기
   toc(e, el) { const l = $('#tocList'); l.hidden = !l.hidden; el.setAttribute('aria-expanded', String(!l.hidden)); },
   goto(e, el) {
@@ -6471,19 +6471,19 @@ const acts = {
   done(e, el) {
     const id = el.dataset.id, t = $(`#ta-${id}`); if (t) saveAns(id, t);
     if (!(status[id] && status[id].ok)) return;
-    editing.delete(id); renderAns(id); toast('저장했어요');
+    editing.delete(id); renderAns(id); toast('저장했어요.');
   },
   retry(e, el) { const t = $(`#ta-${el.dataset.id}`); if (t) saveAns(el.dataset.id, t); },
   'keep-retry'() { saveKeepRead(); },
-  'ans-fill'() { allQs().forEach(q => { if (q.sample && !answers[q.id]) answers[q.id] = q.sample; }); persistAnswers(); editing.clear(); renderAll(); toast('예시를 채웠어요'); },
-  'ans-clear'() { answers = {}; ls.del(K.answers); editing.clear(); renderAll(); toast('비웠어요'); },
+  'ans-fill'() { allQs().forEach(q => { if (q.sample && !answers[q.id]) answers[q.id] = q.sample; }); persistAnswers(); editing.clear(); renderAll(); toast('예시를 채웠어요.'); },
+  'ans-clear'() { answers = {}; ls.del(K.answers); editing.clear(); renderAll(); toast('비웠어요.'); },
   // 나눔하기
   'sw-open'() { R.open = !R.open; renderStart(); },
   'sw-triple'() { R.triple = !R.triple; renderStart(); },
   'sw-dim'() { R.dim = !R.dim; renderStart(); },
   stage(e, el) {
     const i = +el.dataset.i, off = R.stages.map((v, k) => (v ? -1 : k)).filter(k => k >= 0);
-    if (R.stages[i]) { if (off.length >= 1) { toast('한 단계만 뺄 수 있어요'); return; } R.stages[i] = false; } else R.stages[i] = true;
+    if (R.stages[i]) { if (off.length >= 1) { toast('한 단계만 뺄 수 있어요.'); return; } R.stages[i] = false; } else R.stages[i] = true;
     renderStart();
   },
   'share-pick'() {
@@ -6504,7 +6504,7 @@ const acts = {
   'share-pick-shelf'() { closeSheet(); location.hash = '#shelf'; },
   'share-start'() { startShare(); },
   next() { go(1); }, prev() { go(-1); },
-  pray() { toast('데모에서는 코이데로 이어지지 않아요'); },
+  pray() { toast('데모에서는 코이데로 이어지지 않아요.'); },
   finish() { exitShare(); },
   'ask-close'() {
     shareOpenSheet(`${sheetHead('나눔을 마칠까요?')}<p class="soft">처음 화면으로 돌아가요.</p><div class="close-ask"><button class="btn" type="button" data-act="pop-close">계속 나누기</button><button class="btn ghost" type="button" data-act="exit">나가기</button></div>`);
@@ -6635,11 +6635,11 @@ if (LIVE) {
     // 우리 사랑방: 서버가 처리한 뒤의 요청·명단으로 화면을 바꾼다
     'room-approve': lvRun(async (e, el) => {
       if (!liveLeads()) return;
-      PEND.data = await api('approve', { kakaoId: el.dataset.k }); roomRedraw(); toast(`${nameOf(el)} 님의 연결을 승인했어요`);
+      PEND.data = await api('approve', { kakaoId: el.dataset.k }); roomRedraw(); toast(`${nameOf(el)} 님의 연결을 승인했어요.`);
     }),
     'room-reject': lvRun(async (e, el) => {
       if (!liveLeads()) return;
-      PEND.data = await api('reject', { kakaoId: el.dataset.k }); roomRedraw(); toast(`${nameOf(el)} 님의 요청을 거절했어요`);
+      PEND.data = await api('reject', { kakaoId: el.dataset.k }); roomRedraw(); toast(`${nameOf(el)} 님의 요청을 거절했어요.`);
     }),
     'room-apall'() {
       if (!liveLeads() || !PEND.data || PEND.data.requests.length < 2) return;
@@ -6649,7 +6649,7 @@ if (LIVE) {
     'room-apall-do': lvRun(async () => {
       if (!liveLeads() || !PEND.ask || !PEND.ask.length) return;
       const r = await api('approveAll', { kakaoIds: PEND.ask }); PEND.ask = null; PEND.data = r; closeSheet(); roomRedraw();
-      toast(`${r.bulk.done}명을 승인했어요${r.bulk.skipped ? ` (이미 처리된 ${r.bulk.skipped}건은 건너뛰었어요)` : ''}`);
+      toast(`${r.bulk.done}명을 승인했어요${r.bulk.skipped ? ` (이미 처리된 ${r.bulk.skipped}건은 건너뛰었어요)` : ''}.`);
     }),
     'room-dc'(e, el) {
       if (!liveLeads()) return;
@@ -6657,7 +6657,7 @@ if (LIVE) {
     },
     'room-dc-do': lvRun(async (e, el) => {
       if (!liveLeads()) return;
-      PEND.data = await api('unlink', { kakaoId: el.dataset.k }); closeSheet(); roomRedraw(); toast('연결을 해제했어요');
+      PEND.data = await api('unlink', { kakaoId: el.dataset.k }); closeSheet(); roomRedraw(); toast('연결을 해제했어요.');
     })
   });
 
@@ -6684,8 +6684,8 @@ if (LIVE) {
         period: start ? `${Number(start.slice(0, 4))}년 ${Number(start.slice(5, 7))}월부터` : b ? b.period : '' };
       if (b) body.id = b.id;
       const nb = (await api('bookSave', body)).book;
-      if (b) { Object.assign(b, bookFields(nb)); touched(b); liveSyncData(); closeSheet(); route(false); toast('저장했어요'); }
-      else { const mb = liveMapBook({ ...nb, lessons: [] }); touched(mb); mg().books.unshift(mb); mgTab = 'now'; liveSyncData(); closeSheet(); mgGo('mb-' + mb.id, '교재를 만들었어요'); }
+      if (b) { Object.assign(b, bookFields(nb)); touched(b); liveSyncData(); closeSheet(); route(false); toast('저장했어요.'); }
+      else { const mb = liveMapBook({ ...nb, lessons: [] }); touched(mb); mg().books.unshift(mb); mgTab = 'now'; liveSyncData(); closeSheet(); mgGo('mb-' + mb.id, '교재를 만들었어요.'); }
     }),
     'mg-lesson-add': mgRun(async () => {
       const b = canManage() && mgCurrent(); if (!b || b.closed) return;
@@ -6705,30 +6705,30 @@ if (LIVE) {
       const r = await api('lessonSave', { bookId: b.id, lesson: liveLessonOut(copy, guide) });
       copy.no = r.no; copy.state = 'prep'; copy.status = 'draft'; delete copy.pubAt; delete copy.saveState;
       b.lessons.push(copy); mg().guides[b.id + ':' + r.no] = guide; touched(b); liveSyncData();
-      mgGo('me-' + b.id + '.' + r.no, '과를 복제했어요');
+      mgGo('me-' + b.id + '.' + r.no, '과를 복제했어요.');
     }),
     'mg-lesson-del-do': mgRun(async () => {
       const c = mgEditCurrent(); if (!c || mgStatus(c.b, c.L) !== 'draft') return;
       const k = lkey(c.b, c.L); clearTimeout(LS.timers[k]); delete LS.timers[k];
       await api('lessonDelete', { bookId: c.b.id, no: c.L.no });
-      c.b.lessons = c.b.lessons.filter(l => l !== c.L); delete mg().guides[c.key]; touched(c.b); liveSyncData(); closeSheet(); mgGo('mb-' + c.b.id, '과를 지웠어요');
+      c.b.lessons = c.b.lessons.filter(l => l !== c.L); delete mg().guides[c.key]; touched(c.b); liveSyncData(); closeSheet(); mgGo('mb-' + c.b.id, '과를 지웠어요.');
     }),
     'mg-dup': mgRun(async () => {
       const source = canManage() && mgCurrent(); if (!source) return;
       for (const L of source.lessons) await liveSettle(source, L);
       const r = await api('bookCopy', { id: source.id });
       const mb = liveMapBook(r.book); Object.assign(mg().guides, clone(r.guides)); touched(mb); mg().books.unshift(mb); mgTab = 'now'; liveSyncData();
-      mgGo('mb-' + mb.id, '복제했어요. 배포 이력은 가져오지 않아요');
+      mgGo('mb-' + mb.id, '복제했어요. 배포 이력은 가져오지 않아요.');
     }),
     'mg-close-do': mgRun(async () => {
       const b = canManage() && mgCurrent(); if (!b) return;
       const nb = (await api('bookClose', { id: b.id })).book;
-      Object.assign(b, bookFields(nb)); if (nb.end) b.end = nb.end; touched(b); liveSyncData(); closeSheet(); route(false); toast('교재를 닫았어요');
+      Object.assign(b, bookFields(nb)); if (nb.end) b.end = nb.end; touched(b); liveSyncData(); closeSheet(); route(false); toast('교재를 닫았어요.');
     }),
     'mg-reopen': mgRun(async () => {
       const b = canManage() && mgCurrent(); if (!b) return;
       const nb = (await api('bookClose', { id: b.id, closed: false })).book;
-      Object.assign(b, bookFields(nb)); delete b.end; touched(b); liveSyncData(); route(false); toast('다시 열었어요');
+      Object.assign(b, bookFields(nb)); delete b.end; touched(b); liveSyncData(); route(false); toast('다시 열었어요.');
     }),
     // 배포·배포 중단: 서버가 공개 범위를 바꾸고 배포 시각을 적는다. 배포하기 전에 쓰던 글은 먼저 저장한다
     'mg-pub-do': mgRun(async (e, el) => {
@@ -6736,12 +6736,12 @@ if (LIVE) {
       const v = el.dataset.v; if (!pubOk(c, v)) return;
       await liveSettle(c.b, c.L);
       applyStatus(c.b, c.L, await api('lessonStatus', { bookId: c.b.id, no: c.L.no, status: v === 'leader' ? 'leader' : 'all' }));
-      closeSheet(); route(false); toast(v === 'leader' ? '리더에게 배포했어요' : '회원에게 배포했어요');
+      closeSheet(); route(false); toast(v === 'leader' ? '리더에게 배포했어요.' : '회원에게 배포했어요.');
     }),
     'mg-unpub-do': mgRun(async () => {
       const c = mgPublishCurrent(); if (!c || mgStatus(c.b, c.L) === 'draft') return;
       applyStatus(c.b, c.L, await api('lessonStatus', { bookId: c.b.id, no: c.L.no, status: 'draft' }));
-      closeSheet(); route(false); toast('배포를 멈췄어요');
+      closeSheet(); route(false); toast('배포를 멈췄어요.');
     }),
     // 디다코 기본 교재 가져오기: 확인 한 번 → 우리 교회 교재로 복제(모든 과가 준비 중, 출처가 남는다)
     'mg-basic'(e, el) {
@@ -6760,7 +6760,7 @@ if (LIVE) {
       });
       const r = await api('basicImport', { deptId, book: { title: src.title, kind: src.kind, cover: src.cover, coverName: src.coverName || '', range: src.range || '' }, lessons });
       const mb = liveMapBook(r.book); Object.assign(mg().guides, clone(r.guides)); touched(mb); mg().books.unshift(mb); mgTab = 'now'; liveSyncData();
-      closeSheet(); mgGo('mb-' + mb.id, '디다코 기본 교재를 가져왔어요. 모든 과가 준비 중이에요');
+      closeSheet(); mgGo('mb-' + mb.id, '디다코 기본 교재를 가져왔어요. 모든 과가 준비 중이에요.');
     })
   });
 
@@ -6794,7 +6794,7 @@ if (LIVE) {
       if (err.code === 'notLinked') await loadStart(); else throw err;
     }
     applyMe(); sset(LK.setup, null); sset(LK.setupTok, null);
-    toast('교회 관리자로 시작했어요');
+    toast('교회 관리자로 시작했어요.');
     goHash('#week');
   });
   window.addEventListener('pageshow', e => { if (e.persisted && LV.authBusy && !LV.work && !LV.booting) { LV.authBusy = false; route(false); } });
@@ -6964,7 +6964,7 @@ if (ADL) Object.assign(acts, {
     try { await api('adReorgSave', { dept: LA.dept, start: rg.start, leaderFrom: rg.lf, memberFrom: rg.mf, rooms: Object.keys(adRgRooms()), rows, leave, hold }); }
     catch (err) { LA.busy = false; if (err && !err.cancelled) toast(err.code && err.message ? err.message : '서버가 답하지 않아요. 잠시 뒤 다시 해 주세요.'); return; }
     LA.busy = false;
-    AD.rg = null; AD.rgAsk = false; AD.fold.reorg = true; adNote = '예약했어요'; LA.ready.admin = false; location.hash = '#admin';
+    AD.rg = null; AD.rgAsk = false; AD.fold.reorg = true; adNote = '예약했어요.'; LA.ready.admin = false; location.hash = '#admin';
   },
   'ad-rgyes'() { AD.rgAsk = false; adlRun('adReorgCancel', {}, '예약을 취소했어요'); },
   'ad-deptgo'(e, el) { LA.dept = el.dataset.v; LA.ready.admin = false; location.hash = '#admin'; },
@@ -6973,7 +6973,7 @@ if (ADL) Object.assign(acts, {
     (async () => {
       if (g !== d.group && !(await adlRun('adGroup', { group: g }, '소그룹 이름을 바꿨어요'))) return;
       if (unit !== d.unit && !(await adlRun('adDeptSave', { id: d.id, name: d.name, group: g, unit: unit === 'single' ? '개인' : '가정' }, '단위를 바꿨어요'))) return;
-      if (g === d.group && unit === d.unit) toast('바뀐 것이 없어요');
+      if (g === d.group && unit === d.unit) toast('바뀐 것이 없어요.');
       AD.grp = ''; AD.unit = ''; adRedraw();
     })();
   },
@@ -7023,29 +7023,29 @@ document.addEventListener('submit', e => {
   if (kind === 'dept') {
     const N = AD.cNew, n = f.elements.n.value.trim(); if (!N || !n) return;
     N.name = n;
-    if (DATA.admin.depts.some(x => x.name === n)) { toast('같은 이름이 이미 있어요'); return; }
+    if (DATA.admin.depts.some(x => x.name === n)) { toast('같은 이름이 이미 있어요.'); return; }
     const nd = { id: 'd' + (++adSeq), name: n, group: N.group, unit: N.unit, rooms: [] }; DATA.admin.depts.push(nd);
     AD.cNew = null; AD.hl = [nd.id]; toast(adJ(n, '을/를') + ' 만들었어요'); adRedraw(); return;
   }
   if (kind === 'person') {
     const r = d.rooms.find(x => x.id === f.dataset.v), a = f.elements.a.value.trim(), b = f.elements.b ? f.elements.b.value.trim() : ''; if (!r || !a) return;
     if (AD.edit) { AD.edit.a = a; AD.edit.b = b; }
-    if (!AD_BK_NAME.test(a) || (b && !AD_BK_NAME.test(b))) { toast('이름은 글자로만 적어 주세요'); return; }
+    if (!AD_BK_NAME.test(a) || (b && !AD_BK_NAME.test(b))) { toast('이름은 글자로만 적어 주세요.'); return; }
     const parts = b ? [a, b] : [a], key = adKey(parts);
-    for (const rr of d.rooms) { const hit = rr.fams.find(x => adKey(adNames(x)) === key); if (hit) { toast(`${hit.name}${adSolo(d) ? ' 님은' : ' 가정은'} 이미 ${rr.name}에 있어요`); return; } }
+    for (const rr of d.rooms) { const hit = rr.fams.find(x => adKey(adNames(x)) === key); if (hit) { toast(`${hit.name}${adSolo(d) ? ' 님은' : ' 가정은'} 이미 ${rr.name}에 있어요.`); return; } }
     const nf = { id: adNewId('f'), name: parts.join(', '), role: '', on: [] }; r.fams.push(nf);
-    AD.edit = null; AD.hl = [nf.id]; toast('더했어요'); adRedraw(); return;
+    AD.edit = null; AD.hl = [nf.id]; toast('더했어요.'); adRedraw(); return;
   }
   const n = f.elements.n.value.trim(); if (!n) return;
   if (AD.edit) AD.edit.n = n;
-  if (d.rooms.some(x => x.name === n && x.id !== f.dataset.v)) { toast('같은 이름이 이미 있어요'); return; }
+  if (d.rooms.some(x => x.name === n && x.id !== f.dataset.v)) { toast('같은 이름이 이미 있어요.'); return; }
   if (kind === 'room') {
     const r = { id: adNewId('r'), name: n, leader: '', co: '', fams: [] }; d.rooms.push(r); DATA.admin.invites.rooms.push(n);
     AD.open[r.id] = true; AD.edit = null; AD.hl = [r.id]; toast(adJ(n, '을/를') + ' 만들었어요'); adRedraw(); return;
   }
   if (kind === 'rename') {
     const r = d.rooms.find(x => x.id === f.dataset.v); if (!r) return;
-    adRenameRoom(r, n); AD.edit = null; AD.hl = [r.id]; toast('이름을 바꿨어요'); adRedraw();
+    adRenameRoom(r, n); AD.edit = null; AD.hl = [r.id]; toast('이름을 바꿨어요.'); adRedraw();
   }
 });
 
