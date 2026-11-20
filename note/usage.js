@@ -1,19 +1,19 @@
 // 디다코 사용 기록 보내기: 노트(note/)·공동체(community/)·교회(app/)가 함께 쓰는 작은 부품. 공동체와 교회는 ../note/usage.js로 읽는다(places.js·guide.js와 같다).
 // 코이데 app/index.html의 track()과 church-api.js의 usage 보내기를 본떴다. 보내는 곳은 코이데와 함께 쓰는 Supabase 사용 기록(usage_event, app = 'didako')이고,
-// 서버가 받는 이름은 supabase/016_didako_usage.sql이 등록한 27개뿐이다(NAMES가 같은 목록이다. 모르는 이름은 앱이 먼저 버린다).
+// 서버가 받는 이름은 supabase/016_didako_usage.sql이 등록한 27개와 018_didako_core_usage.sql이 더한 6개(핵심 행동: note.walk-done·note.keep·cm/church.quiz-done·share-done)뿐이다(NAMES가 같은 목록이다. 모르는 이름은 앱이 먼저 버린다).
 //
 // 보내는 때는 셋이 모두 맞을 때뿐이다(active):
 //   ① 새 길(Supabase)로 로그인해 있다 — 앱이 init의 ok()로 알려 준다(노트 sbMode, 공동체 SB, 교회 CHURCH_ON). 예전 길(Apps Script)·데모·따라 하기(?tutorial)·?demo에서는 거짓이다.
 //   ② 앱 설정 "이용 통계 보내기"가 켜져 있다(키 didako-usage-off가 '1'이 아니다). 세 앱이 같은 키를 쓴다. 끄면 모아 둔 줄도 지운다.
 //   ③ 서버 스위치(koide_setting 'usage_track')가 'on'이다 — 서버가 정한다. 꺼져 있으면 서버가 아무것도 저장하지 않는다.
-// 사건에 담는 것은 행동 이름, 일이 일어난 시각(휴대폰 시계), 숫자 하나(날 수), 기기 폭, 홈 화면 앱 여부, 앱 판뿐이다.
+// 사건에 담는 것은 행동 이름, 일이 일어난 시각(휴대폰 시계), 숫자 하나(날 수 또는 머문 초), 기기 폭, 홈 화면 앱 여부, 앱 판뿐이다.
 // 글·이름·교회·사랑방·교재 이름은 어느 칸에도 넣지 않는다(이 파일에는 그런 값을 받는 자리가 없다). 숫자는 0~86400 사이 정수일 때만 싣는다.
 // 기기에는 아직 못 보낸 사건 줄(didako-usage-q, 상한 200개)과 "처음 한 번만" 표시를 위한 키(didako-usage-seen)만 둔다. 과 번호 같은 값이 들어 있어도 이 기기 밖으로는 나가지 않는다.
 // 한 기기를 여러 계정이 쓸 수 있어서, 사건 줄과 표시에는 로그인한 계정의 해시(w, 앱의 who())를 함께 적어 둔다. 보낼 때는 지금 로그인한 계정의 줄만 보내고 다른 계정의 줄은 지운다(서버에는 해시가 가지 않는다).
 window.DidakoUsage = (() => {
   const OFF = 'didako-usage-off', QK = 'didako-usage-q', SEEN = 'didako-usage-seen', LOCK = 'didako-usage-lock';
-  const NAMES = new Set(['note.open', 'note.answer', 'note.view-past', 'note.view-journal', 'note.view-answers']);
-  ['cm', 'church'].forEach(p => ['open', 'first-before', 'first-after', 'keep-before', 'keep-after', 'keep-sentence', 'keep-action', 'reflect', 'record-again', 'view-month', 'view-year']
+  const NAMES = new Set(['note.open', 'note.answer', 'note.view-past', 'note.view-journal', 'note.view-answers', 'note.walk-done', 'note.keep']);
+  ['cm', 'church'].forEach(p => ['open', 'first-before', 'first-after', 'keep-before', 'keep-after', 'keep-sentence', 'keep-action', 'reflect', 'record-again', 'view-month', 'view-year', 'quiz-done', 'share-done']
     .forEach(s => NAMES.add(p + '.' + s)));
   const KEEP = 200, BATCH = 50;   // 쌓아 두는 상한 · 한 번에 보내는 수(서버 한도)
   let cfg = null, busy = false, failAt = 0, timer = 0, ver = '', bound = false;
