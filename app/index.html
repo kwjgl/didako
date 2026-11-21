@@ -1424,7 +1424,7 @@ button.gallery-cell { display: block; width: 100%; padding: 0; cursor: pointer; 
 .about-page .about-name { display: flex; flex: 1; min-width: 0; flex-direction: column; align-items: center; gap: 4px; padding: 12px 6px; border: 1px solid var(--line); border-radius: 12px; }
 .about-page .about-name .greek { color: var(--ink-2); }
 .about-page .about-card { margin-top: 14px; padding: 20px; }
-.about-page .about-card h2 { margin-bottom: 12px; }
+.about-page .about-card h2 { margin-bottom: 12px; font-size: .84em; font-weight: 600; color: var(--ink-2); }   /* 코이데처럼 카드 제목은 작은 회색 이름표(2026-11-21) */
 .about-page .about-card p { line-height: 1.75; margin: 0; }
 .about-page .about-credit { display: flex; flex-direction: column; }
 .about-page .about-credit > div { display: grid; grid-template-columns: 4em 1fr; gap: .6em; padding: .6em 0; border-top: 1px solid var(--line); font-size: .9em; word-break: keep-all; }
@@ -1808,7 +1808,16 @@ const groupName = () => LIVE ? liveGroupName() : (isTop() ? DATA.church.dept : D
 const roleName = () => LIVE && LV.me && LV.me.role && LV.me.role !== '회원' && (D.role === 'pastor' || D.role === 'leader') ? LV.me.role : ROLES.find(x => x[0] === D.role)[1];
 function paintBadge() {
   $('#badge').innerHTML = `<span class="badge-name">${esc(groupName())}</span><span class="role-tag${D.role === 'leader' ? ' leader' : isTop() ? ' admin' : ''}">${esc(roleName())}</span>`;
-  $('#placeMenu').innerHTML = didakoPlaces.html({ cur: 'church', attr: k => k === 'note' ? 'href="../note/"' : k === 'circleOne' ? 'href="../community/"' : '' });
+  $('#placeMenu').innerHTML = didakoPlaces.html({ cur: 'church', attr: k => k === 'note' ? 'href="../note/"' : k === 'circleOne' ? 'href="../community/"' : '' }) + badgeAdminMenu();
+}
+// 관리자에게는 코이데처럼 창 맨 아래에 "교회 관리 › 교회 전체"(운영 지원이면 맡은 부서)를 더한다. 더보기 "맡은 일"과 같은 조건(2026-11-21)
+function badgeAdminMenu() {
+  if (D.role !== 'admin') return '';
+  const me = (LIVE && LV.me) || {}, sbRoles = LIVE && CHURCH_ON;
+  const row = (target, name) => `<a class="place-row" role="menuitem" href="${target}"><span class="place-copy"><span>${esc(name)}</span></span></a>`;
+  if (!sbRoles || (me.ops && me.ops.all)) return `<div class="mdiv"></div><p class="mlabel">교회 관리</p>${row('#church-admin', '교회 전체')}`;
+  if (me.ops) return `<div class="mdiv"></div><p class="mlabel">운영 지원</p>${row('#admin', (((me.ops.depts) || []).filter(d => d && !d.fam).map(d => d.name).filter(Boolean).join(' · ') || '운영 지원') + ' · 지원')}`;
+  return '';
 }
 
 // ── 알림과 아래에서 올라오는 창 ──
