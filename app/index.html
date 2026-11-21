@@ -875,6 +875,7 @@ label.f { display: block; font-size: .85em; font-weight: 600; margin: 12px 0 4px
 .sheet-h { display: flex; justify-content: space-between; align-items: center; gap: 8px; margin: 0 0 .6em; }
 .sheet-h h3 { margin: 0; font-family: var(--f-display); font-size: 1.15em; }
 .sheet-x { width: 44px; height: 44px; border-radius: 12px; background: none; border: 0; color: var(--ink-2); cursor: pointer; display: grid; place-items: center; flex: none; }
+.a2hs-steps { margin: 0; padding-left: 1.3em; display: flex; flex-direction: column; gap: .25em; font-size: .92em; }   /* 홈 화면 창의 순서 목록은 코이데와 같게 */
 .jump { display: flex; flex-direction: column; gap: 6px; }
 .jump .grp { font-size: .8em; font-weight: 600; color: var(--ink-2); margin: .7em 0 .1em; }
 .jump button { text-align: left; min-height: 48px; border-radius: 12px; border: 1px solid var(--line); background: var(--surface); padding: .5em .9em; cursor: pointer; line-height: 1.5; word-break: keep-all; }
@@ -936,7 +937,7 @@ label.f { display: block; font-size: .85em; font-weight: 600; margin: 12px 0 4px
 /* 펼치기 (read.html) */
 .read-wrap { max-width: 680px; margin: 0 auto; }
 @media (min-width: 1000px) { .read-wrap { max-width: 968px; } }
-.back-link { display: inline-flex; align-items: center; gap: .3em; min-height: 44px; margin: -8px 0 0 -4px; padding: 0 4px; color: var(--ink-2); text-decoration: none; font-size: .92em; }
+.back-link { display: inline-flex; align-items: center; gap: .3em; min-height: 44px; margin: -8px 0 0 -4px; padding: 0 4px; color: var(--accent); font-weight: 600; text-decoration: none; font-size: .92em; }
 .back-link:hover { color: var(--ink); }
 .read-grid { display: grid; grid-template-columns: minmax(0, 1fr); gap: 12px; align-items: start; margin-top: 4px; }
 .read-grid > * { min-width: 0; }
@@ -1437,7 +1438,7 @@ button.gallery-cell { display: block; width: 100%; padding: 0; cursor: pointer; 
 .feedback-page .feedback-card { max-width: 760px; margin-top: 16px; padding: 20px; display: flex; flex-direction: column; gap: 12px; }
 .feedback-page .feedback-card .seg { width: 100%; display: grid; grid-template-columns: repeat(3, minmax(0,1fr)); }
 .feedback-page .feedback-card textarea { min-height: 140px; }
-.feedback-page .feedback-card .warning { color: var(--ink-2); }
+.feedback-page .feedback-card .warning { color: var(--warn); }
 .feedback-page .feedback-card .feedback-count { text-align: right; margin: 0; color: var(--ink-2); }
 .feedback-page .feedback-card .set-row > span { display: flex; flex-direction: column; gap: 3px; }
 
@@ -1453,8 +1454,9 @@ html.kg-on .topbar, html.kg-on .tabs { transform: none !important; }
 .fq:first-of-type { border-top: 0; }
 .fa { padding: 0 0 14px; }
 .fa .pg { margin: 0; line-height: 1.65; }
-.guide-page .lk { display: inline-block; margin-top: 8px; color: var(--accent); }
+.guide-page .lk { display: inline-block; margin-top: 8px; color: var(--accent); font-weight: 600; font-size: .88em; text-decoration: none; }   /* 카드 안 링크는 코이데 .link와 같게 */
 .guide-page .card > h2 { margin: 0 0 8px; font-family: var(--f-body); font-size: .875rem; font-weight: 500; color: var(--ink-2); }   /* 카드 제목은 노트 사용법의 작은 이름표(.sl)와 같게 */
+.guide-page .btn.wide[data-act="guidere"] { min-height: 56px; font-size: 1.1em; font-weight: 700; }   /* 따라 하기 단추 크기는 코이데 사용법(.help-go)과 같게 */
 html.tutorial .demo-tag { display: none !important; }
 /* ── 인쇄(C-02): A4 종이와 쪽 나누기. 시안 manage.html·prep.html의 인쇄용을 옮겼다. 종이 안 색은 화면 색 테마와 상관없이 흰 종이 ── */
 .print-bar { display: flex; flex-direction: column; align-items: flex-start; gap: 6px; margin: 12px 0 14px; }
@@ -3022,7 +3024,7 @@ function a2hsSheet() {
   openSheet(sheetHead('휴대폰 홈 화면에 디다코를 두세요') + `
     <p>앱처럼 아이콘을 눌러 바로 열 수 있어요. 홈 화면에 두면 휴대폰이 저장된 내용을 함부로 정리하지 않아서 기록도 더 안전해요.</p>
     <div class="seg" style="--n:2" role="tablist" aria-label="휴대폰 종류">${[['ios', '아이폰'], ['android', '안드로이드']].map(([k, l]) => `<button type="button" class="${a2hsOs === k ? 'on' : ''}" role="tab" aria-selected="${a2hsOs === k}" data-act="a2hsos" data-v="${k}">${l}</button>`).join('')}</div>
-    <ol>${how.map(x => `<li>${x}</li>`).join('')}</ol>
+    <ol class="a2hs-steps">${how.map(x => `<li>${x}</li>`).join('')}</ol>
     <button class="btn ghost wide" type="button" data-act="pop-close">알겠어요</button>`);
   sheetFrom = from;
 }
@@ -3142,7 +3144,7 @@ function guideView() {
     <section class="card" style="margin-top:18px"><h2>처음처럼 따라 해 보기</h2><p class="pg">예시 화면에서 이번 주, 책장, 나눔하기, 내 기록을 한 걸음씩 눌러 보며 익혀요. 연습한 것은 저장되지 않아요.</p>
       <button class="btn wide" type="button" data-act="guidere" style="margin-top:16px"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M6 3.5v17l14-8.5z"/></svg>따라 하기 시작</button></section>
     <section class="card"><h2>궁금한 것 찾아보기</h2>${faq}</section>
-    ${true ? `<section class="card"><h2>의견 보내기</h2><p class="pg">불편한 점이나 바라는 점, 고마운 점을 보내 주세요.</p><a class="lk" href="#feedback">의견 보내기 ›</a></section>` : ''}
+    ${true ? `<section class="card"><h2>만든 곳 · 의견 보내기</h2><p class="pg">${LIVE && ls.get(LK.name) ? '우리 교회(' + esc(ls.get(LK.name)) + ')가' : '쓰는 분들이'} 함께 만들어 가고 있어요. 불편한 점이나 바라는 점, 고마운 점을 보내 주세요.</p><a class="lk" href="#feedback">의견 보내기 ›</a></section>` : ''}
     <section class="card"><h2>사용 안내서</h2><p class="pg">그림과 함께 차근차근 설명한 안내서예요.</p><a class="lk" href="manual.pdf" target="_blank" rel="noopener">사용 안내서(PDF) ›</a></section>
   </div>`;
 }

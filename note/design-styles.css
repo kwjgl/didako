@@ -53,7 +53,7 @@
 :root[data-style="neu"] .item.s-family, :root[data-style="neu"] .today .item.s-family, :root[data-style="neu"] .sub > li.s-family { background: var(--page); box-shadow: var(--press); }
 :root[data-style="neu"] .received { box-shadow: var(--press-sm); }
 :root[data-style="neu"] .received.r-plain { box-shadow: none; }
-:root[data-style="neu"] .field, :root[data-style="neu"] .kid-form input, :root[data-style="neu"] .copybox { background: var(--page); border-color: transparent; box-shadow: var(--press); }
+:root[data-style="neu"] .field, :root[data-style="neu"] textarea.ta, :root[data-style="neu"] .kid-form input, :root[data-style="neu"] .copybox { background: var(--page); border-color: transparent; box-shadow: var(--press); }
 :root[data-style="neu"] .export, :root[data-style="neu"] .kid-list li { background: var(--page); box-shadow: var(--press); }
 :root[data-style="neu"] .switch { background: var(--page); box-shadow: var(--press); }
 :root[data-style="neu"] .switch.on { background: var(--accent); }
@@ -142,7 +142,7 @@
 :root[data-style="glass"] .btn.ghost, :root[data-style="glass"] .pray:not(.hero):not(.on), :root[data-style="glass"] .mchip, :root[data-style="glass"] .chip-btn, :root[data-style="glass"] .badge-btn,
 :root[data-style="glass"] .tgt, :root[data-style="glass"] .role-tag:not(.admin):not(.leader), :root[data-style="glass"] .seg, :root[data-style="glass"] .seg2 {
   background: var(--glass-soft); border-color: color-mix(in srgb, var(--surface) 65%, transparent); }
-:root[data-style="glass"] .field, :root[data-style="glass"] .kid-form input { background: var(--glass-strong); border-color: color-mix(in srgb, var(--line-strong) 60%, transparent); }
+:root[data-style="glass"] .field, :root[data-style="glass"] textarea.ta, :root[data-style="glass"] .kid-form input { background: var(--glass-strong); border-color: color-mix(in srgb, var(--line-strong) 60%, transparent); }
 :root[data-style="glass"] .seg button.on, :root[data-style="glass"] .seg2 button.on { background: var(--glass-strong); box-shadow: inset 0 1px 0 var(--neu-hi), 0 2px 8px -3px var(--shadow); }
 :root[data-style="glass"] .mchip.on, :root[data-style="glass"] .chip-btn.on { background: color-mix(in srgb, var(--accent-soft) 70%, transparent); color: var(--ink); border-color: color-mix(in srgb, var(--accent) 55%, transparent); }
 :root[data-style="glass"] .btn:not(.ghost), :root[data-style="glass"] .pray.hero { box-shadow: inset 0 1px 0 rgba(255, 255, 255, .3), 0 8px 20px -10px var(--accent); }
