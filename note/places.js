@@ -1,4 +1,5 @@
 // 세 앱의 '함께하는 곳' 메뉴를 같은 순서로 그린다.
+// 오른쪽 작은 회색 글은 '지금 상태'만 쓴다(지금 보는 곳 · 승인을 기다려요 · D-숫자 · 신청 수). 곳이 무엇인지 설명은 붙이지 않는다(2026-11-21)
 (() => {
   const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
   const here = '지금 보는 곳';
@@ -27,13 +28,13 @@
     }
 
     const circles = o.circles === undefined
-      ? row('circleOne', '', '디다코 공동체', '작은 모임에서 말씀을 함께 읽어요.')
+      ? row('circleOne', '', '디다코 공동체', '')
       : o.circles.map(g => row('circle', g.id, g.name, o.cur === g.id ? [here, g.asks ? '신청 ' + Number(g.asks) : ''].filter(Boolean).join(', ') : circleSub(g), g.off === true)).join('');
     return `<p class="mlabel">함께하는 곳</p>
-      ${row('note', '', '디다코 노트', o.cur === 'note' ? here : '혼자 묵상하는 노트')}
+      ${row('note', '', '디다코 노트', o.cur === 'note' ? here : '')}
       ${circles}
       ${o.circleMake ? divider + row('circleMake', '', '+ 공동체 만들기', '') : ''}
-      ${divider}${row('church', '', '디다코 교회', o.cur === 'church' ? here : '교회 코드로 들어가기')}`;
+      ${divider}${row('church', '', '디다코 교회', o.cur === 'church' ? here : '')}`;
   }
 
   window.didakoPlaces = { html };
