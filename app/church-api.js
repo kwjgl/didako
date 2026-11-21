@@ -9,6 +9,7 @@
 //   requestLink → didako_ch_link_staff(교역자) · didako_ch_link_new(새로 왔어요) · didako_ch_link_name(이름 써서 찾기) · didako_ch_link_pick(목록에서 고르기) 뒤 didako_ch_me
 //   pending · approve · reject · approveAll · unlink → didako_ch_pending · didako_ch_decide · didako_ch_approve_all · didako_ch_unlink
 //   setupAdmin → didako_ch_admin_accept 뒤 didako_ch_me (설치 코드 = SQL Editor의 didako_ch_setup_invite가 준 값)
+//   applyState·applySend·applyCancel·applyClaim(교회 신청, 2026-11-20) → church_apply_open·church_apply_mine · church_apply_send(p_app 'didako') · church_apply_cancel · didako_ch_apply_claim(supabase/021)
 //   where(옛 기본 서버가 하던 "내 교회 찾기") → didako_ch_me의 교회 소속 · join(옛 기본 서버의 교회 코드로 들어가기) → church_join(코이데 공용 함수)
 //   logout → DidakoSb.signOut(로그인 세션을 끊는다. 노트·공동체도 같은 세션이라 함께 로그아웃된다)
 //   books → didako_ch_books_view (보는 사람에 맞게 서버가 걸러서 준다: 회원은 '모두' 과만 리더 칸·진행 안내 없이, 쓰는 사람은 준비 중·보관까지)
@@ -129,6 +130,21 @@ window.didakoChurchApi = (() => {
         const r = await rpc('church_join', { p_code: str(body.code) });
         okOrThrow(r, '맞는 교회 코드가 없어요. 받은 코드를 다시 확인해 주세요.');
         return { church: { id: r.church.id, name: str(r.church.name), kind: str(r.church.kind) } };
+      }
+      // 교회 신청(코이데 035·043, 디다코 021). applyState는 던지지 않는다(교회 코드 화면은 이 값이 없어도 지금 모양 그대로 그려진다): 신청을 받는지(open)와 내 신청(mine), 로그인 이름(nick)
+      case 'applyState': {
+        let open = false, mine = null;
+        try { open = !!(await rpc('church_apply_open')); } catch (e) { open = false; }
+        try { const r = await rpc('church_apply_mine'); mine = (r && r.apply) || null; } catch (e) { mine = null; }
+        return { open, mine, nick: (await ident()).nick };
+      }
+      case 'applySend': return rpc('church_apply_send', { p_region: str(body.region), p_name: str(body.name), p_denom: str(body.denom), p_pastor: str(body.pastor),
+        p_contact: str(body.contact), p_size: str(body.size), p_site: str(body.site), p_agree: body.agree === true, p_app: 'didako' });
+      case 'applyCancel': return rpc('church_apply_cancel');
+      // 신청한 교회가 만들어진 뒤 [첫 관리자로 시작하기]: 같은 거래에서 디다코 교회 관리자가 되고 교회에 들어간다. 끝나면 나의 정보를 돌려준다(설치 코드와 같다)
+      case 'applyClaim': {
+        okOrThrow(await rpc('didako_ch_apply_claim', { p_name: str(body.name) }), '시작하지 못했어요. 잠시 뒤에 다시 해 주세요.');
+        return meOf();
       }
       case 'requestLink': {
         let r;
