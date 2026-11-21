@@ -1884,7 +1884,7 @@ function displayControls() {
 function renderSettings() {
   // 실제 모드에는 데모용 설정(역할 바꾸기 등)이 없다. 화면 설정만 연다
   // 실제 모드의 톱니 메뉴 맨 아래에는 코이데처럼 로그아웃 줄이 있다(2026-11-20). 따라 하기(TUT)에서는 로그아웃하지 않는다
-  if (LIVE || TUT) { $('#settings').innerHTML = '<p class="mlabel mhead">화면 설정</p>' + displayControls() + (LIVE && !TUT && D.entered ? '<div class="mdiv"></div><button class="mitem" type="button" role="menuitem" data-act="more-logout"><span>이 기기에서 로그아웃</span></button>' : ''); return; }
+  if (LIVE || TUT) { $('#settings').innerHTML = '<p class="mlabel mhead">화면 설정</p>' + displayControls(); return; }   // 로그아웃은 '계정과 동기화'에서만 한다(2026-11-21)
   const inApp = currentView() !== 'start';
   $('#settings').innerHTML = `<p class="mlabel mhead">화면 설정</p>${displayControls()}    <div class="mdiv"></div>
     <p class="mlabel">데모용 <span class="demo-tag static">데모</span></p>
@@ -2250,6 +2250,7 @@ function applyMe() {
 const liveLeads = () => D.role === 'leader' || (LIVE && D.role === 'admin' && !!LV.me && !!LV.me.admin && (LV.me.role === '리더' || LV.me.role === '코리더'));
 function liveGroupName() {
   const me = LV.me || {};
+  if (!me.staff && me.roomName) return me.roomName;   // 코이데처럼 교역자가 아니면 내 사랑방(관리자도 사랑방이 있으면 사랑방, 2026-11-21)
   if (isTop()) return (me.dept && me.dept.name) || (me.ops && !me.ops.all && me.ops.depts[0] && me.ops.depts[0].name) || ls.get(LK.name) || '';
   return me.roomName || (me.dept && me.dept.name) || '';
 }
