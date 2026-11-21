@@ -120,9 +120,9 @@ a { color: inherit; }
 .field { display: block; width: 100%; min-height: 48px; padding: 11px 12px; border: 1px solid var(--line-strong); border-radius: 12px; background: var(--surface); color: var(--ink); font-size: .9375rem; }
 .field::placeholder { color: var(--ink-2); }
 textarea.field { resize: none; line-height: 1.6; }
-.seg { display: flex; background: var(--surface-2); border-radius: 12px; padding: 3px; }
-.seg button { flex: 1; min-height: 44px; border: 0; border-radius: 10px; background: none; font-size: .875rem; color: var(--ink-2); }
-.seg button.on { background: var(--line); color: var(--ink); font-weight: 700; }
+.seg { display: flex; gap: 3px; background: var(--surface-2); border-radius: 12px; padding: 3px; }
+.seg button { flex: 1; min-height: 44px; border: 0; border-radius: 9px; background: none; font: inherit; font-size: .86em; word-break: keep-all; padding: 0 4px; color: var(--ink-2); cursor: pointer; }
+.seg button.on { background: var(--surface); color: var(--ink); font-weight: 600; box-shadow: 0 1px 3px rgba(0,0,0,.12); }
 .seg.q { background: var(--line); }
 .seg.q button.on { background: var(--surface); }
 .switch { width: 48px; height: 28px; border-radius: 999px; border: 0; background: var(--line-strong); position: relative; flex: none; padding: 0; }
@@ -177,8 +177,10 @@ body.tabs-off .stickbar { bottom: env(safe-area-inset-bottom, 0px); }
 .tm.on { background: var(--accent-soft); color: var(--accent-deep); font-weight: 700; }
 .tm.ic-btn { width: 44px; padding: 0; color: var(--ink); margin-left: auto; font-size: 1rem; }
 .tm.ic-btn .ic { width: 1.35em; height: 1.35em; }
-.menu { position: absolute; top: calc(100% + 6px); right: 16px; width: min(300px, calc(100vw - 32px)); background: var(--surface); border: 1px solid var(--line); border-radius: 16px; box-shadow: 0 16px 40px -12px var(--shadow); padding: 10px; z-index: 25; }
-.menu .mlabel { font-size: .75rem; font-weight: 600; color: var(--ink-2); margin: 6px 6px 6px; }
+.menu { position: absolute; top: calc(100% + 6px); right: 16px; width: min(300px, calc(100vw - 32px)); background: var(--surface); border: 1px solid var(--line); border-radius: 16px; box-shadow: 0 16px 40px -12px var(--shadow); padding: .5em; z-index: 25; }
+.menu:not([hidden]) { display: flex; flex-direction: column; gap: .1em; }
+.menu .mlabel, .ex .mlabel { font-size: .84em; font-weight: 600; color: var(--ink-2); margin: .6em .7em .3em; }
+.menu .seg { margin: 0 .3em .3em; }
 .topbar:not([hidden]) { display: block; }
 @media (min-width: 1000px) { .tabs { display: none !important; } .col { padding-top: 28px; padding-bottom: 56px; } .h1 { font-size: 1.625rem; } }
 
@@ -202,13 +204,12 @@ body.tabs-off .stickbar { bottom: env(safe-area-inset-bottom, 0px); }
 /* 크기 · 굵기 · 여백은 코이데 노트의 값을 그대로 쓴다(pray-for app/note.html의 .menu · .mlabel · .mitem · .mdiv). 밑줄은 없다(2026-11-14) */
 #placeMenu { padding: .5em; }
 #placeMenu:not([hidden]) { display: flex; flex-direction: column; gap: .1em; }
-#placeMenu .mlabel { font-size: .72em; font-weight: 600; margin: .6em .7em .3em; }
+#placeMenu .mlabel { font-size: .84em; font-weight: 600; margin: .6em .7em .3em; }
 #placeMenu .place-row { gap: .6em; font: inherit; font-size: .9em; padding: .55em .7em; cursor: pointer; }
 #placeMenu .place-row.on { cursor: default; }
 #placeMenu .place-row[aria-disabled="true"] { cursor: default; opacity: .7; }
 #placeMenu .place-row[aria-disabled="true"]:hover { background: none; }
 #placeMenu .mdiv { margin: .35em .3em; }
-#setMenu .set-row { padding-left: 6px; }
 #setMenu > .mlabel:first-child { font-size: .97rem; font-weight: 600; color: var(--ink); }
 #setMenu { max-height: calc(100dvh - 74px); overflow-y: auto; }
 @media (max-width: 999px) {
@@ -285,7 +286,7 @@ html.kg-on body.tabs-off .topbar, html.kg-on body.tabs-off .tabs { transform: no
 .vine-story .sm { font-size: .875rem; line-height: 1.6; }
 .vine-fruit { font: inherit; color: var(--ink); }
 .vine-badge-title { margin: 28px 0 4px; }
-.mdiv { height: 1px; background: var(--line); margin: 8px 6px; }
+.mdiv { flex: none; height: 1px; background: var(--line); margin: .35em .3em; }
 .toast { pointer-events: none; position: fixed; left: 50%; bottom: calc(96px + env(safe-area-inset-bottom, 0px)); transform: translateX(-50%); width: max-content; background: var(--ink); color: var(--page); padding: .6em 1em; border-radius: 10px; font-size: .875rem; z-index: 60; max-width: calc(100% - 32px); text-align: center; }
 @media (min-width: 1000px) { .toast { bottom: 40px; } }
 
@@ -451,11 +452,14 @@ html.kg-on body.tabs-off .topbar, html.kg-on body.tabs-off .tabs { transform: no
 .erase-ask .ra { justify-content: flex-start; flex-wrap: wrap; }
 .erase-ask .warn-text { color: var(--warn); }
 .btn.danger { background: var(--warn); border-color: var(--warn); color: var(--on-accent); }
-.ex { padding: 4px 0 14px; }
-.cdw { display: flex; gap: 4px; margin: 10px 0 10px -2px; }
-.cd { width: 48px; height: 48px; border: 0; background: none; padding: 0; display: flex; align-items: center; justify-content: center; }
-.cd i { display: block; width: 34px; height: 34px; border-radius: 17px; }
-.cd[aria-checked="true"] i { box-shadow: 0 0 0 3px var(--surface), 0 0 0 5px var(--ink); }
+.ex { padding: 4px 0 14px; display: flex; flex-direction: column; gap: 12px; }
+.ex .mlabel { margin: 0 0 .4em .2em; }
+.swatches { display: flex; gap: 4px; margin: .2em .2em .4em; flex-wrap: nowrap; }   /* 색 테마 여섯 개는 늘 한 줄(디다코 앱·공동체, 코이데와 같은 모양) */
+.swatch { flex: 0 1 40px; min-width: 0; max-width: 40px; aspect-ratio: 1; height: auto; border-radius: 50%; padding: 0; border: 2px solid transparent; background: none; cursor: pointer; display: grid; place-items: center; }
+.swatch i { width: 28px; height: 28px; border-radius: 50%; display: block; box-shadow: inset 0 0 0 1px rgba(0, 0, 0, .12); }
+.swatch.on { border-color: var(--ink); }
+.menu .ex { padding: 0; gap: .1em; }
+.menu .ex .mlabel { margin: .6em .7em .3em; }
 .set-row { display: flex; align-items: center; gap: 12px; margin-top: 14px; }
 .set-row > span { flex: 1; min-width: 0; }
 .set-row b { display: block; font-size: .96875rem; }
@@ -1813,12 +1817,12 @@ const MODE_OPTS = [['auto', '기기 설정'], ['light', '밝게'], ['dark', '어
 const SWATCHES = [['green', '#2B6A62', '초록'], ['amber', '#A9561B', '주황'], ['blue', '#2F5D95', '파랑'], ['rose', '#A8435C', '장미'], ['ink', '#33332F', '먹색'], ['paper', '#6B4A2E', '종이']];
 const STYLE_OPTS = [['basic', 'basic'], ['neu', 'new'], ['skeu', 'classic'], ['glass', 'glass']];
 function displayEx(id = 'dispEx') {
+  // 칸마다 이름표를 단다(코이데·디다코 앱·공동체와 같은 모양, ux-common 50번)
   return `<div class="ex" id="${id}">
-    <div class="seg" role="radiogroup" aria-label="화면 모드">${RADIO('mode', MODE_OPTS)}</div>
-    <div class="cdw" role="radiogroup" aria-label="색 테마">${SWATCHES.map(([v, c, n]) => `<button class="cd" type="button" role="radio" aria-checked="false" aria-label="${n}" data-set="accent:${v}"><i style="background:${c}"></i></button>`).join('')}</div>
-    <div class="seg" role="radiogroup" aria-label="디자인 스타일">${RADIO('style', STYLE_OPTS)}</div>
-    <div class="set-row"><span><b>큰 글씨</b></span></div>
-    <div class="seg" role="radiogroup" aria-label="큰 글씨">${RADIO('big', [['0', '보통'], ['1', '크게'], ['2', '아주 크게']])}</div>
+    <div><p class="mlabel">화면 모드</p><div class="seg" role="radiogroup" aria-label="화면 모드">${RADIO('mode', MODE_OPTS)}</div></div>
+    <div><p class="mlabel">색 테마</p><div class="swatches" role="radiogroup" aria-label="색 테마">${SWATCHES.map(([v, c, n]) => `<button class="swatch" type="button" role="radio" aria-checked="false" aria-label="${n}" title="${n}" data-set="accent:${v}"><i style="background:${c}"></i></button>`).join('')}</div></div>
+    <div><p class="mlabel">디자인</p><div class="seg" role="radiogroup" aria-label="디자인">${RADIO('style', STYLE_OPTS)}</div></div>
+    <div><p class="mlabel">큰 글씨</p><div class="seg" role="radiogroup" aria-label="큰 글씨">${RADIO('big', [['0', '보통'], ['1', '크게'], ['2', '아주 크게']])}</div></div>
   </div>`;
 }
 // ── 내 공동체(더보기와 함께하는 곳 메뉴. 코이데 노트 방식) ──
@@ -1919,7 +1923,7 @@ function viewMore() {
       <button class="gr" type="button" data-act="community"><span class="gt"><b>디다코 교회</b></span><span class="ch" aria-hidden="true">›</span></button>
     </div>`;
   const account = `<div class="gl">계정과 동기화</div><div class="gc">
-      <a class="gr" href="#/more/sync"><span class="gt"><b>계정과 동기화</b><span class="gd">${on ? `연결됨${syncLine() ? ' · 마지막 동기화 ' + syncLine() : ''}` : '켜면 기기를 바꿔도 기록이 이어져요'}</span></span><span class="ch" aria-hidden="true">›</span></a>
+      <a class="gr" href="#/more/sync"><span class="gt"><b>계정과 동기화</b><span class="gd">${on ? `연결됨 · ${syncLine() ? '마지막 동기화 ' + syncLine() : '아직 동기화하지 않았어요'}` : '켜면 기기를 바꿔도 기록이 이어져요'}</span></span><span class="ch" aria-hidden="true">›</span></a>
     </div>`;
   const set1 = `<div class="gl">앱 설정</div><div class="gc">
       <button class="gr${dispOpen ? ' open' : ''}" type="button" data-act="disp" aria-expanded="${dispOpen}" aria-controls="dispEx"><span class="gt"><b>화면 설정</b></span>${dispOpen ? CHEV_DOWN_S : '<span class="ch" aria-hidden="true">›</span>'}</button>
@@ -2029,11 +2033,10 @@ function viewSync() {
       <input type="file" id="restore-file" accept="application/json,.json" hidden></div>`;
   const how = on ? '' : `<div class="ft"><div class="sl">켜는 순서</div><ol class="os"><li>비밀번호를 두 번 적어요</li><li>복구용 낱말 여섯 개를 보고 적어 둬요</li><li>기록이 암호화되어 동기화돼요</li></ol></div>`;
   return colWrap(`${back}
-    <div class="sm" style="margin-top:6px;font-size:.875rem">${esc(me.name)}</div>
-    <h1 class="tt" style="margin-top:2px">계정과 동기화</h1>
+    <h1 class="tt" style="margin-top:8px">계정과 동기화</h1>
     ${acctCard()}
     <div class="sc sy" style="margin-top:14px"><div class="hd"><h2>동기화 켜기</h2><button class="switch${on ? ' on' : ''}" type="button" role="switch" aria-checked="${on}" aria-label="동기화 켜기" data-act="${on ? 'cut-sheet' : 'keep-start'}"><span></span></button></div>
-      <p class="stt${on ? '' : ' off'}"><i aria-hidden="true"></i><span>${on ? `연결됨 · 마지막 동기화 ${syncLine()}` : '켜면 기기를 바꿔도 기록이 이어져요'}</span></p>
+      <p class="stt${on ? '' : ' off'}"><i aria-hidden="true"></i><span>${on ? `연결됨 · ${syncLine() ? '마지막 동기화 ' + syncLine() : '아직 동기화하지 않았어요'}` : '켜면 기기를 바꿔도 기록이 이어져요'}</span></p>
       <div class="act">${on ? `${LIVE && sbRelogin ? '<button class="btn sm2" type="button" data-act="sb-relogin">다시 로그인</button>' : ''}<button class="btn ghost sm2" type="button" data-act="sync-now">${SYNC_IC}지금 동기화</button><button class="ql" type="button" data-act="cut-sheet">연결 끊기</button>` : '<button class="btn sm2" type="button" data-act="keep-start">켜기</button>'}</div></div>
     ${secret}${file}${how}
     <div class="ft"><div class="sl">알아 두세요</div><p>· 브라우저의 인터넷 기록·사이트 데이터를 지우면 이 기기의 사본과 화면 설정이 지워질 수 있어요.</p><p>· 보관한 기록은 비밀번호로 다시 열 수 있어요.</p>${on ? '' : '<p>· 아이폰은 홈 화면에 두지 않고 7일 넘게 열지 않으면 이 기기의 기록이 지워질 수 있어요.</p>'}</div>
@@ -5100,7 +5103,7 @@ function takeMerged(m) {
 }
 const editing = () => !!document.activeElement?.closest('input, textarea, [contenteditable="true"]');
 function paintSyncStatus() {
-  const line = syncStatus || (V.on ? `연결됨 · 마지막 동기화 ${syncLine()}` : '켜면 기기를 바꿔도 기록이 이어져요');
+  const line = syncStatus || (V.on ? `연결됨 · ${syncLine() ? '마지막 동기화 ' + syncLine() : '아직 동기화하지 않았어요'}` : '켜면 기기를 바꿔도 기록이 이어져요');
   const t = $('.sy .stt span'); if (t) t.textContent = line;
   const more = $('[href="#/more/sync"] .gd'); if (more) more.textContent = line;
 }

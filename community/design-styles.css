@@ -175,3 +175,16 @@
 .info-tip[data-side="up"]::before { bottom: -6px; border-right: 1px solid var(--tip-line); border-bottom: 1px solid var(--tip-line); }
 :root[data-style="skeu"] .info-tip { box-shadow: inset 0 1px 0 rgba(255, 255, 255, .12), 0 8px 24px -8px var(--shadow); }
 @media (prefers-reduced-motion: reduce) { .info-tip { transition: none; } }
+
+/* ── new(뉴모피즘)에서 빠졌던 것 채우기 (2026-11-20, 두 앱 차이 50번) ──
+   로그인 단추(카카오·구글·애플)는 색과 테두리는 그대로 두고 볼록한 그림자만 더한다 */
+:root[data-style="neu"] .kakao { box-shadow: var(--raise-sm); }
+:root[data-style="neu"] .kakao:disabled { box-shadow: none; }
+:root:root:root[data-style="neu"] .btn.sso-btn:not(:disabled) { box-shadow: var(--raise-sm) !important; }
+/* 디다코 노트·교회·공동체에만 있는 이름도 코이데 카드·단추와 같게 한다: 카드(.sc 쪽지 · .cg 묶음 · .ft 안내 · .kv 한 줄), 위 막대 이름표·톱니(.place-btn · .tm.ic-btn), 걷는 길의 날짜 동그라미(.walk-day)와 고르는 칸(.walk-choice) */
+:root[data-style="neu"] .sc, :root[data-style="neu"] .cg, :root[data-style="neu"] .ft, :root[data-style="neu"] .kv { background-color: var(--card); border-color: transparent; box-shadow: var(--raise-card); }
+:root[data-style="neu"] .place-btn, :root[data-style="neu"] .topbar .tm.ic-btn { background: var(--card); border-color: transparent; box-shadow: var(--raise-sm); }
+:root[data-style="neu"] .topbar .tm.ic-btn[aria-expanded="true"], :root[data-style="neu"] .place-btn[aria-expanded="true"] { box-shadow: var(--press); }
+:root[data-style="neu"] .walk-day:not(.chosen):not(.today) { background-color: var(--card); border-color: transparent; box-shadow: var(--raise-sm); }
+:root[data-style="neu"] .walk-choice { background-color: var(--card); border-color: transparent; box-shadow: var(--raise-sm); }
+:root[data-style="neu"] .walk-choice.right { background-color: var(--accent-soft); box-shadow: var(--press); }
