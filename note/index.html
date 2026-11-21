@@ -1233,13 +1233,12 @@ const pick = (v, list, d) => (list.includes(v) ? v : d);
 // ── 계정 탈퇴 뒤 이 기기의 그 계정 노트 지우기(2026-11-20) ──
 // 교회 앱(app/)에서 탈퇴하면 그 계정의 id 해시({h})를 표시(didako-wipe-note)에 남긴다. 노트가 열릴 때(기억해 둔 노트를 읽기 전에) 이 기기의 노트 주인이 그 계정('sb:'+해시)일 때만 그 노트를 지우고 표시를 치운다.
 // 같은 기기의 다른 계정 노트(보관해 둔 사본 포함)는 그대로 두고, 화면 설정과 이용 통계 끔은 남긴다. 표시가 올바르지 않으면 아무것도 지우지 않고 치우기만 한다.
+const NOTE_WIPE_KEYS = [K.notes, K.badges, K.session, K.demo, K.vine, 'didako-note-vault', 'didako-note-lock', 'didako-note-gone', 'didako-note-guide', 'didako-note-walk-open', 'didako-note-owner',
+  'didako-read-answers', 'didako-share-memo', 'didako-live-records', 'didako-record-reflections', 'didako-record-answers', 'didako-record-edits', 'didako-weekwalk-thought', 'didako-weekwalk-meditate', 'didako-weekwalk-done',
+  'didako-read-bookmark', 'didako-gbs-base', 'didako-weekwalk-read', 'didako-share-lesson', 'didako-my-book'];
 function wipeAccountNote(h) {
   const owner = 'sb:' + h;
-  if (ls.get('didako-note-owner') === owner) {
-    [K.notes, K.badges, K.session, K.demo, K.vine, 'didako-note-vault', 'didako-note-lock', 'didako-note-gone', 'didako-note-guide', 'didako-note-walk-open', 'didako-note-owner',
-      'didako-read-answers', 'didako-share-memo', 'didako-live-records', 'didako-record-reflections', 'didako-record-answers', 'didako-record-edits', 'didako-weekwalk-thought', 'didako-weekwalk-meditate', 'didako-weekwalk-done',
-      'didako-read-bookmark', 'didako-gbs-base', 'didako-weekwalk-read', 'didako-share-lesson', 'didako-my-book'].forEach(k => ls.del(k));
-  }
+  if (ls.get('didako-note-owner') === owner) NOTE_WIPE_KEYS.forEach(k => ls.del(k));
   ls.del('didako-note-stash.' + owner);
   if (ls.get('didako-note-sbh') === h) ls.del('didako-note-sbh');
 }
@@ -2025,7 +2024,7 @@ function viewSync() {
       <button class="gr${on ? '' : ' dm'}" type="button" data-act="${on ? 'pass-sheet' : 'need-sync'}"><span class="gt"><b>비밀번호 바꾸기</b></span><span class="ch" aria-hidden="true">›</span></button>
       <button class="gr${on ? '' : ' dm'}" type="button" data-act="${on ? 'forgot-sheet' : 'need-sync'}"><span class="gt"><b>비밀번호를 잊었어요</b></span><span class="ch" aria-hidden="true">›</span></button>
       <button class="gr${on ? '' : ' dm'}" type="button" data-act="${on ? 'rec-new' : 'need-sync'}"><span class="gt"><b>복구용 낱말 새로 만들기</b></span><span class="ch" aria-hidden="true">›</span></button>
-      <p class="nt2" style="padding-top:2px">비밀번호와 복구용 낱말을 둘 다 잃으면 기록을 되살릴 수 없어요.</p></div>`;
+      <p class="nt2" style="margin-top:-6px">비밀번호·복구용 낱말을 모두 잃으면 기록을 불러올 수 없어요.</p></div>`;
   // 기록 파일: 동기화를 켜지 않아도 쓴다(코이데 노트와 같다). 서버에 문제가 생겼을 때의 마지막 안전판
   const file = `<div class="cg"><div class="sl" style="padding-top:16px;margin-bottom:0;font-size:.84375rem">내 기록 파일</div>
       <button class="gr" type="button" data-act="backup" style="border-top:0"><span class="gt"><b>기록 저장하기</b></span></button>
@@ -2041,6 +2040,7 @@ function viewSync() {
     ${secret}${file}${how}
     <div class="ft"><div class="sl">알아 두세요</div><p>· 브라우저의 인터넷 기록·사이트 데이터를 지우면 이 기기의 사본과 화면 설정이 지워질 수 있어요.</p><p>· 보관한 기록은 비밀번호로 다시 열 수 있어요.</p>${on ? '' : '<p>· 아이폰은 홈 화면에 두지 않고 7일 넘게 열지 않으면 이 기기의 기록이 지워질 수 있어요.</p>'}</div>
     <button class="logout" type="button" data-act="logout">이 기기에서 로그아웃</button>
+    <button class="logout" type="button" data-act="wipe-ask" style="margin-top:6px">이 휴대폰의 디다코 노트 모두 지우기</button>
     ${canErase() ? '<button class="logout danger" type="button" data-act="acct-del-open">계정 탈퇴</button>' : ''}`);
 }
 
@@ -4493,6 +4493,9 @@ const acts = {
   a2hsos(e, el) { a2hsOs = el.dataset.v; a2hsSheet(); },
   logout() { confirmSheet('로그아웃할까요?', '다시 들어올 때는 카카오로 로그인해요. 보관한 기록은 비밀번호로 다시 열 수 있어요.', '그만두기', '로그아웃', 'logout-go'); },
   'logout-go'() { resetAll(); },
+  // 이 휴대폰의 노트 모두 지우기(2026-11-21, 코이데와 같게): 로그인은 두고 이 기기의 노트 기록만 지운 뒤 처음부터 다시 연다. 서버에 맡긴 기록은 그대로다
+  'wipe-ask'() { confirmSheet('이 휴대폰의 디다코 노트를 모두 지울까요?', D.sync === 'on' ? '다른 기기에 연결해 둔 것은 그대로 남고, 이 휴대폰만 연결이 끊겨요.' : '되돌릴 수 없어요. 먼저 기록을 저장해 두세요.', '그만두기', '모두 지우기', 'wipe-go'); },
+  'wipe-go'() { clearVineMoments(); try { F.id = ''; X.id = ''; } catch (_) { /* 무시 */ } NOTE_WIPE_KEYS.forEach(k => ls.del(k)); location.replace(location.pathname + location.search); },
   faq(e, el) {
     const i = Number(el.dataset.i), open = !faqOpen.has(i);
     open ? faqOpen.add(i) : faqOpen.delete(i);
