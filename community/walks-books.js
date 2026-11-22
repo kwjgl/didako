@@ -18,7 +18,11 @@
   delete D.admin; D.records = []; D.rooms = { mine: { name: '', leader: '', coLeader: '', members: [], pending: [] } }; D.church = { dept: '', room: '' };
   Object.keys(D.guides).forEach(k => { if (!BASIC.includes(k.split(':')[0])) delete D.guides[k]; });
 
-  const walks = W.map(w => {
+  // 책장 순서(2026-11-22): 연재 데이터는 쓴 순서로 쌓여 있으니 성경 순서로 세운다. 주제 연재 '엘리야'는 열왕기상 17~22장이라 열왕기상 바로 뒤에 두고, 책 이름도 열왕기상으로 쓴다(노트 서가와 같게)
+  const ORDER = '창세기 출애굽기 레위기 민수기 신명기 여호수아 사사기 룻기 사무엘상 사무엘하 열왕기상 열왕기하 역대상 역대하 에스라 느헤미야 에스더 욥기 시편 잠언 전도서 아가 이사야 예레미야 예레미야애가 에스겔 다니엘 호세아 요엘 아모스 오바댜 요나 미가 나훔 하박국 스바냐 학개 스가랴 말라기 마태복음 마가복음 누가복음 요한복음 사도행전 로마서 고린도전서 고린도후서 갈라디아서 에베소서 빌립보서 골로새서 데살로니가전서 데살로니가후서 디모데전서 디모데후서 디도서 빌레몬서 히브리서 야고보서 베드로전서 베드로후서 요한일서 요한이서 요한삼서 유다서 요한계시록'.split(' ');
+  const UNDER = { '엘리야': '열왕기상' };
+  const pos = w => { const i = ORDER.indexOf(UNDER[w.book] || w.book); return (i < 0 ? ORDER.length : i) * 100 + (UNDER[w.book] ? 50 : 0) + Number((/-(\d+)$/.exec(w.id) || [])[1] || 0); };
+  const walks = W.slice().sort((a, b) => pos(a) - pos(b)).map(w => {
     const part = (/-(\d+)$/.exec(w.id) || [])[1], cover = COVER[w.id] || ['cord', 'paper'], now = w.id === ROOM_BOOK ? NOW : 0;
     w.eps.forEach(ep => {
       const key = w.id + '-' + ep.n;
@@ -34,8 +38,8 @@
       };
     });
     return {
-      id: w.id, title: w.title, group: 'walk', period: '', closed: false, kind: '자유 모임', cover: { motif: cover[0], color: cover[1] }, coverName: w.book,
-      range: w.book + (part ? ' ' + part + '부' : ''),
+      id: w.id, title: w.title, group: 'walk', period: '', closed: false, kind: '자유 모임', cover: { motif: cover[0], color: cover[1] }, coverName: UNDER[w.book] || w.book,
+      range: UNDER[w.book] ? UNDER[w.book] + ' · ' + w.book : w.book + (part ? ' ' + part + '부' : ''),
       lessons: w.eps.map(ep => ({ no: ep.n, name: ep.title, ref: ep.ref, date: '', state: !now ? 'upcoming' : ep.n < now ? 'past' : ep.n === now ? 'now' : 'upcoming', body: '' }))
     };
   });
