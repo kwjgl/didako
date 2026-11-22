@@ -1161,6 +1161,11 @@ body.sharing { overflow: hidden; }
 @media (prefers-color-scheme: dark) { :root:not([data-mode="light"]) .book-name { color: color-mix(in srgb, var(--cover-color) 40%, var(--ink)); } }
 :root[data-mode="dark"] .book-name { color: color-mix(in srgb, var(--cover-color) 40%, var(--ink)); }
 .mg-cover:not(.big) .book-cover.has-name .book-symbol { width: 70%; left: 18.5%; top: 50%; }
+/* 연재 표지 그림(2026-11-22): 그림 바탕색 위에 3:2 창으로 그림을 놓고 가장자리는 바탕으로 녹인다. 책 이름은 어느 화면 모드에서나 어두운 글씨 */
+.book-cover.has-img { background: var(--cover-bg); }
+.book-art { position: absolute; left: 7%; top: 58%; width: 93%; aspect-ratio: 3 / 2; height: auto; transform: translateY(-50%); object-fit: cover; object-position: 50% 62%; -webkit-mask-image: linear-gradient(to right, transparent, #000 10%, #000 90%, transparent), linear-gradient(to bottom, transparent, #000 10%, #000 90%, transparent); -webkit-mask-composite: source-in; mask-image: linear-gradient(to right, transparent, #000 10%, #000 90%, transparent), linear-gradient(to bottom, transparent, #000 10%, #000 90%, transparent); mask-composite: intersect; }
+:root .book-cover.has-img .book-name { color: #2E261C; }
+.mg-cover:not(.big) .book-cover.has-img .book-art { top: 50%; }
 .cover-art > svg { display: none; width: 100%; height: 100%; }
 .cover-art > img { display: block; width: 100%; height: 100%; object-fit: contain; }
 .cover-art.cover-missing > svg { display: block; }
@@ -4714,6 +4719,7 @@ function coverSvg(cover, cls) {
 }
 // 표지 색(교재가 고른 색, 없으면 종이색). 책 안도 이 색을 옅게 입는다(2026-11-10)
 function coverHex(b) {
+  if (b.coverImg && b.coverMain) return b.coverMain;   // 연재 표지 그림이 있으면 그림에서 뽑은 색(2026-11-22)
   const cover = bCover(b);
   const valid = COVER_ITEMS.some(item => item.id === (cover || {}).motif);
   const color = valid && COVERS.colors.find(row => row[0] === (cover || {}).color);
@@ -4722,6 +4728,8 @@ function coverHex(b) {
 function bookCover(b, size) {
   const cover = bCover(b), hex = coverHex(b);
   const name = String(b.coverName || '').trim();
+  // 연재 표지 그림(노트 서가와 같은 그림): 그림 바탕색을 표지 바탕으로 깔고 그림을 가운데에 놓는다. 가장자리는 바탕으로 녹아든다
+  if (b.coverImg) return `<span class="book-cover has-img${size === 'current' ? ' book-cover-current' : size === 'hero' ? ' book-cover-hero' : ''}${name ? ' has-name' : ''}" style="--cover-color:${hex};--cover-bg:${esc(b.coverBg || hex)}" aria-hidden="true">${name ? `<span class="book-name">${esc(name)}</span>` : ''}<img class="book-art" src="${esc(b.coverImg)}" alt="" width="1200" height="675" loading="lazy" decoding="async"></span>`;
   return `<span class="book-cover${size === 'current' ? ' book-cover-current' : size === 'hero' ? ' book-cover-hero' : ''}${name ? ' has-name' : ''}" style="--cover-color:${hex}" aria-hidden="true">${name ? `<span class="book-name">${esc(name)}</span>` : ''}${coverSvg(cover, 'book-symbol')}</span>`;
 }
 // 고른 책이 없거나 교재 목록에 없으면 사랑방 기본 교재를 사용한다
