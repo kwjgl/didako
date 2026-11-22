@@ -5461,7 +5461,9 @@ const acts = {
   // 모임장이 지금 읽는 과를 바꾼다(책 안의 과 목록에서 고른다)
   'cm-now-do'(e, el) {
     const g = cmCur(), b = bookById(g.book), no = Number(el.dataset.no); if (D.role !== 'leader' || !b || !b.lessons.some(l => l.no === no)) return;
-    g.no = no; cmSave(); ls.del(K.shareLesson); ls.del(K.bookmark); closeSheet(); rerender(); toast(`제${no}과를 지금 읽는 과로 정했어요.`);
+    g.no = no; cmSave(); ls.del(K.shareLesson); ls.del(K.bookmark); closeSheet(); rerender();
+    if (['read', 'share'].includes(currentView())) window.scrollTo(0, 0);   // 읽거나 나누던 화면에서 다음 과로 넘기면 새 과의 맨 위에서 시작한다(책장에서 고를 때는 보던 자리 그대로)
+    toast(`제${no}과를 지금 읽는 과로 정했어요.`);
   },
   'demo-info'() {
     openSheet(`<h2 id="popT">데모로 열었어요</h2>
