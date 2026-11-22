@@ -2675,7 +2675,7 @@ function viewWalks() {
   };
   const head = `<div class="card xhead"><div class="xlb" style="margin:0 0 6px">질문으로 묵상하기</div><div class="sf xwq">서가</div></div>`;
   const books = [...new Set(all.map(w => w.book))];
-  const bookIndex = book => { const i = BOOKS.findIndex(([n]) => n === book); return i < 0 ? BOOKS.length : i; };
+  const bookIndex = walkBookPos;
   books.sort((a, b) => bookIndex(a) - bookIndex(b));
   const row = book => {
     const ws = all.filter(w => w.book === book).sort((a, b) => walkPart(a) - walkPart(b));
@@ -3319,6 +3319,8 @@ function firstOpenToday(key) {
 // 연재 표지(S-54): 단색 바탕 + 상징 하나. 탐구하기 카드, 연재 목록 머리, 서가 카드에 같은 그림을 쓴다. 표지가 없는 연재는 아무것도 그리지 않는다
 const walkCover = w => (w.cover ? `<img class="wk-cover" src="${esc(w.cover)}" alt="" width="1200" height="675" decoding="async">` : '');
 // 한 책을 여러 부로 나눈 연재는 "마가복음 2부"처럼 부르고, 한 부짜리는 책 이름만 쓴다(S-67)
+// 서가 순서에서 책의 자리: 주제 연재 '엘리야'(열왕기상 17~22장)는 열왕기상 바로 뒤에 선다. 성경 66권 밖의 이름은 맨 뒤(신약 칸)로 가므로 이렇게 따로 자리를 준다.
+const walkBookPos = book => { const el = book === '엘리야', i = BOOKS.findIndex(([n]) => n === (el ? '열왕기상' : book)); return i < 0 ? BOOKS.length : i + (el ? 0.5 : 0); };
 const walkPart = w => { const m = /-(\d+)$/.exec(w.id); return m && (window.WALKS || []).filter(x => x.book === w.book).length > 1 ? Number(m[1]) : 0; };
 const walkName = w => w.book + (walkPart(w) ? ` ${walkPart(w)}부` : '');
 // 연재가 다루는 장: 첫 편과 마지막 편 장절의 첫 "○장"으로 "1~4장"(장으로 셀 수 없는 책은 빈칸)
@@ -3397,7 +3399,7 @@ function walkNow() {
 }
 // 다 마친 연재 다음에 이어 읽어 볼 연재(2026-11-20): 성경 순서에서 이 연재 뒤에 있는 것 가운데 아직 다 안 마친 첫 연재, 뒤에 없으면 앞쪽의 첫 연재. 모두 마쳤으면 null. 완독·진도 표시는 두지 않는다(철학 ③)
 function walkAfter(w) {
-  const pos = x => { const i = BOOKS.findIndex(([n]) => n === x.book); return (i < 0 ? BOOKS.length : i) * 100 + walkPart(x); };
+  const pos = x => walkBookPos(x.book) * 100 + walkPart(x);
   const rest = (window.WALKS || []).filter(x => x.id !== w.id && x.eps.some(e => !walkDone(x, e))).sort((a, b) => pos(a) - pos(b));
   return rest.find(x => pos(x) > pos(w)) || rest[0] || null;
 }
