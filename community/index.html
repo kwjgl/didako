@@ -138,6 +138,9 @@ button, a, label, summary, select, input, [role="button"], [data-act], .brand { 
 .set-row { display: flex; justify-content: space-between; align-items: center; gap: 12px; }
 .mdiv { flex: none; height: 1px; background: var(--line); margin: .35em .3em; }
 @media (max-width: 420px) { .brand-name { display: none; } }
+/* 스크롤을 내리면 상단 바와 하단 바가 함께 숨고, 조금이라도 올리면 다시 보인다(코이데·디다코 노트와 같게. 공용 규칙 68번) */
+body.hide-bars .topbar { transform: translateY(-100%); }
+body.hide-bars .tabs { transform: translateY(100%); }
 @media (prefers-reduced-motion: reduce) { .topbar, .tabs { transition: none; } }
 h1 { font-family: var(--f-display); font-size: 1.65em; line-height: 1.3; margin: .3em 0 .2em; }
 /* 탭 제목 옆 그림(코이데와 같게): 글자색과 크기를 따라가며, 그림만 따로 줄바꿈하지 않게 한다. */
@@ -6821,7 +6824,22 @@ if (!LIVE && !SB && new URLSearchParams(location.search).has('join')) { D.entere
  }
  if (TUT) setTimeout(() => { if (!CmGuide.begun()) CmGuide.fail(); }, 6000);
 
-window.addEventListener('hashchange', () => route(true, true));
+// 스크롤: 아래로 내리면 상단 바와 하단 바가 함께 숨고, 조금이라도 올리면 다시 보인다(코이데·디다코 노트와 같은 동작, 공용 규칙 68번). 메뉴·창이 열렸거나 PC 폭이면 그대로 둔다
+let barY = window.scrollY, barTick = false;
+window.addEventListener('scroll', () => {
+  if (barTick) return; barTick = true;
+  requestAnimationFrame(() => {
+    barTick = false;
+    const y = window.scrollY, dy = y - barY, B = document.body.classList;
+    if (matchMedia('(min-width: 1000px)').matches) { B.remove('hide-bars'); barY = y; return; }
+    if (B.contains('pop-open') || !$('#settings').hidden || !$('#placeMenu').hidden) { barY = y; return; }
+    if (y < 40 || dy < -6) B.remove('hide-bars');
+    else if (dy > 6) B.add('hide-bars');
+    else return;
+    barY = y;
+  });
+}, { passive: true });
+window.addEventListener('hashchange', () => { document.body.classList.remove('hide-bars'); route(true, true); });
 
 applySettings(); route(false);
 if (TUT) { const demoTag = $('.topbar .demo-tag'); if (demoTag) demoTag.remove(); }
