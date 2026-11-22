@@ -821,6 +821,14 @@ details.wk-bk[open] > summary .xch { transform: rotate(90deg); }
 .wk-bk .wk-tt { flex: 1; min-width: 0; }
 .wk-bk > summary, .wk-pt { margin-top: 0; }
 .wk-pt { border-top: 1px solid var(--line); }
+.wk-grp { margin-top: 8px; }
+.wk-grp > summary { list-style: none; cursor: pointer; margin-top: 0; font-weight: 700; }
+.wk-grp > summary::-webkit-details-marker { display: none; }
+.wk-grp > summary .xch { transition: transform .15s; }
+.wk-grp[open] > summary .xch { transform: rotate(90deg); }
+.wk-grp[open] > summary { margin-bottom: 2px; }
+.wk-grp-body { padding-left: 10px; }
+@media (prefers-reduced-motion: reduce) { .wk-grp > summary .xch { transition: none; } }
 @media (prefers-reduced-motion: reduce) { details.wk-bk > summary .xch { transition: none; } }
 .wk-row { justify-content: flex-start; gap: 12px; }
 .wk-row .wk-tt { flex: 1; min-width: 0; }
@@ -2674,22 +2682,42 @@ function viewWalks() {
     return `<div class="card xcard" style="margin-top:10px" aria-current="true">${walkCover(w)}<div class="sm">${esc(walkName(w))}</div><div class="sf xct" style="margin-top:4px">${esc(w.title)}</div><div class="sm" style="margin-top:6px;line-height:1.55;word-break:keep-all">${esc(w.line)}</div><div class="sm" style="margin-top:6px">${tail} 지금 묵상하고 있어요.</div><a class="btn${wide ? '' : ' wide'}" href="#/explore/walk/${w.id}" style="margin-top:12px">이어 하기</a></div>`;
   };
   const head = `<div class="card xhead"><div class="xlb" style="margin:0 0 6px">질문으로 묵상하기</div><div class="sf xwq">서가</div></div>`;
-  const books = [...new Set(all.map(w => w.book))];
+  const books = [...new Set(all.map(walkShelfBook))];
   const bookIndex = walkBookPos;
   books.sort((a, b) => bookIndex(a) - bookIndex(b));
+  // 한 책 아래 연재는 책을 따라 읽는 부가 먼저, 책 속 이야기를 따라가는 주제 연재(엘리야)는 그 뒤에 선다
+  const partRow = (w, solo) => {
+    const topic = walkShelfBook(w) !== w.book, no = walkPart(w);
+    const name = topic ? `${esc(w.book)} · ${esc(w.title)}` : no ? `${no}부 ${esc(w.title)}` : esc(w.title);
+    const range = walkRange(w) ? (topic ? `${esc(walkShelfBook(w))} ${walkRange(w)}을 ` : walkRange(w) + '을 ') : '';
+    return `<a class="xrow wk-pt" href="#/explore/walk/${w.id}"><span class="wk-tt"><span style="display:block">${name}</span><span class="sm">${range}${w.eps.length}편으로 읽어요.${w.id === cur ? ' 지금 묵상하고 있어요.' : ''}</span></span><span class="xch" aria-hidden="true">›</span></a>`;
+  };
   const row = book => {
-    const ws = all.filter(w => w.book === book).sort((a, b) => walkPart(a) - walkPart(b));
+    const ws = all.filter(w => walkShelfBook(w) === book).sort((a, b) => (walkShelfBook(a) !== a.book) - (walkShelfBook(b) !== b.book) || walkPart(a) - walkPart(b));
     const cover = ws.find(w => w.cover);
     const thumb = cover ? `<img class="wk-th" src="${esc(cover.cover)}" alt="" width="128" height="72" decoding="async">` : '<span class="wk-th" aria-hidden="true"></span>';
     if (ws.length === 1) {
       const w = ws[0];
       return `<a class="card xrow wk-bk" href="#/explore/walk/${w.id}">${thumb}<span class="wk-tt"><span style="display:block">${esc(book)}</span><span class="sm">${esc(w.title)}${w.id === cur ? ' 지금 묵상하고 있어요.' : ''}</span></span><span class="xch" aria-hidden="true">›</span></a>`;
     }
-    return `<details class="card wk-bk"${ws.some(w => w.id === cur) ? ' open' : ''}><summary class="xrow">${thumb}<span class="wk-tt"><span style="display:block">${esc(book)}</span><span class="sm">${ws.length}부로 나눠 읽어요.</span></span><span class="xch" aria-hidden="true">›</span></summary>${ws.map(w => `<a class="xrow wk-pt" href="#/explore/walk/${w.id}"><span class="wk-tt"><span style="display:block">${walkPart(w)}부 ${esc(w.title)}</span><span class="sm">${walkRange(w) ? walkRange(w) + '을 ' : ''}${w.eps.length}편으로 읽어요.${w.id === cur ? ' 지금 묵상하고 있어요.' : ''}</span></span><span class="xch" aria-hidden="true">›</span></a>`).join('')}</details>`;
+    const topics = ws.filter(w => walkShelfBook(w) !== w.book), parts = ws.length - topics.length;
+    const sub = topics.length ? `${parts > 1 ? `${parts}부로 나눠 읽고, ` : ''}${esc(topics.map(w => w.book + ' 이야기').join('·'))}도 있어요.` : `${ws.length}부로 나눠 읽어요.`;
+    return `<details class="card wk-bk"${ws.some(w => w.id === cur) ? ' open' : ''}><summary class="xrow">${thumb}<span class="wk-tt"><span style="display:block">${esc(book)}</span><span class="sm">${sub}</span></span><span class="xch" aria-hidden="true">›</span></summary>${ws.map(w => partRow(w)).join('')}</details>`;
   };
-  const shelf = old => { const bs = books.filter(book => (bookIndex(book) < 39) === old); return bs.length ? `<div class="xlb">${old ? '구약' : '신약'}</div>${bs.map(row).join('')}` : ''; };
+  // 66권을 묶음으로 접어 둔다(2026-11-22): 묶음 줄을 눌러야 그 안의 책이 보인다. 지금 묵상하는 연재는 맨 위 카드에 있고, 든 묶음에는 "지금 묵상하고 있어요."만 적는다. 한 번 연 묶음은 이 화면을 다시 열어도 그대로다
+  const shelf = old => {
+    const gs = WALK_GROUPS.filter(([, from, to]) => (from < 39) === old).map(([name, from, to]) => ({ name, bs: books.filter(book => bookIndex(book) >= from && bookIndex(book) < to) })).filter(g => g.bs.length);
+    if (!gs.length) return '';
+    return `<div class="xlb">${old ? '구약' : '신약'}</div>${gs.map(g => {
+      const hasCur = g.bs.some(book => all.some(w => w.id === cur && walkShelfBook(w) === book));
+      const open = WALK_GRP_OPEN.get(g.name) === true;
+      return `<details class="wk-grp"${open ? ' open' : ''}><summary class="card xrow" data-grp="${esc(g.name)}"><span class="wk-tt"><span style="display:block">${esc(g.name)}</span><span class="sm" style="font-weight:400">${esc(g.bs[0])}${g.bs.length > 1 ? `부터 ${esc(g.bs[g.bs.length - 1])}까지` : ''} · ${g.bs.length}권${hasCur ? ' · 지금 묵상하고 있어요.' : ''}</span></span><span class="xch" aria-hidden="true">›</span></summary><div class="wk-grp-body">${g.bs.map(row).join('')}</div></details>`;
+    }).join('')}`;
+  };
   const current = all.find(w => w.id === cur);
-  const body = head + (current ? card(current) : '') + shelf(true) + shelf(false)
+  // 성경 66권 밖의 이름으로 된 연재가 새로 생겨도 서가에서 사라지지 않게, 묶음에 들지 않는 책은 맨 아래에 따로 둔다
+  const others = books.filter(book => bookIndex(book) >= BOOKS.length);
+  const body = head + (current ? card(current) : '') + shelf(true) + shelf(false) + (others.length ? `<div class="xlb">그 밖의 연재</div>${others.map(row).join('')}` : '')
     + `<p class="sm" style="margin-top:18px;line-height:1.6;word-break:keep-all">풀이는 STEP Bible 자료에서 확인한 원어를 바탕으로, 여러 교회가 함께 받아들이는 읽기를 따라 AI가 작성하고 사람이 확인한 묵상 글이에요. 다르게 읽히는 곳은 <a href="#/more/feedback">의견 보내기</a>로 알려 주세요.</p>`;
   if (wide) return wideShell(body, { pn: true, top: '' });
   return `<div class="col"><div class="back-row"><a class="tx" href="#/explore"><span style="margin-left:-6px">← 탐구하기</span></a></div>${body}</div>`;
@@ -3321,6 +3349,14 @@ const walkCover = w => (w.cover ? `<img class="wk-cover" src="${esc(w.cover)}" a
 // 한 책을 여러 부로 나눈 연재는 "마가복음 2부"처럼 부르고, 한 부짜리는 책 이름만 쓴다(S-67)
 // 서가 순서에서 책의 자리: 주제 연재 '엘리야'(열왕기상 17~22장)는 열왕기상 바로 뒤에 선다. 성경 66권 밖의 이름은 맨 뒤(신약 칸)로 가므로 이렇게 따로 자리를 준다.
 const walkBookPos = book => { const el = book === '엘리야', i = BOOKS.findIndex(([n]) => n === (el ? '열왕기상' : book)); return i < 0 ? BOOKS.length : i + (el ? 0.5 : 0); };
+// 성경 66권 밖의 주제 연재가 속하는 책(서가에서만 쓴다): 엘리야는 열왕기상 17~22장이라 열왕기상 줄 안에 선다. 연재 데이터의 book은 그대로 둔다.
+const WALK_UNDER = { '엘리야': '열왕기상' };
+const walkShelfBook = w => WALK_UNDER[w.book] || w.book;
+// 서가 묶음(2026-11-22): [이름, 책 자리 시작, 끝(미포함)]. 책 자리는 BOOKS의 순서(창세기 0 … 요한계시록 65)
+const WALK_GROUPS = [['모세오경', 0, 5], ['역사서', 5, 17], ['시가서', 17, 22], ['대예언서', 22, 27], ['소예언서', 27, 39], ['복음서와 사도행전', 39, 44], ['바울 서신', 44, 57], ['일반 서신과 요한계시록', 57, 66]];
+// 묶음을 사람이 열고 닫은 것(이 화면을 다시 열어도 유지, 새로 고치면 모두 접힘)
+const WALK_GRP_OPEN = new Map();
+document.addEventListener('click', e => { const sm = e.target.closest && e.target.closest('summary[data-grp]'); if (sm) WALK_GRP_OPEN.set(sm.dataset.grp, !sm.parentElement.open); }, true);
 const walkPart = w => { const m = /-(\d+)$/.exec(w.id); return m && (window.WALKS || []).filter(x => x.book === w.book).length > 1 ? Number(m[1]) : 0; };
 const walkName = w => w.book + (walkPart(w) ? ` ${walkPart(w)}부` : '');
 // 연재가 다루는 장: 첫 편과 마지막 편 장절의 첫 "○장"으로 "1~4장"(장으로 셀 수 없는 책은 빈칸)
