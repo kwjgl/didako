@@ -3236,6 +3236,23 @@ function ppFill() {
   const m = /^mx-([\w-]+)\.(\d+)$/.exec(arg), b = m && mgBook(m[1]), L = b && b.lessons.find(l => l.no === Number(m[2]));
   if (L) area.innerHTML = ppPagesHtml(ppSource(b, L), o).html;
 }
+// 인쇄 > 'PDF로 저장'의 기본 파일 이름은 문서 제목이다. 인쇄하는 동안만 "교재 제목 - 디다코"(과 하나면 "교재 제목 · N과 - 디다코")로 바꾸고, 끝나면 되돌린다.
+// 리더용이면 제목 뒤에 "(리더용)"을 붙인다. 파일 이름에 못 쓰는 글자는 뺀다
+function ppDocTitle() {
+  const v = currentView(), arg = parseHash().arg || '', end = PP.leader ? ' (리더용)' : '';
+  const clean = s => String(s).replace(/[\\/:*?"<>|\u0000-\u001f]/g, ' ').replace(/\s+/g, ' ').trim();
+  let name = '';
+  if (v === 'prepprint') { if (G) { const s = prepSource(); name = `${s.book} · ${s.no}과`; } }
+  else if (v === 'manage') {
+    const bk = /^mxb-([\w-]+)$/.exec(arg), ls = /^mx-([\w-]+)\.(\d+)$/.exec(arg);
+    if (bk) { const b = mgBook(bk[1]); if (b) name = b.title; }
+    else if (ls) { const b = mgBook(ls[1]); if (b && b.lessons.some(l => l.no === Number(ls[2]))) name = `${b.title} · ${Number(ls[2])}과`; }
+  }
+  return name ? `${clean(name)}${end} - 디다코` : '';
+}
+let ppTitleOld = null;
+window.addEventListener('beforeprint', () => { const t = ppDocTitle(); if (t && ppTitleOld === null) { ppTitleOld = document.title; document.title = t; } });
+window.addEventListener('afterprint', () => { if (ppTitleOld !== null) { document.title = ppTitleOld; ppTitleOld = null; } });
 // ── Word(.docx) 내려받기(D-10): 시안 manage.html처럼 라이브러리 없이 압축 없는 ZIP을 직접 만든다. 종이와 같은 순서·같은 쪽 나누기 규칙이다 ──
 const CRC_T = (() => { const t = []; for (let n = 0; n < 256; n++) { let c = n; for (let k = 0; k < 8; k++) c = c & 1 ? 0xEDB88320 ^ (c >>> 1) : c >>> 1; t[n] = c >>> 0; } return t; })();
 const crc32 = u => { let c = 0xFFFFFFFF; for (let i = 0; i < u.length; i++) c = CRC_T[(c ^ u[i]) & 255] ^ (c >>> 8); return (c ^ 0xFFFFFFFF) >>> 0; };

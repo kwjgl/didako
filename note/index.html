@@ -3281,8 +3281,8 @@ function buildTxt(m) {
     : stepParts(m.n).map(p => `${p.no} ${p.name}\n${p.empty ? '아직 비어 있어요' : [p.chips.join(' · '), ...p.paras].filter(Boolean).join('\n')}`).join('\n\n');
   return `${head}\n\n==========\n\n${body}\n\n----------\n디다코 노트\n`;
 }
-// 파일 이름: "디다코 노트 - {질문 앞 20자}.{확장자}". 파일 이름에 쓸 수 없는 글자는 뺀다
-const exportBase = q => `디다코 노트 - ${[...q.text].slice(0, 20).join('').replace(/[\\/:*?"<>|\u0000-\u001f]/g, '').replace(/^[\s.]+|[\s.]+$/g, '') || '노트'}`;
+// 파일 이름: "{질문 앞 20자} - 디다코 노트.{확장자}". 파일 이름에 쓸 수 없는 글자는 뺀다
+const exportBase = q => `${[...q.text].slice(0, 20).join('').replace(/[\\/:*?"<>|\u0000-\u001f]/g, '').replace(/^[\s.]+|[\s.]+$/g, '') || '노트'} - 디다코 노트`;   // 제목이 앞에 와야 파일 목록에서 찾기 쉽다
 function saveFile(name, mime, text) {
   const url = URL.createObjectURL(new Blob([text], { type: mime + ';charset=utf-8' })), a = document.createElement('a');
   a.href = url; a.download = name; a.rel = 'noopener'; document.body.appendChild(a); a.click(); a.remove();
@@ -3902,7 +3902,7 @@ function buildJournalHtml(year) {
     const m = new Date(e.t).getMonth() + 1, head = m !== month ? `<h2>${esc(m)}월</h2>` : ''; month = m;
     return head + `<h3>${esc(walkDay(dnOfMs(e.t)) + ' ' + e.head)}</h3>${e.ref ? `<p class="meta">${esc(e.ref)}</p>` : ''}${e.parts.map(p => `<p><strong>${esc(p.name)}</strong>${p.q ? ' ' + esc(p.q) : ''}</p><p class="pre">${esc(p.text)}</p>`).join('')}`;
   }).join('');
-  return `<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>${esc('디다코 노트 - ' + year + '년 묵상')}</title><style>${EXPORT_CSS}</style></head><body><main><h1>${esc(year)}년 묵상</h1>${body}</main><footer>디다코 노트</footer></body></html>`;
+  return `<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>${esc(year + '년 묵상 - 디다코 노트')}</title><style>${EXPORT_CSS}</style></head><body><main><h1>${esc(year)}년 묵상</h1>${body}</main><footer>디다코 노트</footer></body></html>`;
 }
 function journalExportSheet() {
   if (journalYear === null) return;
@@ -3912,7 +3912,7 @@ function journalExportSheet() {
     <div>${row('pdf', 'PDF로 저장', '읽기 좋은 문서 파일')}${row('md', 'Markdown 파일', '.md')}${row('txt', 'TXT 파일', '.txt')}${row('html', 'HTML 파일', '.html')}${row('copy', '마크다운 복사', '붙여 넣을 수 있게 복사해요')}</div>`);
 }
 function doJournalExport(year, kind) {
-  const base = `디다코 노트 - ${year}년 묵상`;
+  const base = `${year}년 묵상 - 디다코 노트`;
   if (kind === 'pdf') printHtml(buildJournalHtml(year), base);
   else if (kind === 'html') saveFile(base + '.html', 'text/html', buildJournalHtml(year));
   else if (kind === 'md') saveFile(base + '.md', 'text/markdown', buildJournalMd(year));
