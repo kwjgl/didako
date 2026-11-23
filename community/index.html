@@ -5029,7 +5029,7 @@ function vtMotion() {
 // anim: 주소가 바뀌어(hashchange) 부를 때만 true. 다른 곳에서 부르는 route(true)는 지금처럼 바로 그린다
 function route(moved, anim) {
   const motion = moved && anim ? vtMotion() : '', html = document.documentElement;
-  if (motion && typeof document.startViewTransition === 'function') {
+  if (motion && typeof document.startViewTransition === 'function' && document.documentElement.dataset.style !== 'skeu') {
     closeMenu(); $('#toast').hidden = true;   // 새 화면은 다음 그림에서 그려지므로, 옮긴 뒤 띄우는 알림이 지워지지 않게 미리 닫는다
     vtNow = true; html.dataset.vt = motion;
     let t = null;
