@@ -29,6 +29,7 @@ try {
 </script>
 <link rel="stylesheet" href="family-tokens.css">
 <link rel="stylesheet" href="family-ui.css">
+<link rel="stylesheet" href="church-survey.css">
 <style>
 .wrap { width: 100%; max-width: 1160px; margin: 0 auto; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
 .topbar .wrap { display: flex; align-items: center; gap: .6em; min-height: 51px; position: relative; }   /* 막대 높이 51px · 좌우 여백 16px · 칸 사이 .6em은 코이데와 같다(가족 앱 공용 규칙 48번) */
@@ -423,6 +424,7 @@ button.badge-btn { appearance: none; font-family: inherit; line-height: inherit;
 .seg2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 3px; padding: 3px; background: var(--surface-2); border-radius: 10px; border: 1px solid var(--line); }
 .seg2 button { font-size: .84em; border: 0; border-radius: 8px; padding: .3em 1em; min-height: 44px; background: transparent; color: var(--ink-2); cursor: pointer; }
 .admin-seg { max-width: 320px; margin: 0 0 14px; }
+.admin-seg.three { grid-template-columns: repeat(3, 1fr); max-width: 480px; }   /* 설문 탭이 있으면 셋(코이데와 같다) */
 /* ── 교역자 홈(S-01, 2026-11-19): 코이데 목사님 홈(.home-grid·.stats·.room-board·.room-sum)의 짜임을 옮겼다. 앱에 이미 있는 이름과 겹치지 않게 sf-로 시작한다. 새 색은 없다 ── */
 .sf-grid { display: grid; gap: 14px; align-items: start; margin-top: 12px; }
 .sf-grid .col { display: flex; flex-direction: column; gap: 12px; min-width: 0; }
@@ -1437,6 +1439,7 @@ html.tutorial .demo-tag { display: none !important; }
 <script src="church-api.js"></script>
 <script src="account-delete.js"></script>
 <script src="info-tip.js"></script>
+<script src="church-survey.js"></script>
 <script src="koinobia-logo.js"></script>
 <script src="covers.js"></script>
 <script src="demo-data.js"></script>
@@ -1733,7 +1736,7 @@ function closeMenu() { const m = $('#settings'); m.hidden = true; $('#gearBtn').
 // 이름표와 어느 탭이 켜지는지는 여기에 모아 둔다. 아직 만들지 않은 화면은 차분한 안내 한 장으로 연다(막다른 길이 없게 이번 주로 가는 링크를 둔다)
 const PLACE = {
   wq: ['이번 주의 질문', 'week'], read: ['펼치기', 'week'], share: ['나눔하기', 'share'], shelf: ['책장', 'shelf'], record: ['내 기록', 'record'], records: ['모든 기록', 'record'], found: ['찾은 말씀', 'record'], gallery: ['올해의 그림', 'record'], staff: ['교역자 홈', 'week'], rooms: ['사랑방 전체 보기', 'more'], more: ['더보기', 'more'],
-  church: ['우리 사랑방', 'more'], prep: ['진행 준비', 'share'], prepprint: ['인쇄', 'share'], manage: ['교재 관리', 'more'], admin: ['관리', 'more'], 'admin-reorg': ['연도 개편', 'more'], 'church-admin': ['교회 전체', 'more'], about: ['디다코 소개', 'more'], account: ['계정과 동기화', 'more'], acctdel: ['계정 탈퇴', 'more'], guide: ['사용법', 'more'], feedback: ['의견 보내기', 'more']
+  survey: ['설문', 'more'], church: ['우리 사랑방', 'more'], prep: ['진행 준비', 'share'], prepprint: ['인쇄', 'share'], manage: ['교재 관리', 'more'], admin: ['관리', 'more'], 'admin-reorg': ['연도 개편', 'more'], 'church-admin': ['교회 전체', 'more'], about: ['디다코 소개', 'more'], account: ['계정과 동기화', 'more'], acctdel: ['계정 탈퇴', 'more'], guide: ['사용법', 'more'], feedback: ['의견 보내기', 'more']
 };
 const VIEWS = ['start', 'week'].concat(Object.keys(PLACE));
 // 책 안(#book-교재)과 기록 상세(#rec-기록)는 책장·내 기록 안의 화면이다
@@ -1741,12 +1744,14 @@ function parseHash() {
   const h = location.hash.replace(/^#/, ''), m = /^(book|rec)-([\w-]+)$/.exec(h);
   if (m) return { v: m[1] === 'book' ? 'shelf' : 'record', arg: m[2] };
   if (/^(mb|me|mp|mx|mxb)-([\w.-]+)$/.test(h)) return { v: 'manage', arg: h };
+  const sv = /^survey(?:-((?:s|try)-[\w-]+))?$/.exec(h);   // 교회 설문: #survey(목록), #survey-s-번호(고치기·결과), #survey-try-번호(미리 보기)
+  if (sv) return { v: 'survey', arg: sv[1] || '' };
   // 실제 모드의 첫 접속 걸음(#start/dept …). 데모에서는 쓰지 않아 route가 첫 화면으로 돌린다
   const sm = /^start\/(dept|room|family|who|name|new|consent|wait|done|church|setup|apply|apply-form)$/.exec(h);
   if (sm) return { v: 'start', arg: sm[1] };
   return { v: VIEWS.includes(h) ? h : null, arg: '' };
 }
-const hashFor = (v, arg) => v === 'manage' && arg ? '#' + arg : v === 'start' && arg ? '#start/' + arg : '#' + (arg ? (v === 'shelf' ? 'book-' : 'rec-') + arg : v);
+const hashFor = (v, arg) => v === 'manage' && arg ? '#' + arg : v === 'survey' ? '#survey' + (arg ? '-' + arg : '') : v === 'start' && arg ? '#start/' + arg : '#' + (arg ? (v === 'shelf' ? 'book-' : 'rec-') + arg : v);
 const currentView = () => parseHash().v;
 
 // ── 이번 주 ──
@@ -1936,7 +1941,7 @@ function weekView() {
   const hiddenCard = hidden ? hiddenWeekCard(hidden, walkFoundWeek(w, read, today, false)) : walkFoundWeek(w, read, today, true);
   lampNow = '';
   hiddenNow = '';
-  return `<p class="eyebrow top-eyebrow">${esc(LIVE ? (ls.get(LK.name) || '') : DATA.admin.church)}</p>
+  return `<div data-sv-card>${SV_ON && window.ChurchSurvey ? ChurchSurvey.cardHtml() : ''}</div><p class="eyebrow top-eyebrow">${esc(LIVE ? (ls.get(LK.name) || '') : DATA.admin.church)}</p>
     <div class="page-top"><h1>이번 주 ${HEAD_ICON.calendar}</h1></div>${staffHomeOn() ? staffSeg('week') : ''}
     <div class="week-grid"><div class="col">
     <section class="card walk-hero">
@@ -2814,6 +2819,7 @@ function moreView() {
         <p class="mlabel">함께하는 사람</p><div class="kids">${myRoom().members.map(n => `<span class="kid">${esc(n)}</span>`).join('')}</div>
         <p class="hint">이름만 보여요. 서로 얼마나 썼는지는 보이지 않아요.</p>
       </div>`}
+      ${SV_ON ? `<div data-sv-row hidden><div class="gl">교회</div><div class="gc"><button class="gr" type="button" data-sv="pick"><span class="gt"><b>교회 설문</b><span class="gd sv-row-sub"></span></span>${chevron}</button></div></div>` : ''}
       <div class="gl">함께하는 곳</div><div class="gc">
         <a class="gr" href="../note/"><span class="gt"><b>디다코 노트</b></span>${chevron}</a>
         <a class="gr" href="../community/"><span class="gt"><b>디다코 공동체</b></span>${chevron}</a>
@@ -4092,7 +4098,7 @@ const adRgMissing = () => [...AD.rg.res.missing, ...AD.rg.res.rows.filter((r, i)
 // 단계를 바꿀 때: 맨 위로, 제목에 초점
 function adRgGo() { route(false); window.scrollTo(0, 0); const h = $('h1', $('#view')); if (h) { h.setAttribute('tabindex', '-1'); h.focus({ preventScroll: true }); } }
 // 관리 화면 위쪽 탭 [관리 | 분석](부서 관리와 교회 전체가 같이 쓴다)
-const adTabs = (tab, church) => `<div class="seg2 admin-seg" role="tablist" aria-label="${church ? '교회 전체' : '관리 화면'}">${[['manage', '관리'], ['analysis', '분석']].map(([k, l]) => `<button type="button" class="${tab === k ? 'on' : ''}" role="tab" aria-selected="${tab === k}" data-act="${church ? 'ad-ctab' : 'ad-tab'}" data-v="${k}">${l}</button>`).join('')}</div>`;
+const adTabs = (tab, church) => `<div class="seg2 admin-seg${SV_ON ? ' three' : ''}" role="tablist" aria-label="${church ? '교회 전체' : '관리 화면'}">${[['manage', '관리'], ['analysis', '분석']].concat(SV_ON ? [['survey', '설문']] : []).map(([k, l]) => `<button type="button" class="${tab === k ? 'on' : ''}" role="tab" aria-selected="${tab === k}" data-act="${church ? 'ad-ctab' : 'ad-tab'}" data-v="${k}">${l}</button>`).join('')}</div>`;
 function adminView() {
   if (D.role !== 'admin') return `<div class="page-top"><h1>관리</h1></div>
     <section class="card calm"><p class="calm-t">관리자만 여는 화면이에요</p>
@@ -4258,6 +4264,39 @@ const adDeptForm = () => {
 // 설정 › 부서 만들기·닫기: 부서 목록(새 길에서만 닫기·다시 열기)과 그 아래 부서 만들기 단추 또는 만드는 칸
 const adDeptSetBody = () => `${ADL ? adlDeptCloseBody() : ''}
   ${AD.cNew ? adDeptForm() : '<div class="ad-acts"><button class="btn small ghost" type="button" data-act="ad-cnew">+ 부서 만들기</button></div>'}`;
+// ── 설문(관리 화면의 셋째 탭, 2026-11-23): 모양과 하는 일은 공용 파일 church-survey.js(원본 shared/family-ui)가 맡고, 여기서는 앱과 이어 주기만 한다 ──
+// 서버 함수(supabase/026_church_survey.sql)가 아직 없으면 그 화면이 "설문 기능을 준비하고 있어요"만 보여 주고 앱의 다른 곳은 그대로 돈다
+const SV_ON = !LIVE || ADL;   // 데모와 새 길에서만. 옛 길(HUB)에는 없다
+const svLevel = v => /^[1-5]$/.test(v) ? +v : ({ easy: 2, normal: 3, hard: 4 })[v] || 0;
+let svReady = false;
+function svInit() {
+  if (svReady || !window.ChurchSurvey) return;
+  svReady = true;
+  ChurchSurvey.init({
+    app: 'didako', demo: !ADL, rpc: ADL ? (name, args) => window.DidakoSb.rpc(name, args) : null,
+    church: () => LIVE ? (ls.get(LK.name) || '') : DATA.admin.church, toast,
+    books: () => DATA.books.map(b => ({ title: b.title, note: b.levelNote || '', level: svLevel(b.level) })),
+    head: () => {
+      const church = AD.svChurch != null ? !!AD.svChurch : !!(ADL && LV.me && LV.me.ops && LV.me.ops.all);   // 새로 고쳐 들어왔으면 가진 역할로
+      const back = !church && prevV === 'church-admin' ? ['#church-admin', '교회 전체'] : ['#more', '더보기'];
+      return `<a class="back-link" href="${back[0]}">${ic('back')}<span>${back[1]}</span></a>
+        <p class="eyebrow top-eyebrow">${esc(church ? (LIVE ? (ls.get(LK.name) || '') : DATA.admin.church) : (deptLabel() || ''))}</p>${church ? '<div class="page-top"><h1>교회 전체</h1></div>' : '<div class="page-top ad-top"><h1>관리</h1><a class="ad-link" href="#church-admin">교회 전체 ›</a></div>'}${adTabs('survey', church)}`;
+    }
+  });
+}
+// 이번 주와 더보기에 있는 자리를 채운다(열린 설문이 있을 때만 보인다). 서버 준비 전에는 조용히 비워 둔다
+function svFillCards(v) {
+  if (!SV_ON || !D.entered || (v !== 'week' && v !== 'more')) return;
+  svInit(); if (window.ChurchSurvey) ChurchSurvey.fillCards();
+}
+function surveyView(arg) {
+  if (!SV_ON || D.role !== 'admin') return `<div class="page-top"><h1>설문</h1></div>
+    <section class="card calm"><p class="calm-t">관리자만 여는 화면이에요</p>
+      <p class="soft" style="margin:0">${SV_ON ? '데모 설정에서 역할을 관리자로 바꿔 보세요.' : '이 길에서는 아직 쓸 수 없어요.'}</p>
+      <a class="btn ghost" href="#more">더보기로 돌아가기</a></section>`;
+  svInit();
+  return window.ChurchSurvey ? ChurchSurvey.page() : '';
+}
 function churchAdminView() {
   if (D.role !== 'admin') return `<div class="page-top"><h1>교회 전체</h1></div>
     <section class="card calm"><p class="calm-t">관리자만 여는 화면이에요</p>
@@ -6002,6 +6041,7 @@ function vtDepth(v, arg) {
   if (v === 'manage') return !arg ? 1 : /^mb-/.test(arg) ? 2 : 3;   // 교재 관리 → 교재 → 과·인쇄
   if (v === 'shelf' || v === 'record') return arg ? 2 : 0;   // 책장 → 책 안, 내 기록 → 기록 상세
   if (v === 'prepprint' || v === 'admin-reorg') return 2;
+  if (v === 'survey') return arg ? 2 : 1;
   return VT_TABS.includes(v) || v === 'staff' ? 0 : 1;   // 교역자 홈은 첫 탭 안의 같은 깊이 화면
 }
 function vtMotion() {
@@ -6056,7 +6096,7 @@ function drawRoute(moved) {
   // 없는 책, 없는 기록이면 목록으로(책이 하나도 없게 한 상태에서도)
   if (v === 'shelf' && arg && (noShelf() || !bookById(arg))) arg = '';
   if (v === 'record' && arg && !recById(arg)) arg = '';
-  if (v !== 'shelf' && v !== 'record' && v !== 'manage' && !(LIVE && v === 'start')) arg = '';
+  if (v !== 'shelf' && v !== 'record' && v !== 'manage' && v !== 'survey' && !(LIVE && v === 'start')) arg = '';
   if (location.hash !== hashFor(v, arg)) history.replaceState(null, '', hashFor(v, arg));
   if (moved && !vtNow) { closeMenu(); $('#toast').hidden = true; }   // 겹쳐 넘길 때는 route가 미리 닫았다
   vtV = v; vtArg = arg || '';
@@ -6064,8 +6104,10 @@ function drawRoute(moved) {
   $('#topbar').classList.toggle('bare', start);
   $('#topnav').hidden = start; $('#tabs').hidden = start;
   document.body.dataset.view = v;
-  $('#view').innerHTML = start ? startView(arg) : v === 'week' ? weekView() : v === 'staff' ? staffHomeView() : v === 'wq' ? wqView() : v === 'read' ? readView() : v === 'share' ? shareView() : v === 'shelf' ? shelfView(arg) : v === 'record' ? recordView(arg) : v === 'records' ? recordsView() : v === 'found' ? foundView() : v === 'gallery' ? galleryView() : v === 'more' ? moreView() : v === 'admin' ? adminView() : v === 'admin-reorg' ? adminReorgView() : v === 'church-admin' ? churchAdminView() : v === 'about' ? aboutView() : v === 'account' ? accountView() : v === 'acctdel' ? acctDelView() : v === 'guide' ? guideView() : v === 'feedback' ? feedbackView() : v === 'prep' ? prepView() : v === 'prepprint' ? prepPrintView() : v === 'church' ? churchView() : v === 'rooms' ? roomsView() : v === 'manage' ? manageView(arg) : placeView(v);
+  $('#view').innerHTML = start ? startView(arg) : v === 'week' ? weekView() : v === 'staff' ? staffHomeView() : v === 'wq' ? wqView() : v === 'read' ? readView() : v === 'share' ? shareView() : v === 'shelf' ? shelfView(arg) : v === 'record' ? recordView(arg) : v === 'records' ? recordsView() : v === 'found' ? foundView() : v === 'gallery' ? galleryView() : v === 'more' ? moreView() : v === 'admin' ? adminView() : v === 'admin-reorg' ? adminReorgView() : v === 'church-admin' ? churchAdminView() : v === 'survey' ? surveyView(arg) : v === 'about' ? aboutView() : v === 'account' ? accountView() : v === 'acctdel' ? acctDelView() : v === 'guide' ? guideView() : v === 'feedback' ? feedbackView() : v === 'prep' ? prepView() : v === 'prepprint' ? prepPrintView() : v === 'church' ? churchView() : v === 'rooms' ? roomsView() : v === 'manage' ? manageView(arg) : placeView(v);
   placeStaffTip(v);
+  if (v === 'survey' && SV_ON && D.role === 'admin' && window.ChurchSurvey) ChurchSurvey.mount(arg);
+  svFillCards(v);
   if (adv && !adShown) { adShown = adv; showAdSplash(adv === 'admin' ? DATA.church.dept + ' 관리' : '교회 전체'); }
   reuseImgs($('#view'));
   const film = start && !!$('#view .welcome');   // 첫 화면(로그인 전)일 때만 영상. 첫 접속의 다음 걸음들에는 없다
@@ -6113,7 +6155,7 @@ const acts = {
 
   'walk-pick'(e, el) { const w = walkWeek(), d = walkDay || walkToday(), day = w.days.find(x => x.d === d), key = w.n + '-' + d, i = Number(el.dataset.i); if (i === day.answer) { const saved = readJson(K.walkRead); if (saved[key] !== true) { lampNow = key; usageQuiz(key); const h = HIDDEN.find(x => w.n >= x.from && w.n <= x.to); if (h && hiddenOpen(h) < HIDDEN_CELLS) hiddenNow = h.from + ':' + hiddenOrder[hiddenOpen(h)]; } saved[key] = true; ls.set(K.walkRead, JSON.stringify(saved)); delete walkWrong[key]; } else walkWrong[key] = i; walkRedraw(); },
   'walk-day'(e, el) { const days = ['월', '화', '수', '목', '금'], d = el.dataset.d; if (days.indexOf(d) > days.indexOf(walkToday())) { toast(walkNames[d] + '에 열려요'); return; } walkDay = d; walkRedraw(); },
-  'ad-tab'(e, el) { AD.tab = el.dataset.v === 'analysis' ? 'analysis' : 'manage'; AD.apAsk = false; adRedraw(`[data-act="ad-tab"][data-v="${AD.tab}"]`); },
+  'ad-tab'(e, el) { if (el.dataset.v === 'survey') { AD.svChurch = false; location.hash = '#survey'; return; } AD.tab = el.dataset.v === 'analysis' ? 'analysis' : 'manage'; AD.apAsk = false; adRedraw(`[data-act="ad-tab"][data-v="${AD.tab}"]`); },
   'ad-fold'(e, el) { const k = el.dataset.v; AD.fold[k] = !AD.fold[k]; adRedraw(`[data-act="ad-fold"][data-v="${k}"]`); },
   'ad-approve'(e, el) { AD.reqs = adReqs().filter(q => q.id !== el.dataset.v); if (AD.reqs.length < 2) AD.apAsk = false; toast('승인했어요.'); adRedraw(); },
   'ad-reject'(e, el) { AD.reqs = adReqs().filter(q => q.id !== el.dataset.v); if (AD.reqs.length < 2) AD.apAsk = false; toast('거절했어요.'); adRedraw(); },
@@ -6125,7 +6167,7 @@ const acts = {
   'ad-unit'(e, el) { AD.unit = el.dataset.v === 'single' ? 'single' : 'family'; adRedraw(`[data-act="ad-unit"][data-v="${AD.unit}"]`); },
   'ad-say'(e, el) { toast(el.dataset.msg || AD_NOCHANGE); },
   // 교회 전체 관리(#church-admin): 탭, 부서 카드, 부서 만들기
-  'ad-ctab'(e, el) { AD.ctab = el.dataset.v === 'analysis' ? 'analysis' : 'manage'; adRedraw(`[data-act="ad-ctab"][data-v="${AD.ctab}"]`); },
+  'ad-ctab'(e, el) { if (el.dataset.v === 'survey') { AD.svChurch = true; location.hash = '#survey'; return; } AD.ctab = el.dataset.v === 'analysis' ? 'analysis' : 'manage'; adRedraw(`[data-act="ad-ctab"][data-v="${AD.ctab}"]`); },
   'ad-deptgo'(e, el) { const d = DATA.admin.depts.find(x => x.id === el.dataset.v); if (!d) return; if (d.name === DATA.church.dept) location.hash = '#admin'; else toast(`데모에서는 ${DATA.church.dept}만 열어요.`); },
   'ad-cnew'() { AD.cNew = { name: '', group: '순', unit: 'single' }; adRedraw(); const f = $('#adCname'); if (f) f.focus({ preventScroll: true }); },
   'ad-cnew-x'() { AD.cNew = null; adRedraw('[data-act="ad-cnew"]'); },
