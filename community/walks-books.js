@@ -5,7 +5,7 @@
 // 그림 바탕색과 책등·책 안 색은 그림에서 뽑아 아래 표에 둔다. 표에 없는 새 연재는 표를 채우기 전까지 무늬+색 표지로 보인다.
 (function () {
   const D = window.DIDAKO_DEMO, W = window.WALKS || [];
-  const BASIC = ['trinity', 'family', 'jesus-walk', 'hebrew-eyes', 'second-temple', 'feasts'];
+  const BASIC = ['trinity', 'family', 'jesus-walk', 'hebrew-eyes', 'second-temple', 'feasts', 'gospel'];
   // 연재 표지 그림의 바탕색과 책등·책 안 색: id: [바탕, 진한 색]. 새 연재의 표지를 note/img/walk/에 넣으면 여기에도 한 줄 더한다
   const ART = {
     'habakkuk': ['#C9B69F', '#876A47'],
