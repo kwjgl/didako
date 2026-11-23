@@ -10,6 +10,8 @@
   "period": "",
   "closed": false,
   "kind": "자유 모임",
+  "level": "hard",
+  "levelNote": "교리를 천천히 곱씹는 교재예요",
   "cover": {
     "motif": "cord",
     "color": "blue"

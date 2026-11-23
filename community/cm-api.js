@@ -59,6 +59,7 @@ window.DidakoCm = (() => {
     const motif = /^[a-z0-9-]{1,32}$/.test(str(cv.motif)) ? str(cv.motif) : 'cord', color = /^[a-z0-9-]{1,32}$/.test(str(cv.color)) ? str(cv.color) : 'paper';
     const b = {
       id, title: str(d.title), kind: str(d.kind) || '자유 모임', period: str(d.period), coverName: str(d.coverName), range: str(d.range),
+      level: ['easy', 'normal', 'hard'].includes(str(d.level)) ? str(d.level) : '', levelNote: str(d.levelNote).slice(0, 30),
       start: str(d.start), end: str(d.end), source: str(d.source), closed: d.closed === true, edited: d.edited === true,
       cover: { motif, color }, updatedAt: str(r.updatedAt),
       lessons: list(d.lessons).filter(isObj).slice(0, 300).map(L => ({

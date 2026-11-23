@@ -26,6 +26,8 @@
   "period": "2026년 11월부터",
   "closed": false,
   "kind": "자유 모임",
+  "level": "hard",
+  "levelNote": "예언서를 한 권씩 천천히 읽어요",
   "cover": {
     "motif": "rays",
     "color": "ink"

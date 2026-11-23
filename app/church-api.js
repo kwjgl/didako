@@ -76,7 +76,7 @@ window.didakoChurchApi = (() => {
       const d = row.data, cv = isObj(d.cover) ? d.cover : {}, gm = isObj(d.guides) ? d.guides : {};
       const lessons = arr(d.lessons).filter(isObj).slice(0, 100).map(L => ({ no: Number(L.no), name: str(L.name), ref: str(L.ref), intro: str(L.intro), body: str(L.body), wrap: str(L.wrap) }))
         .filter(L => Number.isInteger(L.no) && L.no >= 1 && L.no <= 999);
-      out.books.push({ id, title: str(d.title), kind: str(d.kind) || 'GBS', coverName: str(d.coverName), range: str(d.range), lessons,
+      out.books.push({ id, title: str(d.title), kind: str(d.kind) || 'GBS', coverName: str(d.coverName), range: str(d.range), level: ['easy', 'normal', 'hard'].includes(str(d.level)) ? str(d.level) : '', levelNote: str(d.levelNote).slice(0, 30), lessons,
         cover: { motif: /^[a-z0-9-]{1,32}$/.test(str(cv.motif)) ? str(cv.motif) : 'cord', color: /^[a-z0-9-]{1,32}$/.test(str(cv.color)) ? str(cv.color) : 'paper' } });
       lessons.forEach(L => {
         const g = isObj(gm[L.no]) ? gm[L.no] : null;
@@ -174,7 +174,7 @@ window.didakoChurchApi = (() => {
         const id = body.id == null || body.id === '' ? null : uuid(body.id, '교재를 찾지 못했어요.');
         const deptSet = body.deptId !== undefined && body.deptId !== null;
         return rpc('didako_ch_book_save', { p_id: id, p_title: str(body.title), p_kind: str(body.kind), p_dept: deptSet ? deptOf(body.deptId) : null, p_dept_set: deptSet,
-          p_meta: { cover: body.cover, coverName: body.coverName, range: body.range, period: body.period, start: body.start } });   // 보내지 않은 칸(undefined)은 빠져서 서버가 있던 값을 지킨다
+          p_meta: { cover: body.cover, coverName: body.coverName, range: body.range, period: body.period, start: body.start, level: body.level, levelNote: body.levelNote } });   // 보내지 않은 칸(undefined)은 빠져서 서버가 있던 값을 지킨다
       }
       case 'bookClose': return rpc('didako_ch_book_close', { p_id: uuid(body.id, '교재를 찾지 못했어요.'), p_closed: body.closed !== false });
       case 'bookCopy': return rpc('didako_ch_book_copy', { p_id: uuid(body.id, '교재를 찾지 못했어요.') });
