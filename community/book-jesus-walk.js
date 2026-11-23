@@ -10,7 +10,7 @@
   "period": "",
   "closed": false,
   "kind": "가정예배",
-  "level": "easy",
+  "level": "2",
   "levelNote": "누가복음을 이야기로 따라 걸어요",
   "cover": {
     "motif": "shoes",

@@ -3015,12 +3015,16 @@ const mg = () => mgBaseMode() ? BASE_OWN : cmOwn();   // 이 공동체에서 모
 const deptLabel = () => groupName();
 const isWeekMain = (b, L) => b.id === DATA.thisWeek.main.book && L.no === DATA.thisWeek.main.no;
 // 고친 표시: 데모는 '오늘 고침', 실제 모드는 서버에 저장한 시각("14:05에 저장했어요")
-// 교재 난이도(2026-11-23): 교재가 고르는 선택 칸. level은 easy·normal·hard이고 비우면 보이지 않는다. levelNote는 짧은 설명(30자까지)
-const LEVELS = [['easy', '쉬움'], ['normal', '보통'], ['hard', '어려움']];
-const levelName = b => { const r = LEVELS.find(l => l[0] === (b && b.level)); return r ? r[1] : ''; };
-const levelChip = b => levelName(b) ? '난이도 ' + levelName(b) : '';
+// 교재 난이도(2026-11-23): 교재가 고르는 선택 칸. level은 별 1~5개('1'~'5')이고 비우면 보이지 않는다. 처음에 쓰던 easy·normal·hard는 2·3·4로 읽는다. levelNote는 짧은 설명(30자까지)
+const LEVELS = [['1', '아주 쉬움'], ['2', '쉬움'], ['3', '보통'], ['4', '어려움'], ['5', '아주 어려움']];
+const LEVEL_OLD = { easy: '2', normal: '3', hard: '4' };
+const levelNum = b => { const v = String(b && b.level || ''), n = LEVEL_OLD[v] || v; return LEVELS.some(l => l[0] === n) ? Number(n) : 0; };
+const levelName = b => levelNum(b) ? LEVELS[levelNum(b) - 1][1] : '';
+const levelStars = n => '★'.repeat(n) + '☆'.repeat(5 - n);
+const levelChip = b => levelNum(b) ? '난이도 ' + levelStars(levelNum(b)) : '';
+const levelPill = (b, cls) => levelNum(b) ? `<span class="walk-tag${cls ? ' ' + cls : ''}" role="img" aria-label="난이도 ${levelName(b)}">${esc(levelChip(b))}</span>` : '';
 const levelRead = () => ({ level: ($('#mgLevel') || {}).value || '', levelNote: (($('#mgLevelNote') || {}).value || '').trim() });
-const levelFormHtml = b => `<div><label for="mgLevel">난이도 <span class="hint">선택</span>${DidakoTip.btn('책장과 책 소개에 보여요. 쉬움은 처음 믿는 분도 부담 없이 읽는 교재, 어려움은 배경 지식이나 시간이 필요한 교재예요. 정하지 않아도 돼요.', '난이도')}</label><select class="field" id="mgLevel">${[['', '정하지 않음'], ...LEVELS].map(([v, n]) => `<option value="${v}"${v === (b && b.level || '') ? ' selected' : ''}>${n}</option>`).join('')}</select></div>
+const levelFormHtml = b => `<div><label for="mgLevel">난이도 <span class="hint">선택</span>${DidakoTip.btn('책장과 책 소개에 별로 보여요. 별 하나는 처음 믿는 분도 부담 없이 읽는 교재, 별 다섯은 배경 지식이나 시간이 많이 필요한 교재예요. 정하지 않아도 돼요.', '난이도')}</label><select class="field" id="mgLevel">${[['', '정하지 않음'], ...LEVELS.map(([v, n]) => [v, levelStars(Number(v)) + ' ' + n])].map(([v, n]) => `<option value="${v}"${v === (levelNum(b) ? String(levelNum(b)) : '') ? ' selected' : ''}>${n}</option>`).join('')}</select></div>
     <div><label for="mgLevelNote">난이도 설명 <span class="hint">선택, 30자까지</span></label><input class="field" id="mgLevelNote" maxlength="30" value="${esc(b && b.levelNote || '')}" placeholder="예: 역사 배경을 처음 만나요"></div>
     `;
 // 책처럼 읽기(2026-11-23): 질문·내 생각·깊이 묵상하기를 숨기고 읽을 글만 이어서 읽는다. 읽을 글이나 질문이 한쪽뿐인 과에는 스위치가 없다. 이 기기에만 기억한다
@@ -3485,7 +3489,7 @@ function mgBookView(b) {
   return `<a class="back-link" href="${base ? '#admin/books' : '#manage'}">${ic('back')}<span>${base ? '디다코 교재 만들기' : '교재 관리'}</span></a><p class="eyebrow top-eyebrow mg-pills">${mgChips([b.kind, b.period, levelChip(b)])}</p><div class="page-top"><h1>${esc(b.title)}</h1></div>${mgSavedText(b) ? '<p class="fine">' + esc(mgSavedText(b)) + '</p>' : ''}
     <div class="more-grid"><div>${!b.closed ? '<button class="btn wide" type="button" data-act="mg-lesson-add">과 추가</button>' : ''}<div class="gl">과</div><div class="gc">
       ${b.lessons.map(L => `<a class="gr" href="#me-${b.id}.${L.no}"><span class="gt"><b>제${L.no}과 ${esc(L.name || '(제목을 적어 주세요)')}</b><span class="gd mg-pills">${mgChips([L.date, L.ref && [L.ref, true]])}</span></span></a>`).join('') || '<div class="gr"><span class="gt"><span class="gd">아직 과가 없어요. 과를 더해 시작해요.</span></span></div>'}
-    </div></div><div><div class="gc"><div class="gr"><span class="mg-cover big">${bookCover({ ...b, id: '' }, 'list')}</span><span class="gt"><b>${esc(b.title)}</b><span class="gd">${esc(b.kind)}</span></span></div><dl class="mg-info"><div><dt>출처</dt><dd><span class="mg-pills">${mgChips([base ? '디다코 교재' : '모임장이 쓴 교재', b.source])}</span></dd></div>${levelName(b) ? `<div><dt>난이도</dt><dd>${esc(levelName(b))}${b.levelNote ? ' · ' + esc(b.levelNote) : ''}</dd></div>` : ''}${b.start ? `<div><dt>시작 날짜</dt><dd>${esc(mgLongDate(b.start))}</dd></div>` : ''}${b.closed && b.end ? `<div><dt>끝난 날짜</dt><dd>${esc(mgLongDate(b.end))}</dd></div>` : ''}</dl></div>${base ? `<p class="hint">${baseHidden(b.id) ? '지금은 숨겨져 있어 공동체에 보이지 않아요.' : '모든 공동체의 책장에 보여요.'}</p>` : ''}
+    </div></div><div><div class="gc"><div class="gr"><span class="mg-cover big">${bookCover({ ...b, id: '' }, 'list')}</span><span class="gt"><b>${esc(b.title)}</b><span class="gd">${esc(b.kind)}</span></span></div><dl class="mg-info"><div><dt>출처</dt><dd><span class="mg-pills">${mgChips([base ? '디다코 교재' : '모임장이 쓴 교재', b.source])}</span></dd></div>${levelName(b) ? `<div><dt>난이도</dt><dd>${esc(levelStars(levelNum(b)))} ${esc(levelName(b))}${b.levelNote ? ' · ' + esc(b.levelNote) : ''}</dd></div>` : ''}${b.start ? `<div><dt>시작 날짜</dt><dd>${esc(mgLongDate(b.start))}</dd></div>` : ''}${b.closed && b.end ? `<div><dt>끝난 날짜</dt><dd>${esc(mgLongDate(b.end))}</dd></div>` : ''}</dl></div>${base ? `<p class="hint">${baseHidden(b.id) ? '지금은 숨겨져 있어 공동체에 보이지 않아요.' : '모든 공동체의 책장에 보여요.'}</p>` : ''}
     <div class="gc">${row('교재 정보 편집', '', 'mg-edit')}${row('교재 통째로 복제', base ? '디다코 교재로 한 권 더 만들어요' : '이 공동체 안에 한 권 더 만들어요', 'mg-dup', mgFull())}${`<a class="gr" href="#mxb-${b.id}"><span class="gt"><b>인쇄용 보기</b></span><span class="ch" aria-hidden="true">›</span></a>`}${b.closed || base ? '' : row('교재 닫기', '오늘 날짜로 끝내고 지난 교재로 옮겨요', 'mg-close')}</div>${mgFull() ? `<p class="hint">${MG_FULL}</p>` : ''}${b.closed && !base ? '<button class="quiet-link" type="button" data-act="mg-reopen">다시 열기</button>' : ''}
     <div class="gc">${base && baseAppId(b.id) && b.baseOwn ? row('복원', '앱에 들어 있던 원래 판으로 되돌려요. 고친 내용은 사라져요', 'base-revert') : ''}${row(base ? '<span class="warn-text">교재 지우기</span>' : '<span class="warn-text">교재 지우기</span>', base ? '디다코 교재에서 지워요. 되살릴 수 없어요' : '이 공동체에서 지워요. 되살릴 수 없어요', 'mg-del', mgIsNow(b))}</div>${mgIsNow(b) ? `<p class="hint">${base ? MG_BASE_NOW : MG_NOW}</p>` : ''}</div></div>`;
 }
@@ -4558,7 +4562,7 @@ function coverHtml(b) {
   return `<div class="card xcard sh-card">
     ${bookCover(b, 'current')}
     <div class="sh-body">
-      <div class="sh-sm sh-kind"><span class="walk-tag">${esc(b.kind)}</span><span>${esc(b.period)}</span>${levelName(b) ? `<span class="walk-tag">${esc(levelChip(b))}</span>` : ''}</div>
+      <div class="sh-sm sh-kind"><span class="walk-tag">${esc(b.kind)}</span><span>${esc(b.period)}</span>${levelPill(b)}</div>
       <div class="sf xct" style="margin-top:4px">${esc(bTitle(b))}</div>
       ${weekHidden() ? '<div class="sh-sm sh-lesson">이번 주 과를 준비하고 있어요</div>' : c ? `<div class="sh-sm sh-lesson"><span class="sh-cap">${esc(c.lead)}</span><span class="sh-cap-t">${esc(c.text)}</span></div><div class="sh-sm sh-date">${esc(c.date)}</div>` : ''}
       ${dotsHtml(b)}
@@ -4570,7 +4574,7 @@ function coverHtml(b) {
   </div>`;
 }
 // 교재 목록: 책 표지 아래에 이름과 기간, 열린 교재 알약을 둔다
-const shelfBookHtml = b => `<button class="sh-book" type="button" data-act="open-book" data-book="${b.id}" title="${esc(bTitle(b))}" aria-label="${esc(bTitle(b))} ${esc(b.period)}${levelName(b) ? ' ' + esc(levelChip(b)) : ''} 책 열기">${bookCover(b, 'list')}<span class="sh-book-title">${esc(bTitle(b))}</span><span class="sh-book-period">${esc(b.period)}</span>${levelName(b) ? `<span class="sh-book-level">${esc(levelChip(b))}</span>` : ''}${cmMine(b) ? '<span class="walk-tag">모임장이 쓴 교재</span>' : ''}</button>`;
+const shelfBookHtml = b => `<button class="sh-book" type="button" data-act="open-book" data-book="${b.id}" title="${esc(bTitle(b))}" aria-label="${esc(bTitle(b))} ${esc(b.period)}${levelName(b) ? ' 난이도 ' + levelName(b) : ''} 책 열기">${bookCover(b, 'list')}<span class="sh-book-title">${esc(bTitle(b))}</span><span class="sh-book-period">${esc(b.period)}</span>${levelName(b) ? `<span class="sh-book-level" role="img" aria-label="난이도 ${levelName(b)}">${esc(levelChip(b))}</span>` : ''}${cmMine(b) ? '<span class="walk-tag">모임장이 쓴 교재</span>' : ''}</button>`;
 function shelfGroup(b) {
   if (cmMine(b)) return 'own';
   return b.group === 'walk' ? 'walk' : 'didako';
@@ -4667,7 +4671,7 @@ function bookPage(b) {
     <p class="eyebrow top-eyebrow">${esc([b.kind, b.period].filter(Boolean).join(' · '))}</p>
     <section class="card book-hero" aria-label="책 소개">
       <div class="bh-row">${bookCover(b, 'hero')}
-        <div class="bh-info"><h1 class="bh-t">${esc(bTitle(b))}</h1><span class="passage-chip bh-range">${esc(b.range)}</span>${levelName(b) ? `<span class="walk-tag bh-level">${esc(levelChip(b))}</span>${b.levelNote ? `<span class="fine bh-mine">${esc(b.levelNote)}</span>` : ''}` : ''}
+        <div class="bh-info"><h1 class="bh-t">${esc(bTitle(b))}</h1><span class="passage-chip bh-range">${esc(b.range)}</span>${levelName(b) ? `${levelPill(b, 'bh-level')}${b.levelNote ? `<span class="fine bh-mine">${esc(b.levelNote)}</span>` : ''}` : ''}
           ${cmMine(b) ? '<span class="fine bh-mine">모임장이 쓴 교재</span>' : ''}${mine ? '<span class="fine bh-mine">지금 읽는 책이에요</span>' : ''}${b.closed ? '<span class="fine bh-mine">교재를 닫아서 책장에 꽂혀 있어요.</span>' : ''}</div>
       </div>
       ${mine ? `<button class="btn bh-read" type="button" data-act="read-go" data-resume="1" data-from="${b.id}">${ic('read')}${hasBm() ? '이어 읽기' : '읽기'}</button>` : D.role === 'leader' ? `<button class="btn ghost bh-read" type="button" data-act="book-pick" data-book="${b.id}">지금 읽는 책으로</button>` : ''}

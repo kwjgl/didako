@@ -76,7 +76,7 @@ window.didakoChurchApi = (() => {
       const d = row.data, cv = isObj(d.cover) ? d.cover : {}, gm = isObj(d.guides) ? d.guides : {};
       const lessons = arr(d.lessons).filter(isObj).slice(0, 100).map(L => ({ no: Number(L.no), name: str(L.name), ref: str(L.ref), intro: str(L.intro), body: str(L.body), wrap: str(L.wrap) }))
         .filter(L => Number.isInteger(L.no) && L.no >= 1 && L.no <= 999);
-      out.books.push({ id, title: str(d.title), kind: str(d.kind) || 'GBS', coverName: str(d.coverName), range: str(d.range), level: ['easy', 'normal', 'hard'].includes(str(d.level)) ? str(d.level) : '', levelNote: str(d.levelNote).slice(0, 30), lessons,
+      out.books.push({ id, title: str(d.title), kind: str(d.kind) || 'GBS', coverName: str(d.coverName), range: str(d.range), level: ['1', '2', '3', '4', '5', 'easy', 'normal', 'hard'].includes(str(d.level)) ? str(d.level) : '', levelNote: str(d.levelNote).slice(0, 30), lessons,
         cover: { motif: /^[a-z0-9-]{1,32}$/.test(str(cv.motif)) ? str(cv.motif) : 'cord', color: /^[a-z0-9-]{1,32}$/.test(str(cv.color)) ? str(cv.color) : 'paper' } });
       lessons.forEach(L => {
         const g = isObj(gm[L.no]) ? gm[L.no] : null;

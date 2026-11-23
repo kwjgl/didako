@@ -10,7 +10,7 @@
   "period": "",
   "closed": false,
   "kind": "자유 모임",
-  "level": "hard",
+  "level": "5",
   "levelNote": "교리를 천천히 곱씹는 교재예요",
   "cover": {
     "motif": "cord",
