@@ -3249,10 +3249,11 @@ function ppFill() {
   if (L) area.innerHTML = ppPagesHtml(ppSource(b, L), o).html;
 }
 // 인쇄 창을 열기 전에 종이 안 그림이 모두 불러와질 때까지 기다린다(최대 10초). 안 기다리면 늦게 오는 그림이 빠진 채 인쇄된다
+// 다 불러온 뒤에는 그림을 미리 풀어(decode) 둔다. 크롬 인쇄 미리보기가 아직 안 풀린 그림을 빈칸으로 그리는 일을 막는다
 function ppImagesReady() {
-  const imgs = Array.from(document.querySelectorAll('#ppArea img')).filter(im => !im.complete);
-  if (!imgs.length) return Promise.resolve();
-  return Promise.race([Promise.all(imgs.map(im => new Promise(r => { im.addEventListener('load', r, { once: true }); im.addEventListener('error', r, { once: true }); }))), new Promise(r => setTimeout(r, 10000))]);
+  const imgs = Array.from(document.querySelectorAll('#ppArea img'));
+  const one = im => new Promise(r => { if (im.complete) r(); else { im.addEventListener('load', r, { once: true }); im.addEventListener('error', r, { once: true }); } }).then(() => im.decode && im.naturalWidth ? im.decode().catch(() => {}) : 0);
+  return Promise.race([Promise.all(imgs.map(one)), new Promise(r => setTimeout(r, 10000))]);
 }
 // 인쇄 > 'PDF로 저장'의 기본 파일 이름은 문서 제목이다. 인쇄하는 동안만 "교재 제목 - 디다코"(과 하나면 "교재 제목 · N과 - 디다코")로 바꾸고, 끝나면 되돌린다.
 // Word로 내려받기도 같은 이름(ppDocTitle)을 쓴다. PDF와 Word의 파일 이름 규칙이 하나다.
@@ -5077,7 +5078,7 @@ function readPieces(q) {
 }
 const readImgTag = (pic, more) => `<img src="${BOOK_IMG}${esc(pic.src)}" alt="${esc(pic.alt)}" width="${pic.w}" height="${pic.h}" style="--r: ${(pic.w / pic.h).toFixed(4)}" ${more}>`;
 // eager=true는 인쇄용: 지연 로딩이면 화면 밖 쪽의 그림이 인쇄 때 안 불러와져 빠진다(2026-11-23)
-const readFigureHtml = (pic, eager) => `<figure class="lesson-img"><button class="lesson-zoom" type="button" data-act="img-zoom" data-src="${esc(pic.src)}" data-w="${pic.w}" data-h="${pic.h}" data-cap="${esc(pic.cap)}" aria-label="그림 크게 보기${pic.alt ? ': ' + esc(pic.alt) : ''}">${readImgTag(pic, `loading="${eager ? 'eager' : 'lazy'}" decoding="async" onerror="this.closest(\'figure\').hidden=true"`)}</button>${pic.cap ? `<figcaption>${esc(pic.cap)}</figcaption>` : ''}</figure>`;
+const readFigureHtml = (pic, eager) => `<figure class="lesson-img"><button class="lesson-zoom" type="button" data-act="img-zoom" data-src="${esc(pic.src)}" data-w="${pic.w}" data-h="${pic.h}" data-cap="${esc(pic.cap)}" aria-label="그림 크게 보기${pic.alt ? ': ' + esc(pic.alt) : ''}">${readImgTag(pic, `loading="${eager ? 'eager' : 'lazy'}" decoding="${eager ? 'sync' : 'async'}" onerror="this.closest(\'figure\').hidden=true"`)}</button>${pic.cap ? `<figcaption>${esc(pic.cap)}</figcaption>` : ''}</figure>`;
 const readBodyHtml = q => readPieces(q).map(part => part.type === 'image' ? readFigureHtml(part) : mdHtml(part.text)).join('');
 function mdPlain(text) {
   const clean = s => mdSpans(s).map(x => x.t).join('');
