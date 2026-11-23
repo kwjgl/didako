@@ -3020,6 +3020,9 @@ const levelName = b => levelNum(b) ? LEVELS[levelNum(b) - 1][1] : '';
 const levelStars = n => '★'.repeat(n) + '☆'.repeat(5 - n);
 const levelChip = b => levelNum(b) ? '난이도 ' + levelStars(levelNum(b)) : '';
 const levelPill = (b, cls) => levelNum(b) ? `<span class="walk-tag${cls ? ' ' + cls : ''}" role="img" aria-label="난이도 ${levelName(b)}">${esc(levelChip(b))}</span>` : '';
+const rangeRead = () => ($('#mgRange') ? { range: $('#mgRange').value.trim() } : {});
+const rangeFormHtml = b => `<div><label for="mgRange">본문 범위 <span class="hint">선택, 60자까지</span>${DidakoTip.btn('책 소개 머리에 보여요. 성경 교재는 읽는 범위(예: 요한복음 1~15장), 그 밖의 교재는 다루는 내용(예: 제2성전기 역사)을 적어요.', '본문 범위')}</label><input class="field" id="mgRange" maxlength="60" value="${esc(b ? b.range || '' : '')}" placeholder="예: 요한복음 1~15장"></div>
+    `;
 const levelRead = () => ({ level: ($('#mgLevel') || {}).value || '', levelNote: (($('#mgLevelNote') || {}).value || '').trim() });
 const levelFormHtml = b => `<div><label for="mgLevel">난이도 <span class="hint">선택</span>${DidakoTip.btn('책장과 책 소개에 별로 보여요. 별 하나는 처음 믿는 분도 부담 없이 읽는 교재, 별 다섯은 배경 지식이나 시간이 많이 필요한 교재예요. 정하지 않아도 돼요.', '난이도')}</label><select class="field" id="mgLevel">${[['', '정하지 않음'], ...LEVELS.map(([v, n]) => [v, levelStars(Number(v)) + ' ' + n])].map(([v, n]) => `<option value="${v}"${v === (levelNum(b) ? String(levelNum(b)) : '') ? ' selected' : ''}>${n}</option>`).join('')}</select></div>
     <div><label for="mgLevelNote">난이도 설명 <span class="hint">선택, 30자까지</span></label><input class="field" id="mgLevelNote" maxlength="30" value="${esc(b && b.levelNote || '')}" placeholder="예: 역사 배경을 처음 만나요"></div>
@@ -3474,7 +3477,7 @@ function mgForm(b) {
     <div><label for="mgColor">색</label><select class="field" id="mgColor">${options(COVERS.colors.map(c => [c[0], c[2]]), cover.color)}</select></div>
     <span class="mg-cover big" id="mgPreview">${bookCover({ cover, coverName: b ? b.coverName : '' }, 'list')}</span>
     <div><label for="mgTarget">대상 모임</label><select class="field" id="mgTarget">${LIVE ? options(LV.writeDepts.map(d => [d.id, d.name]), b ? b.deptId : liveDefaultDept()) : options(DATA.admin.depts.map(d => [d.name, d.name]), b && b.target || DATA.church.dept)}</select></div>
-    ${levelFormHtml(b)}<div><label for="mgStart">시작 날짜</label><input class="field" type="date" id="mgStart" value="${esc(b ? b.start || '' : LIVE ? liveWeek().sun : '2026-10-25')}"></div>
+    ${rangeFormHtml(b)}${levelFormHtml(b)}<div><label for="mgStart">시작 날짜</label><input class="field" type="date" id="mgStart" value="${esc(b ? b.start || '' : LIVE ? liveWeek().sun : '2026-10-25')}"></div>
     </div><div class="set-btns"><button class="btn ghost" type="button" data-act="pop-close">취소</button><button class="btn" type="button" data-act="mg-save">${b ? '저장하기' : '만들기'}</button></div>`);
 }
 function mgPreview() {
@@ -5607,7 +5610,7 @@ function bookPage(b) {
     <p class="eyebrow top-eyebrow">${esc(b.kind)} · ${esc(b.period)}</p>
     <section class="card book-hero" aria-label="책 소개">
       <div class="bh-row">${bookCover(b, 'hero')}
-        <div class="bh-info"><h1 class="bh-t">${esc(bTitle(b))}</h1><span class="passage-chip bh-range">${esc(b.range)}</span>${levelName(b) ? `${levelPill(b, 'bh-level')}${b.levelNote ? `<span class="fine bh-mine">${esc(b.levelNote)}</span>` : ''}` : ''}
+        <div class="bh-info"><h1 class="bh-t">${esc(bTitle(b))}</h1>${b.range ? `<span class="passage-chip bh-range">${esc(b.range)}</span>` : ''}${levelName(b) ? `${levelPill(b, 'bh-level')}${b.levelNote ? `<span class="fine bh-mine">${esc(b.levelNote)}</span>` : ''}` : ''}
           ${mine ? '<span class="fine bh-mine">지금 읽는 책이에요</span>' : ''}${b.closed ? '<span class="fine bh-mine">교재를 닫아서 책장에 꽂혀 있어요.</span>' : ''}</div>
       </div>
       ${mine ? `<button class="btn bh-read" type="button" data-act="read-go" data-resume="1" data-from="${b.id}">${ic('read')}${hasBm() ? '이어 읽기' : '읽기'}</button>` : `<button class="btn ghost bh-read" type="button" data-act="book-pick" data-book="${b.id}">지금 읽는 책으로</button>`}
@@ -6370,7 +6373,7 @@ const acts = {
     if (!canManage()) return;
     const title = $('#mgTitle').value.trim(); $('#mgTitleHint').hidden = !!title; if (!title) { $('#mgTitle').focus(); return; }
     const b = mgEditing && mgBook(mgEditing), start = $('#mgStart').value;
-    const fields = { title, ...levelRead(), coverName: $('#mgCoverName').value.trim(), kind: $('#mgKind').value, cover: { motif: $('#mgMotif').value, color: $('#mgColor').value }, target: $('#mgTarget').value, start, period: start ? `${Number(start.slice(0, 4))}년 ${Number(start.slice(5, 7))}월부터` : b ? b.period : '', edited: true };
+    const fields = { title, ...levelRead(), ...rangeRead(), coverName: $('#mgCoverName').value.trim(), kind: $('#mgKind').value, cover: { motif: $('#mgMotif').value, color: $('#mgColor').value }, target: $('#mgTarget').value, start, period: start ? `${Number(start.slice(0, 4))}년 ${Number(start.slice(5, 7))}월부터` : b ? b.period : '', edited: true };
     if (b) { Object.assign(b, fields); closeSheet(); route(false); toast('저장했어요.'); }
     else { const id = mgId(); mg().books.unshift({ id, ...fields, closed: false, lessons: [] }); mgTab = 'now'; closeSheet(); mgGo('mb-' + id, '교재를 만들었어요.'); }
   },
@@ -6739,7 +6742,7 @@ if (LIVE) {
       if (!canManage()) return;
       const title = $('#mgTitle').value.trim(); $('#mgTitleHint').hidden = !!title; if (!title) { $('#mgTitle').focus(); return; }
       const b = mgEditing && mgBook(mgEditing), start = $('#mgStart').value;
-      const body = { title, ...levelRead(), coverName: $('#mgCoverName').value.trim(), kind: $('#mgKind').value, cover: { motif: $('#mgMotif').value, color: $('#mgColor').value }, deptId: $('#mgTarget').value, start,
+      const body = { title, ...levelRead(), ...rangeRead(), coverName: $('#mgCoverName').value.trim(), kind: $('#mgKind').value, cover: { motif: $('#mgMotif').value, color: $('#mgColor').value }, deptId: $('#mgTarget').value, start,
         period: start ? `${Number(start.slice(0, 4))}년 ${Number(start.slice(5, 7))}월부터` : b ? b.period : '' };
       if (b) body.id = b.id;
       const nb = (await api('bookSave', body)).book;

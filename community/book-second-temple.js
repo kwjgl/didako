@@ -16,7 +16,7 @@
     "motif": "rays",
     "color": "paper"
   },
-  "range": "제2성전기 역사 · 16과",
+  "range": "제2성전기 역사",
   "source": "",
   "startHidden": true,
   "lessons": [
