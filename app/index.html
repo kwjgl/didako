@@ -1003,6 +1003,10 @@ body.sharing { overflow: hidden; }
 .sh-book { display: flex; flex-direction: column; align-items: flex-start; gap: 5px; min-width: 0; padding: 0; border: 0; background: none; color: var(--ink); font-family: var(--f-body); text-align: left; cursor: pointer; }
 .sh-book-title { display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; overflow: hidden; font-size: calc(var(--base) * .875); font-weight: 700; line-height: 1.4; overflow-wrap: anywhere; margin-top: 3px; }
 .sh-book-period { font-size: calc(var(--base) * .75); color: var(--ink-2); line-height: 1.4; }
+.sh-book-level { font-size: calc(var(--base) * .75); color: var(--ink-2); line-height: 1.4; }
+.read-mode { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-top: .9em; padding-top: .9em; border-top: 1px solid var(--line); }
+.read-mode .opt-sub { margin-top: .1em; }
+.book-read .rcard .q-meta { display: none; }   /* 책처럼 읽기에서는 '단계 · 읽을 글' 알약을 빼고 글만 */
 .sh-book .walk-tag { max-width: 100%; min-height: 22px; padding: 2px 6px; font-size: calc(var(--base) * .625); white-space: normal; }
 @media (min-width: 640px) { .sh-books { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
 @media (min-width: 1000px) {
@@ -1528,7 +1532,7 @@ const BUBBLE = '<svg viewBox="0 0 18 18" width="18" height="18" aria-hidden="tru
 // answers 내 생각(펼치기), bookmark 책갈피(펼치기), memo 리더의 내 진행 메모(나눔하기), leadopen 해설 접기/펼치기, keep 오늘 남길 것(펼치기·나눔하기가 같이 쓴다)
 // shareDone 나눔하기를 끝까지 넘겼는지(내 기록에 이번 주 기록이 나타나는 때), record… 내 기록에서 고친 글·돌아보기·지운 기록·비워 둔 상태
 // liveRec 실제 모드에서 과마다 남긴 기록(과 ID별 한 쪽)
-const K = { display: 'didako-note-display', demo: 'didako-demo', myBook: 'didako-my-book', shareLesson: 'didako-share-lesson', keep: 'didako-keep', answers: 'didako-read-answers', bookmark: 'didako-read-bookmark', memo: 'didako-share-memo', leadopen: 'didako-leadopen',
+const K = { display: 'didako-note-display', demo: 'didako-demo', myBook: 'didako-my-book', shareLesson: 'didako-share-lesson', keep: 'didako-keep', answers: 'didako-read-answers', bookmark: 'didako-read-bookmark', readBook: 'didako-read-book', memo: 'didako-share-memo', leadopen: 'didako-leadopen',
   walkRead: 'didako-weekwalk-read', walkThought: 'didako-weekwalk-thought', walkDone: 'didako-weekwalk-done', walkMeditate: 'didako-weekwalk-meditate',
   shareDone: 'didako-share-done', liveRec: 'didako-live-records', recRefl: 'didako-record-reflections', recAns: 'didako-record-answers', recEdit: 'didako-record-edits', recDel: 'didako-record-deleted', recHide: 'didako-record-hidden' };
 // note/index.html switchOwner의 keys와 같게 둔다(한 휴대폰을 다른 사람이 쓸 때 기록을 섞지 않으려고)
@@ -2302,7 +2306,7 @@ function liveDefaultDept() {
 }
 // 서버가 준 교재 하나를 화면이 쓰는 모양으로. 과의 날짜는 iso(yyyy-MM-dd)와 화면 글(date)을 함께 둔다
 function liveMapBook(sb) {
-  const b = { id: sb.id, deptId: sb.deptId || '', target: sb.target || '', title: sb.title, kind: sb.kind, period: sb.period || '', closed: !!sb.closed, canWrite: !!sb.canWrite, cover: sb.cover, coverName: sb.coverName || '', range: sb.range || '', start: sb.start || '', source: sb.source || '', lessons: (sb.lessons || []).filter(l => l.status !== 'archived').map(liveMapLesson) };
+  const b = { id: sb.id, deptId: sb.deptId || '', target: sb.target || '', title: sb.title, kind: sb.kind, period: sb.period || '', closed: !!sb.closed, canWrite: !!sb.canWrite, cover: sb.cover, coverName: sb.coverName || '', range: sb.range || '', start: sb.start || '', source: sb.source || '', level: sb.level || '', levelNote: sb.levelNote || '', lessons: (sb.lessons || []).filter(l => l.status !== 'archived').map(liveMapLesson) };
   if (sb.end) b.end = sb.end;
   return b;
 }
@@ -3008,6 +3012,17 @@ function setMgStatus(b, L, st) {
   b.edited = true;
 }
 // 고친 표시: 데모는 '오늘 고침', 실제 모드는 서버에 저장한 시각("14:05에 저장했어요")
+// 교재 난이도(2026-11-23): 교재가 고르는 선택 칸. level은 easy·normal·hard이고 비우면 보이지 않는다. levelNote는 짧은 설명(30자까지)
+const LEVELS = [['easy', '쉬움'], ['normal', '보통'], ['hard', '어려움']];
+const levelName = b => { const r = LEVELS.find(l => l[0] === (b && b.level)); return r ? r[1] : ''; };
+const levelChip = b => levelName(b) ? '난이도 ' + levelName(b) : '';
+const levelRead = () => ({ level: ($('#mgLevel') || {}).value || '', levelNote: (($('#mgLevelNote') || {}).value || '').trim() });
+const levelFormHtml = b => `<div><label for="mgLevel">난이도 <span class="hint">선택</span>${DidakoTip.btn('책장과 책 소개에 보여요. 쉬움은 처음 믿는 분도 부담 없이 읽는 교재, 어려움은 배경 지식이나 시간이 필요한 교재예요. 정하지 않아도 돼요.', '난이도')}</label><select class="field" id="mgLevel">${[['', '정하지 않음'], ...LEVELS].map(([v, n]) => `<option value="${v}"${v === (b && b.level || '') ? ' selected' : ''}>${n}</option>`).join('')}</select></div>
+    <div><label for="mgLevelNote">난이도 설명 <span class="hint">선택, 30자까지</span></label><input class="field" id="mgLevelNote" maxlength="30" value="${esc(b && b.levelNote || '')}" placeholder="예: 역사 배경을 처음 만나요"></div>
+    `;
+// 책처럼 읽기(2026-11-23): 질문·내 생각·깊이 묵상하기를 숨기고 읽을 글만 이어서 읽는다. 읽을 글이나 질문이 한쪽뿐인 과에는 스위치가 없다. 이 기기에만 기억한다
+const lessonHasRead = () => !!G && G.stages.some(st => st.qs.some(isRead)) && G.stages.some(st => st.qs.some(q => !isRead(q)));
+const bookMode = () => lessonHasRead() && ls.get(K.readBook) === '1';
 const mgChips = items => items.filter(Boolean).map(x => { const [t, ref] = Array.isArray(x) ? x : [x]; return `<span class="${ref ? 'walk-ref' : 'walk-tag'}">${esc(t)}</span>`; }).join('');   // 정보 사이의 가운데점 대신 알약(장절은 [글, true])
 const mgSavedText = b => LIVE ? (b.lessons.some(L => L.saveState && L.saveState.err) ? '저장하지 못한 과가 있어요' : b.savedAt ? b.savedAt + '에 저장했어요' : '') : (b.edited ? '오늘 고침' : '');
 const mgStatus = (b, L) => L.status || (b.id === DATA.thisWeek.main.book && L.no === DATA.thisWeek.main.no ? D.status : (L.state === 'past' || L.state === 'now') ? 'all' : 'draft');
@@ -3419,7 +3434,7 @@ function mgBooksView() {
     <div class="mg-tabs"><div class="seg" style="--n:2">${[['now', '지금 쓰는 교재'], ['past', '지난 교재']].map(([v, name]) => `<button type="button" data-act="mg-tab" data-v="${v}" class="${mgTab === v ? 'on' : ''}" aria-pressed="${mgTab === v}">${name}</button>`).join('')}</div></div>
     <div class="more-grid"><div>
       ${mgTab === 'now' ? '<button class="btn wide" type="button" data-act="mg-new">새 교재 만들기</button>' : ''}
-      <div class="gl">교재</div><div class="gc">${books.map(b => `<a class="gr mg-row" href="#mb-${b.id}"><span class="mg-cover">${bookCover({ ...b, id: '' }, 'list')}</span><span class="gt"><b>${esc(b.title)}</b><span class="gd mg-pills">${mgChips([b.kind, b.period])}</span>${mgSavedText(b) ? `<span class="gd">${esc(mgSavedText(b))}</span>` : ''}</span><span class="ch" aria-hidden="true">›</span></a>`).join('') || `<div class="gr"><span class="gt"><span class="gd">${mgTab === 'now' ? '지금 쓰는 교재가 없어요. 새 교재를 만들어 시작해요.' : '지난 교재가 아직 없어요.'}</span></span></div>`}</div>
+      <div class="gl">교재</div><div class="gc">${books.map(b => `<a class="gr mg-row" href="#mb-${b.id}"><span class="mg-cover">${bookCover({ ...b, id: '' }, 'list')}</span><span class="gt"><b>${esc(b.title)}</b><span class="gd mg-pills">${mgChips([b.kind, b.period, levelChip(b)])}</span>${mgSavedText(b) ? `<span class="gd">${esc(mgSavedText(b))}</span>` : ''}</span><span class="ch" aria-hidden="true">›</span></a>`).join('') || `<div class="gr"><span class="gt"><span class="gd">${mgTab === 'now' ? '지금 쓰는 교재가 없어요. 새 교재를 만들어 시작해요.' : '지난 교재가 아직 없어요.'}</span></span></div>`}</div>
       ${LIVE && mgTab === 'now' ? mgBasicHtml() : ''}
       ${upcoming.length ? `<div class="gl">다가오는 과</div><div class="gc">${upcoming.map(({ b, L }) => `<a class="gr" href="#me-${b.id}.${L.no}"><span class="gt"><b>제${L.no}과 ${esc(L.name || '(제목을 적어 주세요)')}</b><span class="gd mg-pills">${mgChips([L.date, b.title])}</span></span>${mgPill(b, L)}</a>`).join('')}</div>` : ''}
     </div><div><div class="gl">교재 제작 순서</div><div class="gc"><div class="mg-steps">${mgStepsHtml()}<p class="hint">${ic('lock')} 회원이 쓴 답과 기록은 잠겨 있어서 아무도 볼 수 없어요.</p></div></div></div></div>`;
@@ -3427,15 +3442,15 @@ function mgBooksView() {
 // 디다코 기본 교재(실제 모드): 앱에 들어 있는 교재를 우리 교회 교재로 복제한다. 줄 모양은 교재 목록 줄과 같다
 function mgBasicHtml() {
   if (!BASIC.books.length) return '';
-  return `<div class="gl">디다코 기본 교재${DidakoTip.btn('우리 교회 교재로 복제해서 읽고 고친 뒤 배포해요.', '디다코 기본 교재')}</div><div class="gc">${BASIC.books.map(b => `<div class="gr mg-row"><span class="mg-cover">${bookCover({ ...b, id: '' }, 'list')}</span><span class="gt"><b>${esc(b.title)}</b><span class="gd mg-pills">${mgChips([b.kind, b.lessons.length + '과'])}</span></span><button class="btn ghost small" type="button" data-act="mg-basic" data-v="${esc(b.id)}" aria-label="${esc(b.title)} 가져오기">가져오기</button></div>`).join('')}</div>`;
+  return `<div class="gl">디다코 기본 교재${DidakoTip.btn('우리 교회 교재로 복제해서 읽고 고친 뒤 배포해요.', '디다코 기본 교재')}</div><div class="gc">${BASIC.books.map(b => `<div class="gr mg-row"><span class="mg-cover">${bookCover({ ...b, id: '' }, 'list')}</span><span class="gt"><b>${esc(b.title)}</b><span class="gd mg-pills">${mgChips([b.kind, b.lessons.length + '과', levelChip(b)])}</span></span><button class="btn ghost small" type="button" data-act="mg-basic" data-v="${esc(b.id)}" aria-label="${esc(b.title)} 가져오기">가져오기</button></div>`).join('')}</div>`;
 }
 const mgLongDate = v => { const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(v || ''); return m ? `${m[1]}년 ${Number(m[2])}월 ${Number(m[3])}일` : (v || ''); };
 function mgBookView(b) {
   const row = (name, desc, act) => `<button class="gr" type="button" data-act="${act}"><span class="gt"><b>${name}</b>${desc ? `<span class="gd">${desc}</span>` : ''}</span><span class="ch" aria-hidden="true">›</span></button>`;
-  return `<a class="back-link" href="#manage">${ic('back')}<span>교재 관리</span></a><p class="eyebrow top-eyebrow mg-pills">${mgChips([b.kind, b.period])}</p><div class="page-top"><h1>${esc(b.title)}</h1></div>${mgSavedText(b) ? '<p class="fine">' + esc(mgSavedText(b)) + '</p>' : ''}
+  return `<a class="back-link" href="#manage">${ic('back')}<span>교재 관리</span></a><p class="eyebrow top-eyebrow mg-pills">${mgChips([b.kind, b.period, levelChip(b)])}</p><div class="page-top"><h1>${esc(b.title)}</h1></div>${mgSavedText(b) ? '<p class="fine">' + esc(mgSavedText(b)) + '</p>' : ''}
     <div class="more-grid"><div>${!b.closed ? '<button class="btn wide" type="button" data-act="mg-lesson-add">과 추가</button>' : ''}<div class="gl">과</div><div class="gc">
       ${b.lessons.map(L => `<a class="gr" href="#me-${b.id}.${L.no}"><span class="gt"><b>제${L.no}과 ${esc(L.name || '(제목을 적어 주세요)')}</b><span class="gd mg-pills">${mgChips([L.date, L.ref && [L.ref, true]])}</span></span>${mgPill(b, L)}</a>`).join('') || '<div class="gr"><span class="gt"><span class="gd">아직 과가 없어요. 과를 더해 시작해요.</span></span></div>'}
-    </div></div><div><div class="gc"><div class="gr"><span class="mg-cover big">${bookCover({ ...b, id: '' }, 'list')}</span><span class="gt"><b>${esc(b.title)}</b><span class="gd">${esc(b.kind)}</span></span></div><dl class="mg-info"><div><dt>대상 모임</dt><dd>${esc(b.target || deptLabel())}</dd></div>${b.source ? `<div><dt>출처</dt><dd>${esc(b.source)}</dd></div>` : ""}${b.start ? `<div><dt>시작 날짜</dt><dd>${esc(mgLongDate(b.start))}</dd></div>` : ''}${b.closed && b.end ? `<div><dt>끝난 날짜</dt><dd>${esc(mgLongDate(b.end))}</dd></div>` : ''}</dl></div>
+    </div></div><div><div class="gc"><div class="gr"><span class="mg-cover big">${bookCover({ ...b, id: '' }, 'list')}</span><span class="gt"><b>${esc(b.title)}</b><span class="gd">${esc(b.kind)}</span></span></div><dl class="mg-info"><div><dt>대상 모임</dt><dd>${esc(b.target || deptLabel())}</dd></div>${b.source ? `<div><dt>출처</dt><dd>${esc(b.source)}</dd></div>` : ""}${levelName(b) ? `<div><dt>난이도</dt><dd>${esc(levelName(b))}${b.levelNote ? ' · ' + esc(b.levelNote) : ''}</dd></div>` : ''}${b.start ? `<div><dt>시작 날짜</dt><dd>${esc(mgLongDate(b.start))}</dd></div>` : ''}${b.closed && b.end ? `<div><dt>끝난 날짜</dt><dd>${esc(mgLongDate(b.end))}</dd></div>` : ''}</dl></div>
     <div class="gc">${row('교재 정보 편집', '', 'mg-edit')}${row('교재 통째로 복제', '내용만 가져오고 배포 이력은 가져오지 않아요', 'mg-dup')}${`<a class="gr" href="#mxb-${b.id}"><span class="gt"><b>인쇄용 보기</b></span><span class="ch" aria-hidden="true">›</span></a>`}${b.closed ? '' : row('교재 닫기', '오늘 날짜로 끝내고 지난 교재로 옮겨요', 'mg-close')}</div>${b.closed ? '<button class="quiet-link" type="button" data-act="mg-reopen">다시 열기</button>' : ''}</div></div>`;
 }
 function mgForm(b) {
@@ -3455,7 +3470,7 @@ function mgForm(b) {
     <div><label for="mgColor">색</label><select class="field" id="mgColor">${options(COVERS.colors.map(c => [c[0], c[2]]), cover.color)}</select></div>
     <span class="mg-cover big" id="mgPreview">${bookCover({ cover, coverName: b ? b.coverName : '' }, 'list')}</span>
     <div><label for="mgTarget">대상 모임</label><select class="field" id="mgTarget">${LIVE ? options(LV.writeDepts.map(d => [d.id, d.name]), b ? b.deptId : liveDefaultDept()) : options(DATA.admin.depts.map(d => [d.name, d.name]), b && b.target || DATA.church.dept)}</select></div>
-    <div><label for="mgStart">시작 날짜</label><input class="field" type="date" id="mgStart" value="${esc(b ? b.start || '' : LIVE ? liveWeek().sun : '2026-10-25')}"></div>
+    ${levelFormHtml(b)}<div><label for="mgStart">시작 날짜</label><input class="field" type="date" id="mgStart" value="${esc(b ? b.start || '' : LIVE ? liveWeek().sun : '2026-10-25')}"></div>
     </div><div class="set-btns"><button class="btn ghost" type="button" data-act="pop-close">취소</button><button class="btn" type="button" data-act="mg-save">${b ? '저장하기' : '만들기'}</button></div>`);
 }
 function mgPreview() {
@@ -5041,24 +5056,27 @@ function deepHtml() {
     ${G.triple.map(t => `<div class="tri-item" id="q-${t.id}" data-qid="${t.id}"><div class="q-meta"><span class="who">${esc(t.who)}</span><span class="bm" hidden>${mkIc()}책갈피</span></div><h3 class="q-t">${esc(t.t)}</h3><div class="ans" data-ans="${t.id}"></div></div>`).join('')}
   </section>`;
 }
-function wrapHtml() {
+function wrapHtml(bare) {   // bare: 책처럼 읽기에서는 한 문장·작은 실천 칸 없이 끝 단추만
   const k = readKeep();
-  return `<section class="card wrapup" id="wrapup" aria-labelledby="wrapT">
+  return (bare ? '' : `<section class="card wrapup" id="wrapup" aria-labelledby="wrapT">
     <h2 id="wrapT">모임에 가지 못했다면${DidakoTip.btn('혼자 읽었다면 마음에 남은 말과 작은 실천을 남길 수 있어요. 둘 다 비워 두어도 괜찮아요. 모임에 함께했다면 나눔하기 끝에서 남기면 돼요.', '모임에 가지 못했다면')}</h2>
     <div class="keep-form">
       <div><label for="kSentence">한 문장</label><textarea class="field" id="kSentence" rows="2" maxlength="200" placeholder="마음에 남은 말을 짧게">${esc(k.sentence || '')}</textarea></div>
       <div><label for="kAction">이번 주 작은 실천</label><input class="field" id="kAction" maxlength="120" placeholder="하나만 적어요" value="${esc(k.action || '')}" autocomplete="off"></div>
       <p class="hint" id="kStatus" aria-live="polite" hidden><button type="button" class="quiet-link retry" data-act="keep-retry">저장하지 못했어요 · 다시 시도</button></p>
     </div>
-  </section>
+  </section>`) + `
   <div class="end-btns row"><a class="btn" href="#share">나눔하기</a></div>`;
 }
 function tocHtml() {
   let h = '';
+  const book = bookMode();
   G.stages.forEach(st => {
+    if (book && !st.qs.some(isRead)) return;
     h += `<p class="toc-grp">${esc(st.name)}</p>`;
-    st.qs.forEach((q, i) => { h += `<button type="button" class="toc-q" data-act="goto" data-to="q-${q.id}"${isRead(q) ? '' : ` data-id="${q.id}"`}><span class="tn">${isRead(q) ? '' : qNo(st, i)}</span><span class="tt">${(isRead(q) ? readLabel(q) : esc(q.t))}</span>${isRead(q) ? '<span></span>' : `<span class="tb" role="img" aria-label="책갈피">${mkIc()}</span>`}</button>`; });
+    st.qs.forEach((q, i) => { if (book && !isRead(q)) return; h += `<button type="button" class="toc-q" data-act="goto" data-to="q-${q.id}"${isRead(q) ? '' : ` data-id="${q.id}"`}><span class="tn">${isRead(q) ? '' : qNo(st, i)}</span><span class="tt">${(isRead(q) ? readLabel(q) : esc(q.t))}</span>${isRead(q) ? '<span></span>' : `<span class="tb" role="img" aria-label="책갈피">${mkIc()}</span>`}</button>`; });
   });
+  if (book) return h;
   if (D.readTriple && G.triple.length) h += `<p class="toc-grp">깊이 묵상하기</p><button type="button" class="toc-q" data-act="goto" data-to="deep"><span class="tn"></span><span class="tt">아버지 · 아들 · 성령</span><span></span></button>`;
   h += `<p class="toc-grp">마무리</p><button type="button" class="toc-q" data-act="goto" data-to="wrapup"><span class="tn"></span><span class="tt">모임에 가지 못했다면</span><span></span></button>`;
   return h;
@@ -5116,6 +5134,7 @@ function readView() {
         <h2 class="lesson-title" id="lessonTitle">${esc(L.title)}</h2>
         <div class="read-scripture"><span class="passage-chip">${esc(L.ref)}</span>${bibleUrl(L.ref) ? `<a class="quiet-link" href="${esc(bibleUrl(L.ref))}" target="_blank" rel="noopener" aria-label="${esc(L.ref)} 성경 펴기 (새 창)">성경 펴기 ›</a>` : ''}</div>
         ${readAsMember ? '<p class="fine">회원에게 보이는 모습이에요. 해설은 보이지 않아요.</p>' : ''}
+        ${lessonHasRead() ? `<div class="read-mode"><div><p class="opt-name">책처럼 읽기${DidakoTip.btn('질문과 내 생각 칸을 숨기고, 읽을 글만 이어서 읽어요. 미리 읽어 오거나 혼자 복습할 때 좋아요. 이 기기에 기억해요.', '책처럼 읽기')}</p><p class="opt-sub">질문 없이 글만 쭉 읽어요.</p></div><button class="switch${bookMode() ? ' on' : ''}" type="button" role="switch" aria-checked="${bookMode()}" aria-label="책처럼 읽기" id="swBook" data-act="sw-book"><span></span></button></div>` : ''}
       </section>
       <section class="card toc rg-toc" aria-label="단계 목록">
         <button class="toc-btn" type="button" id="tocBtn" data-act="toc" aria-expanded="false" aria-controls="tocList"><span class="l">${ic('list')}단계 목록</span>${ic('chev', 'ch')}</button>
@@ -5127,8 +5146,10 @@ function readView() {
 }
 function renderAll() {
   flushAll();
-  $('#rbody').innerHTML = G.stages.map(st => `<section class="stage-sec" aria-label="${esc(st.name)}"><h2 class="stage-h">${esc(st.name)}</h2>${st.qs.map((q, i) => isRead(q) ? readHtml(st, q) : qHtml(st, i, q)).join('')}</section>`).join('')
-    + (D.readTriple && G.triple.length ? deepHtml() : '') + wrapHtml();
+  const book = bookMode();   // 책처럼 읽기: 읽을 글이 든 단계의 읽을 글만
+  $('#rbody').classList.toggle('book-read', book);
+  $('#rbody').innerHTML = (book ? G.stages.filter(st => st.qs.some(isRead)) : G.stages).map(st => `<section class="stage-sec" aria-label="${esc(st.name)}"><h2 class="stage-h">${esc(st.name)}</h2>${st.qs.map((q, i) => isRead(q) ? readHtml(st, q) : book ? '' : qHtml(st, i, q)).join('')}</section>`).join('')
+    + (book ? wrapHtml(true) : (D.readTriple && G.triple.length ? deepHtml() : '') + wrapHtml());
   $('#tocList').innerHTML = tocHtml();
   allQs().forEach(q => renderAns(q.id));
   cordDone = false; paintCord(); paintBookmark();
@@ -5515,7 +5536,7 @@ function coverHtml(b) {
   return `<div class="card xcard sh-card">
     ${bookCover(b, 'current')}
     <div class="sh-body">
-      <div class="sh-sm sh-kind"><span class="walk-tag">${esc(b.kind)}</span><span>${esc(b.period)}</span></div>
+      <div class="sh-sm sh-kind"><span class="walk-tag">${esc(b.kind)}</span><span>${esc(b.period)}</span>${levelName(b) ? `<span class="walk-tag">${esc(levelChip(b))}</span>` : ''}</div>
       <div class="sf xct" style="margin-top:4px">${esc(bTitle(b))}</div>
       ${weekHidden() ? '<div class="sh-sm sh-lesson">이번 주 과를 준비하고 있어요</div>' : c ? `<div class="sh-sm sh-lesson"><span class="sh-cap">${esc(c.lead)}</span><span class="sh-cap-t">${esc(c.text)}</span></div><div class="sh-sm sh-date">${esc(c.date)}</div>` : ''}
       ${dotsHtml(b)}
@@ -5527,7 +5548,7 @@ function coverHtml(b) {
   </div>`;
 }
 // 교재 목록: 책 표지 아래에 이름과 기간, 열린 교재 알약을 둔다
-const shelfBookHtml = b => `<button class="sh-book" type="button" data-act="open-book" data-book="${b.id}" title="${esc(bTitle(b))}" aria-label="${esc(bTitle(b))} ${esc(b.period)} 책 열기">${bookCover(b, 'list')}<span class="sh-book-title">${esc(bTitle(b))}</span><span class="sh-book-period">${esc(b.period)}</span>${b.closed ? '' : '<span class="walk-tag">교회에서 읽는 중</span>'}</button>`;
+const shelfBookHtml = b => `<button class="sh-book" type="button" data-act="open-book" data-book="${b.id}" title="${esc(bTitle(b))}" aria-label="${esc(bTitle(b))} ${esc(b.period)}${levelName(b) ? ' ' + esc(levelChip(b)) : ''} 책 열기">${bookCover(b, 'list')}<span class="sh-book-title">${esc(bTitle(b))}</span><span class="sh-book-period">${esc(b.period)}</span>${levelName(b) ? `<span class="sh-book-level">${esc(levelChip(b))}</span>` : ''}${b.closed ? '' : '<span class="walk-tag">교회에서 읽는 중</span>'}</button>`;
 function browseHtml() {
   if (noShelf()) {
     const make = LIVE && LV.writer;   // 교재를 꾸릴 수 있는 사람(교회 관리자 등)에게는 교재 관리로 가는 길을 보인다
@@ -5582,7 +5603,7 @@ function bookPage(b) {
     <p class="eyebrow top-eyebrow">${esc(b.kind)} · ${esc(b.period)}</p>
     <section class="card book-hero" aria-label="책 소개">
       <div class="bh-row">${bookCover(b, 'hero')}
-        <div class="bh-info"><h1 class="bh-t">${esc(bTitle(b))}</h1><span class="passage-chip bh-range">${esc(b.range)}</span>
+        <div class="bh-info"><h1 class="bh-t">${esc(bTitle(b))}</h1><span class="passage-chip bh-range">${esc(b.range)}</span>${levelName(b) ? `<span class="walk-tag bh-level">${esc(levelChip(b))}</span>${b.levelNote ? `<span class="fine bh-mine">${esc(b.levelNote)}</span>` : ''}` : ''}
           ${mine ? '<span class="fine bh-mine">지금 읽는 책이에요</span>' : ''}${b.closed ? '<span class="fine bh-mine">교재를 닫아서 책장에 꽂혀 있어요.</span>' : ''}</div>
       </div>
       ${mine ? `<button class="btn bh-read" type="button" data-act="read-go" data-resume="1" data-from="${b.id}">${ic('read')}${hasBm() ? '이어 읽기' : '읽기'}</button>` : `<button class="btn ghost bh-read" type="button" data-act="book-pick" data-book="${b.id}">지금 읽는 책으로</button>`}
@@ -6183,7 +6204,7 @@ const acts = {
   },
   'demo-reset'() {
     closeSheet(); roomState = null; MG = null; mgTab = 'now'; mgEditing = ''; mgSerial = 0; clearTimeout(mgPvTimer); mgEditTab = 'write'; mgPvMode = 'member'; mgPvOpen = true; mgTouched.clear();
-    ls.del(GUIDE_K); ls.del(K.demo); ls.del(K.keep); ls.del(K.answers); ls.del(K.walkRead); ls.del(K.walkThought); ls.del(K.walkDone); ls.del(K.walkMeditate); ls.del(K.bookmark); ls.del(K.memo); ls.del(K.leadopen);
+    ls.del(GUIDE_K); ls.del(K.demo); ls.del(K.readBook); ls.del(K.keep); ls.del(K.answers); ls.del(K.walkRead); ls.del(K.walkThought); ls.del(K.walkDone); ls.del(K.walkMeditate); ls.del(K.bookmark); ls.del(K.memo); ls.del(K.leadopen);
     [K.shareDone, K.liveRec, K.recRefl, K.recAns, K.recEdit, K.recDel, K.recHide].forEach(ls.del); loadState();
     if (location.hash === '#start') route(true); else location.hash = '#start';
   },
@@ -6345,7 +6366,7 @@ const acts = {
     if (!canManage()) return;
     const title = $('#mgTitle').value.trim(); $('#mgTitleHint').hidden = !!title; if (!title) { $('#mgTitle').focus(); return; }
     const b = mgEditing && mgBook(mgEditing), start = $('#mgStart').value;
-    const fields = { title, coverName: $('#mgCoverName').value.trim(), kind: $('#mgKind').value, cover: { motif: $('#mgMotif').value, color: $('#mgColor').value }, target: $('#mgTarget').value, start, period: start ? `${Number(start.slice(0, 4))}년 ${Number(start.slice(5, 7))}월부터` : b ? b.period : '', edited: true };
+    const fields = { title, ...levelRead(), coverName: $('#mgCoverName').value.trim(), kind: $('#mgKind').value, cover: { motif: $('#mgMotif').value, color: $('#mgColor').value }, target: $('#mgTarget').value, start, period: start ? `${Number(start.slice(0, 4))}년 ${Number(start.slice(5, 7))}월부터` : b ? b.period : '', edited: true };
     if (b) { Object.assign(b, fields); closeSheet(); route(false); toast('저장했어요.'); }
     else { const id = mgId(); mg().books.unshift({ id, ...fields, closed: false, lessons: [] }); mgTab = 'now'; closeSheet(); mgGo('mb-' + id, '교재를 만들었어요.'); }
   },
@@ -6458,6 +6479,11 @@ const acts = {
   // 나눔하기
   'sw-open'() { R.open = !R.open; renderStart(); },
   'sw-triple'() { R.triple = !R.triple; renderStart(); },
+  'sw-book'(e, el) {
+    const on = ls.get(K.readBook) !== '1'; ls.set(K.readBook, on ? '1' : '0');
+    el.classList.toggle('on', on); el.setAttribute('aria-checked', String(on));
+    renderAll(); goTo('rbody');
+  },
   'sw-dim'() { R.dim = !R.dim; renderStart(); },
   stage(e, el) {
     const i = +el.dataset.i, off = R.stages.map((v, k) => (v ? -1 : k)).filter(k => k >= 0);
@@ -6692,7 +6718,7 @@ if (LIVE) {
   // 교재 관리(2-3): 고치는 지점마다 서버에 저장하고, 서버가 돌려준 답으로 MG와 책장 자료를 맞춘다.
   //  저장하지 못했을 때는 쓴 글을 지우거나 처음으로 돌리지 않고 안내만 한다(P-02)
   const mgRun = fn => lvRun(async (e, el) => { try { await fn(e, el); } catch (err) { if (err && err.cancelled) return; mgFail(err); } });
-  const bookFields = nb => ({ deptId: nb.deptId || '', target: nb.target || '', title: nb.title, kind: nb.kind, period: nb.period || '', closed: !!nb.closed, cover: nb.cover, coverName: nb.coverName || '', range: nb.range || '', start: nb.start || '', source: nb.source || '' });
+  const bookFields = nb => ({ deptId: nb.deptId || '', target: nb.target || '', title: nb.title, kind: nb.kind, period: nb.period || '', closed: !!nb.closed, cover: nb.cover, coverName: nb.coverName || '', range: nb.range || '', start: nb.start || '', source: nb.source || '', level: nb.level || '', levelNote: nb.levelNote || '' });
   const touched = b => { b.edited = true; b.savedAt = liveClock(new Date()); };
   const pubOk = (c, v) => {
     const st = mgStatus(c.b, c.L);
@@ -6708,7 +6734,7 @@ if (LIVE) {
       if (!canManage()) return;
       const title = $('#mgTitle').value.trim(); $('#mgTitleHint').hidden = !!title; if (!title) { $('#mgTitle').focus(); return; }
       const b = mgEditing && mgBook(mgEditing), start = $('#mgStart').value;
-      const body = { title, coverName: $('#mgCoverName').value.trim(), kind: $('#mgKind').value, cover: { motif: $('#mgMotif').value, color: $('#mgColor').value }, deptId: $('#mgTarget').value, start,
+      const body = { title, ...levelRead(), coverName: $('#mgCoverName').value.trim(), kind: $('#mgKind').value, cover: { motif: $('#mgMotif').value, color: $('#mgColor').value }, deptId: $('#mgTarget').value, start,
         period: start ? `${Number(start.slice(0, 4))}년 ${Number(start.slice(5, 7))}월부터` : b ? b.period : '' };
       if (b) body.id = b.id;
       const nb = (await api('bookSave', body)).book;
@@ -6786,7 +6812,7 @@ if (LIVE) {
         const g = BASIC.guides[src.id + ':' + L.no] || { stages: [], triple: [] };
         return { name: L.name, ref: L.ref, intro: L.intro || '', body: L.body || '', wrap: L.wrap || '', guide: g.guide || '', stages: g.stages, triple: g.triple && g.triple.length ? g.triple : mgNewTriple() };
       });
-      const r = await api('basicImport', { deptId, book: { title: src.title, kind: src.kind, cover: src.cover, coverName: src.coverName || '', range: src.range || '' }, lessons });
+      const r = await api('basicImport', { deptId, book: { title: src.title, kind: src.kind, cover: src.cover, coverName: src.coverName || '', range: src.range || '', level: src.level || '', levelNote: src.levelNote || '' }, lessons });
       const mb = liveMapBook(r.book); Object.assign(mg().guides, clone(r.guides)); touched(mb); mg().books.unshift(mb); mgTab = 'now'; liveSyncData();
       closeSheet(); mgGo('mb-' + mb.id, '디다코 기본 교재를 가져왔어요. 모든 과가 준비 중이에요.');
     })
