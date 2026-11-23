@@ -21,6 +21,7 @@
 <script src="widget-bridge.js"></script>
 <script src="info-tip.js"></script>
 <script src="family-push.js"></script>
+<script src="family-vault.js"></script>
 <script src="account-delete.js"></script>
 <script>
 // 저장된 화면 설정을 그림이 그려지기 전에 먼저 입힌다(밝은 화면이 잠깐 번쩍이지 않게). 읽을 수 없으면 기기 설정을 따른다
@@ -117,6 +118,8 @@ textarea.field { resize: none; line-height: 1.6; }
 .kakao.sso-google { background: #FFFFFF; color: #1F1F1F; border: 1px solid #747775; }
 .kakao.sso-apple { background: #000000; color: #FFFFFF; }
 .kakao svg { width: 18px; height: 18px; flex: none; }
+.wl-act { display: flex; flex-direction: column; gap: 10px; padding: 16px; }   /* 코이데 노트 첫 화면의 로그인 카드(.wl-act)와 같다 */
+.wl-church { margin-bottom: 0; }
 .kakao .wl-last { font-weight: 500; font-size: .72em; opacity: .7; margin-left: .3em; }   /* 코이데 노트의 .wl-last와 같다 */
 @media (prefers-color-scheme: dark) { :root:not([data-mode="light"]) .kakao.sso-google { background: #131314; color: #E3E3E3; border-color: #8E918F; } :root:not([data-mode="light"]) .kakao.sso-apple { background: #FFFFFF; color: #000000; } }
 :root[data-mode="dark"] .kakao.sso-google { background: #131314; color: #E3E3E3; border-color: #8E918F; }
@@ -325,6 +328,25 @@ html.kg-on body.tabs-off .topbar, html.kg-on body.tabs-off .tabs { transform: no
     background: radial-gradient(75% 62% at 50% 40%, color-mix(in srgb, var(--page) 62%, transparent), transparent 100%), color-mix(in srgb, var(--page) 22%, transparent); }
   .ob-start-name, .ob-start-tag { text-shadow: 0 0 14px color-mix(in srgb, var(--page) 80%, transparent), 0 0 3px color-mix(in srgb, var(--page) 55%, transparent); }
   .wl-film-m ~ #main .ob-start-tag { color: var(--ink); }   /* 영상이 있을 때만 소개 글을 한 단계 진하게 */
+}
+/* 새 로그인 첫 화면(.wl-sb)은 코이데 노트의 .welcome과 같은 짜임·크기로 맞춘다(2026-11-23, 코이데에서 하는 걸 그대로): 머리 가운데 정렬, 카드 간격 18px, 단추 높이 48px */
+.ob-start.wl-sb { max-width: 30rem; padding: calc(1.2em + env(safe-area-inset-top, 0px)) 16px calc(2em + env(safe-area-inset-bottom, 0px)); gap: 18px; }
+.ob-start.wl-sb .ob-start-head { margin-top: 0; display: flex; flex-direction: column; align-items: center; text-align: center; gap: .35em; padding: 1.2em 0 .2em; }
+.ob-start.wl-sb .ob-mark.logo { width: 76px; height: 76px; border-radius: 50%; margin: 0 0 .3em; }
+.ob-start.wl-sb .ob-mark.logo .mk { width: 46px; height: 46px; }
+.ob-start.wl-sb .ob-start-name { font-size: 2.1em; font-weight: 700; line-height: 1.3; margin: 0; letter-spacing: .02em; }
+.ob-start.wl-sb .ob-start-tag { margin: 0; font-family: var(--f-display); font-size: 1.15em; line-height: 1.55; color: var(--ink-2); }
+.ob-start.wl-sb .ob-start-act { margin: 0; gap: 18px; width: 100%; }
+.ob-start.wl-sb .wl-act .kakao { min-height: 48px; gap: 8px; }
+.ob-start.wl-sb .wl-act .kakao svg { width: 20px; height: 20px; }
+@media (min-width: 860px) {
+  .ob-start.wl-sb { width: calc(var(--wl-L) / 2); max-width: none; padding: 32px clamp(24px, 4vw, 64px); }
+  .ob-start.wl-sb .ob-start-head, .ob-start.wl-sb .ob-start-act { max-width: 26rem; }
+  .ob-start.wl-sb .ob-start-head { padding-top: 0; }
+  .ob-start.wl-sb .ob-start-name { font-size: 2.6em; }
+}
+@media (max-width: 859.98px) {
+  .ob-start.wl-sb .ob-start-head { padding: 0 0 .2em; justify-content: center; min-height: calc(var(--wl-m) - 1.2em - env(safe-area-inset-top, 0px) - 56px); }
 }
 @keyframes wl-breathe { 0%, 100% { transform: translateY(0) scale(1); } 50% { transform: translateY(-8px) scale(1.04); } }
 @keyframes wl-ring { 0%, 100% { transform: scale(.96); opacity: .15; } 50% { transform: scale(1.04); opacity: .55; } }
@@ -1569,16 +1591,21 @@ const confirmSheet = (title, text, no, yes, act) => openSheet(`<h2>${title}</h2>
 // ── 첫 접속(M18 → M18b → M18c → M18d) ──
 const STEPS = n => `<div class="steps" aria-hidden="true">${[1, 2, 3].map(i => `<span class="${i <= n ? 'on' : ''}"></span>`).join('')}</div>`;
 function viewStart() {
-  return `<div class="ob ob-start">
+  const sb = LIVE && sbMode();   // 새 로그인(카카오·구글·애플) 첫 화면은 코이데 노트와 같은 짜임(.wl-sb). 예전 길(교회 코드)·데모는 옛 모양 그대로
+  return `<div class="ob ob-start${sb ? ' wl-sb' : ''}">
     <div class="ob-start-head">
       <div class="ob-mark logo" aria-hidden="true"><svg class="mk" viewBox="0 0 16 16"><use href="#i-didako"/></svg></div>
-      <h1 class="sf ob-start-name" style="font-size:2rem;font-weight:700;margin:16px 0 0">디다코</h1>
-      <div class="sm ob-start-tag" style="margin-top:8px;line-height:1.6">말씀 앞에서 묻고,<br>품고, 알게 되는 곳이에요</div>
+      <h1 class="sf ob-start-name"${sb ? '' : ' style="font-size:2rem;font-weight:700;margin:16px 0 0"'}>디다코</h1>
+      <div class="sm ob-start-tag"${sb ? '' : ' style="margin-top:8px;line-height:1.6"'}>말씀 앞에서 묻고,<br>품고, 알게 되는 곳이에요</div>
     </div>
     <div class="ob-start-act">
-      ${LIVE && sbMode() ? sbList.map(k => `<button class="kakao sso-${k}" type="button" data-act="sb-login" data-v="${k}"${authBusy ? ' disabled aria-busy="true"' : ''}>${k === 'kakao' ? BUBBLE : SB_LOGO[k]}${SB_START[k]}${ls.get('didako-note-last-provider') === k ? '<small class="wl-last">지난번에 쓴 방법</small>' : ''}</button>`).join('') : `<button class="kakao" type="button" data-act="kakao"${LIVE && authBusy ? ' disabled aria-busy="true"' : ''}>${BUBBLE}${LIVE && authBusy ? '카카오 로그인을 확인하고 있어요…' : '카카오로 시작하기'}</button>`}
-      <div class="sm" style="text-align:center;margin-top:4px">${LIVE && authBusy ? '잠시만 기다려 주세요. 몇 초 걸려요.' : LIVE && sbMode() ? '기록은 이 휴대폰에 있고, 동기화를 켜면 암호화된 채로만 서버에 가요.' : '내 질문은 나만 볼 수 있어요'}</div>
-      <a class="sm" href="https://koinobia.com/privacy/" target="_blank" rel="noopener" style="display:block;text-align:center;margin-top:12px;color:var(--ink-2)">개인정보 처리방침</a>
+      ${sb ? `<section class="card wl-act">
+        ${sbList.map(k => `<button class="kakao sso-${k}" type="button" data-act="sb-login" data-v="${k}"${authBusy ? ' disabled aria-busy="true"' : ''}>${k === 'kakao' ? BUBBLE : SB_LOGO[k]}${SB_START[k]}${ls.get('didako-note-last-provider') === k ? '<small class="wl-last">지난번에 쓴 방법</small>' : ''}</button>`).join('')}
+        <div class="sm" style="text-align:center">${authBusy ? '잠시만 기다려 주세요. 몇 초 걸려요.' : FV.startHint}</div>
+      </section>
+      <div class="gc wl-church"><a class="gr" href="../app/"><span class="gt"><b>디다코 교회를 쓰는 분이에요</b></span><span class="ch" aria-hidden="true">›</span></a></div>` : `<button class="kakao" type="button" data-act="kakao"${LIVE && authBusy ? ' disabled aria-busy="true"' : ''}>${BUBBLE}${LIVE && authBusy ? '카카오 로그인을 확인하고 있어요…' : '카카오로 시작하기'}</button>
+      <div class="sm" style="text-align:center;margin-top:4px">${LIVE && authBusy ? '잠시만 기다려 주세요. 몇 초 걸려요.' : '내 질문은 나만 볼 수 있어요'}</div>`}
+      <a class="sm" href="https://koinobia.com/privacy/" target="_blank" rel="noopener" style="display:block;text-align:center;margin-top:${sb ? 0 : 12}px;color:var(--ink-2)">개인정보 처리방침</a>
     </div>
   </div>`;
 }
@@ -2110,12 +2137,19 @@ function viewAcctDel() {
 }
 
 // ── 창 안의 글(비밀번호 창 · 복구용 낱말 창 · 확인 창은 prototype/more.html의 글을 따른다) ──
-// 신앙 정보(민감정보) 처리 동의: 동기화를 처음 켜는 순간(비밀번호 정하기 · 비밀번호 넣기)에 한 번 받고, 이 기기에 기억하면 다시 묻지 않는다(코이데 노트와 같다. 개인정보 처리방침 2장)
+// 동기화 켜기 창들의 글은 코이데 노트와 한 파일(family-vault.js, FamilyVault.T)을 같이 쓴다. 창의 순서도 같다: 동의 창 → 비밀번호 정하기(맡긴 기록이 없을 때) 또는 비밀번호 넣기(있을 때) → 복구용 낱말
+const FV = (window.FamilyVault || {}).T || {};
+// 신앙 정보(민감정보) 처리 동의: 동기화를 처음 켜기 전에 한 번 받고, 이 기기에 기억하면 다시 묻지 않는다(개인정보 처리방침 2장)
 const SENS_K = 'didako-note-consent';
 const sensAgreed = () => !!ls.get(SENS_K);
-const sensBox = () => sensAgreed() ? '' : '<label style="display:flex;align-items:flex-start;gap:8px;margin:16px 0;text-align:left;word-break:keep-all"><input type="checkbox" data-sens style="margin-top:3px;flex:none"><span>신앙 정보(민감정보) 처리에 동의해요 (필수)<a class="sm" href="https://koinobia.com/privacy/" target="_blank" rel="noopener" style="display:block;margin-top:4px;color:var(--ink-2);text-decoration:underline">개인정보 처리방침 전체 보기</a></span></label>';
-const sensOk = form => { if (sensAgreed()) return true; const c = document.querySelector('form[data-form="' + form + '"] input[data-sens]'); if (c && c.checked) { ls.set(SENS_K, '1'); return true; } return false; };
-const sensLock = form => { if (sensAgreed()) return; const b = document.querySelector('form[data-form="' + form + '"] button[type="submit"]'); if (b) { b.dataset.sensBtn = ''; b.disabled = true; } };
+let agreeNext = '';   // 동의하면 이어 할 일: 'start'(켜기) · 'unlock'(비밀번호 넣기) · 'move'(새 보관함으로 옮기기)
+function agreeSheet(next) {
+  agreeNext = next;
+  openSheet(`<h2>${FV.agreeTitle}</h2><p>${FV.agreeBody}</p>
+    <label style="display:flex;align-items:flex-start;gap:.6em;min-height:44px;margin:16px 0;text-align:left;word-break:keep-all;cursor:pointer"><input type="checkbox" data-sens style="width:20px;height:20px;accent-color:var(--accent);margin:.2em 0 0;flex:none"><span>${FV.agreeCheck}<a href="https://koinobia.com/privacy/" target="_blank" rel="noopener" style="display:block;margin-top:4px;font-size:.88em;color:var(--ink-2);text-decoration:underline">${FV.agreePrivacy}</a></span></label>
+    <div class="ra"><button type="button" class="btn ghost" data-act="sheet-x">${FV.cancel}</button><button class="btn" type="button" data-act="vagree" data-sens-btn disabled>${FV.agreeGo}</button></div>`);
+}
+let connRemote = null;   // 비밀번호 넣기 창이 열린 때의 서버 답(복구용 낱말이 있는지 보고 "잊었어요" 줄을 정한다)
 // 데모: 실제 잠금은 2단계. 여기서는 길이와 두 칸이 같은지만 보고 아무것도 암호화하지 않는다
 const pwIn = (id, ph, label, ac) => `<input class="field" id="${id}" type="password" maxlength="100" autocomplete="${ac || 'off'}" autocapitalize="off" spellcheck="false" placeholder="${ph}" aria-label="${label}">`;
 function formSheet(title, plain, fields, notice, label, act, below) {
@@ -2132,11 +2166,11 @@ function pwPair(a, b, same) {
 }
 let words = DATA.words.slice();
 function recSheet() {
-  openSheet(`<h2>복구용 낱말</h2>
+  openSheet(`<h2>${FV.wordsTitle}</h2>
     <ol class="wd" aria-label="복구용 낱말 6개">${words.map((w, i) => `<li><small>${i + 1}</small>${esc(w)}</li>`).join('')}</ol>
-    <p>비밀번호를 잊었을 때 이 낱말로 기록을 열어요. 사진으로 찍거나 카톡 나에게 보내 두세요. 운영하는 사람도 다시 알려 드릴 수 없어요.</p>
-    <div class="rb"><button class="btn ghost" type="button" data-act="rec-share">보내기</button><button class="btn ghost" type="button" data-act="rec-copy">복사하기</button></div>
-    <div class="ra"><button class="btn" type="button" data-act="rec-done">보관했어요</button></div>`, true);   // 바깥을 눌러도 닫히지 않고 '보관했어요'를 눌러야 닫힌다
+    <p>${FV.wordsBody}</p>
+    <div class="rb"><button class="btn ghost" type="button" data-act="rec-share">${FV.wordsShare}</button><button class="btn ghost" type="button" data-act="rec-copy">${FV.wordsCopy}</button></div>
+    <div class="ra"><button class="btn" type="button" data-act="rec-done">${FV.wordsDone}</button></div>`, true);   // 바깥을 눌러도 닫히지 않고 '보관했어요'를 눌러야 닫힌다
 }
 let a2hsOs = /android/i.test(navigator.userAgent) ? 'android' : 'ios';
 function a2hsSheet() {
@@ -4595,11 +4629,9 @@ const acts = {
   fbsend() { if (!($('#fbT').value || '').trim()) { toast('보낼 내용을 적어 주세요'); return; } toast('데모라 보내지 않아요'); },   // 데모: 실제로 보내지 않는다
   // 동기화: 켜기 → 비밀번호 정하기 → 복구용 낱말 → 켜짐
   'keep-start'() {
-    formSheet('비밀번호 정하기', '이 비밀번호로 기록을 암호화해서 동기화해요. 다른 기기에서 열 때도 같은 비밀번호를 넣어요.',
-      pwIn('kpw1', '비밀번호 (6글자 넘게)', '비밀번호', 'new-password') + pwIn('kpw2', '한 번 더', '비밀번호 한 번 더', 'new-password') +
-      sensBox(),
-      '<b>운영하는 사람도 열 수 없어요.</b> 비밀번호를 정하면 다음 화면에 복구용 낱말(낱말 6개)이 나와요. 잊었을 때를 위해 꼭 보관해 두세요.', '정하고 동기화하기', 'keep-pw');
-    sensLock('keep-pw');
+    formSheet(FV.createTitle, FV.createBody,
+      pwIn('kpw1', FV.pw, '비밀번호', 'new-password') + pwIn('kpw2', FV.pwAgain, '비밀번호 한 번 더', 'new-password'),
+      `<b>${FV.createNoticeB}</b>${FV.createNotice}`, FV.createGo, 'keep-pw');
   },
   'rec-done'() {
     D.sync = 'on'; D.syncAt = Date.now(); saveDemo(); closeSheet(true); render(); toast('기록을 암호화해서 동기화했어요(시안)');
@@ -4622,14 +4654,19 @@ const acts = {
       '', '바꾸기', 'pass-go');
   },
   'forgot-sheet'() {
-    formSheet('복구용 낱말로 열기', '복구용 낱말 6개를 넣고, 새 비밀번호를 정해요. 복구용 낱말은 그대로 두고 또 쓸 수 있어요.',
-      '<textarea class="field" id="rwAll" rows="2" autocapitalize="none" autocomplete="off" spellcheck="false" placeholder="낱말 6개 (붙여 넣어도 돼요)" aria-label="복구용 낱말"></textarea>'
-      + pwIn('rwNew', '새 비밀번호 (6글자 넘게)', '새 비밀번호', 'new-password') + pwIn('rwNew2', '한 번 더', '새 비밀번호 한 번 더', 'new-password'),
-      '', '열고 정하기', 'forgot-go', '<button type="button" class="tx" data-act="connect-sheet" style="align-self:flex-start">‹ 비밀번호로 열기</button>');
+    formSheet(FV.recoverTitle, FV.recoverBody,
+      `<textarea class="field" id="rwAll" rows="2" autocapitalize="none" autocomplete="off" spellcheck="false" placeholder="${FV.recoverWords}" aria-label="복구용 낱말"></textarea>`
+      + pwIn('rwNew', FV.recoverPw, '새 비밀번호', 'new-password') + pwIn('rwNew2', FV.pwAgain, '새 비밀번호 한 번 더', 'new-password'),
+      '', FV.recoverGo, 'forgot-go', `<button type="button" class="tx" data-act="connect-sheet" style="align-self:flex-start">${FV.recoverBack}</button>`);
   },
   'connect-sheet'() {
-    formSheet('비밀번호 넣기', '보관한 기록을 다시 열려면, 정해 둔 비밀번호를 넣어 주세요.', pwIn('pwConn', '비밀번호 (6글자 넘게)', '비밀번호', 'current-password') + sensBox(), '', '연결하기', 'connect-go');
-    sensLock('connect-go');
+    formSheet(FV.unlockTitle, moveTo ? FV.unlockMoveBody : FV.unlockBody, pwIn('pwConn', FV.pw, '비밀번호', 'current-password'), '', FV.unlockGo, 'connect-go');
+  },
+  vagree() {
+    if (!document.querySelector('#popSheet input[data-sens]')?.checked) return;
+    ls.set(SENS_K, '1');
+    const n = agreeNext; agreeNext = ''; closeSheet(true);
+    if (n === 'unlock') acts['connect-sheet'](); else if (n === 'move') acts['vault-move-go'](); else acts['keep-start']();
   },
   'place-menu'() { const m = $('#placeMenu'), open = m.hidden; closeMenus(); m.hidden = !open; $('#placeBtn').setAttribute('aria-expanded', String(open)); if (open) loadCircles(); },
   'set-menu'() { const m = $('#setMenu'), open = m.hidden; closeMenus(); m.hidden = !open; $('#setBtn').setAttribute('aria-expanded', String(open)); },
@@ -4642,7 +4679,7 @@ const acts = {
 const forms = {
   church() { if (val('codeIn').length < 4) return; ob.church = true; setHash('start/name'); },   // 데모: 4글자 넘으면 통과
   name() { const n = val('nameIn'); if (!n) return; ob.name = n; setHash('start/consent'); },
-  'keep-pw'() { if (!sensOk('keep-pw')) return; if (!pwPair('kpw1', 'kpw2')) return; words = DATA.words.slice(); recSheet(); },
+  'keep-pw'() { if (!pwPair('kpw1', 'kpw2')) return; words = DATA.words.slice(); recSheet(); },
   'pass-go'() {
     if (!val('pwNow')) { sheetMsg('지금 비밀번호를 넣어 주세요.'); return; }
     if (!pwPair('pwNew', 'pwNew2', '두 번 쓴 새 비밀번호가 달라요.')) return;
@@ -4689,7 +4726,7 @@ function setDemoDate(v) {
   if (v && !parseYmd(v)) return;   // 키보드로 연도를 치는 도중의 값(0002 등)은 아무것도 하지 않는다. 칸은 칸을 떠날 때 한 번만 되돌린다
   D.date = v; saveDemo(); paintSettings(); render();
 }
-document.addEventListener('change', e => { const c = e.target.closest && e.target.closest('input[data-sens]'); if (!c) return; const w = c.closest('form, .col-n, .ob'); const b = w && w.querySelector('[data-sens-btn]'); if (b) b.disabled = !c.checked; });
+document.addEventListener('change', e => { const c = e.target.closest && e.target.closest('input[data-sens]'); if (!c) return; const w = c.closest('form, .col-n, .ob, #popSheet'); const b = w && w.querySelector('[data-sens-btn]'); if (b) b.disabled = !c.checked; });
 document.addEventListener('change', e => { if (e.target.id === 'gearStart' && parseYmd(e.target.value)) { D.start = e.target.value; saveDemo(); paintSettings(); render(); } });
 document.addEventListener('change', e => { if (e.target.id === 'gearDate' && e.target.value) setDemoDate(e.target.value); });   // 칸을 비우면 그대로 두고, 진짜 오늘로 돌아가려면 [오늘로]
 document.addEventListener('focusout', e => { if (e.target.id === 'gearDate' || e.target.id === 'gearStart') paintSettings(); });   // 칸을 떠날 때 읽히지 않는 값이면 데모의 오늘로 되돌린다
@@ -5092,7 +5129,7 @@ async function doorArrive() {
   if (!h || ls.get(k)) return;
   try {
     const e = epoch, r = await vaultApi('noteGet'); sameAccount(e);
-    if (r && !r.none && !V.on && $('#pop').hidden) { ls.set(k, '1'); acts['connect-sheet'](); }
+    if (r && !r.none && !V.on && $('#pop').hidden) { ls.set(k, '1'); connRemote = r; if (sensAgreed()) acts['connect-sheet'](); else agreeSheet('unlock'); }
   } catch (_) { /* 서버가 답하지 않으면 조용히 넘어간다 */ }
 }
 // 예전 길 기기가 새 보관함 로그인에서 돌아왔으면 하던 일을 잇는다. 이었으면 true
@@ -5425,14 +5462,14 @@ if (LIVE) {
   }
   acts['keep-start'] = run(async () => {
     moveTo = false;
+    if (!sensAgreed()) return agreeSheet('start');   // 코이데 노트처럼 켜기를 누르면 동의 창이 먼저 열린다
     // 예전 길 기기가 새 보관함에 처음 연결하려면 새 길 로그인이 먼저 있어야 한다. 없으면 로그인 창
     if (vaultBackend() === 'supabase' && !sbMode() && !(await sbSession())) { noteProbe = null; return sbLoginOpen('vault'); }
     keepBusy(true);
-    try { const r = await probeNote(); noteProbe = null; if (r.none) keepStart(); else acts['connect-sheet'](); }
+    try { const r = await probeNote(); noteProbe = null; if (r.none) keepStart(); else { connRemote = r; acts['connect-sheet'](); } }
     finally { keepBusy(false); }
   });
   forms['keep-pw'] = run(async () => {
-    if (!sensOk('keep-pw')) return;
     const pass = pwPair('kpw1', 'kpw2'); if (!pass) return;
     const e = epoch, raw = randB64(32), wrapped = await passWrap(pass, raw), rec = await recoveryWrap(raw), tag = await vaultTag(); sameAccount(e);
     V = { on: false, salt: wrapped.salt, rev: 0, last: 0, pend: { ...wrapped, rsalt: rec.rsalt, rwrap: rec.rwrap }, rec: { rsalt: rec.rsalt, rwrap: rec.rwrap }, ...tag };
@@ -5444,17 +5481,18 @@ if (LIVE) {
     render(); if (await syncLive(true)) toast('기록을 암호화해서 동기화했어요');
   });
   forms['connect-go'] = run(async () => {
-    if (!sensOk('connect-go')) return;
     const pass = val('pwConn'); if (pass.length < 6) { sheetMsg('6글자 넘게 써 주세요.'); return; }
     const e = epoch, r = await vaultApi('noteGet', null, vaultWay());
-    const raw = await unwrapKey(pass, r.salt, r.wrap, '비밀번호가 맞지 않아요.'), tag = await vaultTag(); sameAccount(e);
-    await enableSync(raw, r, false, false, tag); toast('연결됐어요');
+    const raw = await unwrapKey(pass, r.salt, r.wrap, FV.errWrong), tag = await vaultTag(); sameAccount(e);
+    await enableSync(raw, r, false, false, tag); toast(FV.toastMerged);
   });
   // 기존 비밀번호 창에 같은 복구용 낱말 창으로 가는 길을 둔다.
   const connectSheet = acts['connect-sheet'];
   acts['connect-sheet'] = () => {
     connectSheet();
-    const b = document.createElement('button'); b.type = 'button'; b.className = 'tx'; b.dataset.act = 'forgot-sheet'; b.textContent = '비밀번호를 잊었어요'; $('#popSheet').append(b);
+    // 코이데 노트와 같다: 복구용 낱말을 만들어 둔 기록이면 열기 줄, 아니면 되살릴 수 없다는 안내
+    if (connRemote && connRemote.rwrap) { const b = document.createElement('button'); b.type = 'button'; b.className = 'tx'; b.dataset.act = 'forgot-sheet'; b.textContent = FV.forgotLink; $('#popSheet').append(b); }
+    else { const n = document.createElement('p'); n.className = 'sm'; n.textContent = FV.forgotNone; $('#popSheet').append(n); }
   };
   forms['pass-go'] = run(async () => {
     const current = val('pwNow'), pass = pwPair('pwNew', 'pwNew2', '두 번 쓴 새 비밀번호가 달라요.'); if (!pass) return;
@@ -5467,7 +5505,7 @@ if (LIVE) {
     const parsed = readWords(val('rwAll')); if (parsed.err) { sheetMsg(parsed.err); return; }
     const pass = pwPair('rwNew', 'rwNew2', '두 번 쓴 새 비밀번호가 달라요.'); if (!pass) return;
     const e = epoch, pending = !!V.pend, r = V.pend || await vaultApi('noteGet', null, vaultWay());
-    const raw = await unwrapKey(parsed.phrase, r.rsalt, r.rwrap, '복구용 낱말이 맞지 않아요.');
+    const raw = await unwrapKey(parsed.phrase, r.rsalt, r.rwrap, FV.errWords);
     const wrapped = await passWrap(pass, raw), tag = await vaultTag(); sameAccount(e); await changeKeys(wrapped, e);
     await enableSync(raw, { ...r, ...wrapped }, true, pending, tag);
     doneSheet('다시 열렸어요', '기록이 다시 열렸어요. 새 비밀번호로 암호화해서 보관했어요.');
@@ -5487,6 +5525,7 @@ if (LIVE) {
   acts['vault-move'] = () => { if (canMoveVault()) confirmSheet('새 보관함으로 옮길까요?', '기록은 휴대폰에서 잠긴 그대로 옮겨요. 서버는 내용을 볼 수 없어요. 예전 보관함의 기록은 남아요.', '그만두기', '옮기기', 'vault-move-go'); };
   acts['vault-move-go'] = run(async () => {
     if (!canMoveVault()) return;
+    if (!sensAgreed()) return agreeSheet('move');
     moveTo = false;
     const e = epoch, old = await noteApi('noteGet'); sameAccount(e);
     if (old.none) throw { message: '예전에 보관한 기록이 없어요.' };
@@ -5498,7 +5537,7 @@ if (LIVE) {
       V.backend = 'supabase'; V.sb = who.h; V.rev = w.rev; V.last = w.at; V.pend = null; saveVault();
       closeSheet(true); render(); toast('새 보관함으로 옮겼어요'); await syncLive(true); return;
     }
-    moveTo = true; acts['connect-sheet']();
+    moveTo = true; connRemote = cur; acts['connect-sheet']();
   });
   // 동기화 화면에서 새로 여는 창은 옮기는 중이 아니다(옮기기의 비밀번호 창 안에서 여는 '비밀번호를 잊었어요'만 옮기기를 잇는다)
   ['pass-sheet', 'forgot-sheet', 'rec-new'].forEach(k => { const f = acts[k]; if (f) acts[k] = (...a) => { if ($('#pop').hidden) moveTo = false; return f(...a); }; });
