@@ -3237,6 +3237,7 @@ function ppFill() {
   if (L) area.innerHTML = ppPagesHtml(ppSource(b, L), o).html;
 }
 // 인쇄 > 'PDF로 저장'의 기본 파일 이름은 문서 제목이다. 인쇄하는 동안만 "교재 제목 - 디다코"(과 하나면 "교재 제목 · N과 - 디다코")로 바꾸고, 끝나면 되돌린다.
+// Word로 내려받기도 같은 이름(ppDocTitle)을 쓴다. PDF와 Word의 파일 이름 규칙이 하나다.
 // 리더용이면 제목 뒤에 "(리더용)"을 붙인다. 파일 이름에 못 쓰는 글자는 뺀다
 function ppDocTitle() {
   const v = currentView(), arg = parseHash().arg || '', end = PP.leader ? ' (리더용)' : '';
@@ -6462,17 +6463,17 @@ const acts = {
   async 'pp-word-book'() {
     const b = mgBook((parseHash().arg || '').slice(4)); if (!b) return;
     const o = { leader: PP.leader, space: PP.space, memo: null }, sources = b.lessons.map(L => ppSource(b, L));
-    await exportWord(sources, media => wordTocXml(b) + sources.map(src => wordLessonXml(src, o, true, media)).join(''), `${b.title} 전체${PP.leader ? ' (리더용)' : ''}`);
+    await exportWord(sources, media => wordTocXml(b) + sources.map(src => wordLessonXml(src, o, true, media)).join(''), ppDocTitle() || `${b.title} 전체${PP.leader ? ' (리더용)' : ''}`);
   },
   async 'pp-word-prep'() {
     if (!isLead() || !(G = readyGuide())) return;
     const src = prepSource();
-    await exportWord([src], media => wordLessonXml(src, prepPrintOpts(), false, media), `${src.book} 제${src.no}과 ${src.name} (${PP.leader ? '리더용 · 내 메모' : '회원용'})`);
+    await exportWord([src], media => wordLessonXml(src, prepPrintOpts(), false, media), ppDocTitle() || `${src.book} 제${src.no}과 ${src.name} (${PP.leader ? '리더용 · 내 메모' : '회원용'})`);
   },
   async 'pp-word'() {
     const m = /^mx-([\w-]+)\.(\d+)$/.exec(parseHash().arg || ''), b = m && mgBook(m[1]), L = b && b.lessons.find(l => l.no === Number(m[2])); if (!L) return;
     const src = ppSource(b, L);
-    await exportWord([src], media => wordLessonXml(src, { leader: PP.leader, space: PP.space, memo: null }, false, media), `${b.title} 제${L.no}과 ${L.name || ''}${PP.leader ? ' (리더용)' : ''}`);
+    await exportWord([src], media => wordLessonXml(src, { leader: PP.leader, space: PP.space, memo: null }, false, media), ppDocTitle() || `${b.title} 제${L.no}과 ${L.name || ''}${PP.leader ? ' (리더용)' : ''}`);
   },
   'pp-target'(e, el) { PP.leader = el.dataset.v === '1'; recRedraw(); },
   'pp-space'(e, el) { PP.space = ['none', 'mid', 'wide'].includes(el.dataset.v) ? el.dataset.v : 'mid'; recRedraw(); },
