@@ -124,7 +124,7 @@
     return out.join('');
   }
   const braidH = (w, h, per, sw) => `<svg viewBox="0 ${-h / 2} ${w} ${h}" aria-hidden="true">${braidPaths(w, h / 2 - sw, per, false, sw)}</svg>`;
-  const noteFirst = `<span class="splash-mark">${mark}</span><p class="splash-name sp-in d1">디다코 노트</p><p class="splash-sub sp-in d2">말씀 앞에서 묻고, 품고, 알게 되는 곳</p>`;
+  const noteFirst = `<span class="splash-mark">${mark}</span><p class="splash-name sp-in d1">디다코</p><p class="splash-sub sp-in d2">말씀 앞에서 묻고, 품고, 알게 되는 곳</p>`;
   const noteSwitch = `<span class="sw-note sw-in"><svg viewBox="0 0 16 16" aria-hidden="true"><use href="#i-didako"/></svg></span><p class="splash-name sw-in d1">디다코 노트</p><p class="splash-sub sw-in d2">말씀 앞에서 묻고, 품고, 알게 되는 곳</p>`;
   const name = place === 'community' ? '디다코 공동체' : '디다코 교회';
   const sub = place === 'community' ? '공동체와 말씀을 함께 읽어요.' : '말씀을 함께 읽고 나누고 간직해요';
