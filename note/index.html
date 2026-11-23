@@ -18,6 +18,7 @@
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Gowun+Batang:wght@400;700&family=IBM+Plex+Sans+KR:wght@400;500;600&display=swap">
 <script src="font-warm.js"></script>
 <script src="config.js"></script>
+<script src="widget-bridge.js"></script>
 <script src="info-tip.js"></script>
 <script src="family-push.js"></script>
 <script src="account-delete.js"></script>
@@ -1253,7 +1254,7 @@ function applySettings() {
   S.style === 'basic' ? root.removeAttribute('data-style') : root.setAttribute('data-style', S.style);
   S.big ? root.setAttribute('data-big', S.big === 2 ? '2' : '') : root.removeAttribute('data-big');
 }
-const saveDisplay = () => ls.set(K.display, JSON.stringify(S));
+const saveDisplay = () => { ls.set(K.display, JSON.stringify(S)); if (window.DidakoWidget) window.DidakoWidget.sync(); };   // 아이폰 앱 안에서는 위젯 색도 바꾼다(widget-bridge.js, 웹에서는 없음)
 
 // ── 데모 상태(시안 보기 설정의 날짜, 동기화 켜짐) ──
 // date: 데모의 오늘, start: 처음 들어온 날('YYYY-MM-DD'). 오늘이 비어 있으면 이 기기의 진짜 오늘
