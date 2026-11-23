@@ -4234,7 +4234,7 @@ function render(fromHash, still) {
     motion = to > from ? 'vt-in-r' : to < from ? 'vt-in-l' : depth(key) > depth(lastKey) ? 'vt-push' : depth(key) < depth(lastKey) ? 'vt-pop' : 'vt-fade';
   }
   // 겹쳐 넘기기(S-73): 화면 전환 기능이 있으면 옛 화면을 사진처럼 남겨 새 화면과 겹쳐 움직인다. 없거나 실패하면 아래 CSS 움직임으로 넘어간다
-  if (motion && !vtNow && typeof document.startViewTransition === 'function') {
+  if (motion && !vtNow && typeof document.startViewTransition === 'function' && document.documentElement.dataset.style !== 'skeu') {
     vtNow = true; root.dataset.vt = motion;
     let t = null;
     try { t = document.startViewTransition(() => { try { render(fromHash, still); } finally { vtNow = false; } }); }
