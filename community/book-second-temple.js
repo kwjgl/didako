@@ -10,7 +10,7 @@
   "period": "",
   "closed": false,
   "kind": "자유 모임",
-  "level": "hard",
+  "level": "4",
   "levelNote": "제2성전기 역사라 낯설 수 있어요",
   "cover": {
     "motif": "rays",

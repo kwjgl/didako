@@ -10,7 +10,7 @@
   "period": "",
   "closed": false,
   "kind": "가정예배",
-  "level": "easy",
+  "level": "1",
   "levelNote": "처음 가정예배를 드려도 괜찮아요",
   "cover": {
     "motif": "lattice",

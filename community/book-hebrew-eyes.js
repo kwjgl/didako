@@ -10,7 +10,7 @@
   "period": "",
   "closed": false,
   "kind": "자유 모임",
-  "level": "normal",
+  "level": "3",
   "levelNote": "구약을 다른 눈으로 읽어 봐요",
   "cover": {
     "motif": "star",
