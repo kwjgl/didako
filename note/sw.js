@@ -5,8 +5,8 @@
  * 아래 CACHE 번호는 남겨 둔 사본의 이름표다. 번호를 올리면 예전 사본을 지운다(AGENTS.md 서비스워커 캐시).
  * 데모에는 서버가 없다. 같은 주소의 파일만 다루고, 글꼴 같은 다른 주소의 요청은 건드리지 않는다.
  */
-const CACHE = 'didako-note-v180';
-const SHELL = ['./', 'index.html', 'config.js', 'splash.js', 'practice.js', 'family-tokens.css', 'design-styles.css', 'info-tip.js', 'font-warm.js', 'account-delete.js', 'guide.js', 'guide.css', 'usage.js', 'demo-data.js', 'questions-data.js', 'places.js', 'walks-data.js', 'map.html', 'map-places.js', 'words-ko.js', 'vendor/tiptap-2.27.3.js', 'manifest.webmanifest', 'icons/icon-192.png', 'icons/icon-512.png', 'icons/icon-maskable-512.png', 'icons/apple-touch-icon.png', 'icons/favicon-32.png'];
+const CACHE = 'didako-note-v182';
+const SHELL = ['./', 'index.html', 'config.js', 'splash.js', 'practice.js', 'family-tokens.css', 'design-styles.css', 'info-tip.js', 'font-warm.js', 'family-push.js', 'account-delete.js', 'guide.js', 'guide.css', 'usage.js', 'demo-data.js', 'questions-data.js', 'places.js', 'walks-data.js', 'map.html', 'map-places.js', 'words-ko.js', 'vendor/tiptap-2.27.3.js', 'manifest.webmanifest', 'icons/icon-192.png', 'icons/icon-512.png', 'icons/icon-maskable-512.png', 'icons/apple-touch-icon.png', 'icons/favicon-32.png'];
 // 나의 배지 그림은 처음 열 때 한꺼번에 받느라 늦게 떴다. 앱을 받을 때 함께 받아 둔다(S-60). 하나를 못 받아도 설치는 계속한다
 const PRE_IMG = ['a-home', 'a-style', 'a-sync', 'f-first', 'm-map', 'm-year', 'q-first', 'q-found', 't-hold', 'walk-first', 'x-first'].map(k => `img/badges/${k}.webp`)
   .concat(['fruit-01', 'fruit-02', 'fruit-03', 'fruit-04', 'fruit-05', 'fruit-06', 'fruit-07', 'fruit-08', 'fruit-09', 'vine'].map(k => `img/vine/badges/${k}.webp`))
@@ -45,4 +45,19 @@ self.addEventListener('fetch', e => {
     return res;
   // 실패하면 남겨 둔 사본. 사본이 없을 때 화면 주소만 첫 화면으로 대신하고, 나머지는 실패 그대로 돌려준다
   }).catch(() => caches.match(req, { ignoreSearch: true }).then(r => r || (req.mode === 'navigate' ? caches.match('./') : Response.error()))));
+});
+
+// 알림(웹 푸시): 서버(supabase/functions/push-send)가 정한 시각에 보낸다. 글은 종류별 고정 문장이라 이름·내용이 없다. 누르면 해당 화면을 연다(family-push.js)
+self.addEventListener('push', e => {
+  let d = {}; try { d = e.data ? e.data.json() : {}; } catch (err) { d = {}; }
+  e.waitUntil(self.registration.showNotification(d.t || '디다코', { body: d.b || '', icon: 'icons/icon-192.png', badge: 'icons/icon-192.png', tag: d.k || 'didako', data: { u: d.u || './' } }));
+});
+self.addEventListener('notificationclick', e => {
+  e.notification.close();
+  const to = new URL((e.notification.data && e.notification.data.u) || './', self.registration.scope).href;
+  e.waitUntil(self.clients.matchAll({ type: 'window', includeUncontrolled: true }).then(list => {
+    const c = list.find(w => w.url.startsWith(self.registration.scope));
+    if (c) return c.focus().then(w => (w && w.navigate ? w.navigate(to) : self.clients.openWindow(to))).catch(() => self.clients.openWindow(to));
+    return self.clients.openWindow(to);
+  }));
 });

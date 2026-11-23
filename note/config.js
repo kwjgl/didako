@@ -6,5 +6,7 @@ window.DIDAKO_CONFIG = {
   // 노트 로그인과 동기화의 새 길(gbs docs/setup.md 3-4). 이미 예전 길로 로그인한 기기는 그대로 예전 길에 남는다
   NOTE_BACKEND: 'supabase',
   SUPABASE_URL: 'https://knzibzjnpkcpelwfqdvx.supabase.co',  // 공개 값(코이데와 같은 프로젝트)
-  SUPABASE_KEY: 'sb_publishable_zWrybkJVwpzQ04XnUoxnSA_keakooJI'   // publishable 키(공개 값). secret(service_role) 키는 절대 넣지 않는다
+  SUPABASE_KEY: 'sb_publishable_zWrybkJVwpzQ04XnUoxnSA_keakooJI',   // publishable 키(공개 값). secret(service_role) 키는 절대 넣지 않는다
+  // 알림(웹 푸시) 공개 열쇠. 비우면 더보기 › 앱 설정에 알림 줄이 없다(공개 값, 비밀 열쇠는 Supabase에만 있다)
+  PUSH_KEY: 'BGqC5a_zTqB3EzsEKyRME1KPPy6uGXiUN7XaNKwXv9jw-MS3aj01IR8sLI8m8_fDFX9KdLv1wUJa7fz_PGTCkIs'
 };

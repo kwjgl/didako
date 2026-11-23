@@ -19,6 +19,7 @@
 <script src="font-warm.js"></script>
 <script src="config.js"></script>
 <script src="info-tip.js"></script>
+<script src="family-push.js"></script>
 <script src="account-delete.js"></script>
 <script>
 // 저장된 화면 설정을 그림이 그려지기 전에 먼저 입힌다(밝은 화면이 잠깐 번쩍이지 않게). 읽을 수 없으면 기기 설정을 따른다
@@ -1902,6 +1903,9 @@ function circleCard() {
     : C.places > 0 ? one('디다코 공동체 만들기', '함께 말씀을 읽을 사람을 초대해요', circleMakeUrl()) : one('디다코 공동체 만들기', '세 곳이 다 찼어요', '');
   return `<div class="gc" id="my-circles">${rows}${make}</div>`;
 }
+// 더보기 › 앱 설정 › 알림(family-push.js, 코이데 기도 노트와 같은 도구). 서버 설정(PUSH_KEY)이 있는 실제 앱에서만 보인다
+let pushOpen = false;
+const pushRow = () => !(window.FamilyPush && FamilyPush.on()) ? '' : `<button class="gr${pushOpen ? ' open' : ''}" type="button" data-act="pushopen" aria-expanded="${pushOpen}"><span class="gt"><b>알림</b><span class="gd">${esc(FamilyPush.hint())}</span></span>${pushOpen ? CHEV_DOWN_S : '<span class="ch" aria-hidden="true">›</span>'}</button>${pushOpen ? FamilyPush.panel() : ''}`;
 function viewMore() {
   const on = D.sync === 'on';
   const places = `<div class="gl">함께하는 곳</div>${circleCard()}<div class="gc">
@@ -1914,6 +1918,7 @@ function viewMore() {
       <button class="gr${dispOpen ? ' open' : ''}" type="button" data-act="disp" aria-expanded="${dispOpen}" aria-controls="dispEx"><span class="gt"><b>화면 설정</b></span>${dispOpen ? CHEV_DOWN_S : '<span class="ch" aria-hidden="true">›</span>'}</button>
       ${dispOpen ? displayEx() : ''}
       ${HOME_APP ? '' : `<button class="gr" type="button" data-act="a2hs"><span class="gt"><b>홈 화면에 앱처럼 두기</b></span><span class="ch" aria-hidden="true">›</span></button>`}
+      ${pushRow()}
       <div class="gr" style="cursor:default"><span class="gt"><b>이용 통계 보내기</b>${DidakoTip.btn('앱을 좋게 만들기 위해 이름 없는 사용 기록을 보내요. 누른 것, 연 때와 머문 시간 같은 숫자만이고 이름과 내가 쓴 글은 보내지 않아요. 끄면 이 기기에서는 더 보내지 않아요.', '이용 통계 보내기')}</span><button type="button" class="switch${usageOff() ? '' : ' on'}" role="switch" aria-checked="${!usageOff()}" aria-label="이용 통계 보내기" data-act="usageoff"><span></span></button></div>
     </div>`;
   const app1 = `<div class="gl">디다코</div><div class="gc">
@@ -4564,6 +4569,7 @@ const acts = {
   'need-sync'() { toast('동기화를 먼저 켜 주세요'); },
   disp() { dispOpen = !dispOpen; render(); const b = $('[data-act="disp"]'); if (b) b.focus({ preventScroll: true }); },
   a2hs() { a2hsSheet(); },
+  pushopen() { pushOpen = !pushOpen; render(); },
   usageoff() { try { if (usageOff()) localStorage.removeItem(USAGE_OFF); else { localStorage.setItem(USAGE_OFF, '1'); UZ.clear(); } } catch (e) { /* 저장하지 못하면 그대로 */ } render(); },
   a2hsos(e, el) { a2hsOs = el.dataset.v; a2hsSheet(); },
   logout() { confirmSheet('로그아웃할까요?', '다시 들어올 때는 카카오로 로그인해요. 보관한 기록은 비밀번호로 다시 열 수 있어요.', '그만두기', '로그아웃', 'logout-go'); },
@@ -5567,6 +5573,7 @@ if (!CIRCLE_REAL || ls.get('didako-note-sb')) setTimeout(() => loadCircles(), 15
 $('#setMenu').innerHTML = '<p class="mlabel">화면 설정</p>' + displayEx('topDispEx') + (LIVE ? '' : '<div class="mdiv"></div><button class="place-row" type="button" data-act="gear"><span class="sm">시안 보기 설정(데모에만 있어요)</span></button>');
 if (!LIVE) saveBadges();
 applySettings();
+if (SB_CFG && CFG.PUSH_KEY && LIVE && window.FamilyPush) FamilyPush.init({ app: 'didako', url: CFG.SUPABASE_URL, key: CFG.SUPABASE_KEY, vapid: CFG.PUSH_KEY, render: () => render(), toast: m => toast(m), a2hs: () => a2hsSheet() });   // 알림(family-push.js): 서버 설정이 있는 실제 앱에서만
 if (!location.hash) setHash(me ? 'today' : 'start', true);
 render(true);
 window.didakoSplash && window.didakoSplash.hide();   // 첫 화면을 그렸으면 시작 화면을 닫는다(S-34)
