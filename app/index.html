@@ -1426,6 +1426,7 @@ html.tutorial .demo-tag { display: none !important; }
 <script src="church-api.js"></script>
 <script src="account-delete.js"></script>
 <script src="info-tip.js"></script>
+<script src="font-warm.js" defer></script>
 <script src="covers.js"></script>
 <script src="demo-data.js"></script>
 <script src="book-gospel.js"></script>
@@ -5496,6 +5497,8 @@ function keepImg(src) {
   if (im.decode) im.decode().catch(() => {});
   COVER_KEEP.set(src, im);
 }
+// 책장을 처음 열 때 표지 그림을 한꺼번에 받으면 비었다가 들어오며 깜빡이므로, 앱이 쉬는 동안 기본 교재가 쓰는 표지(기본 묶음과 신발)를 미리 받아 둔다(2026-11-23)
+(window.requestIdleCallback || (f => setTimeout(f, 2500)))(() => setTimeout(() => COVER_ITEMS.filter(i => i.img && (i.id === 'shoes' || COVERS.groups[0].items.includes(i))).forEach(i => keepImg(i.img)), 2000));
 function coverSvg(cover, cls) {
   const selectedMotif = COVER_ITEMS.find(item => item.id === (cover || {}).motif);
   const selectedColor = COVERS.colors.find(row => row[0] === (cover || {}).color);
