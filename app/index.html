@@ -843,6 +843,8 @@ label.f { display: block; font-size: .85em; font-weight: 600; margin: 12px 0 4px
 .ov-fill { display: block; height: 100%; border-radius: 999px; background: var(--accent); }
 .an-sec { display: flex; flex-direction: column; gap: .8em; min-width: 0; }
 .an-sec .hint { margin: 0; }
+.ov > .row > .hint, .ov .an-mini > .row .hint { font-size: .875em; }   /* 분석 카드 안 작은 회색 글: 코이데 .hint와 같은 크기(2026-11-23) */
+.ov .an-mini > .row { font-size: 1em; }
 .ov > .row > h2, .an-sec > h2 { font-size: .84em; font-weight: 600; color: var(--ink-2); }   /* 분석 카드 제목: 코이데처럼 작은 회색 이름표(.label)로(2026-11-23, 공용 규칙 59번과 같은 뜻) */
 .an-dept { display: flex; flex-direction: column; gap: .7em; padding-top: .9em; border-top: 1px solid var(--line); }
 .an-dept:first-of-type { padding-top: 0; border-top: 0; }
@@ -855,9 +857,9 @@ label.f { display: block; font-size: .85em; font-weight: 600; margin: 12px 0 4px
 .an-col { display: flex; flex-direction: column; align-items: center; justify-content: flex-end; gap: .25em; min-width: 0; }
 .an-bar { width: 62%; max-width: 1.8em; background: var(--accent-mid); border-radius: 4px 4px 0 0; }
 .an-col.now .an-bar { background: var(--accent); }
-.an-v { font-size: .72em; color: var(--ink-2); font-variant-numeric: tabular-nums; }
+.an-v { font-size: .68em; color: var(--ink-2); font-variant-numeric: tabular-nums; }
 .an-col.now .an-v { color: var(--ink); font-weight: 600; }
-.an-x { font-size: .72em; color: var(--ink-2); padding-bottom: .2em; }
+.an-x { font-size: .66em; color: var(--ink-2); padding-bottom: .2em; }
 .an-cols.w8 { grid-template-columns: repeat(8, minmax(0, 1fr)); }   /* 주별 8주(2026-11-20) */
 .an-cols.w8 .an-bar { width: 52%; min-height: 3px; }
 /* 관리 전환 화면: 화면 전체를 덮고 세 겹 끈이 엮이며 나타난다 */
@@ -4392,8 +4394,8 @@ const adDeptCard = d => {
   const bad = s.admins < 2, why = s.admins === 0 ? '부서 관리자가 없어요' : s.admins === 1 ? '관리자가 한 명뿐이에요' : '';
   return `<button class="card ch-dept" type="button" data-act="ad-deptgo" data-v="${d.id}" data-hl="${d.id}">
     <span class="row"><i class="ad-dot${bad ? ' bad' : ''}" aria-hidden="true"></i><b>${esc(d.name)}</b><span class="vh">${bad ? '앱 상태 확인이 필요해요' : '앱 상태 괜찮아요'}</span><span class="ad-chev" style="transform:rotate(-90deg)" aria-hidden="true">${ic('chev')}</span></span>
-    <small>소그룹 이름 ${esc(d.group)}, ${solo ? '개인' : '가정'} 단위</small>
-    <small>${esc(d.group)} ${s.rooms}곳, ${solo ? '' : '가정 ' + s.fams + ', '}사람 ${s.people}명</small>
+    <small>소그룹 이름 ${esc(d.group)} · ${solo ? '개인' : '가정'} 단위</small>
+    <small>${esc(d.group)} ${s.rooms}곳 · ${solo ? `사람 ${s.people}명` : `가정 ${s.fams}`}</small>
     <span class="ch-todos">${s.reqs ? `<span class="ch-todo">연결 신청 ${s.reqs}</span>` : ''}${why ? `<span class="ch-todo soft">${why}</span>` : ''}${!s.reqs && !why ? '<span class="ch-todo soft">지금 할 일이 없어요</span>' : ''}</span></button>`;
 };
 const adDeptForm = () => {
@@ -4422,11 +4424,11 @@ function churchAdminView() {
   const sec = (h, list) => `<p class="more-h">${h}</p><section class="card mrows folds">${list.join('')}</section>`;
   const rows = {
     ops: [
-      adFold('capp', '앱 상태', ADL ? adlCAppSum() : esc(`모두 괜찮아요, 화면 ${a.app.version}`), ADL ? adlCAppBody : adCAppBody, ADL ? adlCAppDot() : '<i class="ad-dot" aria-hidden="true"></i>'),
+      adFold('capp', '앱 상태', ADL ? adlCAppSum() : esc(`모두 괜찮아요 · 화면 ${a.app.version}`), ADL ? adlCAppBody : adCAppBody, ADL ? adlCAppDot() : '<i class="ad-dot" aria-hidden="true"></i>'),
       adFold('cchg', '변경 기록', '모든 부서', ADL ? adlCChangesBody : adChangesBody, '', AD_CHG_TIP)
     ],
     people: [
-      adFold('cadmins', '교회 관리자', nAdm < 2 ? '한 명뿐이에요, 한 명 더 정해 주세요' : esc(a.churchAdmins.map(x => x.name).join(', ')), ADL ? adlChurchAdminBody : adChurchAdminBody, `<i class="ad-dot${nAdm < 2 ? ' bad' : ''}" aria-hidden="true"></i>`, '모든 부서를 꾸리고 부서를 만들어요. 앱을 쓰는 사람의 기록은 보이지 않아요. 한 사람이 빠져도 멈추지 않도록 두 명 이상을 권해요. 마지막 남은 관리자는 자리를 넘겨준 뒤에 교회를 나갈 수 있어요.')
+      adFold('cadmins', '교회 관리자', nAdm < 2 ? '한 명뿐이에요, 한 명 더 정해 주세요' : esc(a.churchAdmins.map(x => x.name).join(' · ')), ADL ? adlChurchAdminBody : adChurchAdminBody, `<i class="ad-dot${nAdm < 2 ? ' bad' : ''}" aria-hidden="true"></i>`, '모든 부서를 꾸리고 부서를 만들어요. 앱을 쓰는 사람의 기록은 보이지 않아요. 한 사람이 빠져도 멈추지 않도록 두 명 이상을 권해요. 마지막 남은 관리자는 자리를 넘겨준 뒤에 교회를 나갈 수 있어요.')
     ],
     set: [
       adFold('cdept', ADL ? '부서 만들기 · 닫기' : '부서 만들기', `부서 ${a.depts.filter(d => !d.closed).length}곳${a.depts.some(d => d.closed) ? ` · 닫은 부서 ${a.depts.filter(d => d.closed).length}곳` : ''}`, adDeptSetBody, '', ADL ? '새 부서를 만들거나 쓰지 않는 부서를 닫아요. 닫은 부서는 첫 접속에서 빠지고 그 부서 사람은 들어오지 못해요. 명단은 남아서 다시 열 수 있어요.' : '새 부서를 만들어요. 만든 뒤에 부서 관리자를 정하고 소그룹을 만들어요.')
@@ -4438,7 +4440,7 @@ function churchAdminView() {
     </div><div class="col side">
       ${sec('앱과 요청', rows.ops)}${sec('사람', rows.people)}${sec('설정', rows.set)}
     </div></div>
-    <p class="soft">${ic('lock')} 앱을 쓰는 사람의 기록은 보이지 않아요.</p>`;
+    <p class="ad-lockline">${ic('lock')} 앱을 쓰는 사람의 기록은 보이지 않아요.</p>`;
 }
 
 // ── 분석(부서 관리와 교회 전체): 코이데 analysisView 맨 위 카드 모양을 본떴다 ──
@@ -4596,7 +4598,7 @@ const AD_NEED_SQL = 20;
 const adlSqlNo = v => { const m = /(\d+)\s*$/.exec(String(v || '')); return m ? Number(m[1]) : 0; };
 const adlCOld = () => { const c = LA.cstat; return !!c && (!!c.err || adlSqlNo(c.version) < AD_NEED_SQL); };
 const adlCFew = () => DATA.admin.depts.filter(d => !d.closed && d.stat && d.stat.admins < 2).length;
-const adlCAppSum = () => { const c = LA.cstat; if (!c) return ''; return c.err ? '서버 번호를 받지 못했어요' : adlCOld() ? 'SQL을 더 넣어 주세요' : `모두 괜찮아요, 서버 ${esc(String(c.version).slice(0, 10))}`; };
+const adlCAppSum = () => { const c = LA.cstat; if (!c) return ''; return c.err ? '서버 번호를 받지 못했어요' : adlCOld() ? 'SQL을 더 넣어 주세요' : `모두 괜찮아요 · 서버 ${esc(String(c.version).slice(0, 10))}`; };
 const adlCAppDot = () => (LA.cstat ? `<i class="ad-dot${adlCOld() ? ' bad' : ''}" aria-hidden="true"></i>` : '');
 const adlCAppBody = () => {
   const c = LA.cstat; if (!c) return adlNoData();
