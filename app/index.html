@@ -4253,7 +4253,8 @@ function adminView() {
       <a class="btn ghost" href="#more">더보기로 돌아가기</a></section>`;
   if (ADL) { const w = adlGate('admin'); if (w) return w; }
   const a = DATA.admin, dept = DATA.church.dept, tab = AD.tab, d = adDept();
-  const head = `<a class="back-link" href="#more">${ic('back')}<span>더보기</span></a>
+  const back = prevV === 'church-admin' ? ['#church-admin', '교회 전체'] : ['#more', '더보기'];   // 교회 전체에서 눌러 왔으면 그리로 돌아간다(코이데와 같게)
+  const head = `<a class="back-link" href="${back[0]}">${ic('back')}<span>${back[1]}</span></a>
     <p class="eyebrow top-eyebrow">${esc(dept)}</p><div class="page-top ad-top"><h1>${tab === 'analysis' ? '분석' : '관리'}</h1><a class="ad-link" href="#church-admin">교회 전체 ›</a></div>${adTabs(tab, false)}`;
   if (tab === 'analysis') return head + (ADL ? adlAnalysisView(false) : adAnalysisView(false));
   const probs = adProblems();
@@ -4416,8 +4417,8 @@ function churchAdminView() {
       <p class="soft" style="margin:0">데모 설정에서 역할을 관리자로 바꿔 보세요.</p>
       <a class="btn ghost" href="#more">더보기로 돌아가기</a></section>`;
   if (ADL) { const w = adlGate('church-admin'); if (w) return w; }
-  const a = DATA.admin, tab = AD.ctab, back = prevV === 'admin' ? ['#admin', DATA.church.dept + ' 관리'] : ['#more', '더보기'];
-  const head = `<a class="back-link" href="${back[0]}">${ic('back')}<span>${esc(back[1])}</span></a>
+  const a = DATA.admin, tab = AD.ctab;
+  const head = `<a class="back-link" href="#more">${ic('back')}<span>더보기</span></a>
     <p class="eyebrow top-eyebrow">${esc(a.church)}</p><div class="page-top"><h1>교회 전체</h1></div>${adTabs(tab, true)}`;
   if (tab === 'analysis') return head + (ADL ? adlAnalysisView(true) : adAnalysisView(true));
   const nAdm = a.churchAdmins.length;
@@ -4669,7 +4670,7 @@ const adlName = v => String(v == null ? '' : v);
 function adlGate(v) {
   if (LA.ready[v]) return '';
   if (!LA.work[v] && !LA.err[v]) adlLoad(v);
-  const back = v === 'church-admin' && prevV === 'admin' ? ['#admin', '관리'] : ['#more', '더보기'];
+  const back = v === 'admin' && prevV === 'church-admin' ? ['#church-admin', '교회 전체'] : ['#more', '더보기'];   // 부서 관리·교회 전체의 돌아가기와 같은 규칙
   return `<a class="back-link" href="${back[0]}">${ic('back')}<span>${back[1]}</span></a>
     <div class="page-top"><h1>${v === 'church-admin' ? '교회 전체' : v === 'rooms' ? '사랑방 전체 보기' : '관리'}</h1></div>
     <section class="card calm"><p class="calm-t">${LA.err[v] ? '잠시 문제가 생겼어요' : '불러오는 중…'}</p>${LA.err[v] ? `<p class="soft" style="margin:0">${esc(LA.err[v])}</p><button class="btn ghost" type="button" data-act="adl-reload" data-v="${v}">다시 불러오기</button>` : ''}</section>`;
