@@ -147,7 +147,7 @@ h1 { font-family: var(--f-display); font-size: 1.65em; line-height: 1.3; margin:
 .h-ic { display:inline-flex; width:1.1em; height:1.1em; align-items:center; justify-content:center; vertical-align:-.16em; flex:none; color:inherit; }
 .h-ic svg { display:block; width:100%; height:100%; overflow:visible; }
 h2 { font-size: 1.05em; margin: 0; }
-.eyebrow { font-size: .8em; color: var(--ink-2); margin: 1em 0 0; }
+.eyebrow { font-size: .84em; color: var(--ink-2); margin: 1em 0 0; }   /* 코이데 .eyebrow와 같다(.84em, 2026-11-23) */
 .top-eyebrow { margin: 0 0 2px; }   /* 코이데처럼 큰 제목 위에 둔다(교회·사랑방·부서 같은 회색 글) */
 .top-eyebrow + .page-top h1, .top-eyebrow + .sh-top h1 { margin-top: 0; }
 .hint { font-size: .82em; color: var(--ink-2); margin: .4em 0 0; }
@@ -632,7 +632,7 @@ label.f { display: block; font-size: .85em; font-weight: 600; margin: 12px 0 4px
 .two-col > .col > .card, .two-col > .col > .gc { margin: 0; }
 @media (min-width: 1000px) { .two-col { grid-template-columns: minmax(0, 1fr) 380px; gap: 24px; } }
 .seg2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 3px; padding: 3px; background: var(--surface-2); border-radius: 10px; border: 1px solid var(--line); }
-.seg2 button { font-size: .8em; border: 0; border-radius: 8px; padding: .3em 1em; min-height: 44px; background: transparent; color: var(--ink-2); cursor: pointer; }
+.seg2 button { font-size: .84em; border: 0; border-radius: 8px; padding: .3em 1em; min-height: 44px; background: transparent; color: var(--ink-2); cursor: pointer; }
 .seg2 button.on { background: var(--surface); color: var(--ink); font-weight: 600; box-shadow: 0 1px 3px var(--shadow); }
 .admin-seg { max-width: 320px; margin: 0 0 14px; }
 /* ── 교역자 홈(S-01, 2026-11-19): 코이데 목사님 홈(.home-grid·.stats·.room-board·.room-sum)의 짜임을 옮겼다. 앱에 이미 있는 이름과 겹치지 않게 sf-로 시작한다. 새 색은 없다 ── */
@@ -664,8 +664,8 @@ label.f { display: block; font-size: .85em; font-weight: 600; margin: 12px 0 4px
 .ad-fold + .ad-fold { border-top: 1px solid var(--line); }
 .ad-mrow { display: flex; align-items: center; gap: .6em; width: 100%; min-height: 56px; background: none; border: 0; padding: .8em 0; color: inherit; font: inherit; text-align: left; cursor: pointer; }
 .ad-mrow .ad-t { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: .15em; }
-.ad-mrow b { font-size: .96875rem; font-weight: 700; }
-.ad-mrow small { color: var(--ink-2); font-size: .84375rem; }
+.ad-mrow b { font-size: 1em; font-weight: 700; }   /* 코이데 .mrow와 같다: 기본 글씨(--base)의 1배, 작은 글은 .85배(2026-11-23) */
+.ad-mrow small { color: var(--ink-2); font-size: .85em; }
 .ad-mrow.sub { min-height: 48px; border-top: 1px solid var(--line); }
 .ad-dept:first-child > .ad-mrow.sub { border-top: 0; }
 .ad-chev { display: inline-flex; color: var(--ink-2); flex: none; transition: transform .2s; }
@@ -800,7 +800,12 @@ label.f { display: block; font-size: .85em; font-weight: 600; margin: 12px 0 4px
 .mchip { font-size: .76em; border-radius: 999px; padding: .2em .8em; min-height: 36px; border: 1px solid var(--line); background: var(--surface); color: var(--ink); cursor: pointer; }
 .mchip.on { background: var(--accent); border-color: var(--accent); color: var(--on-accent); font-weight: 600; }
 .req { background: var(--accent-soft); border-radius: 12px; padding: 12px; margin: 8px 0; }
-.req small { display: block; color: var(--ink-2); }
+.req small { display: block; color: var(--ink-2); font-size: .875em; }
+.req-who { display: flex; flex-wrap: wrap; align-items: center; gap: .2em .5em; margin: 0; font-size: 1.08em; }   /* 코이데 신청 카드와 같다(2026-11-23) */
+.req-where { margin: .1em 0 .3em; }
+.ad-rs-note { font-size: .875em; }   /* 코이데 편성 아래 글과 같은 크기 */
+.ad-lockline { font-size: .875em; color: var(--ink-2); margin: 14px 0 0; }   /* 화면 맨 아래 잠금 안내: 코이데 .hint와 같은 크기 */
+.ad-lockline svg { vertical-align: -.15em; }
 .apall { margin: 0 0 .6em; }
 .apall p { margin: 0 0 .5em; line-height: 1.65; }
 .ops-n { display: inline-flex; align-items: center; justify-content: center; min-width: 1.5em; height: 1.5em; padding: 0 .4em; border-radius: 999px; background: var(--warn); color: var(--on-accent); font-size: .7em; vertical-align: .15em; }
@@ -838,6 +843,7 @@ label.f { display: block; font-size: .85em; font-weight: 600; margin: 12px 0 4px
 .ov-fill { display: block; height: 100%; border-radius: 999px; background: var(--accent); }
 .an-sec { display: flex; flex-direction: column; gap: .8em; min-width: 0; }
 .an-sec .hint { margin: 0; }
+.ov > .row > h2, .an-sec > h2 { font-size: .84em; font-weight: 600; color: var(--ink-2); }   /* 분석 카드 제목: 코이데처럼 작은 회색 이름표(.label)로(2026-11-23, 공용 규칙 59번과 같은 뜻) */
 .an-dept { display: flex; flex-direction: column; gap: .7em; padding-top: .9em; border-top: 1px solid var(--line); }
 .an-dept:first-of-type { padding-top: 0; border-top: 0; }
 .an-dept > .row { align-items: baseline; }
@@ -940,7 +946,7 @@ label.f { display: block; font-size: .85em; font-weight: 600; margin: 12px 0 4px
 /* 펼치기 (read.html) */
 .read-wrap { max-width: 680px; margin: 0 auto; }
 @media (min-width: 1000px) { .read-wrap { max-width: 968px; } }
-.back-link { display: inline-flex; align-items: center; gap: .3em; min-height: 44px; margin: -8px 0 0 -4px; padding: 0 4px; color: var(--accent); font-weight: 600; text-decoration: none; font-size: .92em; }
+.back-link { display: inline-flex; align-items: center; gap: .3em; min-height: 44px; margin: -8px 0 0 -4px; padding: 0 4px; color: var(--accent); font-weight: 600; text-decoration: none; font-size: .84em; }
 .back-link:hover { color: var(--ink); }
 .read-grid { display: grid; grid-template-columns: minmax(0, 1fr); gap: 12px; align-items: start; margin-top: 4px; }
 .read-grid > * { min-width: 0; }
@@ -3862,7 +3868,7 @@ function roomsView() {
 // 데모는 보기와 단추까지만이고, 바뀐 것은 이 화면에서만 기억한다(새로 고치면 처음으로). 서버 호출은 없다.
 // 왼쪽은 할 일(연결 신청)과 편성, 오른쪽은 묶음마다 한 줄씩 접어 둔 메뉴다. 열린 줄은 여러 개 둘 수 있다.
 // 편성(사랑방 접었다 펴기, 가정 더하기 등)은 부서 관리 2에서 옮겼다. 교회 단위 메뉴(교회 관리자, 부서 만들기·닫기)와 부서 카드는 따로 여는 교회 전체 관리(#church-admin)로 옮겼다(부서 관리 3).
-const AD = { tab: 'manage', ctab: 'manage', fold: {}, reqs: null, apAsk: false, people: null, roleOpen: -1, grp: '', unit: '', grpExtra: [], open: {}, sel: '', edit: null, ask: '', mv: null, cNew: null, hl: [], left: 0, rg: null, plan: null, rgAsk: false };
+const AD = { tab: 'manage', ctab: 'manage', fold: {}, reqs: null, apAsk: false, people: null, grp: '', unit: '', grpExtra: [], open: {}, sel: '', edit: null, ask: '', mv: null, cNew: null, hl: [], left: 0, rg: null, plan: null, rgAsk: false };
 const adReqs = () => AD.reqs || (AD.reqs = DATA.admin.requests.map(r => ({ ...r })));
 // 맡은 일 목록의 사람. 부서 관리자는 편성의 가정 스위치가 기준이다(adFamOf로 편성의 가정을 찾아 읽는다). 편성에 없는 사람만 목록에 적힌 '관리자'를 쓴다
 function adPeople() {
@@ -3880,7 +3886,6 @@ const adDept = () => DATA.admin.depts.find(d => d.name === DATA.church.dept);
 const adRoomN = r => r.fams.reduce((n, f) => n + f.on.length, 0) + (!ADL && r.name === DATA.rooms.mine.name ? myRoom().members.length - DATA.rooms.mine.members.length : 0);
 const AD_NOCHANGE = '데모에서는 바뀌지 않아요.';
 const AD_SOON = '교회 새 서버에서는 아직 쓸 수 없는 기능이에요. 곧 열려요.';
-const AD_ROLES = ['리더', '코리더', '교재 담당', '관리자'];
 const AD_GROUPS = ['사랑방', '셀', '목장', '순', '구역', '조', '소그룹'];
 const adSay = (label, msg, cls) => `<button class="${cls || 'btn small ghost'}" type="button" data-act="ad-say" data-msg="${esc(ADL ? AD_SOON : msg || AD_NOCHANGE)}">${label}</button>`;   // 새 길(3-4가)에서 아직 잇지 않은 단추는 "곧 열려요"
 // 접어 둔 한 줄(제목 굵게 + 작은 설명 + 오른쪽 꺾쇠). 누르면 그 자리에서 펼쳐진다. 속은 열렸을 때만 만든다
@@ -3888,7 +3893,8 @@ const adSay = (label, msg, cls) => `<button class="${cls || 'btn small ghost'}" 
 // tip이 있으면 줄 제목 옆에 ⓘ를 둔다: 줄 버튼 안에 버튼을 넣지 않으려고, 같은 틀(.ad-mrow)의 투명한 복사본 위에 ⓘ만 보이게 겹친다(코이데 .fold-ghost와 같다)
 function adFold(key, title, sub, body, lead, tip) {
   const open = !!AD.fold[key], small = sub ? `<small>${sub}</small>` : '';
-  const ghost = tip ? `<div class="ad-mrow ad-fold-ghost">${lead || ''}<span class="ad-t"><b>${title}${DidakoTip.btn(tip, title)}</b>${small}</span><span class="ad-chev">${ic('chev')}</span></div>` : '';
+  const plain = String(title).replace(/<[^>]*>/g, '').trim();
+  const ghost = tip ? `<div class="ad-mrow ad-fold-ghost">${lead || ''}<span class="ad-t"><b>${title}${DidakoTip.btn(tip, plain)}</b>${small}</span><span class="ad-chev">${ic('chev')}</span></div>` : '';
   return `<div class="ad-fold${open ? ' open' : ''}"><button class="ad-mrow" type="button" data-act="ad-fold" data-v="${key}" aria-expanded="${open}"${open ? ` aria-controls="adf-${key}"` : ''}>${lead || ''}<span class="ad-t"><b>${title}</b>${small}</span><span class="ad-chev" aria-hidden="true">${ic('chev')}</span></button>${ghost}
     ${open ? `<div class="ad-fold-body" id="adf-${key}">${body()}</div>` : ''}</div>`;
 }
@@ -3902,13 +3908,18 @@ function adApproveAll(n) {
 }
 function adReqCard() {
   const reqs = adReqs();
-  if (!reqs.length) return `<section class="card"><p class="hint" style="margin:0">지금 할 일이 없어요.</p></section>`;
   return `<section class="card"><h2>연결 신청 <span class="ops-n">${reqs.length}</span></h2>
     ${adApproveAll(reqs.length)}
-    ${reqs.map(q => `<div class="req"><b>${esc(q.name)} 님 → ${esc(q.room)}</b>
-      <small>로그인 이름 "${esc(q.nick)}", ${esc(q.at)} 요청</small>
-      <div class="ad-acts" style="margin-top:8px"><button class="btn small" type="button" data-act="ad-approve" data-v="${esc(q.id)}">승인</button><button class="btn small ghost" type="button" data-act="ad-reject" data-v="${esc(q.id)}">거절</button></div></div>`).join('')}</section>`;
+    ${reqs.map(q => `<div class="req"><p class="req-who"><b>${esc(q.name)} 님</b></p>
+      <p class="req-where">${esc(adJ(q.room, '으로/로'))} 들어오고 싶어요</p>
+      <small>로그인 계정 이름: ${esc(q.nick)} · ${esc(q.at)} 요청</small>
+      <div class="ad-acts" style="margin-top:10px"><button class="btn small" type="button" data-act="ad-approve" data-v="${esc(q.id)}">승인</button><button class="btn small ghost" type="button" data-act="ad-reject" data-v="${esc(q.id)}">거절</button></div></div>`).join('')}</section>`;
 }
+// 할 일에 올라오는 것(코이데와 같다): 연결 신청 · 앱 상태에 문제가 있을 때 · 지울 기록 · 새 의견. 개수가 달린 한 줄은 처리할 게 있을 때만 이곳에 있고, 없으면 오른쪽 '앱과 요청'에 있다
+const adPrivN = () => { const P = ADL ? LA.ops && LA.ops.privacy : DATA.admin.privacy; return P ? P.requests.length + P.due.length : 0; };
+const adFbAll = () => (ADL ? LA.ops && LA.ops.feedback : DATA.admin.feedback) || [];
+const adFbNew = () => adFbAll().filter(x => !x.read).length;
+const adAppBad = () => (ADL ? !!(LA.ops && LA.ops.admins < 2) : adProblems().length > 0);
 // 편성: 코이데의 편성(소그룹과 가정)을 옮겼다. 서버 호출은 없고, 바뀐 것은 DATA.admin에만 남는다(새로 고치면 처음으로).
 // 사랑방마다 접었다 펴고, 펼치면 가정(개인 단위 부서는 사람)마다 이름, 리더·코리더·관리자 표시, 연결 상태가 있다.
 // 가정 줄을 누르면 역할, 다른 사랑방으로 옮기기, 연결 해제, 편성에서 빼기(떠남)가 나온다. 카드 아래에는 사랑방 만들기, 결혼해서 가정 합치기, 다른 부서에서 옮겨 오기.
@@ -3924,8 +3935,6 @@ const adKey = parts => parts.map(x => x.replace(/\s+/g, '')).sort().join('|');
 const adNick = n => (n.length > 2 ? n.slice(1) : n);
 const adFamOf = name => { for (const d of DATA.admin.depts) for (const r of d.rooms) { const f = r.fams.find(x => adNames(x).includes(name)); if (f) return { f, r, d }; } return null; };
 const adAdminOf = f => f.on[0] || adNames(f)[0];
-// 사람의 맡은 일(AD_ROLES 순서). 관리자는 편성의 가정을 찾으면 그 가정 스위치를, 못 찾으면 목록에 적힌 것을 읽는다
-const adRoleList = p => { const x = adFamOf(p.name), has = x ? !!x.f.admin : p.roles.includes('관리자'); return AD_ROLES.filter(r => (r === '관리자' ? has : p.roles.includes(r))); };
 // 한 부서의 부서 관리자: 스위치를 켠 가정마다 한 사람(연결된 첫 사람), 편성에 없는데 목록에 관리자로 적힌 사람
 const adDeptAdmins = d => {
   const out = [];
@@ -3983,7 +3992,9 @@ function adRosterCard() {
       <p class="ad-pn-st">${adDot(n)}${n ? '연결 ' + n + '명' : '아직 연결 없음'}</p>
       <div class="ad-pn-sec"><p class="ad-label">역할</p><div class="seg" style="--n:3" role="radiogroup" aria-label="${esc(f.name)} 역할">${['회원', '코리더', '리더'].map(k => `<button type="button" class="${role === k ? 'on' : ''}" role="radio" aria-checked="${role === k}" data-act="ad-rrole" data-v="${k}">${k}</button>`).join('')}</div>
         <div class="set-row" style="margin-top:.7em"><div><p class="ad-label" style="margin:0">부서 관리자${DidakoTip.btn('이 관리 화면을 함께 열어요.', '부서 관리자')}</p></div>
-          <button type="button" class="switch${f.admin ? ' on' : ''}" role="switch" aria-checked="${!!f.admin}" aria-label="${esc(f.name)} 부서 관리자" data-act="ad-radmin"><span></span></button></div></div>
+          <button type="button" class="switch${f.admin ? ' on' : ''}" role="switch" aria-checked="${!!f.admin}" aria-label="${esc(f.name)} 부서 관리자" data-act="ad-radmin"><span></span></button></div>
+        <div class="set-row" style="margin-top:.7em"><div><p class="ad-label" style="margin:0">교재 담당${DidakoTip.btn('교재 관리를 열어요. 교재를 만들고 고치고, 누구에게 보일지 정해요.', '교재 담당')}</p></div>
+          <button type="button" class="switch${f.writer ? ' on' : ''}" role="switch" aria-checked="${!!f.writer}" aria-label="${esc(f.name)} 교재 담당" data-act="ad-rwriter"><span></span></button></div></div>
       <div class="ad-pn-sec"><p class="ad-label">소속</p><p style="margin:0${others.length ? ' 0 .5em' : ''}">지금 <b>${esc(r.name)}</b></p>
         ${others.length ? `<div class="ad-kform"><label class="ad-mv-l" for="adMoveTo">다른 ${esc(adJ(g, '으로/로'))}</label><select id="adMoveTo" class="field">${others.map(x => `<option value="${x.id}">${esc(x.name)}</option>`).join('')}</select><button class="btn small ghost" type="button" data-act="ad-rmove">옮기기</button></div>` : ''}</div>
       <div class="ad-pn-sec"><p class="ad-label">연결</p>${n ? `<ul class="ad-rs-links">${f.on.map(p => `<li><span>${esc(p)} <small>로그인 이름 "${esc(ADL ? adlNick(f, p) : adNick(p))}"</small></span>${ask === 'unlink:' + p
@@ -4025,7 +4036,7 @@ function adRosterCard() {
     ${addRoom ? `<form class="ad-rs-form" data-adform="room"><label class="ad-label" for="adNewRoom">새 ${esc(g)} 이름</label><div class="ad-kform"><input id="adNewRoom" class="field" name="n" maxlength="20" placeholder="예) 1${esc(g)}" autocomplete="off" data-adin="n" value="${esc(E0.n || '')}"><button class="btn small" type="submit">만들기</button><button class="btn small ghost" type="button" data-act="ad-redit" data-v="">취소</button></div></form>`
       : `<div class="ad-foot ad-foot-btns"><button class="btn small ghost" type="button" data-act="ad-redit" data-v="room|">+ ${esc(g)} 만들기</button>${solo ? '' : `<button class="btn small ghost" type="button" data-act="ad-mvstart" data-v="marry">결혼해서 가정 합치기</button>`}${hasOther ? `<button class="btn small ghost" type="button" data-act="ad-mvstart" data-v="move">다른 부서에서 옮겨 오기</button>` : ''}</div>`}
     ${ADL ? adlLeftList() + adlRecentList() : ''}
-    <p class="hint">${DATA.admin.term}년 편성이에요. 떠나도 각자의 기록은 남아요.</p></section>`;
+    <p class="hint ad-rs-note">${DATA.admin.term}년 편성이에요. 떠나도 각자의 기록은 남아요.</p></section>`;
 }
 // ── 결혼해서 가정 합치기, 다른 부서에서 옮겨 오기: 관리자가 두 분(또는 옮길 가정)께 직접 확인하고 처리한다 ──
 // AD.mv: { kind: 'marry' | 'move', step, a, b, newOn, newPerson, name, nameEdited, roomId, inherit, map, ok, slot, q, found }
@@ -4126,17 +4137,6 @@ const adInviteBody = () => {
   const I = DATA.admin.invites, row = label => `<li><div class="ad-main"><b>${esc(label)}</b></div><span class="ad-btns">${adSay('복사', '데모에서는 복사하지 않아요.')}${adSay('QR 보기', '데모에서는 QR을 만들지 않아요.')}</span></li>`;
   return `<ul class="ad-list">${row(I.dept)}${I.rooms.map(n => row(n)).join('')}</ul>
 `;
-};
-const adPeopleBody = () => {
-  const ppl = adPeople(), admins = adDeptAdmins(adDept());
-  const panel = (p, i) => `<div class="ad-panel">${AD_ROLES.map(role => { const on = adRoleList(p).includes(role); return `<div class="set-row"><b>${role}</b><button class="switch${on ? ' on' : ''}" type="button" role="switch" aria-label="${esc(p.name)} ${role}" aria-checked="${on}" data-act="ad-toggle" data-i="${i}" data-role="${role}"><span></span></button></div>`; }).join('')}
-      <div class="ad-acts">${adSay('저장', '', 'btn small')}</div></div>`;
-  return `<ul class="ad-list">${ppl.map((p, i) => ({ p, i, roles: adRoleList(p) })).filter(x => x.roles.length || AD.roleOpen === x.i).map(({ p, i, roles }) => `<li><div class="ad-main"><b>${esc(p.name)}</b><small>${esc(p.where)}</small>${roles.length ? `<span class="kids">${roles.map(role => `<span class="kid${role === '리더' || role === '코리더' ? ' lead' : ''}">${esc(role)}</span>`).join('')}</span>` : ''}</div><button class="btn small ghost" type="button" data-act="ad-role" data-i="${i}" aria-expanded="${AD.roleOpen === i}">${AD.roleOpen === i ? '접기' : '바꾸기'}</button>${AD.roleOpen === i ? panel(p, i) : ''}</li>`).join('')}</ul>
-    <div class="ad-acts">${adSay('맡은 일 맡기기', '', 'btn small')}</div>
-    <p class="ad-sub">관리자${DidakoTip.btn('한 사람이 빠져도 운영이 멈추지 않도록 관리자는 두 명 이상을 권해요.', '관리자')}</p>
-    ${admins.length ? `<ul class="ad-list">${admins.map(name => `<li><div class="ad-main"><b>${esc(name)}</b></div></li>`).join('')}</ul>` : '<p class="hint">관리자가 없어요.</p>'}
-    <div class="ad-acts">${adSay('관리자 더하기', '', 'btn small')}${adSay('내 자리 넘겨주기')}</div>
-    <p class="soft" style="margin:0">마지막 남은 관리자는 자리를 넘겨준 뒤에 교회를 나갈 수 있어요.</p>`;
 };
 // 앱 상태: 문제가 없으면 한 줄로 "모두 괜찮아요". 관리자가 한 명뿐이면 문제로 보인다(코이데 opsCard처럼)
 const adProblems = () => (adDeptAdmins(adDept()).length < 2 ? ['관리자가 한 명뿐이에요'] : []);
@@ -4255,32 +4255,44 @@ function adminView() {
     <p class="eyebrow top-eyebrow">${esc(dept)}</p><div class="page-top ad-top"><h1>${tab === 'analysis' ? '분석' : '관리'}</h1><a class="ad-link" href="#church-admin">교회 전체 ›</a></div>${adTabs(tab, false)}`;
   if (tab === 'analysis') return head + (ADL ? adlAnalysisView(false) : adAnalysisView(false));
   const probs = adProblems();
+  // 할 일(코이데와 같다): 연결 신청, 앱 상태에 문제가 있을 때의 앱 상태, 지울 기록, 새 의견. 이 줄들은 처리할 게 있을 때만 위로 올라오고, 없으면 오른쪽 '앱과 요청'에 있다
+  const reqs = adReqs(), privN = adPrivN(), fbN = adFbNew(), appBad = adAppBad();
+  const appRow = () => adFold('app', '앱 상태', ADL ? adlAppSum() : probs.length ? esc(probs.join(' · ')) : `모두 괜찮아요 · 화면 ${esc(a.app.version)}`, ADL ? adlAppBody : adAppBody, ADL ? adlAppDot() : `<i class="ad-dot${probs.length ? ' bad' : ''}" aria-hidden="true"></i>`);
+  const privTip = ADL ? AD_PRIVACY_TIP_LIVE : '회원의 기록은 잠겨 있어서 아무도 읽을 수 없어요. 떠난 지 1년이 된 가정과 기록을 지워 달라고 한 사람이 여기 올라와요. 지우면 그 사람의 잠긴 기록 덩어리를 지워요.';
+  const fbTip = '이름을 밝힌 의견에만 보낸 사람이 나와요.';
+  const P0 = ADL ? (LA.ops && LA.ops.privacy) : DATA.admin.privacy;
+  const todoRows = [
+    appBad ? appRow() : '',
+    privN ? adFold('privacy', `개인정보 요청 <span class="ops-n">${privN}</span>`, [P0.requests.length ? `지워 달라는 요청 ${P0.requests.length}` : '', P0.due.length ? `지워야 할 기록 ${P0.due.length}` : ''].filter(Boolean).join(' · '), ADL ? adlPrivacyBody : adPrivacyBody, '', privTip) : '',
+    fbN ? adFold('feedback', `의견함 <span class="ops-n">${fbN}</span>`, `새 의견 ${fbN}${adFbAll().length > fbN ? ` · 받은 의견 ${adFbAll().length}` : ''}`, ADL ? adlFeedbackBody : adFeedbackBody, '', fbTip) : ''
+  ].join('');
+  const todo = [reqs.length ? adReqCard() : '', todoRows ? `<section class="card mrows folds">${todoRows}</section>` : ''].join('')
+    || `<section class="card"><p class="hint" style="margin:0">지금 할 일이 없어요.</p></section>`;
   const rows = {
     people: [
-      adFold('staff', '교역자', a.staff.length ? a.staff.map(s => esc(s.name + ' ' + s.title)).join(', ') : '아직 없어요', ADL ? adlStaffBody : adStaffBody, '', '교역자가 연결을 신청하면 여기서 승인해요. 다른 사람의 신청은 위 할 일에서 승인해요.'),
-      adFold('invite', '초대 링크 · QR', `${esc(dept)} 전체, ${esc(d.group)} ${a.invites.rooms.length}곳`, ADL ? adlInviteBody : adInviteBody, '', `${a.invites.dept} 링크는 새가족 환영, 주보, 교회 화면에 써요. ${d.group} 링크로 들어오면 ${d.group}을 고르는 단계를 건너뛰어요. 링크로 들어와도 연결 승인은 리더가 해요.`),
-      adFold('people', '맡은 일', '', ADL ? adlPeopleBody : adPeopleBody)
+      adFold('staff', '교역자', a.staff.length ? a.staff.map(s => esc(s.name + ' ' + s.title)).join(' · ') : '아직 없어요', ADL ? adlStaffBody : adStaffBody, '', '교역자가 연결을 신청하면 여기서 승인해요. 다른 사람의 신청은 위 할 일에서 승인해요.'),
+      adFold('invite', '초대 링크 · QR', `${esc(dept)} 전체 · ${esc(d.group)} ${a.invites.rooms.length}곳`, ADL ? adlInviteBody : adInviteBody, '', `${a.invites.dept} 링크는 새가족 환영, 주보, 교회 화면에 써요. ${d.group} 링크로 들어오면 ${d.group}을 고르는 단계를 건너뛰어요. 링크로 들어와도 연결 승인은 리더가 해요.`)
     ],
     ops: [
-      adFold('app', '앱 상태', ADL ? adlAppSum() : probs.length ? esc(probs.join(', ')) : `모두 괜찮아요, 화면 ${esc(a.app.version)}`, ADL ? adlAppBody : adAppBody, ADL ? adlAppDot() : `<i class="ad-dot${probs.length ? ' bad' : ''}" aria-hidden="true"></i>`),
-      adFold('privacy', '개인정보 요청', ADL ? adlPrivacySum() : adLater() ? `떠난 가정 ${adLater()}곳, 1년이 되면 올라와요` : '지울 기록이 없어요', ADL ? adlPrivacyBody : adPrivacyBody, '', ADL ? AD_PRIVACY_TIP_LIVE : '회원의 기록은 잠겨 있어서 아무도 읽을 수 없어요. 떠난 지 1년이 된 가정과 기록을 지워 달라고 한 사람이 여기 올라와요. 지우면 그 사람의 잠긴 기록 덩어리를 지워요.'),
+      appBad ? '' : appRow(),
+      privN ? '' : adFold('privacy', '개인정보 요청', ADL ? adlPrivacySum() : adLater() ? `떠난 가정 ${adLater()}곳 · 1년이 되면 올라와요` : '지울 기록이 없어요', ADL ? adlPrivacyBody : adPrivacyBody, '', privTip),
       adFold('changes', '변경 기록', '', ADL ? adlChangesBody : adChangesBody, '', AD_CHG_TIP),
-      adFold('feedback', '의견함', ADL ? adlFeedbackSum() : a.feedback.length ? `받은 의견 ${a.feedback.length}` : '아직 없어요', ADL ? adlFeedbackBody : adFeedbackBody, '', '이름을 밝힌 의견에만 보낸 사람이 나와요.')
-    ],
+      fbN ? '' : adFold('feedback', '의견함', ADL ? adlFeedbackSum() : a.feedback.length ? `받은 의견 ${a.feedback.length}` : '아직 없어요', ADL ? adlFeedbackBody : adFeedbackBody, '', fbTip)
+    ].filter(Boolean),
     set: [
       adFold('group', '소그룹 이름', esc(d.group), adGroupBody, '', '우리 부서에서 소그룹을 부르는 말이에요. 앱 곳곳의 이름이 이 말로 바뀌어요.'),
-      adFold('reorg', '연도 개편', AD.plan ? `${esc(a.nextYear)}년 편성 예약, ${esc(adMonName(AD.plan.start))}부터` : `${esc(a.nextYear)}년 개편 준비`, adReorgBody, '', `교회에서 받은 편성표를 붙여 넣어 ${a.nextYear}년 편성을 만들고, 바뀌는 날을 예약해요. 그날까지는 지금 편성(${a.term}년)이 그대로예요.`)
+      adFold('reorg', '연도 개편', AD.plan ? `${esc(a.nextYear)}년 편성 예약 · ${esc(adMonName(AD.plan.start))}부터` : `${esc(a.nextYear)}년 개편 준비`, adReorgBody, '', `교회에서 받은 편성표를 붙여 넣어 ${a.nextYear}년 편성을 만들고, 바뀌는 날을 예약해요. 그날까지는 지금 편성(${a.term}년)이 그대로예요.`)
     ]
   };
   const sec = (h, list) => `<p class="more-h">${h}</p><section class="card mrows folds">${list.join('')}</section>`;
   return `${head}
     <div class="two-col"><div class="col">
-      <p class="more-h">할 일</p>${adReqCard()}
+      <p class="more-h">할 일</p>${todo}
       <p class="more-h">편성</p>${adRosterCard()}
     </div><div class="col side">
       ${sec('사람', rows.people)}${sec('앱과 요청', rows.ops)}${sec('설정', rows.set)}
     </div></div>
-    <p class="soft">${ic('lock')} 앱을 쓰는 사람의 기록은 보이지 않아요.</p>`;
+    <p class="ad-lockline">${ic('lock')} 앱을 쓰는 사람의 기록은 보이지 않아요.</p>`;
 }
 
 // 연도 개편 마법사 화면(#admin-reorg). 단계 표시 1~4, 단계마다 [이전] [다음], [그만두기]는 관리 화면으로
@@ -4543,14 +4555,14 @@ function adShowHl() {
 // 화면 코드(adminView·adRosterCard 등)는 그대로 쓴다. 바꾸는 누름은 서버를 부르고 그 화면 자료를 다시 받아 그린다(adlRun).
 // 사랑방·가정 id는 서버 uuid다. 연결은 가정마다 사람 이름(on)과 연결 줄(links: id·person·nick)을 함께 두어 해제가 연결 줄 id로 간다.
 // 결혼 합치기·부서 옮기기·연도 개편은 3-4나, 앱 상태·개인정보 요청·변경 기록·의견함·분석은 3-4다(supabase/014)에서 이었다.
-function adlFresh() { return { dept: '', ready: {}, work: {}, err: {}, busy: false, left: [], moves: [], marries: [], wait: [], all: false, allPeople: false,
+function adlFresh() { return { dept: '', ready: {}, work: {}, err: {}, busy: false, left: [], moves: [], marries: [], wait: [], all: false,
   ops: null, changes: null, an: {}, erase: '', cstat: null, cchanges: null, chgN: 20 }; }   // ops·changes·an: 3-4다(앱 상태·개인정보 요청·의견함, 변경 기록, 분석). erase: 이름을 한 번 더 적는 중인 가정. cstat·cchanges: 교회 전체의 앱 상태·모든 부서 변경 기록(020). chgN: 변경 기록에 보이는 줄 수
 const adlSoonCard = what => `<section class="card calm"><p class="calm-t">${esc(what)}은 곧 열려요</p><p class="soft" style="margin:0">${esc(AD_SOON)}</p></section>`;
 const adlSoonBody = () => `<p class="hint" style="margin:0">${esc(AD_SOON)}</p>`;
 // ── 3-4다: 앱 상태·개인정보 요청·변경 기록·의견함·분석(supabase/014). 못 받았으면 접은 줄 안에 까닭만 보인다 ──
 const AD_PRIVACY_TIP_LIVE = '회원의 기록은 각자 휴대폰에서 잠겨 있어서 아무도 읽을 수 없어요. 떠난 지 1년이 된 가정과 지워 달라고 한 가정이 여기 올라와요. 지우면 그 가정의 이름과 연결을 명단에서 지워요.';
 const adlNoData = () => '<p class="hint" style="margin:0">불러오지 못했어요. 화면을 다시 열어 주세요.</p>';
-const adlAppSum = () => { const o = LA.ops; if (!o) return ''; return o.admins < 2 ? '관리자가 한 명뿐이에요' : `모두 괜찮아요, 서버 ${esc(String(o.version || '').slice(0, 10))}`; };
+const adlAppSum = () => { const o = LA.ops; if (!o) return ''; return o.admins < 2 ? '관리자가 한 명뿐이에요' : `모두 괜찮아요 · 서버 ${esc(String(o.version || '').slice(0, 10))}`; };
 const adlAppDot = () => (LA.ops ? `<i class="ad-dot${LA.ops.admins < 2 ? ' bad' : ''}" aria-hidden="true"></i>` : '');
 const adlAppBody = () => {
   const o = LA.ops; if (!o) return adlNoData();
@@ -4559,7 +4571,7 @@ const adlAppBody = () => {
     ${row('관리자', `${n}명${n < 2 ? '<p class="warn-text">한 사람이 빠져도 멈추지 않게 관리자를 한 명 더 정해 주세요.</p>' : ''}`)}</div>`;
 };
 const adlPrivacySum = () => { const P = LA.ops && LA.ops.privacy; if (!P) return ''; const n = P.requests.length + P.due.length;
-  return n ? `지울 ${adSolo() ? '사람' : '가정'} ${n}곳` : P.later ? `떠난 가정 ${P.later}곳, 1년이 되면 올라와요` : '지울 기록이 없어요'; };
+  return n ? `지울 ${adSolo() ? '사람' : '가정'} ${n}곳` : P.later ? `떠난 가정 ${P.later}곳 · 1년이 되면 올라와요` : '지울 기록이 없어요'; };
 const adlPrivacyBody = () => {
   const P = LA.ops && LA.ops.privacy; if (!P) return adlNoData();
   const li = (f, why, due) => `<li><div class="ad-main"><b>${esc(adlName(f.name))}</b><small>${esc(why)}</small></div>${LA.erase === f.id ? '' : `<span class="ad-btns">${due ? `<button class="btn small ghost" type="button" data-act="adl-keep" data-v="${esc(f.id)}">1년 더 두기</button>` : ''}<button class="btn small" type="button" data-act="adl-erase-ask" data-v="${esc(f.id)}">지우기</button></span>`}</li>
@@ -4601,7 +4613,7 @@ const adCAppBody = () => {
     ${row('최근 오류', app.errors ? `7일 동안 ${app.errors}번` : '7일 동안 없어요')}</div>`;
 };
 const AD_CHG_TIP = '누가 언제 무엇을 바꿨는지만 남아요. 회원의 기록 내용은 남기지 않아요.';
-const adlFeedbackSum = () => { const L = LA.ops && LA.ops.feedback; if (!L) return ''; const u = L.filter(x => !x.read).length; return L.length ? `받은 의견 ${L.length}${u ? `, 새 의견 ${u}` : ''}` : '아직 없어요'; };
+const adlFeedbackSum = () => { const L = LA.ops && LA.ops.feedback; if (!L) return ''; const u = L.filter(x => !x.read).length; return L.length ? `${u ? `새 의견 ${u} · ` : ''}받은 의견 ${L.length}` : '아직 없어요'; };
 const adlFeedbackBody = () => {
   const L = LA.ops && LA.ops.feedback; if (!L) return adlNoData();
   return L.length ? `<ul class="ad-list fb">${L.map(x => `<li><div class="ad-main"><span class="ad-l1"><span class="fb-kind">${esc(adlName(x.kind))}</span><small>${esc(adlName(x.at))}${x.person ? ' · ' + esc(adlName(x.person)) : ''}</small></span><p>${esc(adlName(x.text))}</p></div>${x.read ? '' : `<button class="btn small ghost" type="button" data-act="adl-fb-read" data-v="${esc(x.id)}">읽음</button>`}</li>`).join('')}</ul>` : '<p class="hint">아직 받은 의견이 없어요. 회원은 더보기 › 의견 보내기에서 보내요.</p>';
@@ -4828,20 +4840,7 @@ const adlInviteBody = () => {
   return `<ul class="ad-list">${T.map(x => `<li><div class="ad-main"><b>${esc(x.label)}</b></div><span class="ad-btns"><button class="btn small ghost" type="button" data-act="adl-copy" data-v="${esc(x.token)}">복사</button>${adSay('QR 보기')}<button class="ad-link quiet" type="button" data-act="adl-renew" data-v="${esc(x.room)}">새로 만들기</button></span></li>`).join('')}</ul>
     <p class="hint">새로 만들면 예전 링크로는 더 들어오지 못해요.</p>`;
 };
-// 맡은 일: 리더·코리더·교재 담당·관리자(부서 관리자 표시). 스위치를 누르면 바로 저장된다
-const AD_LROLES = ['리더', '코리더', '교재 담당', '관리자'];
-const adlRolesOf = f => AD_LROLES.filter(k => (k === '관리자' ? f.admin : k === '교재 담당' ? f.writer : f.role === k));
-const adlPeopleBody = () => {
-  const d = adDept(), all = d.rooms.flatMap(r => r.fams.map(f => ({ f, r })));
-  const list = all.filter(x => LA.allPeople || adlRolesOf(x.f).length || AD.roleOpen === x.f.id);
-  const panel = f => `<div class="ad-panel">${AD_LROLES.map(k => { const on = adlRolesOf(f).includes(k); return `<div class="set-row"><b>${k}</b><button class="switch${on ? ' on' : ''}" type="button" role="switch" aria-label="${esc(f.name)} ${k}" aria-checked="${on}" data-act="adl-role" data-fam="${esc(f.id)}" data-role="${k}"><span></span></button></div>`; }).join('')}
-      <p class="hint" style="margin:0">누르면 바로 저장돼요.</p></div>`;
-  const admins = all.filter(x => x.f.admin).map(x => adAdminOf(x.f) + ' (' + x.r.name + ')').concat(DATA.admin.churchAdmins.map(x => x.name + ' (교회 관리자)'));
-  return `${list.length ? `<ul class="ad-list">${list.map(({ f, r }) => { const roles = adlRolesOf(f), open = AD.roleOpen === f.id; return `<li><div class="ad-main"><b>${esc(f.name)}</b><small>${esc(r.name)}</small>${roles.length ? `<span class="kids">${roles.map(k => `<span class="kid${k === '리더' || k === '코리더' ? ' lead' : ''}">${esc(k)}</span>`).join('')}</span>` : ''}</div><button class="btn small ghost" type="button" data-act="adl-role-open" data-v="${esc(f.id)}" aria-expanded="${open}">${open ? '접기' : '바꾸기'}</button>${open ? panel(f) : ''}</li>`; }).join('')}</ul>` : '<p class="hint">아직 맡은 일이 있는 분이 없어요.</p>'}
-    <div class="ad-acts"><button class="btn small" type="button" data-act="adl-allpeople">${LA.allPeople ? '맡은 일 있는 분만 보기' : '맡은 일 맡기기'}</button></div>
-    <p class="ad-sub">관리자${DidakoTip.btn('한 사람이 빠져도 운영이 멈추지 않도록 관리자는 두 명 이상을 권해요. 부서 관리자는 편성에서 가정을 눌러 켜요.', '관리자')}</p>
-    ${admins.length ? `<ul class="ad-list">${admins.map(n => `<li><div class="ad-main"><b>${esc(n)}</b></div></li>`).join('')}</ul>` : '<p class="hint">관리자가 없어요.</p>'}`;
-};
+// 교재 담당은 편성에서 사람을 눌러 켠다(맡은 일 줄을 없앴다, 2026-11-23)
 // 교회 관리자: 목록(나 말고 빼기), 쓰지 않은 초대 링크(링크 복사·취소), 초대(일회용 링크, 7일). 코이데와 같은 경험: 설치 코드는 화면에 보이지 않고 링크에 실려 간다
 const adlChurchAdminBody = () => {
   const L = DATA.admin.churchAdmins;
@@ -6263,8 +6262,6 @@ const acts = {
   'ad-apall'() { AD.apAsk = true; adRedraw('[data-act="ad-apall-do"]'); },
   'ad-apall-no'() { AD.apAsk = false; adRedraw('[data-act="ad-apall"]'); },
   'ad-apall-do'() { AD.reqs = []; AD.apAsk = false; toast('모두 승인했어요.'); adRedraw(); },
-  'ad-role'(e, el) { const i = Number(el.dataset.i); AD.roleOpen = AD.roleOpen === i ? -1 : i; adRedraw(`[data-act="ad-role"][data-i="${i}"]`); },
-  'ad-toggle'(e, el) { const p = adPeople()[Number(el.dataset.i)], role = el.dataset.role; if (!p) return; const x = role === '관리자' && adFamOf(p.name); if (x) x.f.admin = !x.f.admin; else p.roles = p.roles.includes(role) ? p.roles.filter(r => r !== role) : p.roles.concat(role); adRedraw(`[data-act="ad-toggle"][data-i="${el.dataset.i}"][data-role="${role}"]`); },
   'ad-grp'(e, el) { AD.grp = el.dataset.v; adRedraw(`[data-act="ad-grp"][data-v="${AD.grp}"]`); },
   'ad-grp-write'() { const t = $('#adGrpIn'), v = t ? t.value.trim().slice(0, 6) : ''; if (!v) return; if (!AD_GROUPS.includes(v) && !AD.grpExtra.includes(v)) AD.grpExtra.push(v); AD.grp = v; adRedraw(`[data-act="ad-grp"][data-v="${v}"]`); },
   'ad-unit'(e, el) { AD.unit = el.dataset.v === 'single' ? 'single' : 'family'; adRedraw(`[data-act="ad-unit"][data-v="${AD.unit}"]`); },
@@ -6301,6 +6298,7 @@ const acts = {
     x.f.role = role; adSync(x.r); AD.hl = [x.f.id]; toast(adJ(k, '으로/로') + ' 정했어요'); adRedraw(`[data-act="ad-rrole"][data-v="${k}"]`);
   },
   'ad-radmin'() { const x = adFamById(AD.sel); if (!x) return; x.f.admin = !x.f.admin; toast(x.f.admin ? '부서 관리자로 정했어요.' : '부서 관리자에서 뺐어요.'); adRedraw('[data-act="ad-radmin"]'); },
+  'ad-rwriter'() { const x = adFamById(AD.sel); if (!x) return; x.f.writer = !x.f.writer; toast(x.f.writer ? '교재 담당을 맡겼어요.' : '교재 담당에서 뺐어요.'); adRedraw('[data-act="ad-rwriter"]'); },
   'ad-rmove'() {
     const x = adFamById(AD.sel), to = adDept().rooms.find(r => r.id === (($('#adMoveTo') || {}).value)); if (!x || !to) return;
     x.r.fams = x.r.fams.filter(f => f.id !== x.f.id);
@@ -7191,6 +7189,7 @@ if (ADL) Object.assign(acts, {
   },
   'ad-rrole'(e, el) { const k = el.dataset.v; adlRun('adRole', { fam: AD.sel, role: k }, adJ(k, '으로/로') + ' 정했어요'); },
   'ad-radmin'() { const x = adFamById(AD.sel); if (!x) return; adlRun('adAdminFlag', { fam: x.f.id, on: !x.f.admin }, x.f.admin ? '부서 관리자에서 뺐어요' : '부서 관리자로 정했어요'); },
+  'ad-rwriter'() { const x = adFamById(AD.sel); if (!x) return; adlRun('adRoleSet', { fam: x.f.id, role: '교재 담당', on: !x.f.writer }, x.f.writer ? '교재 담당에서 뺐어요' : '교재 담당을 맡겼어요'); },
   'ad-rmove'() { const to = ($('#adMoveTo') || {}).value; if (!AD.sel || !to) return; adlRun('adMove', { fam: AD.sel, room: to }, '옮겼어요').then(r => { if (r) { AD.open[to] = true; adRedraw(); } }); },
   'ad-ask-yes'() {
     const i = AD.ask.indexOf(':'), kind = i < 0 ? AD.ask : AD.ask.slice(0, i), v = i < 0 ? '' : AD.ask.slice(i + 1); AD.ask = '';
@@ -7243,15 +7242,6 @@ if (ADL) Object.assign(acts, {
   'adl-renew'(e, el) { adlRun('adInviteRenew', { room: el.dataset.v || null }, '새 링크를 만들었어요'); },
   'adl-unlink-staff'(e, el) { adlRun('adUnlink', { link: el.dataset.v }, '연결을 해제했어요'); },
   'adl-staff-end'(e, el) { AD.ask = 'staffend:' + el.dataset.v; adRedraw('[data-act="ad-ask-yes"]'); },
-  'adl-role-open'(e, el) { const k = el.dataset.v; AD.roleOpen = AD.roleOpen === k ? -1 : k; adRedraw(`[data-act="adl-role-open"][data-v="${k}"]`); },
-  'adl-allpeople'() { LA.allPeople = !LA.allPeople; adRedraw('[data-act="adl-allpeople"]'); },
-  'adl-role'(e, el) {
-    const x = adFamById(el.dataset.fam), k = el.dataset.role; if (!x) return;
-    const on = adlRolesOf(x.f).includes(k);
-    if (k === '관리자') adlRun('adAdminFlag', { fam: x.f.id, on: !on }, on ? '부서 관리자에서 뺐어요' : '부서 관리자로 정했어요');
-    else if (k === '교재 담당') adlRun('adRoleSet', { fam: x.f.id, role: k, on: !on }, on ? '교재 담당에서 뺐어요' : '교재 담당을 맡겼어요');
-    else adlRun('adRole', { fam: x.f.id, role: on ? '회원' : k }, on ? k + '에서 뺐어요' : adJ(k, '으로/로') + ' 정했어요');
-  },
   'adl-admin-invite'() { adlRun('adAdminInvite', {}, '초대 링크를 만들었어요'); },
   'adl-admin-link'(e, el) { adlCopy(location.origin + location.pathname + '?setup=' + encodeURIComponent(el.dataset.v), '초대 링크를 복사했어요'); },
   'adl-admin-remove'(e, el) { AD.ask = 'adm:' + el.dataset.v; adRedraw('[data-act="ad-ask-yes"]'); },
