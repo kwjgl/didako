@@ -1262,9 +1262,19 @@ html.tutorial .demo-tag { display: none !important; }
   .pp-side .print-bar { margin-top: 12px; }
 }
 .paper { --accent: #2B6A62; --accent-mid: #8DBDB5; --accent-soft: #DCEBE7; --ink-2: #5B6965; --s1: #2B6A62; --s2: #8DBDB5; --s3: #5B6965; --cord-bg: #FFFFFF; position: relative; }
-/* 인쇄 종이의 로고: 상단 바와 같은 모양(테마색 동그라미 안 흰 마크). 종이는 늘 기본 초록이다 */
-.pp-logo { width: 1.6em; height: 1.6em; border-radius: 50%; background: var(--accent); display: grid; place-items: center; flex: none; }
-.paper .pp-logo .mk { width: 1.5em; height: 1.5em; display: block; --s1: #FFFFFF; --s2: color-mix(in srgb, #FFFFFF 72%, var(--accent)); --s3: color-mix(in srgb, #FFFFFF 48%, var(--accent)); --cord-bg: var(--accent); }
+/* 인쇄 종이의 머리와 바닥(2026-11-23): 차례 쪽 맨 위에는 교재 표지 그림, 1쪽 바닥에는 갈색 디다코 로고와 코이노비아 로고(KOINOBIA)를 두고 2쪽부터는 쪽 번호만 둔다. 종이는 늘 흰 바탕 */
+.pp-head { display: flex; align-items: center; gap: 1em; margin: .5em 0 .2em; }
+.pp-head h3 { margin: 0 0 .15em; }
+.pp-cover { flex: 0 0 3.4em; width: 3.4em; }
+.pp-cover .book-cover { border-radius: 4px; box-shadow: 0 1px 3px rgba(0,0,0,.25); }
+.pp-foot { position: absolute; left: calc(var(--mm) * 18); right: calc(var(--mm) * 18); bottom: calc(var(--mm) * 8); display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; font-size: .8em; color: #5B6965; }
+.pp-foot .pf-n { letter-spacing: .04em; }
+.pp-foot .pf-d { display: flex; align-items: center; gap: .45em; justify-self: start; font-family: var(--f-body); font-weight: 700; color: #6B4A2E; letter-spacing: .02em; }
+.pp-foot .pf-d .dm { width: 1.7em; height: 1.7em; border-radius: 50%; background: #6B4A2E; display: grid; place-items: center; }
+.pp-foot .pf-d .dm svg { width: 1.45em; height: 1.45em; display: block; --s1: #FFFFFF; --s2: #EADFCD; --s3: #C4A27F; --cord-bg: #6B4A2E; }
+.pp-foot .pf-k { display: flex; align-items: center; gap: .5em; justify-self: end; color: #33332F; }
+.pp-foot .pf-k .k { width: 1.7em; height: 1.7em; display: block; }
+.pp-foot .pf-k .wm { height: .8em; width: auto; display: block; }
 .paper .mk { width: 1.5em; height: 1.5em; flex: none; }
 .pp-pg { position: absolute; left: 0; right: 0; bottom: calc(var(--mm) * 8); text-align: center; font-size: .8em; color: #5B6965; letter-spacing: .04em; }
 .paper-wrap { container-type: inline-size; width: 100%; max-width: 640px; margin: 0 auto 14px; }
@@ -1423,6 +1433,7 @@ html.tutorial .demo-tag { display: none !important; }
 
 <script src="config.js"></script>
 <script src="info-tip.js"></script>
+<script src="koinobia-logo.js"></script>
 <script src="account-delete.js"></script>
 <script src="covers.js"></script>
 <script src="demo-data.js"></script>
@@ -3060,7 +3071,8 @@ function manageView(arg) {
 // ── 인쇄(C-02): A4 종이와 쪽 나누기. 시안 manage.html의 인쇄용(ppHead·ppBlocks·paginate·paperPages)을 앱 자료에 맞게 옮겼다 ──
 // 종이 위아래 여백 16mm씩, 2mm는 넉넉하게 남긴다. 교재 관리의 인쇄에는 회원의 개인 기록을 넣지 않는다
 const PAGE_AV = 297 - 16 * 2 - 2;
-const ppPg = n => `<span class="pp-pg">${n}</span>`;
+// 1쪽 바닥에만 디다코·코이노비아 로고를 넣고, 2쪽부터는 쪽 번호만 둔다(2026-11-23, 사용자). 낱장으로 나눠도 첫 쪽에 출처가 남는다
+const ppPg = n => n === 1 && window.KoinobiaLogo ? `<div class="pp-foot"><span class="pf-d"><span class="dm"><svg aria-hidden="true"><use href="#i-didako"/></svg></span>디다코</span><span class="pf-n">${n}</span><span class="pf-k">${window.KoinobiaLogo.html()}</span></div>` : `<span class="pp-pg">${n}</span>`;
 const ppHas = v => !!String(v || '').trim();
 // 인쇄 자료를 한 모양으로 맞춘다(교재 관리는 화면에서만 기억하는 mg() 자료)
 function ppSource(b, L) {
@@ -3163,7 +3175,7 @@ function mgBookPrintView(b) {
     <div class="pp-main"><div class="print-area" id="ppArea"></div></div></div>`;
 }
 function ppTocHtml(b) {
-  return `<div class="paper-wrap"><article class="paper" aria-label="${esc(b.title)} 차례"><h3 style="display:flex;align-items:center;gap:.4em"><span class="pp-logo">${mkIc()}</span>${esc(b.title)}</h3><p class="pp-ref">${esc(b.kind || b.target || deptLabel())}</p>
+  return `<div class="paper-wrap"><article class="paper" aria-label="${esc(b.title)} 차례"><div class="pp-head"><span class="mg-cover pp-cover">${bookCover({ ...b, id: '' }, 'list')}</span><div><h3>${esc(b.title)}</h3><p class="pp-ref">${esc(b.kind || b.target || deptLabel())}</p></div></div>
     <h4>차례</h4><ul class="pp-toc">${b.lessons.map(L => `<li><span>제${L.no}과${L.name ? ' ' + esc(L.name) : ''}</span><span>${esc(L.ref || L.date || '')}</span></li>`).join('') || '<li><span>아직 과가 없어요</span><span></span></li>'}</ul>${ppPg(1)}</article></div>`;
 }
 // 진행 준비의 인쇄(#prepprint): 이번 주 과. 회원용(처음) 또는 모임장용(해설 + 내 진행 메모, 이 기기의 내 것만)
@@ -3339,19 +3351,25 @@ function wordLessonXml(src, o, brk, media) {
 // body는 이미 만든 본문 XML 글이다(과 하나, 교재 전체, 리더용이 같이 쓴다). A4, 아래 가운데 쪽 번호
 function buildDocxBlob(body, media) {
   media = media || { items: [] };
-  const sect = '<w:sectPr><w:footerReference w:type="default" r:id="rId2"/><w:pgSz w:w="11906" w:h="16838"/><w:pgMar w:top="907" w:right="1020" w:bottom="907" w:left="1020" w:header="567" w:footer="567" w:gutter="0"/></w:sectPr>';
+  const brand = media.brand;   // 있으면 첫 쪽만 다른 바닥글(디다코·코이노비아 로고 + 쪽 번호), 나머지는 쪽 번호만
+  const sect = `<w:sectPr><w:footerReference w:type="default" r:id="rId2"/>${brand ? '<w:footerReference w:type="first" r:id="rIdF1"/>' : ''}<w:pgSz w:w="11906" w:h="16838"/><w:pgMar w:top="907" w:right="1020" w:bottom="907" w:left="1020" w:header="567" w:footer="567" w:gutter="0"/>${brand ? '<w:titlePg/>' : ''}</w:sectPr>`;
   const X = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>\n';
   const fr = c => `<w:r><w:rPr><w:color w:val="${W_GRAY}"/><w:sz w:val="16"/></w:rPr>${c}</w:r>`;
-  const footer = `${X}<w:ftr ${W_NS}><w:p><w:pPr><w:jc w:val="center"/></w:pPr>${fr('<w:fldChar w:fldCharType="begin"/>')}${fr('<w:instrText xml:space="preserve"> PAGE </w:instrText>')}${fr('<w:fldChar w:fldCharType="separate"/>')}${fr('<w:t>1</w:t>')}${fr('<w:fldChar w:fldCharType="end"/>')}</w:p></w:ftr>`;
+  const pageNo = `${fr('<w:fldChar w:fldCharType="begin"/>')}${fr('<w:instrText xml:space="preserve"> PAGE </w:instrText>')}${fr('<w:fldChar w:fldCharType="separate"/>')}${fr('<w:t>1</w:t>')}${fr('<w:fldChar w:fldCharType="end"/>')}`;
+  const footer = `${X}<w:ftr ${W_NS}><w:p><w:pPr><w:jc w:val="center"/></w:pPr>${pageNo}</w:p></w:ftr>`;
+  // 첫 쪽 바닥글: 왼쪽 갈색 디다코 로고와 글자, 가운데 쪽 번호, 오른쪽 코이노비아 로고(높이 0.5cm, EMU 180000)
+  const bpic = (rid, id, nm, cx) => `<w:r><w:drawing><wp:inline xmlns:wp="http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing" distT="0" distB="0" distL="0" distR="0"><wp:extent cx="${cx}" cy="180000"/><wp:docPr id="${id}" name="${nm}" descr="${nm}"/><a:graphic xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main"><a:graphicData uri="http://schemas.openxmlformats.org/drawingml/2006/picture"><pic:pic xmlns:pic="http://schemas.openxmlformats.org/drawingml/2006/picture"><pic:nvPicPr><pic:cNvPr id="0" name="${nm}"/><pic:cNvPicPr/></pic:nvPicPr><pic:blipFill><a:blip r:embed="${rid}"/><a:stretch><a:fillRect/></a:stretch></pic:blipFill><pic:spPr><a:xfrm><a:off x="0" y="0"/><a:ext cx="${cx}" cy="180000"/></a:xfrm><a:prstGeom prst="rect"><a:avLst/></a:prstGeom></pic:spPr></pic:pic></a:graphicData></a:graphic></wp:inline></w:drawing></w:r>`;
+  const footerFirst = brand ? `${X}<w:ftr ${W_NS}><w:p><w:pPr><w:tabs><w:tab w:val="center" w:pos="4933"/><w:tab w:val="right" w:pos="9866"/></w:tabs></w:pPr>${bpic('rId1', 9001, 'didako', 180000)}<w:r><w:rPr><w:b/><w:color w:val="6B4A2E"/><w:sz w:val="16"/></w:rPr><w:t xml:space="preserve"> 디다코</w:t></w:r><w:r><w:tab/></w:r>${pageNo}<w:r><w:tab/></w:r>${bpic('rId2', 9002, 'koinobia', 910800)}</w:p></w:ftr>` : '';
   const styles = `${X}<w:styles ${W_NS}><w:docDefaults><w:rPrDefault><w:rPr><w:rFonts w:ascii="Malgun Gothic" w:hAnsi="Malgun Gothic" w:eastAsia="Malgun Gothic" w:cs="Malgun Gothic"/><w:sz w:val="20"/><w:szCs w:val="20"/><w:lang w:val="ko-KR" w:eastAsia="ko-KR"/></w:rPr></w:rPrDefault></w:docDefaults><w:style w:type="paragraph" w:default="1" w:styleId="Normal"><w:name w:val="Normal"/><w:qFormat/></w:style></w:styles>`;
   const REL = 'http://schemas.openxmlformats.org/officeDocument/2006/relationships';
   return zipStore([
-    ['[Content_Types].xml', `${X}<Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types"><Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/><Default Extension="xml" ContentType="application/xml"/><Default Extension="jpg" ContentType="image/jpeg"/><Default Extension="png" ContentType="image/png"/><Override PartName="/word/document.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml"/><Override PartName="/word/styles.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.styles+xml"/><Override PartName="/word/footer1.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.footer+xml"/></Types>`],
+    ['[Content_Types].xml', `${X}<Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types"><Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/><Default Extension="xml" ContentType="application/xml"/><Default Extension="jpg" ContentType="image/jpeg"/><Default Extension="png" ContentType="image/png"/><Override PartName="/word/document.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml"/><Override PartName="/word/styles.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.styles+xml"/><Override PartName="/word/footer1.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.footer+xml"/>${brand ? '<Override PartName="/word/footer2.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.footer+xml"/>' : ''}</Types>`],
     ['_rels/.rels', `${X}<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="${REL}/officeDocument" Target="word/document.xml"/></Relationships>`],
-    ['word/_rels/document.xml.rels', `${X}<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="${REL}/styles" Target="styles.xml"/><Relationship Id="rId2" Type="${REL}/footer" Target="footer1.xml"/>${media.items.map(f => `<Relationship Id="${f.rid}" Type="${REL}/image" Target="media/${f.src}"/>`).join('')}</Relationships>`],
+    ['word/_rels/document.xml.rels', `${X}<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="${REL}/styles" Target="styles.xml"/><Relationship Id="rId2" Type="${REL}/footer" Target="footer1.xml"/>${brand ? `<Relationship Id="rIdF1" Type="${REL}/footer" Target="footer2.xml"/>` : ''}${media.items.map(f => `<Relationship Id="${f.rid}" Type="${REL}/image" Target="media/${f.src}"/>`).join('')}</Relationships>`],
     ['word/document.xml', `${X}<w:document ${W_NS}><w:body>${body}${sect}</w:body></w:document>`],
     ['word/styles.xml', styles],
     ['word/footer1.xml', footer],
+    ...(brand ? [['word/footer2.xml', footerFirst], ['word/_rels/footer2.xml.rels', `${X}<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="${REL}/image" Target="media/brand-didako.png"/><Relationship Id="rId2" Type="${REL}/image" Target="media/brand-koinobia.png"/></Relationships>`], ['word/media/brand-didako.png', brand.dd.data], ['word/media/brand-koinobia.png', brand.koi.data]] : []),
     ...media.items.map(f => ['word/media/' + f.src, f.data])
   ]);
 }
@@ -3388,6 +3406,7 @@ async function wordMedia(sources) {
 }
 async function exportWord(sources, build, name) {
   const media = await wordMedia(sources);
+  media.brand = window.KoinobiaLogo ? await window.KoinobiaLogo.pngs() : null;   // 1쪽 바닥글의 로고 그림(만들지 못하면 로고 없이)
   downloadDocx(buildDocxBlob(build(media), media), name);
   if (media.failed) toast('그림 일부를 넣지 못했어요. 인터넷 연결을 확인해 주세요.');
 }
@@ -3783,7 +3802,6 @@ function noGuideView(name) {
     </section>`;
 }
 const bookHtml = noMark => { const L = thisLesson(); return `<span class="book-l">${noMark ? '' : '<svg class="mk" aria-hidden="true"><use href="#i-didako"/></svg>'}<b>${esc(L.book)}</b><span>${esc(L.period)}</span></span>`; };
-const mkIc = () => '<svg class="mk" aria-hidden="true"><use href="#i-didako"/></svg>';
 const calm = () => { try { return matchMedia('(prefers-reduced-motion: reduce)').matches; } catch (e) { return false; } };
 const isLead = () => D.role === 'leader';
 const NOLEAD = '등록된 해설이 없어요';
