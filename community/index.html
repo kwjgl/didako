@@ -4144,7 +4144,7 @@ function readView() {
         <h2 class="lesson-title" id="lessonTitle">${esc(L.title)}</h2>
         <div class="read-scripture"><span class="passage-chip">${esc(L.ref)}</span>${bibleUrl(L.ref) ? `<a class="quiet-link" href="${esc(bibleUrl(L.ref))}" target="_blank" rel="noopener" aria-label="${esc(L.ref)} 성경 펴기 (새 창)">성경 펴기 ›</a>` : ''}</div>
         ${readAsMember ? '<p class="fine">회원에게 보이는 모습이에요. 해설은 보이지 않아요.</p>' : ''}
-        ${lessonHasRead() ? `<div class="read-mode"><div><p class="opt-name">책처럼 읽기${DidakoTip.btn('질문과 내 생각 칸을 숨기고, 읽을 글만 이어서 읽어요. 미리 읽어 오거나 혼자 복습할 때 좋아요. 이 기기에 기억해요.', '책처럼 읽기')}</p><p class="opt-sub">질문 없이 글만 쭉 읽어요.</p></div><button class="switch${bookMode() ? ' on' : ''}" type="button" role="switch" aria-checked="${bookMode()}" aria-label="책처럼 읽기" id="swBook" data-act="sw-book"><span></span></button></div>` : ''}
+        ${lessonHasRead() ? `<div class="read-mode"><div><p class="opt-name">책처럼 읽기${DidakoTip.btn('질문과 내 생각 칸을 숨기고, 읽을 글만 이어서 읽어요. 미리 읽어 오거나 혼자 복습할 때 좋아요. 이 기기에 기억해요.', '책처럼 읽기')}</p></div><button class="switch${bookMode() ? ' on' : ''}" type="button" role="switch" aria-checked="${bookMode()}" aria-label="책처럼 읽기" id="swBook" data-act="sw-book"><span></span></button></div>` : ''}
       </section>
       <section class="card toc rg-toc" aria-label="단계 목록">
         <button class="toc-btn" type="button" id="tocBtn" data-act="toc" aria-expanded="false" aria-controls="tocList"><span class="l">${ic('list')}단계 목록</span>${ic('chev', 'ch')}</button>
@@ -5585,6 +5585,7 @@ const acts = {
   'sw-book'(e, el) {
     const on = ls.get(K.readBook) !== '1'; ls.set(K.readBook, on ? '1' : '0');
     el.classList.toggle('on', on); el.setAttribute('aria-checked', String(on));
+    if (on) { try { UZ.track('read-book', { daily: 'rb' }); } catch (e) { /* 기록 못 해도 앱은 그대로 */ } }   // 책처럼 읽기를 켠 날 하루 한 번(사용 기록 024)
     renderAll(); goTo('rbody');
   },
   'sw-dim'() { R.dim = !R.dim; renderStart(); },
