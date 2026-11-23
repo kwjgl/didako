@@ -4824,6 +4824,8 @@ function noGuideView(name) {
     </section>`;
 }
 const bookHtml = noMark => { const L = thisLesson(); return `<span class="book-l">${noMark ? '' : '<svg class="mk" aria-hidden="true"><use href="#i-didako"/></svg>'}<b>${esc(L.book)}</b><span>${esc(L.period)}</span></span>`; };
+// 책갈피 표시의 작은 디다코 표(펼치기 질문 카드). 인쇄물 로고를 바꿀 때(bb93778) 정의가 함께 지워져 펼치기가 비어 보였다(2026-11-24 되살림)
+const mkIc = () => '<svg class="mk" aria-hidden="true"><use href="#i-didako"/></svg>';
 const calm = () => { try { return matchMedia('(prefers-reduced-motion: reduce)').matches; } catch (e) { return false; } };
 const isLead = () => D.role === 'leader' || D.role === 'pastor';
 const NOLEAD = '등록된 해설이 없어요';
