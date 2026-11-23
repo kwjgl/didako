@@ -1808,10 +1808,12 @@ function applySettings() {
 // 배지 규칙: 회원·리더는 "2-20 사랑방", 목사님·관리자는 "청장년부" + 역할 이름표
 const isTop = () => D.role === 'pastor' || D.role === 'admin';
 const groupName = () => LIVE ? liveGroupName() : (isTop() ? DATA.church.dept : DATA.church.room);
+// 위 막대 이름표에는 교회 이름만 보인다(공용 규칙 5번, 2026-11-23, 코이데와 같게). 사랑방·부서 이름은 제목 윗글과 '우리 사랑방' 카드에 있다. 교회 이름을 모르면 예전처럼 사랑방·부서 이름
+const badgeName = () => LIVE ? (ls.get(LK.name) || groupName()) : DATA.admin.church;
 // 실제 모드에서는 서버가 알려 준 직분(목사님·전도사님·장로님, 리더·코리더)을 그대로 보인다. 직분이 비었거나 '회원'으로 오면(옛 자료 등) 역할 이름(목사님·리더)으로 둔다
 const roleName = () => LIVE && LV.me && LV.me.role && LV.me.role !== '회원' && (D.role === 'pastor' || D.role === 'leader') ? LV.me.role : ROLES.find(x => x[0] === D.role)[1];
 function paintBadge() {
-  $('#badge').innerHTML = `<span class="badge-name">${esc(groupName())}</span><span class="role-tag${D.role === 'leader' ? ' leader' : isTop() ? ' admin' : ''}">${esc(roleName())}</span>`;
+  $('#badge').innerHTML = `<span class="badge-name">${esc(badgeName())}</span><span class="role-tag${D.role === 'leader' ? ' leader' : isTop() ? ' admin' : ''}">${esc(roleName())}</span>`;
   $('#placeMenu').innerHTML = didakoPlaces.html({ cur: 'church', attr: k => k === 'note' ? 'href="../note/"' : k === 'circleOne' ? 'href="../community/"' : '' }) + badgeAdminMenu();
 }
 // 관리자에게는 코이데처럼 창 맨 아래에 "교회 관리 › 교회 전체"(운영 지원이면 맡은 부서)를 더한다. 더보기 "맡은 일"과 같은 조건(2026-11-21)
