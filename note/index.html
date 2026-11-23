@@ -5573,7 +5573,7 @@ if (!CIRCLE_REAL || ls.get('didako-note-sb')) setTimeout(() => loadCircles(), 15
 $('#setMenu').innerHTML = '<p class="mlabel">화면 설정</p>' + displayEx('topDispEx') + (LIVE ? '' : '<div class="mdiv"></div><button class="place-row" type="button" data-act="gear"><span class="sm">시안 보기 설정(데모에만 있어요)</span></button>');
 if (!LIVE) saveBadges();
 applySettings();
-if (SB_CFG && CFG.PUSH_KEY && LIVE && window.FamilyPush) FamilyPush.init({ app: 'didako', url: CFG.SUPABASE_URL, key: CFG.SUPABASE_KEY, vapid: CFG.PUSH_KEY, render: () => render(), toast: m => toast(m), a2hs: () => a2hsSheet() });   // 알림(family-push.js): 서버 설정이 있는 실제 앱에서만
+if (SB_CFG && CFG.PUSH_KEY && LIVE && window.FamilyPush) FamilyPush.init({ app: 'didako', url: CFG.SUPABASE_URL, key: CFG.SUPABASE_KEY, vapid: CFG.PUSH_KEY, render: () => render(), tip: (t, l) => DidakoTip.btn(t, l), toast: m => toast(m), a2hs: () => a2hsSheet() });   // 알림(family-push.js): 서버 설정이 있는 실제 앱에서만
 if (!location.hash) setHash(me ? 'today' : 'start', true);
 render(true);
 window.didakoSplash && window.didakoSplash.hide();   // 첫 화면을 그렸으면 시작 화면을 닫는다(S-34)
