@@ -4,8 +4,8 @@
  * 아래 CACHE 번호는 남겨 둔 사본의 이름표다. 번호를 올리면 예전 사본을 지운다(AGENTS.md 서비스워커 캐시).
  * 데모에는 서버가 없다. 같은 주소의 파일만 다루고, 글꼴 같은 다른 주소의 요청은 건드리지 않는다.
  */
-const CACHE = 'didako-v185';
-const SHELL = ['./', 'index.html', 'config.js', 'sb.js', 'church-api.js', 'account-delete.js', 'family-tokens.css', 'family-ui.css', 'design-styles.css', 'info-tip.js', 'font-warm.js', 'covers.js', 'demo-data.js', 'book-gospel.js', 'book-prophets.js', '../community/book-trinity.js', '../community/book-family.js', '../community/book-jesus-walk.js', '../community/book-hebrew-eyes.js', '../community/book-second-temple.js', '../note/places.js', '../note/splash.js', '../note/guide.js', '../note/guide.css', '../note/usage.js', 'practice.js', 'manifest.webmanifest', 'icons/icon-192.png', 'icons/icon-512.png', 'icons/icon-maskable-512.png', 'icons/apple-touch-icon.png', 'icons/favicon-32.png'];
+const CACHE = 'didako-v186';
+const SHELL = ['./', 'index.html', 'config.js', 'sb.js', 'church-api.js', 'account-delete.js', 'family-tokens.css', 'family-ui.css', 'design-styles.css', 'info-tip.js', 'font-warm.js', 'covers.js', 'demo-data.js', 'book-gospel.js', 'book-prophets.js', '../community/book-trinity.js', '../community/book-family.js', '../community/book-jesus-walk.js', '../community/book-hebrew-eyes.js', '../community/book-second-temple.js', '../community/book-feasts.js', '../note/places.js', '../note/splash.js', '../note/guide.js', '../note/guide.css', '../note/usage.js', 'practice.js', 'manifest.webmanifest', 'icons/icon-192.png', 'icons/icon-512.png', 'icons/icon-maskable-512.png', 'icons/apple-touch-icon.png', 'icons/favicon-32.png'];
 
 self.addEventListener('install', e => {
   // GitHub Pages가 파일을 잠시 그대로 쓰라고 해도 새로 받도록 사본을 쓰지 않고 요청한다
@@ -33,7 +33,7 @@ self.addEventListener('fetch', e => {
   }
   // 세 앱이 함께 쓰는 메뉴·시작 화면·따라 하기 파일은 note/에 있어도, 디다코 기본 교재 세 권(공동체와 같은 파일)은 community/에 있어도 이 앱의 사본으로 열 수 있게 한다.
   const sharedPlaces = (req.destination === 'script' || req.destination === 'style') && ['../note/places.js', '../note/splash.js', '../note/guide.js', '../note/guide.css', '../note/usage.js',
-    '../community/book-trinity.js', '../community/book-family.js', '../community/book-jesus-walk.js', '../community/book-hebrew-eyes.js', '../community/book-second-temple.js'].some(p => url.pathname === new URL(p, location).pathname);
+    '../community/book-trinity.js', '../community/book-family.js', '../community/book-jesus-walk.js', '../community/book-hebrew-eyes.js', '../community/book-second-temple.js', '../community/book-feasts.js'].some(p => url.pathname === new URL(p, location).pathname);
   if (!sharedPlaces && !url.pathname.startsWith(new URL('./', location).pathname)) return;
   // GitHub Pages가 파일을 10분 동안 그대로 쓰라고 해도, 서버에 바뀌었는지 늘 물어본다(바뀌지 않았으면 확인만 하고 끝난다).
   //  화면 주소 요청(navigate)에는 옵션을 붙일 수 없어서 주소로 새 요청을 만든다 (코이데와 같다)
