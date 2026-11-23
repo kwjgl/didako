@@ -366,6 +366,7 @@ html.kg-on body.tabs-off .topbar, html.kg-on body.tabs-off .tabs { transform: no
 .q-actions > .btn { min-height: 48px; min-width: 0; padding: 0 8px; white-space: nowrap; }
 .q-actions > .btn:first-child { flex: 3 1 0; }
 .q-actions > .btn:last-child { flex: 1 1 0; }
+.q-med { text-align: center; margin-top: 6px; }
 .q-answer { margin-top: 16px; padding: 14px 0 0; border-top: 1px solid var(--line); }
 .q-answer .q-answer-text { margin: 8px 0 6px; white-space: pre-wrap; line-height: 1.7; overflow-wrap: anywhere; }
 .q-old { margin-top: 12px; border-top: 1px solid var(--line); }
@@ -802,7 +803,7 @@ mark { background: var(--accent-soft); color: inherit; border-radius: 4px; paddi
 .wk-jot { margin-top: 20px; }
 .wk-jot summary { min-height: 44px; display: flex; align-items: center; font-weight: 700; color: var(--accent-deep); cursor: pointer; }
 .wk-jot .xta { margin-top: 8px; }
-.wk-p { margin: 0 0 12px; font-size: .96875rem; line-height: 1.8; word-break: keep-all; color: var(--ink); }
+.wk-p { margin: 0 0 12px; font-size: 1.0625rem; line-height: 1.8; word-break: keep-all; color: var(--ink); }
 .wk-stay { margin-top: 26px; padding: 14px 16px; border-left: 3px solid var(--accent); background: var(--surface); border-radius: 0 12px 12px 0; }
 .wk-stay .sf { margin: 6px 0 0; font-size: 1.0625rem; line-height: 1.6; word-break: keep-all; }
 .wk-wait { opacity: .55; }
@@ -922,6 +923,7 @@ label.wr-row > input, label.vc > input { position: absolute; inset: 0; width: 10
 .xw-in .xnm { font-size: 1.625rem; }
 .xw-in .xnm.s { font-size: 1.25rem; }
 .xw-in .xgq { font-size: 1.125rem; }
+.xw-in .wk-p { font-size: 1.125rem; }
 .xw-in .xact { position: static; background: none; border: 0; padding: 0; margin-top: 22px; }
 .xw-in .xact-in { max-width: none; padding: 0; }
 .xw-in .xact .btn { flex: none; min-width: 120px; padding: 0 24px; }
@@ -1094,6 +1096,93 @@ body.fs .xw-top { padding-right: 52px; }   /* 시안 보기 설정(톱니)이 �
   :root[data-big="2"] .topbar-in { gap: .4em; }
   :root[data-big="2"] .place-btn { padding-inline: .5em; gap: .3em; }
 }
+
+/* ── 묵상하기(2026-11-23): 시작 화면과 몰입 화면. 몰입 화면은 코이데 기도하는 화면(.pss-*)과 같은 값, 단계 화면은 위의 .xhead .xnm .xfd 같은 질문으로 묵상하기 값 그대로 ── */
+body.med-on { overflow: hidden; }
+.med-two { display: grid; gap: 14px; align-items: start; margin-top: 8px; }
+.med-c { display: flex; flex-direction: column; gap: 12px; min-width: 0; }
+.med-c > .card { margin: 0; padding: 16px; }
+@media (min-width: 1000px) { .med-two { grid-template-columns: minmax(0, 1fr) 380px; gap: 24px; } .med-s { position: sticky; top: 76px; } }
+.med-plain { margin: 0; line-height: 1.6; word-break: keep-all; }
+.med-lb { margin: 18px 0 8px; font-size: .84375rem; font-weight: 600; color: var(--ink-2); display: flex; align-items: center; gap: 2px; }
+.med-src { margin-top: 10px; padding: 10px 12px; border-radius: 12px; background: var(--surface-2); }
+.med-src b { display: block; font: 700 1rem var(--f-display); word-break: keep-all; line-height: 1.45; }
+.med-src small { display: block; margin-top: 2px; color: var(--ink-2); font-size: .8125rem; }
+.med-src .field { background: var(--surface); }
+.med-src .field + .field { margin-top: 8px; }
+.med-note { margin: 8px 0 0; color: var(--ink-2); font-size: .8125rem; line-height: 1.55; word-break: keep-all; }
+.med-link { display: inline-flex; align-items: center; min-height: 44px; margin-left: -4px; padding: 0 4px; background: none; border: 0; color: var(--accent); font: inherit; font-size: .875rem; font-weight: 600; text-decoration: none; cursor: pointer; }
+.med-sw { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-top: 12px; min-height: 44px; }
+.med-go { margin-top: 18px; min-height: 52px; }
+.med-ord { margin: 12px 0 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: 12px; counter-reset: o; }
+.med-ord li { display: flex; gap: 12px; align-items: center; font-size: .9375rem; counter-increment: o; }
+.med-ord li::before { content: counter(o); flex: none; width: 26px; height: 26px; border-radius: 50%; background: var(--accent-soft); color: var(--accent); font-weight: 700; font-size: .8125rem; display: grid; place-items: center; }
+.med-ord b { font-weight: 600; }
+.med-pick { display: flex; flex-direction: column; gap: 8px; max-height: 50vh; overflow-y: auto; }
+.med-pick button { text-align: left; display: block; width: 100%; font: inherit; background: var(--surface-2); border: 1px solid var(--line); border-radius: 12px; padding: 10px 14px; min-height: 48px; color: var(--ink); cursor: pointer; }
+.med-pick button b { display: block; font-weight: 600; word-break: keep-all; }
+.med-pick button small { display: block; margin-top: 2px; color: var(--ink-2); font-size: .8125rem; }
+/* 내 기록 맨 위 남기기 칸 */
+.cmp-fold { display: flex; gap: 12px; align-items: center; width: 100%; margin: 12px 0 0; padding: 12px 14px; text-align: left; font: inherit; color: var(--ink); cursor: pointer; }
+.cmp-ic { flex: none; width: 36px; height: 36px; border-radius: 12px; background: var(--accent-soft); color: var(--accent); display: grid; place-items: center; }
+.cmp-ic .ic { width: 20px; height: 20px; }
+.cmp-t { flex: 1; min-width: 0; }
+.cmp-t b { display: block; font: 700 1rem var(--f-display); }
+.cmp-t small { display: block; margin-top: 2px; color: var(--ink-2); font-size: .8125rem; line-height: 1.45; word-break: keep-all; }
+.cmp { margin-top: 12px; padding: 14px 16px; }
+.cmp-h { display: flex; align-items: center; gap: 10px; }
+.cmp-h b { font: 700 1rem var(--f-display); }
+.cmp-h .cmp-ic { width: 32px; height: 32px; }
+.cmp-x { margin-left: auto; min-height: 40px; padding: 0 8px; background: none; border: 0; color: var(--ink-2); font: inherit; font-size: .875rem; cursor: pointer; }
+.cmp .strip { margin-top: 10px; }
+.cmp-w .cmp-seg { margin-top: 12px; }
+.cmp-w .wr2-card { margin-top: 12px; padding: 14px 0 0; min-height: 0; background: none; box-shadow: none; border: 0; }
+.cmp-w .wr2-ta { min-height: 150px; }
+/* 묵상하는 화면: 코이데 기도하는 화면(.pss-*)과 같은 값. 전체 화면이 스크롤 칸이고, 위 줄과 아래 단추 줄은 늘 화면에 붙어 있다 */
+.pss { position: fixed; inset: 0; z-index: 40; background: var(--page); overflow-y: auto; display: flex; flex-direction: column; gap: 16px; padding: max(16px, env(safe-area-inset-top)) 16px 0; }
+.pss-top { display: flex; justify-content: space-between; align-items: center; gap: 8px; max-width: 640px; width: 100%; margin: 0 auto; flex-wrap: wrap; position: sticky; top: calc(-1 * max(16px, env(safe-area-inset-top))); z-index: 2; padding: max(10px, env(safe-area-inset-top)) 0 10px; margin-top: calc(-1 * max(16px, env(safe-area-inset-top))); background: linear-gradient(var(--page) 75%, transparent); }
+.pss-step { font-size: .86em; color: var(--ink-2); font-variant-numeric: tabular-nums; display: inline-flex; align-items: center; gap: .6em; }
+.pss-timer { display: inline-flex; align-items: center; gap: .3em; color: var(--accent); font-weight: 600; }
+.pss-ring { width: 22px; height: 22px; transform: rotate(-90deg); }
+.pss-ring circle { fill: none; stroke-width: 12; }
+.pss-ring .track { stroke: var(--accent-soft); }
+.pss-ring .bar { stroke: var(--accent); stroke-linecap: round; transition: stroke-dashoffset 1s linear; }
+.pss-x, .pss-music { font: inherit; font-size: .84em; font-weight: 600; background: var(--surface); color: var(--ink-2); border: 1px solid var(--line); border-radius: 999px; padding: .35em .9em; min-height: 40px; cursor: pointer; }
+.pss-music.on { color: var(--accent); background: var(--accent-soft); border-color: transparent; }
+.pss-mus { display: inline-flex; gap: 6px; }
+.pss-body { flex: 1; max-width: 640px; width: 100%; margin: 0 auto; display: flex; flex-direction: column; gap: 14px; }
+.pss-body.pss-med { display: block; text-align: left; }
+.pss-body.pss-med .xhead { margin-top: 0; }
+.pss-nav { position: sticky; bottom: 0; display: grid; grid-template-columns: 1fr 1.4fr; gap: 10px; max-width: 640px; width: 100%; margin: 0 auto; padding: 12px 0 max(16px, env(safe-area-inset-bottom)); background: linear-gradient(transparent, var(--page) 30%); }
+.pss-nav.one { grid-template-columns: 1fr; }
+.pss-nav button { font: inherit; font-weight: 600; min-height: 56px; border-radius: 14px; border: 1px solid var(--line); background: var(--surface); color: var(--ink); cursor: pointer; display: inline-flex; align-items: center; justify-content: center; gap: .4em; }
+.pss-nav .pss-pray { background: var(--accent); border-color: var(--accent); color: var(--on-accent); }
+.pss-nav .pss-pray.ready { animation: pss-glow 1.6s ease-in-out infinite; }
+.pss-nav .pss-cd { grid-column: 1 / -1; order: -1; display: flex; justify-content: space-between; align-items: center; gap: .6em; padding: .45em .5em .45em .95em; border-radius: 14px; background: var(--accent-soft); color: var(--accent); font-size: .9em; font-weight: 600; }
+.pss-nav .pss-cd button { min-height: 40px; padding: 0 1em; border-radius: 999px; font-size: .95em; }
+@keyframes pss-glow { 50% { box-shadow: 0 0 0 6px var(--accent-soft); } }
+@media (prefers-reduced-motion: reduce) { .pss-nav .pss-pray.ready { animation: none; } }
+.pss-med .xnm:focus-visible, .pss-med .wk-stay .xlb:focus-visible { outline: none; }
+/* 저절로 어둡게(코이데 pray-dim.css와 같은 값): 가만히 30초면 어두워지고 만지면 밝아진다. 남는 것은 순서, 남은 시간 고리, 말씀과 질문과 적은 글, 시간이 다 됐다는 알림뿐 */
+.pss { --dim-t: .15s; --dim-e: ease-out; }
+.pss, .pss .pss-body, .pss .pss-body *, .pss .pss-step, .pss .pss-step *, .pss .pss-top, .pss .pss-nav, .pss .pss-cd { transition: color var(--dim-t) var(--dim-e), background-color var(--dim-t) var(--dim-e), border-color var(--dim-t) var(--dim-e); }
+.pss .pss-x, .pss .pss-mus, .pss .pss-nav > button, .pss .pss-cd button { transition: opacity var(--dim-t) var(--dim-e), visibility 0s; }
+.pss .pss-ring .bar { transition: stroke-dashoffset 1s linear, stroke var(--dim-t) var(--dim-e); }
+.pss .pss-ring .track { transition: stroke var(--dim-t) var(--dim-e); }
+.pss .dim-only { display: none; }
+.pss.dim { --dim-t: .8s; --dim-e: ease-in; color-scheme: dark; --page: #090d0c; --surface: #0f1513; --surface-2: #141b18; --ink: #cbd2ce; --ink-2: #8d9893; --line: #1a231f; --line-strong: #26322d; --accent: #8fb3aa; --accent-soft: #101815; --accent-deep: #8fb3aa; --on-accent: #090d0c; color: var(--ink); background: var(--page) !important; -webkit-backdrop-filter: none !important; backdrop-filter: none !important; }
+.pss.dim .pss-top, .pss.dim .pss-nav { background-image: none !important; background-color: var(--page); }
+.pss.dim .pss-x, .pss.dim .pss-mus, .pss.dim .pss-nav > button { opacity: 0; visibility: hidden; pointer-events: none; transition: opacity var(--dim-t) var(--dim-e), visibility 0s linear var(--dim-t); }
+.pss.dim .pss-nav .pss-cd { background: none; box-shadow: none; justify-content: center; text-align: center; color: var(--ink); }
+.pss.dim .pss-ring .track { stroke: var(--line-strong); }
+.pss.dim .pss-timer { color: var(--ink-2); }
+.pss.dim .pss-cd button { display: none; }
+.pss.dim .dim-only { display: block; margin-top: .15em; color: var(--ink-2); font-weight: 400; font-size: .9em; }
+.pss.dim .xfd, .pss.dim .xhead, .pss.dim .xvl, .pss.dim .wk-stay, .pss.dim .field { background: var(--surface) !important; box-shadow: none !important; border-color: var(--line) !important; }
+.pss.dim .xta { color: var(--ink); }
+.pss.dim .wk-bible .tx, .pss.dim .wk-nt { color: var(--ink-2); }
+.pss.dim img.q-img { opacity: .55; }
+@media (prefers-reduced-motion: reduce) { .pss, .pss.dim { --dim-t: .2s; } }
 </style>
 <link rel="stylesheet" href="design-styles.css">
 <link rel="stylesheet" href="guide.css">
@@ -1115,7 +1204,7 @@ body.fs .xw-top { padding-right: 52px; }   /* 시안 보기 설정(톱니)이 �
     <nav class="topnav" aria-label="메뉴">
       <a class="tm" data-menu="today" href="#/today">오늘의 질문</a>
       <a class="tm" data-menu="explore" href="#/explore">탐구하기</a>
-      <a class="tm" data-menu="write" href="#/write">남기기</a>
+      <a class="tm" data-menu="med" href="#/med">묵상하기</a>
       <a class="tm" data-menu="mine" href="#/mine">내 기록</a>
       <a class="tm" data-menu="more" href="#/more">더보기</a>
     </nav>
@@ -1134,7 +1223,7 @@ body.fs .xw-top { padding-right: 52px; }   /* 시안 보기 설정(톱니)이 �
 <nav class="tabs" id="tabs" aria-label="메뉴" hidden>
   <a data-tab="today" href="#/today" aria-label="오늘의 질문"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8"/><path d="M12 7v5l3 2"/></svg></a>
   <a data-tab="explore" href="#/explore" aria-label="탐구하기"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8.5"/><path d="M15.5 8.5l-2 5-5 2 2-5z"/></svg></a>
-  <a class="pray-tab" data-tab="write" href="#/write" aria-label="남기기"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 6v12M6 12h12"/></svg></a>
+  <a class="pray-tab" data-tab="med" href="#/med" aria-label="묵상하기"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 6.5C10 5 7 4.5 4 5v13c3-.5 6 0 8 1.5 2-1.5 5-2 8-1.5V5c-3-.5-6 0-8 1.5z"/><path d="M12 6.5v13"/></svg></a>
   <a data-tab="mine" href="#/mine" aria-label="내 기록"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 3h11v11"/><path d="M5 7h11v10l-3 3H5z"/><path d="M13 20v-3h3"/></svg></a>
   <a data-tab="more" href="#/more" aria-label="더보기"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><circle cx="6" cy="12" r="1"/><circle cx="12" cy="12" r="1"/><circle cx="18" cy="12" r="1"/></svg></a>
 </nav>
@@ -1683,7 +1772,7 @@ function qCard(q, hold = false, holdHref = '#/today/write') {
     ${img}
     <div class="q-bg"><div class="sm b">이 질문의 배경</div><p>${esc(q.bg)}</p></div>
     ${map}
-    ${hold ? `${answerBox}<div class="q-actions"><button class="btn" type="button" data-act="today-answer" data-key="${esc(key)}">${current ? '생각 고치기' : '생각 쓰기'}</button><a class="btn ol" href="${esc(holdHref)}">품기</a></div>` : ''}
+    ${hold ? `${answerBox}<div class="q-actions"><button class="btn" type="button" data-act="today-answer" data-key="${esc(key)}">${current ? '생각 고치기' : '생각 쓰기'}</button><a class="btn ol" href="${esc(holdHref)}">품기</a></div>${holdHref === '#/today/write' ? `<div class="q-med"><button class="tx" type="button" data-act="med-today">이 질문으로 묵상하기 ›</button></div>` : ''}` : ''}
   </article>`;
 }
 function openTodayAnswer(key) {
@@ -1724,6 +1813,11 @@ const HEAD_ICON = {
     <path d="M13 28h10M13 37h9M13 46h7" stroke-opacity=".65" stroke-width="2.7"/>
     <path d="m30 33 19-24a4 4 0 0 1 6-1l2 2a4 4 0 0 1 0 5L37 39Z" fill="currentColor" fill-opacity=".22"/>
     <path d="m30 33-5 15 12-9Z" fill="currentColor"/>
+    </g></svg></span>`,
+  book: `<span class="h-ic" aria-hidden="true"><svg viewBox="0 0 64 64"><g fill="none" stroke="currentColor" stroke-width="3.4" stroke-linejoin="round" stroke-linecap="round">
+    <path d="M32 14C25 9 15 8 6 10v38c9-2 19-1 26 4 7-5 17-6 26-4V10c-9-2-19-1-26 4Z" fill="currentColor" fill-opacity=".10"/>
+    <path d="M32 14v38"/>
+    <path d="M13 20c5-1 10 0 14 2M13 29c5-1 10 0 14 2M37 22c4-2 9-3 14-2M37 31c4-2 9-3 14-2" stroke-opacity=".65" stroke-width="2.7"/>
     </g></svg></span>`,
   notes: `<span class="h-ic" aria-hidden="true"><svg viewBox="0 0 64 64"><g fill="none" stroke="currentColor" stroke-width="3.4" stroke-linejoin="round" stroke-linecap="round">
     <path d="M14 42h43v15H14a7.5 7.5 0 0 1 0-15Z" fill="currentColor" fill-opacity=".28"/>
@@ -1980,7 +2074,7 @@ function viewAbout() {
     </div>
     <div class="sc"><div class="sl">기록은 이렇게 지켜요</div>${keepRows()}</div>
     <div class="sc"><div class="sl">디다코는 말씀을 이렇게 이해해요</div>
-      <div class="stp"><span class="no">1</span><div class="bd"><h3>말씀은 교회에서 선포돼요.</h3><p>교회에서 선포되는 말씀을 읽고 듣는 가운데 성령께서 일하세요.</p><a class="lk" href="#/write">+ 남기기 열기 ›</a></div></div>
+      <div class="stp"><span class="no">1</span><div class="bd"><h3>말씀은 교회에서 선포돼요.</h3><p>교회에서 선포되는 말씀을 읽고 듣는 가운데 성령께서 일하세요.</p><a class="lk" href="#/write">남기기 열기 ›</a></div></div>
       <div class="stp"><span class="no">2</span><div class="bd"><h3>성령께서 깨닫게 해 주세요.</h3><p>신앙의 여정에서 생긴 질문에 답을 주시는 분은 성령님이세요.</p><a class="lk" href="#/explore">탐구하기 열기 ›</a></div></div>
       <div class="stp"><span class="no">3</span><div class="bd"><h3>들은 말씀을 간직해요.</h3><p>알게 된 것을 기록함으로써 소중히 간직해요.</p><a class="lk" href="#/explore">탐구하기 열기 ›</a></div></div>
       <div class="stp"><span class="no">4</span><div class="bd"><h3>말씀은 그리스도를 가리켜요.</h3><p>성경은 예수님에 대해 말해 주어요(요한복음 5장).</p><a class="lk" href="#/explore">탐구하기 열기 ›</a></div></div>
@@ -1997,12 +2091,13 @@ function viewAbout() {
 }
 // 사용법(M8d): 궁금한 것 찾아보기는 눌러 펼치고 접는다
 const FAQ = [
-  ['질문은 어떻게 남겨요?', '궁금한 것은 ? 질문으로, 알게 된 것은 ! 발견으로 + 남기기에 바로 적어요. 발견은 질문 하나에 이어지고, 이어지지 않은 발견은 따로 남아요.', ['#/write', '+ 남기기 ›']],
+  ['질문은 어떻게 남겨요?', '궁금한 것은 ? 질문으로, 알게 된 것은 ! 발견으로 내 기록 맨 위의 남기기에 바로 적어요. 발견은 질문 하나에 이어지고, 이어지지 않은 발견은 따로 남아요.', ['#/write', '내 기록 › 남기기 ›']],
+  ['묵상하기는 어떻게 해요?', '가운데 칸의 묵상하기에서 오늘의 질문, 권별 연재(하루 한 편), 내가 고른 말씀 가운데 하나를 골라 조용한 화면에서 한 걸음씩 묵상해요. 시간을 정할 수 있고, 다 되어도 저절로 넘어가지 않아요. 연재는 편을 마치면 다음 편이 다음 날 열려요.', ['#/med', '묵상하기 ›']],
   ['발견은 질문과 어떻게 이어져요?', '발견은 질문 하나에만 이어요. 한 질문에는 발견이 여러 개 붙을 수 있어요. 짝은 풀거나 바꿀 수 있고, 짝을 확정하는 것은 늘 내가 해요.'],
   ['탐구하기는 어떻게 해요?', '질문 하나를 한 권의 노트로 깊이 파고들어요. 단계별로 쓰기와 자유롭게 쓰기 가운데 골라 시작해요.', ['#/explore', '탐구하기 ›']],
   ['내 기록의 칩은 뭐예요?', '질문 하나가 쪽지 한 장이에요. 칩으로 전체 · 질문만 · 질문과 발견 · 발견만을 골라 봐요.', ['#/mine', '내 기록 › 쪽지 벽 ›']],
   ['오늘의 질문에 대답하면 어떻게 돼요?', '대답은 나만 봐요. 쓰지 않아도 괜찮아요. 내년 이맘때 같은 질문이 다시 오면, 새 대답을 남긴 뒤 지난 대답을 펼쳐 볼 수 있어요. 지난 대답은 고쳐지지 않고 그대로 남아요.', ['#/mine/answers', '내 기록 › 나의 대답 ›']],
-  ['말씀을 열며는 뭐예요?', '질문으로 묵상하기에서 마치지 않은 편을 그날 처음 열 때 "말씀을 열며" 한 장이 나와요. 세 겹으로 꼰 끈 아래 "아버지께서 주신 말씀을 / 말씀이 가리키는 예수님 안에서 / 성령님이 깨닫게 해 주시기를"이 한 줄씩 나타나고, 누르면 바로 넘어가요.', ['#/explore', '탐구하기 ›']],
+  ['말씀을 열며는 뭐예요?', '탐구하기의 통독에서 마치지 않은 편을 그날 처음 열 때 "말씀을 열며" 한 장이 나와요. 세 겹으로 꼰 끈 아래 "아버지께서 주신 말씀을 / 말씀이 가리키는 예수님 안에서 / 성령님이 깨닫게 해 주시기를"이 한 줄씩 나타나고, 누르면 바로 넘어가요.', ['#/explore', '탐구하기 ›']],
   ['묵상한 것을 다른 사람에게 보낼 수 있나요?', '한 편의 머묾 아래 공유 표시를 누르면 묵상 질문과 장절을 글로 보낼 수 있어요. 내가 쓴 묵상과 나의 해석은 체크했을 때만 함께 가요. 내 글은 암호화되기 때문에, 링크로 내 글을 보여 주는 방법은 없어요.']
 ];
 let faqOpen = new Set();
@@ -2685,14 +2780,14 @@ function viewExplore() {
     : `<div class="card xcard xempty"><div class="ph">품고 있는 질문 하나를 골라 탐구를 시작해 보세요</div><a class="btn${wide ? '' : ' wide'}" href="#/mine">질문 고르기</a></div>`;
   if (wide) {
     return wideShell(`${pageHead('glass', '탐구하기')}
-      ${walkCard ? `<div class="xlb" style="margin-top:20px">질문으로 묵상하기</div>${walkCard}` : ''}
+      ${walkCard ? `<div class="xlb" style="margin-top:20px">통독</div><p class="sm" style="margin:4px 0 12px;line-height:1.55;word-break:keep-all">권별로 풀이를 따라 읽어요. 하루 한 편으로 질문을 품고 묵상하는 것은 묵상하기에서 해요.</p>${walkCard}` : ''}
       <div class="xlb" style="margin-top:${walkCard ? 28 : 20}px">내가 탐구하는 질문</div>${curHtml}
       `, { pn: false });
   }
   const rows = past.map(n => `<button class="card xrow" type="button" data-act="past-open" data-id="${n.q}"><span><span style="display:block">${esc(getQ(n.q).text)}</span><span class="sm">${n.mode === 'free' ? '자유롭게 쓰기' : '단계별로 쓰기'} · ${startLine(n)}</span></span><span class="xch" aria-hidden="true">›</span></button>`).join('');
   return `<div class="col">
     ${pageHead('glass', '탐구하기', `<button class="ib" type="button" aria-label="검색" data-act="srch-ex" style="margin-right:-10px">${SEARCH_IC}</button>`)}
-    ${walkCard ? `<div class="xlb" style="margin-top:14px">질문으로 묵상하기</div>${walkCard}` : ''}
+    ${walkCard ? `<div class="xlb" style="margin-top:14px">통독</div><p class="sm" style="margin:4px 0 12px;line-height:1.55;word-break:keep-all">권별로 풀이를 따라 읽어요. 하루 한 편으로 질문을 품고 묵상하는 것은 묵상하기에서 해요.</p>${walkCard}` : ''}
     <div class="xlb"${walkCard ? '' : ' style="margin-top:14px"'}>내가 탐구하는 질문</div>${curHtml}
     ${past.length ? `<div class="xlb">지난 탐구</div>${rows}` : ''}
   </div>`;
@@ -2706,7 +2801,7 @@ function viewWalks() {
     const tail = `${w.eps.length}편으로 된 ${kind}예요.`;
     return `<div class="card xcard" style="margin-top:10px" aria-current="true">${walkCover(w)}<div class="sm">${esc(walkName(w))}</div><div class="sf xct" style="margin-top:4px">${esc(w.title)}</div><div class="sm" style="margin-top:6px;line-height:1.55;word-break:keep-all">${esc(w.line)}</div><div class="sm" style="margin-top:6px">${tail} 지금 묵상하고 있어요.</div><a class="btn${wide ? '' : ' wide'}" href="#/explore/walk/${w.id}" style="margin-top:12px">이어 하기</a></div>`;
   };
-  const head = `<div class="card xhead"><div class="xlb" style="margin:0 0 6px">질문으로 묵상하기</div><div class="sf xwq">서가</div></div>`;
+  const head = `<div class="card xhead"><div class="xlb" style="margin:0 0 6px">연재 읽기</div><div class="sf xwq">서가</div></div>`;
   const books = [...new Set(all.map(walkShelfBook))];
   const bookIndex = walkBookPos;
   books.sort((a, b) => bookIndex(a) - bookIndex(b));
@@ -2745,17 +2840,15 @@ function viewWalks() {
   const body = head + (current ? card(current) : '') + shelf(true) + shelf(false) + (others.length ? `<div class="xlb">그 밖의 연재</div>${others.map(row).join('')}` : '')
     + `<p class="sm" style="margin-top:18px;line-height:1.6;word-break:keep-all">풀이는 STEP Bible 자료에서 확인한 원어를 바탕으로, 여러 교회가 함께 받아들이는 읽기를 따라 AI가 작성하고 사람이 확인한 묵상 글이에요. 다르게 읽히는 곳은 <a href="#/more/feedback">의견 보내기</a>로 알려 주세요.</p>`;
   if (wide) return wideShell(body, { pn: true, top: '' });
-  return `<div class="col"><div class="back-row"><a class="tx" href="#/explore"><span style="margin-left:-6px">← 탐구하기</span></a></div>${body}</div>`;
+  const fromMed = routeKey().startsWith('med');   // 묵상하기의 [연재 바꾸기]에서 왔으면 돌아가는 곳도 묵상하기
+  return `<div class="col"><div class="back-row"><a class="tx" href="#/${fromMed ? 'med' : 'explore'}"><span style="margin-left:-6px">← ${fromMed ? '묵상하기' : '탐구하기'}</span></a></div>${body}</div>`;
 }
 
 // ── 질문을 따라 걷기(S-38): 연재 목록. 열린 토막은 누르고, 아직 안 열린 토막은 흐리게 열리는 날만. 읽은 표시·진도는 두지 않는다 ──
 function viewWalk(w) {
-  const wide = isWide(), mode = walkMode(w);
-  const head = `<div class="card xhead"><div class="xlb" style="margin:0 0 6px">질문으로 묵상하기</div>${walkCover(w)}<div class="sm">${esc(walkName(w))}</div><div class="sf xwq" style="margin-top:2px">${esc(w.title)}</div><p class="wk-p" style="margin-top:10px">${esc(w.intro)}</p></div>`;
-  const modes = `<div class="seg" role="radiogroup" aria-label="읽는 방식" style="margin-top:12px">
-    <button type="button" role="radio" aria-checked="${mode === 'day'}" class="${mode === 'day' ? 'on' : ''}" data-act="walk-mode" data-id="${w.id}" data-v="day">1일 1편</button>
-    <button type="button" role="radio" aria-checked="${mode === 'read'}" class="${mode === 'read' ? 'on' : ''}" data-act="walk-mode" data-id="${w.id}" data-v="read">통독</button>
-  </div><div class="sm" style="margin-top:8px;line-height:1.55;word-break:keep-all">${mode === 'read' ? '한 화면에서 쭉 읽어요. 다 읽으면 다음 편이 바로 열려요.' : '하루에 한 편씩 단계를 따라 묵상해요. 머묾까지 읽으면 다음 편이 다음 날 열려요.'}</div>`;
+  const wide = isWide();
+  const head = `<div class="card xhead"><div class="xlb" style="margin:0 0 6px">연재 읽기</div>${walkCover(w)}<div class="sm">${esc(walkName(w))}</div><div class="sf xwq" style="margin-top:2px">${esc(w.title)}</div><p class="wk-p" style="margin-top:10px">${esc(w.intro)}</p></div>`;
+  const modes = `<div class="sm" style="margin-top:12px;line-height:1.55;word-break:keep-all">한 화면에서 쭉 읽어요. 다 읽으면 다음 편이 바로 열려요. 하루에 한 편씩 질문을 품고 묵상하는 것은 묵상하기에서 해요.</div>`;
   // 토막 줄: 앞에 순서 번호. 열린 토막은 모두, 안 열린 토막은 바로 다음 하나만 보이고 나머지는 [남은 토막 모두 보기]로 접는다(S-47)
   const no = e => `<span class="wk-no" aria-label="${e.n}편">${e.n}</span>`;
   const openRow = e => `<a class="card xrow wk-row" href="#/explore/walk/${w.id}/${e.n}">${no(e)}<span class="wk-tt"><span style="display:block">${esc(e.title)}</span><span class="sm">${esc(e.ref)}</span></span><span class="xch" aria-hidden="true">›</span></a>`;
@@ -2800,7 +2893,7 @@ function walkSecTake(k) {   // 이 편에 머문 밀리초를 모두 꺼내고 �
 }
 document.addEventListener('visibilitychange', () => {   // 다른 앱으로 가 있던 동안은 세지 않는다
   if (document.hidden) walkPause();
-  else if (WALK_AT.key && !WALK_AT.at && routeKey() === 'explore/walk/' + WALK_AT.key) WALK_AT.at = Date.now();
+  else if (WALK_AT.key && !WALK_AT.at && /^(explore|med)\/walk\//.test(routeKey()) && routeKey().endsWith('/' + WALK_AT.key.split('/').pop())) WALK_AT.at = Date.now();
 });
 // 본문 노트: 첫 줄은 낱말(히브리어나 그리스어) 우리말 뜻, 그 아래 풀이. 낱말 번호·나오는 절·사전 뜻·같은 낱말은 접힌 "근거"에 모은다(S-43)
 const walkNoteRow = n => `<li class="wk-note"><div><b>${esc(n.w)}</b>(<span class="wk-heb" ${n.s.startsWith('G') ? 'lang="grc"' : 'lang="he" dir="rtl"'}>${esc(n.heb)}</span>) ${esc(n.ko)}</div><p>${esc(n.t)}</p><details class="wk-why"><summary class="sm">근거</summary><p class="sm">낱말 번호 ${esc(n.s)}. 이 편에서 나오는 절 ${esc(n.at.join(', '))}. 사전의 영어 뜻 ${esc(n.gloss)}.${n.see.length ? ` 같은 낱말이 나오는 곳 ${esc(n.see.join(', '))}.` : ''}</p></details></li>`;
@@ -2833,46 +2926,234 @@ function walkShareSheet(w, ep) {
   $$('#popSheet input[type="checkbox"]').forEach(c => c.addEventListener('change', paint));
   paint();
 }
-function viewWalkEp(w, ep) {
-  const wide = isWide(), i = w.eps.indexOf(ep), key = walkKey(w) + '/' + ep.n, mine = getMine(walkMineId(w, ep)), mine2 = getMine(walkMine2Id(w, ep));
-  const st = walkDone(w, ep) ? 5 : (mine || mine2) ? 4 : 0;   // 마친 토막은 머묾까지, 적어 두고 안 마친 토막은 풀이까지 펴 둔다(다음 →으로 머묾에 들어가야 마친 날이 남는다)
-  walkOpened(w, ep);
-  if (WE.key !== key) {
-    WE = { key, max: st, view: st };
-    if (!walkDone(w, ep) && firstOpenToday(key)) setTimeout(() => showOpening(null), 0);   // 마치지 않은 편을 그날 처음 열면 말씀을 열며 한 장(S-60)
+// ── 묵상하기(2026-11-23, 가운데 칸. 예전 남기기 자리) ─────────────────────────────────────────
+// 코이데 기도하기처럼 한 자리에서 한 걸음씩 가는 몰입 화면이다. 묵상할 말씀은 [오늘의 질문 | 권별 연재 | 내가 고른 말씀] 중에서 고른다.
+// 한 걸음은 예전 질문으로 묵상하기(viewWalkEp)의 여섯 단계 그대로다: 본문 읽기, 보기, 묵상, 나의 해석, 풀이, 머묾. 한 단계씩 펴고, 지나온 단계는 아래에 접어 두며(누르면 다시 펴요),
+// 가장 새 단계가 위에 온다. 머묾까지 오면 그 편을 마친 것이고(마친 날을 남긴다), 다음 편은 다음 날 열린다. 오늘의 질문과 내가 고른 말씀은 같은 틀에서 그 말씀에 있는 단계만 쓴다(결정 기록 2026-11-23).
+// 말씀을 열며는 묵상하기에서 쓰지 않는다(통독에만 있다). 묵상 글은 묵상 모아 보기로, 질문은 머묾의 [이 질문을 내 기록에 품기]를 눌렀을 때만 내 기록에 남는다.
+const MED_K = 'didako-note-med';   // 시작 화면에서 고른 것(이 기기에만 둔다)
+const MED = Object.assign({ src: 'today', dur: 600, dim: false, music: false, track: 0, auto: true }, readJson(MED_K));
+MED.mine = Object.assign({ ref: '', ask: '' }, MED.mine);
+const saveMed = () => ls.set(MED_K, JSON.stringify(MED));
+const MED_DUR = [[0, '시간 없이'], [300, '5분'], [600, '10분'], [1200, '20분']];
+const MED_NAME = { read: '본문 읽기', look: '보기', bg: '질문의 배경', m1: '묵상', m2: '나의 해석', p: '풀이', stay: '머묾' };
+const MED_KEYS = { walk: ['read', 'look', 'm1', 'm2', 'p', 'stay'], today: ['read', 'bg', 'm1', 'stay'], mine: ['read', 'm1', 'm2', 'stay'] };
+const MED_PH = '떠오르는 대로 적어 보세요. 적지 않아도 돼요.';
+const medStepKey = key => /^med\/(walk\/[\w-]+\/\d{1,2}|today|mine)$/.test(key);
+let MS = { on: false, dur: 0, left: 0, up: false, stay: false, last: 5, tm: 0, wake: null };   // 묵상하는 중(시간 고리, 시간이 다 된 알림)
+let medPickBack = false;   // [연재 바꾸기]로 서가에 다녀오는 중이면 연재를 고른 뒤 묵상하기로 돌아온다
+const medFmt = s => `${Math.floor(s / 60)}:${String(s % 60).padStart(2, '0')}`;
+
+// 지금 주소의 묵상 한 편을 같은 모양으로 모은다(연재의 한 편, 오늘의 질문, 내가 고른 말씀)
+function medCtx() {
+  const key = routeKey();
+  if (key === 'med/today') {
+    const q = questionOn(demoDN());
+    return { k: 'today', keys: MED_KEYS.today, id: questionKey(q), label: '오늘의 질문', title: q.q, ref: q.ref, bg: q.bg, ask: q.q, img: q.img, alt: q.alt || '', stay: '오늘 하루, 이 질문을 마음에 두고 지내 보세요.', hold: true };
   }
-  const head = `<div class="card xhead"><div class="xlb" style="margin:0 0 6px">${esc(walkName(w))} ${ep.n}편</div><div class="sf xwq">${esc(ep.title)}</div></div>`
-    + (ep.img ? `<img class="q-img" src="${esc(ep.img)}" alt="${esc(ep.art || '')}" width="1200" height="675" decoding="async" style="margin-top:12px">` : '');   // 그림은 img가 있는 토막에만(S-49에서 네 편에 넣었다)
-  const notes = ep.notes && ep.notes.length ? `<div class="wk-notes"><button class="tx wk-nt" type="button" data-act="walk-notes" aria-haspopup="dialog">원어 해설 보기</button></div>` : '';
-  const names = ['본문 읽기', '보기', '묵상', '나의 해석', '풀이', '머묾'];
-  const sums = [ep.ref, oneLine(ep.look), mine ? oneLine(mine) : '건너뛰었어요', mine2 ? oneLine(mine2) : '건너뛰었어요', oneLine(ep.p[0]), oneLine(ep.stay)];
-  const open = [
-    `<div class="xcur"><div class="xnm s" id="xHead" tabindex="-1">본문 읽기</div><div class="card xvl"><div>${esc(ep.ref)}</div>${bibleLinkHtml(ep.ref)}</div></div>`,
-    `<div class="xcur"><div class="xnm s" id="xHead" tabindex="-1">보기</div><div class="xgq">${esc(ep.look)}</div></div>`,
-    `<div class="xcur"><div class="xnm s" id="xHead" tabindex="-1">묵상</div><div class="xgq">${esc(ep.ask)}</div><textarea class="field xta" id="waTa" rows="4" placeholder="떠오르는 대로 적어 보세요. 적지 않아도 돼요." aria-label="묵상">${esc(mine)}</textarea></div>`,
-    `<div class="xcur"><div class="xnm s" id="xHead" tabindex="-1">나의 해석</div><div class="xgq">이 본문이 무엇을 말하는지 내 말로 풀어 보세요.</div><textarea class="field xta" id="wbTa" rows="4" placeholder="떠오르는 대로 적어 보세요. 적지 않아도 돼요." aria-label="나의 해석">${esc(mine2)}</textarea></div>`,
-    `<div class="xcur"><div class="xnm s" id="xHead" tabindex="-1">풀이</div>${ep.p.map(t => `<p class="wk-p">${esc(t)}</p>`).join('')}</div>`
-  ];
-  const fold = k => `<button class="xfd${(k === 2 && mine) || (k === 3 && mine2) ? ' full' : ''}" type="button" data-act="walk-view" data-i="${k}" aria-label="${names[k]}. 누르면 다시 펴요"><i class="mk">✓</i><span class="tt"><b>${names[k]}</b><span>${esc(k === 2 && mine ? mine : k === 3 && mine2 ? mine2 : sums[k])}</span></span><i class="ar" aria-hidden="true">›</i></button>`;
-  let cur = WE.view < 5 ? open[WE.view] : '';
-  if (WE.view === 5) cur = walkStayHtml(w, ep, true);
-  let past = WE.max >= 5 && WE.view !== 5 ? fold(5) : '';
-  for (let k = Math.min(WE.max, 4); k >= 0; k--) if (k !== WE.view) past += fold(k);
-  const body = head + notes + cur + (past ? `<div class="xpast">${past}</div>` : '');
-  let bar;
-  if (WE.view === 2 || WE.view === 3) bar = '<button class="btn ol" type="button" data-act="walk-next">건너뛰기</button><button class="btn k" type="button" data-act="walk-next">다음 →</button>';
-  else if (WE.view < 5) bar = '<button class="btn" type="button" data-act="walk-next">다음 →</button>';
-  else {
-    const prevEp = w.eps[i - 1], nextEp = w.eps[i + 1];
-    const prev = prevEp ? `<a class="btn ol" href="#/explore/walk/${w.id}/${prevEp.n}">‹ 이전</a>` : '';
-    const next = !nextEp ? `<a class="btn" href="#/explore/walk/${w.id}">${esc(walkName(w))} 목록으로</a>`
-      : walkIsOpen(w, nextEp) ? `<a class="btn" href="#/explore/walk/${w.id}/${nextEp.n}">다음 편 →</a>`
-      : walkDone(w, ep) ? `<span class="sm wk-next">다음 편은 ${walkWhen(walkOpenDN(w, i + 1))} 열려요</span>` : '';
-    bar = prev + next;
+  if (key === 'med/mine') {
+    const ref = MED.mine.ref.trim(), ask = MED.mine.ask.trim();
+    return { k: 'mine', keys: MED_KEYS.mine, id: 'mine', label: '내가 고른 말씀', title: ref, ref, ask, stay: '오늘 하루, 이 말씀을 마음에 두고 지내 보세요.', hold: Boolean(ask) };
   }
-  const actBar = `<div class="xact"><div class="xact-in">${bar}</div></div>`;
-  if (wide) return wideShell(body + actBar, { pn: true, top: '' });
-  return `<div class="col"><div class="back-row"><a class="tx" href="#/explore/walk/${w.id}"><span style="margin-left:-6px">← ${esc(walkName(w))}</span></a></div>${body}${actBar}</div>`;
+  const r = walkEpOfRoute(); if (!r) return null;
+  const { w, ep } = r;
+  return { k: 'walk', keys: MED_KEYS.walk, id: walkKey(w) + '/' + ep.n, w, ep, label: `${walkName(w)} ${ep.n}편`, title: ep.title, ref: ep.ref, look: ep.look, ask: ep.ask, p: ep.p, stay: ep.stay, hold: Boolean(ep.hold), img: ep.img, alt: ep.art || '' };
+}
+// 쓴 글은 쓰는 대로 남는다. 연재는 예전 질문으로 묵상하기와 같은 자리, 오늘의 질문은 나의 대답 자리, 내가 고른 말씀은 'wc-<날짜>-<장절>'(묵상 모아 보기에 모인다)
+const medHash = t => [...t].reduce((h, ch) => (h * 31 + ch.charCodeAt(0)) >>> 0, 7).toString(36);
+const medMineId = c => `wc-${dnStr(demoDN())}-${medHash(c.ref)}`;
+function medRec(c) { const m = N.wk.find(x => x.id === medMineId(c)); let o = {}; try { o = m ? JSON.parse(m.mine) : {}; } catch (e) { o = {}; } return o && typeof o === 'object' ? o : {}; }
+const medGet = (c, k) => (c.k === 'walk' ? getMine(k === 'm1' ? walkMineId(c.w, c.ep) : walkMine2Id(c.w, c.ep)) : c.k === 'today' ? (k === 'm1' ? getMine(todayAnswerId(c.id)) : '') : String(medRec(c)[k] || ''));
+function medSet(c, k, v) {
+  if (c.k === 'walk') return setMine(k === 'm1' ? walkMineId(c.w, c.ep) : walkMine2Id(c.w, c.ep), v);
+  if (c.k === 'today') {
+    const first = !thisAnswer(c.id) && !!v.trim();
+    setMine(todayAnswerId(c.id), v.slice(0, 1000));
+    if (first) { markGrape('answer'); UZ.track('answer', { once: 'a:' + todayAnswerId(c.id) }); }   // 오늘의 질문에 처음 대답했다(글은 보내지 않는다)
+    return;
+  }
+  setMine(medMineId(c), JSON.stringify(Object.assign({ ref: c.ref, ask: c.ask || '', m1: '', m2: '' }, medRec(c), { [k]: v })));
+}
+// 노트와 같다: 마친 편을 다시 열면 머묾까지 펴 두고, 적어 두고 안 마친 편은 풀이까지 펴 둔다
+const medFirstView = c => (c.k === 'walk' ? (walkDone(c.w, c.ep) ? c.keys.length - 1 : (medGet(c, 'm1') || medGet(c, 'm2')) ? c.keys.indexOf('p') : 0) : 0);
+
+function medStepBody(c, k) {
+  const hd = t => `<div class="xnm s" id="xHead" tabindex="-1">${t}</div>`;
+  if (k === 'read') return `<div class="xcur">${hd(MED_NAME.read)}<div class="card xvl"><div>${esc(c.ref)}</div>${bibleLinkHtml(c.ref)}</div></div>`;
+  if (k === 'look') return `<div class="xcur">${hd(MED_NAME.look)}<div class="xgq">${esc(c.look)}</div></div>`;
+  if (k === 'bg') return `<div class="xcur">${hd(MED_NAME.bg)}<div class="xgq">${esc(c.bg)}</div></div>`;
+  if (k === 'm1') return `<div class="xcur">${hd(MED_NAME.m1)}<div class="xgq">${esc(c.ask || '이 말씀 앞에서 어떤 질문이 생겼나요?')}</div><textarea class="field xta" id="waTa" rows="4" maxlength="1000" placeholder="${MED_PH}" aria-label="묵상">${esc(medGet(c, 'm1'))}</textarea></div>`;
+  if (k === 'm2') return `<div class="xcur">${hd(MED_NAME.m2)}<div class="xgq">이 본문이 무엇을 말하는지 내 말로 풀어 보세요.</div><textarea class="field xta" id="wbTa" rows="4" maxlength="1000" placeholder="${MED_PH}" aria-label="나의 해석">${esc(medGet(c, 'm2'))}</textarea></div>`;
+  if (k === 'p') return `<div class="xcur">${hd(MED_NAME.p)}${c.p.map(t => `<p class="wk-p">${esc(t)}</p>`).join('')}</div>`;
+  if (c.k === 'walk') return walkStayHtml(c.w, c.ep, true);   // 머묾(두 읽는 방식이 함께 쓴다)
+  const hold = !c.hold ? '' : c.k === 'today' ? `<a class="btn wide" href="#/today/write" style="margin-top:12px">이 질문을 내 기록에 품기</a>` : `<button class="btn wide" type="button" data-act="med-hold" style="margin-top:12px">이 질문을 내 기록에 품기</button>`;
+  return `<div class="wk-stay"><div class="xlb" style="margin-top:0" id="xHead" tabindex="-1">머묾</div><p class="sf">${esc(c.stay)}</p></div>
+    <button class="btn wide" type="button" data-act="pray" style="margin-top:12px;background:var(--accent-soft);color:var(--accent-deep)">이 질문으로 하나님께 기도하기${EXT_IC}</button>${hold}`;
+}
+function medFold(c, k, i) {
+  const isT = k === 'm1' || k === 'm2', t = isT ? medGet(c, k) : '';
+  const sum = isT ? (t.trim() || '건너뛰었어요') : ({ read: c.ref, look: oneLine(c.look || ''), bg: oneLine(c.bg || ''), p: oneLine((c.p || [''])[0]), stay: oneLine(c.stay || '') })[k];
+  return `<button class="xfd${isT && t.trim() ? ' full' : ''}" type="button" data-act="med-view" data-i="${i}" aria-label="${MED_NAME[k]}. 누르면 다시 펴요"><i class="mk">✓</i><span class="tt"><b>${MED_NAME[k]}</b><span>${esc(sum)}</span></span><i class="ar" aria-hidden="true">›</i></button>`;
+}
+const medUpBanner = () => `<div class="pss-cd" id="psUp" role="status"><span>시간이 다 됐어요<small class="dim-only">화면을 누르면 머물러요</small></span><button type="button" data-act="med-stay">머무르기</button></div>`;
+// 묵상하는 화면(주소 med/walk/<연재>/<번호>, med/today, med/mine)
+function viewMedStep() {
+  const c = medCtx(); if (!c) return viewMed();
+  const key = 'med:' + c.id, last = c.keys.length - 1;
+  if (c.k === 'walk') walkOpened(c.w, c.ep);
+  if (WE.key !== key) { const st = medFirstView(c); WE = { key, max: st, view: st }; }
+  MS.last = last;
+  const k = c.keys[WE.view], atLast = WE.view === last;
+  const tr = HYMNS[MED.track % HYMNS.length].label;
+  const mus = `<span class="pss-mus"><button class="pss-music${MED.music ? ' on' : ''}" type="button" data-act="med-music" aria-pressed="${MED.music}">♪ <span class="trk">${MED.music ? tr : '음악 꺼짐'}</span></button>${MED.music ? '<button class="pss-music" type="button" data-act="med-track" aria-label="다음 곡">다음 곡 ›</button>' : ''}</span>`;
+  const ring = !atLast && MS.on && MS.dur ? `<span class="pss-timer"><svg class="pss-ring" viewBox="0 0 100 100" aria-hidden="true"><circle cx="50" cy="50" r="44" class="track"/><circle cx="50" cy="50" r="44" class="bar" stroke-dasharray="276.5" stroke-dashoffset="${(276.5 * (1 - MS.left / MS.dur)).toFixed(1)}"/></svg><span id="ps-time">${medFmt(MS.left)}</span></span>` : '';
+  const top = `<div class="pss-top"><button class="pss-x" type="button" data-act="med-close">끝내기</button><span class="pss-step">${ring}<span>${atLast ? '머묾' : `${WE.view + 1} / ${c.keys.length}`}</span></span>${mus}</div>`;
+  const head = `<div class="card xhead"><div class="xlb" style="margin:0 0 6px">${esc(c.label)}</div><div class="sf xwq">${esc(c.k === 'mine' ? c.ref : c.title)}</div></div>`
+    + (c.img ? `<img class="q-img" src="${esc(c.img)}" alt="${esc(c.alt)}" width="1200" height="675" decoding="async" style="margin-top:12px">` : '');
+  const notes = c.k === 'walk' && c.ep.notes && c.ep.notes.length ? `<div class="wk-notes"><button class="tx wk-nt" type="button" data-act="walk-notes" aria-haspopup="dialog">원어 해설 보기</button></div>` : '';
+  let past = WE.max >= last && !atLast ? medFold(c, c.keys[last], last) : '';
+  for (let i = Math.min(WE.max, last - 1); i >= 0; i--) if (i !== WE.view) past += medFold(c, c.keys[i], i);
+  const body = head + notes + medStepBody(c, k) + (past ? `<div class="xpast">${past}</div>` : '');
+  const skip = k === 'm1' || k === 'm2';
+  let nx = '';
+  if (atLast && c.k === 'walk') { const i = c.w.eps.indexOf(c.ep), nextEp = c.w.eps[i + 1]; if (nextEp && !walkIsOpen(c.w, nextEp) && walkDone(c.w, c.ep)) nx = `<span class="sm wk-next">다음 편은 ${walkWhen(walkOpenDN(c.w, i + 1))} 열려요</span>`; }
+  const ready = MS.up && !MS.stay && !atLast;
+  const nav = atLast
+    ? `<div class="pss-nav${nx ? '' : ' one'}">${nx}<button class="pss-pray" id="psMain" type="button" data-act="med-finish">마치기</button></div>`
+    : `<div class="pss-nav${skip ? '' : ' one'}">${ready ? medUpBanner() : ''}${skip ? '<button type="button" data-act="med-next">건너뛰기</button>' : ''}<button class="pss-pray${ready ? ' ready' : ''}" id="psMain" type="button" data-act="med-next">다음 →</button></div>`;
+  return `<div class="pss" id="pss" role="dialog" aria-modal="true" aria-label="묵상하기">${top}<div class="pss-body pss-med">${body}</div>${nav}</div>`;
+}
+function medGo(i) {   // 단계 열기. 새 단계로 나아가면 가장 먼 곳(max)도 따라간다. 머묾에 닿으면 그 편을 마친 것으로 센다
+  const c = medCtx(); if (!c) return;
+  WE.view = Math.max(0, Math.min(c.keys.length - 1, i)); WE.max = Math.max(WE.max, WE.view);
+  if (WE.view === c.keys.length - 1 && c.k === 'walk') markWalkDone(c.w, c.ep);
+  render();
+  const e = $('#pss'); if (e) e.scrollTop = 0;
+  const h = $('#xHead'); if (h) h.focus({ preventScroll: true });
+}
+// 시간 고리: 다 돼도 저절로 넘기지 않는다. 알림과 반짝이는 단추만 보인다
+function medTick() {
+  clearInterval(MS.tm); MS.tm = 0;
+  if (!MS.on || !MS.dur || WE.view >= MS.last || MS.left <= 0) return;
+  MS.tm = setInterval(() => {
+    if (!medStepKey(routeKey())) return medStop();
+    MS.left = Math.max(0, MS.left - 1);
+    const t = $('#ps-time'), bar = $('.pss-ring .bar');
+    if (t) t.textContent = medFmt(MS.left);
+    if (bar) bar.setAttribute('stroke-dashoffset', (276.5 * (1 - MS.left / MS.dur)).toFixed(1));
+    if (!MS.left) {
+      clearInterval(MS.tm); MS.tm = 0; MS.up = true;
+      if (WE.view < MS.last && !MS.stay) { const nav = $('.pss-nav'); if (nav && !$('#psUp')) nav.insertAdjacentHTML('afterbegin', medUpBanner()); const b = $('#psMain'); if (b) b.classList.add('ready'); }
+    }
+  }, 1000);
+}
+function medSync() { if (!medStepKey(routeKey())) return; MedDim.sync(); medTick(); }   // 화면을 그린 뒤마다
+function medStart() {
+  let route = '';
+  if (MED.src === 'today') route = 'med/today';
+  else if (MED.src === 'mine') route = MED.mine.ref.trim() ? 'med/mine' : '';
+  else { const wn = walkNow(); route = wn && wn.ep ? `med/walk/${wn.w.id}/${wn.ep.n}` : ''; }
+  if (!route) return;
+  MS = Object.assign(MS, { on: true, dur: MED.dur, left: MED.dur, up: false, stay: false });
+  WE.key = '';
+  Music.unlock(); if (MED.music) Music.play(MED.track);
+  try { if (navigator.wakeLock) navigator.wakeLock.request('screen').then(l => { MS.wake = l; }).catch(() => {}); } catch (e) { /* 되는 기기에서만(코이데 기도하기와 같게) */ }
+  setHash(route);
+}
+function medStop() {   // 묵상하는 화면을 떠났을 때: 시간 고리, 화면 켜 두기, 음악을 모두 멈춘다
+  clearInterval(MS.tm); MS.tm = 0; MS.on = false; MS.up = false; MS.stay = false;
+  try { if (MS.wake) MS.wake.release(); } catch (e) { /* 이미 풀림 */ }
+  MS.wake = null;
+  if (Music.playing()) Music.off();
+  MedDim.sync();
+}
+// 저절로 어둡게(코이데 pray-dim.js와 같은 움직임): 가만히 30초면 어두워지고, 만지면 밝아지며 그때 만진 것은 단추를 누르지 않는다. 머묾에서는 어두워지지 않는다
+const MedDim = (() => {
+  let dim = false, timer = 0, wakeAt = 0;
+  const can = () => !!(MED.dim && medStepKey(routeKey()) && WE.view < MS.last);
+  const paint = () => { const e = $('#pss'); if (e) e.classList.toggle('dim', dim && can()); };
+  function arm() { clearTimeout(timer); timer = 0; if (!can() || dim) return; timer = setTimeout(() => { timer = 0; if (can()) { dim = true; paint(); } }, 30000); }
+  function sync() { if (!can()) { clearTimeout(timer); timer = 0; dim = false; } else if (!dim && !timer) arm(); paint(); }
+  function touch() {
+    if (!can()) return;
+    if (dim) { dim = false; wakeAt = Date.now(); paint(); if (MS.up && !MS.stay) { MS.stay = true; const u = $('#psUp'); if (u) u.remove(); } }
+    arm();
+  }
+  ['pointerdown', 'touchstart', 'keydown', 'wheel'].forEach(t => document.addEventListener(t, touch, { capture: true, passive: true }));
+  document.addEventListener('click', e => { if (Date.now() - wakeAt < 500) { e.stopPropagation(); e.preventDefault(); } }, true);
+  return { sync };
+})();
+// 잔잔한 음악: 찬송가 1~8장(송영) 연주 파일(music/hymn-01.mp3 ~ hymn-08.mp3, config.js의 MUSIC으로 위치를 바꿀 수 있다). 코이데 기도하기와 같은 곡이다
+//  곡은 소리 장치(Web Audio)로 이어서 튼다. "묵상 시작"을 누를 때 한 번 열어 두면 곡이 끝나 다음 곡으로 넘어갈 때 휴대폰이 막지 않는다. 받아 올 수 없으면 audio 요소로 튼다
+const HYMNS = Array.from({ length: 8 }, (_, i) => ({ label: (i + 1) + '장', file: (CFG.MUSIC || 'music/') + 'hymn-' + String(i + 1).padStart(2, '0') + '.mp3' }));
+const Music = (() => {
+  let ctx = null, node = null, gain = null, token = 0;
+  const cache = {}, player = new Audio(); player.preload = 'auto';
+  function unlock() {
+    try { if (navigator.audioSession) navigator.audioSession.type = 'playback'; } catch (e) { /* 무시 */ }
+    try { if (!ctx) ctx = new (window.AudioContext || window.webkitAudioContext)(); if (ctx.state !== 'running') ctx.resume(); } catch (e) { ctx = null; }
+  }
+  const label = () => document.querySelectorAll('.pss-music .trk').forEach(e => { e.textContent = HYMNS[MED.track].label; });
+  const ended = () => { if (!MED.music || !medStepKey(routeKey())) return; play(MED.auto ? (MED.track + 1) % HYMNS.length : MED.track); label(); };
+  const load = i => cache[i] || (cache[i] = fetch(HYMNS[i].file).then(r => { if (!r.ok) throw new Error('no file'); return r.arrayBuffer(); })
+    .then(buf => new Promise((ok, bad) => ctx.decodeAudioData(buf, ok, bad))).catch(e => { delete cache[i]; throw e; }));
+  function stopNode() {
+    if (!node || !ctx) return;
+    const n = node, g = gain; node = null; gain = null; n.onended = null;
+    g.gain.cancelScheduledValues(ctx.currentTime); g.gain.setValueAtTime(g.gain.value, ctx.currentTime); g.gain.linearRampToValueAtTime(0, ctx.currentTime + .6);
+    try { n.stop(ctx.currentTime + .7); } catch (e) { /* 이미 멈춤 */ }
+  }
+  player.addEventListener('ended', () => { if (!node) ended(); });
+  function play(i) {
+    stopNode(); player.pause(); MED.track = i; saveMed();
+    const my = ++token, file = () => { player.src = HYMNS[i].file; player.currentTime = 0; player.play().catch(() => {}); };
+    if (!ctx) return file();
+    load(i).then(buf => {
+      if (my !== token) return;
+      gain = ctx.createGain(); gain.gain.setValueAtTime(0, ctx.currentTime); gain.gain.linearRampToValueAtTime(.8, ctx.currentTime + 1);
+      node = ctx.createBufferSource(); node.buffer = buf; node.connect(gain).connect(ctx.destination);
+      node.onended = () => { if (my === token) { node = null; ended(); } };
+      node.start();
+      load((i + 1) % HYMNS.length).catch(() => {});
+    }).catch(() => { if (my === token) file(); });
+  }
+  return { unlock, play, playing: () => !!node || !player.paused, off() { token++; stopNode(); player.pause(); } };
+})();
+
+// ── 묵상하기 시작 화면(코이데 기도하기 시작 화면과 같은 짜임: 안내 한 줄, 무엇으로, 머무는 시간, 스위치 둘, 시작 단추. 넓은 화면은 오른쪽에 오늘 할 순서) ──
+const medSw = (on, act, label) => `<button class="switch${on ? ' on' : ''}" type="button" role="switch" aria-checked="${!!on}" aria-label="${label}" data-act="${act}"><span></span></button>`;
+const medSeg = (items, cur, act, label) => `<div class="seg" style="--n:${items.length}" role="radiogroup" aria-label="${label}">${items.map(([v, l]) => `<button type="button" class="${String(cur) === String(v) ? 'on' : ''}" role="radio" aria-checked="${String(cur) === String(v)}" data-act="${act}" data-v="${v}">${l}</button>`).join('')}</div>`;
+const medLastDone = w => w.eps.filter(e => walkDone(w, e)).sort((a, b) => walkDone(w, b) - walkDone(w, a) || b.n - a.n)[0];
+function medOff() {   // 시작 단추를 못 누를 때(고른 말씀이 없거나, 오늘 편을 이미 마쳤거나, 연재를 모두 마침)
+  if (MED.src === 'mine') return !MED.mine.ref.trim();
+  if (MED.src === 'walk') { const wn = walkNow(); return !(wn && wn.ep); }
+  return false;
+}
+function medSrcBox() {
+  if (MED.src === 'today') { const q = questionOn(demoDN()); return `<div class="med-src"><b>${esc(q.q)}</b><small>${esc(q.ref)}</small></div>`; }
+  if (MED.src === 'mine') {
+    return `<div class="med-src"><input class="field" id="medRef" maxlength="30" placeholder="장절 (예: 시편 13편 1~6절)" aria-label="장절" value="${esc(MED.mine.ref)}">
+      <input class="field" id="medAsk" maxlength="120" placeholder="품고 시작할 질문이 있으면 적어요 (선택)" aria-label="질문" value="${esc(MED.mine.ask)}"></div>
+      ${N.qs.length ? `<button class="tx med-link" type="button" data-act="med-pick-q">품고 있는 질문에서 고르기 ›</button>` : ''}`;
+  }
+  const wn = walkNow();
+  const swap = `<p class="med-note">하루에 한 편씩 열려요. 오늘 편을 마치면 내일 다음 편이 열려요.</p><button class="tx med-link" type="button" data-act="med-swap">연재 바꾸기 ›</button>`;
+  if (!wn) return `<div class="med-src"><b>읽을 연재가 아직 없어요</b></div>`;
+  if (wn.ep) return `<div class="med-src"><b>${esc(walkName(wn.w))} ${wn.ep.n}편 ${esc(wn.ep.title)}</b><small>${esc(wn.ep.ref)}</small></div>${swap}`;
+  if (wn.next) { const d = medLastDone(wn.w); return `<div class="med-src"><b>오늘 편을 마쳤어요</b><small>${walkWhen(wn.nextDN)} ${wn.next.n}편이 열려요.</small></div>${d ? `<a class="tx med-link" href="#/med/walk/${wn.w.id}/${d.n}">마친 편 다시 펴 보기 ›</a>` : ''}${swap}`; }
+  return `<div class="med-src"><b>${esc(walkName(wn.w))} 묵상을 모두 마쳤어요</b></div>${walkAfterLine(wn.w)}${swap}`;
+}
+function viewMed() {
+  const keys = MED_KEYS[MED.src] || MED_KEYS.walk;
+  const order = `<section class="card med-side"><div class="xlb" style="margin:0">오늘 묵상할 순서</div><ol class="med-ord">${keys.map(k => `<li><b>${MED_NAME[k]}</b></li>`).join('')}</ol></section>`;
+  const wnow = MED.src === 'walk' ? walkNow() : null, startLabel = wnow && !wnow.ep ? (wnow.all ? '연재를 모두 마쳤어요' : '내일 이어서 묵상해요') : '묵상 시작';
+  const main = `<section class="card med-main"><p class="med-plain">조용한 화면에서 한 걸음씩 말씀 앞에 머물러요. 마지막에는 기도로 옮겨 가요.</p>
+    <p class="med-lb">무엇으로 묵상할까요?</p>${medSeg([['today', '오늘의 질문'], ['walk', '권별 연재'], ['mine', '내가 고른 말씀']], MED.src, 'med-src', '묵상할 말씀')}${medSrcBox()}
+    <p class="med-lb">묵상하는 시간${DidakoTip.btn('시간이 다 되어도 저절로 넘어가지 않아요. 더 머물러도 좋고, 마무리해도 좋아요.', '묵상하는 시간')}</p>${medSeg(MED_DUR, MED.dur, 'med-dur', '묵상하는 시간')}
+    <div class="med-sw"><span>저절로 어둡게${DidakoTip.btn('30초 동안 손대지 않으면 화면이 어두워져요. 어두운 곳에서도 눈부시지 않게 말씀, 질문, 적은 글만 남아요. 화면을 만지면 다시 밝아져요.', '저절로 어둡게')}</span>${medSw(MED.dim, 'med-sw-dim', '저절로 어둡게')}</div>
+    <div class="med-sw"><span>잔잔한 음악 (찬송가 1~8장)</span>${medSw(MED.music, 'med-sw-music', '잔잔한 음악')}</div>
+    <button class="btn wide med-go" id="medGo" type="button" data-act="med-start"${medOff() ? ' disabled' : ''}>${startLabel}</button></section>`;
+  return `<div class="col more">${pageHead('book', '묵상하기')}<div class="med-two"><div class="med-c">${main}</div><div class="med-c med-s">${order}</div></div></div>`;
 }
 
 // 통독은 한 편을 한 화면에 펴고, 마음에 남은 글만 접힌 칸에 적는다(S-70)
@@ -3421,9 +3702,8 @@ function walkOlder(w, ep) {
   }
   return out;
 }
-// 연재를 읽는 방식(S-70): N.wk 'wm-<연재>'의 mine이 'read'면 통독, 아니면 1일 1편. 동기화로 다른 기기에도 간다
-const walkMode = w => { const m = N.wk.find(x => x.id === `wm-${w.id}`); return m && m.mine === 'read' ? 'read' : 'day'; };
-const setWalkMode = (w, v) => setMine(`wm-${w.id}`, v === 'read' ? 'read' : '');
+// 연재를 읽는 방식(S-70, 2026-11-23에 바뀜): 어느 탭에서 여느냐로 정한다
+const walkMode = w => (routeKey().startsWith('med') ? 'day' : 'read');   // 묵상하기(med)는 1일 1편, 탐구하기는 통독(2026-11-23). 마친 기록은 둘이 같이 쓴다. 예전에 저장한 'wm-<연재>'는 더는 보지 않는다
 // 조사 고르기: 끝 글자에 받침이 있으면 a, 없으면 b를 붙인다. josa('하박국', '을', '를') → '하박국을', josa('요나', '을', '를') → '요나를'
 const josa = (t, a, b) => { const c = [...t].pop().charCodeAt(0) - 0xAC00; return t + (c >= 0 && c <= 11171 && c % 28 !== 0 ? a : b); };
 // 지금 걷는 연재: N.wk의 'wa-cur'(mine = 연재 id). 없거나 모르는 id면 첫 연재(WALKS[0])
@@ -3491,7 +3771,7 @@ function walkAfterLine(w) {
 }
 // 지금 주소가 열린 토막(explore/walk/<id>/<번호>)이면 { w, ep }
 function walkEpOfRoute() {
-  const m = /^explore\/walk\/([\w-]+)\/(\d{1,2})$/.exec(routeKey()), w = m && walkById(m[1]), ep = w && w.eps.find(e => e.n === Number(m[2]));
+  const m = /^(?:explore|med)\/walk\/([\w-]+)\/(\d{1,2})$/.exec(routeKey()), w = m && walkById(m[1]), ep = w && w.eps.find(e => e.n === Number(m[2]));
   return ep && walkIsOpen(w, ep) ? { w, ep } : null;
 }
 const WALK_WRITE = /^write\/walk\/([\w-]+)\/(\d{1,2})$/;
@@ -3510,8 +3790,13 @@ function tnoteHtml(q, folded, wide) {
       <button class="btn" type="button" data-act="open-q" data-id="${q.id}">내 기록에서 펴기</button></div>` +
     (wide ? '' : `<div class="tnote fold" id="tnFold"${folded ? '' : ' hidden'}><span class="l">오늘의 쪽지 ·</span><span class="t sf">${esc(q.text)}</span></div>`);
 }
-function viewWrite() {
-  const map = mapContext(routeKey()), walk = walkContext(routeKey()), tw = TODAY_WRITE.exec(routeKey()), todayMode = Boolean(tw) || Boolean(map) || Boolean(walk), wday = tw ? (tw[1] ? parseYmd(tw[1]).t : demoDN()) : 0;
+// 남기기 칸(2026-11-23부터 내 기록 맨 위, 예전 가운데 칸 남기기 화면의 입력 그대로). 예전 #/write 주소들(오늘의 질문·지도·연재 머묾에서 품기)은 이 칸이 펴진 내 기록으로 열린다.
+// 그냥 내 기록을 열었을 때는 한 줄로 접어 두고, 눌러야 펴진다(CMP_OPEN)
+let CMP_OPEN = false;
+const writeRoute = key => key === 'write' || MAP_WRITE.test(key) || WALK_WRITE.test(key) || TODAY_WRITE.test(key);
+function viewWrite() { return viewMine(); }
+function composeHtml() {
+  const key = routeKey(), map = mapContext(key), walk = walkContext(key), tw = TODAY_WRITE.exec(key), todayMode = Boolean(tw) || Boolean(map) || Boolean(walk), wday = tw ? (tw[1] ? parseYmd(tw[1]).t : demoDN()) : 0;
   const selected = tw ? (tw[2] ? qOf(tw[2], Number(tw[3])) : questionOn(wday)) : null;
   if (tw && (W.mode !== 'today' || W.day !== wday || W.todayKey !== questionKey(selected))) W = newDraft('today', 'q', wday, selected);   // 다른 질문을 품으면 글과 장절도 새로 채운다(S-63)
   if (map && W.mapKey !== map.key) {
@@ -3521,52 +3806,43 @@ function viewWrite() {
   }
   if (walk && W.walkKey !== walk.key) { W = newDraft('walk', walk.ep.hold.kind); W.walkKey = walk.key; W.ref = walk.ep.hold.ref; }   // 글 칸은 비워 둔다: 머묾을 읽고 내 말로 적는다
   if (!todayMode && (W.mode === 'today' || W.mode === 'map' || W.mode === 'walk')) W = newDraft('', W.kind);
+  const open = writeRoute(key) || CMP_OPEN;
+  if (!open) return `<button class="card cmp-fold" type="button" data-act="cmp-open" aria-expanded="false"><span class="cmp-ic" aria-hidden="true">${CMP_IC}</span><span class="cmp-t"><b>남기기</b><small>말씀 앞에서 생긴 궁금증이나 알게 된 것을 적어 두세요</small></span></button>`;
   const isQ = W.kind === 'q', wide = isWide(), note = todayNote();
   const ph = isQ ? '말씀 앞에서 생긴 궁금증을 적어 보세요' : '말씀 앞에서 알게 된 것을 적어 보세요';
   const kinds = [['q', '? 질문'], ['f', '! 발견']];
   const seg = `<div class="seg q" role="radiogroup" aria-label="종류"${wide ? ' style="margin:-3px 0;width:300px"' : ' style="margin-top:8px"'}>${kinds.map(([v, l]) => `<button type="button" role="radio" aria-checked="${W.kind === v}" class="${W.kind === v ? 'on' : ''}" data-act="wr-kind" data-v="${v}">${l}</button>`).join('')}</div>`;
-  const strip = walk ? `<div class="strip"><span class="l">질문으로 묵상하기에서</span><span class="v">${esc(walkName(walk.w))} ${esc(walk.ep.title)}</span></div><p class="sm" style="line-height:1.55;word-break:keep-all">${esc(walk.ep.ask)}</p>` : map ? `<div class="strip"><span class="l">말씀 지도에서 · ${esc(window.MAP_NAMES[map.place])}</span></div>${map.kind === 's' ? `<p class="sm">${esc(map.data.ref)} · ${esc(map.data.t)}</p>` : ''}` : todayMode ? `<div class="strip"><span class="l">오늘의 질문에서 ·</span><span class="v">${esc(selected.q)}</span></div>` : '';
+  const strip = walk ? `<div class="strip"><span class="l">연재 읽기에서</span><span class="v">${esc(walkName(walk.w))} ${esc(walk.ep.title)}</span></div><p class="sm" style="line-height:1.55;word-break:keep-all">${esc(walk.ep.ask)}</p>` : map ? `<div class="strip"><span class="l">말씀 지도에서 · ${esc(window.MAP_NAMES[map.place])}</span></div>${map.kind === 's' ? `<p class="sm">${esc(map.data.ref)} · ${esc(map.data.t)}</p>` : ''}` : todayMode ? `<div class="strip"><span class="l">오늘의 질문에서 ·</span><span class="v">${esc(selected.q)}</span></div>` : '';
   const sinceLabel = isQ ? '예전에 생긴 질문이에요' : '예전에 알게 된 거예요';
   const refBox = `<div class="exbox" id="wrRefBox"${W.refOpen ? '' : ' hidden'}><input class="field" id="wrRef" type="text" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="예) 창22:2, 요 15:1-8, 시편 23편" aria-label="성경 위치" value="${esc(W.refRaw || W.ref)}"><div class="okl" id="wrRefOk">${refOkText()}</div></div>`;
   const sinceInput = `<input id="wrSince" type="month" data-act="since-pick" max="${ymNow()}" aria-label="${sinceLabel}" value="${esc(W.since)}">`;
   const go = `<button class="btn ${wide ? '' : 'wide'}" id="wrGo" type="button" data-act="wr-save"${W.text.trim() ? '' : ' disabled'}>${isQ ? '품어 두기' : '남기기'}</button>`;
+  const fold = writeRoute(key) ? '' : `<button class="tx cmp-x" type="button" data-act="cmp-fold">접기</button>`;
+  const head = `<div class="cmp-h"><span class="cmp-ic" aria-hidden="true">${CMP_IC}</span><b>남기기</b>${fold}</div>`;
   if (wide) {
-    const recent = wallItems().slice(0, 3).map(it => it.k === 'q'
-      ? `<button class="rec" type="button" data-act="open-q" data-id="${it.q.id}"><span class="tag" aria-hidden="true">?</span><span><span style="display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${esc(it.q.text)}</span><span class="sm">${mdLine(new Date(it.t))}</span></span></button>`
-      : `<button class="rec" type="button" data-act="pair-find" data-id="${it.f.id}"><span class="tag f" aria-hidden="true">!</span><span><span style="display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${esc(it.f.text)}</span><span class="sm">${mdLine(new Date(it.t))}</span></span></button>`).join('');
-    return `<div class="col more">
-      ${strip}
-      <div class="wr2" style="margin-top:${todayMode ? 12 : 0}px">
-        <div class="wr2-main">
-          ${pageHead('pen', '남기기', seg)}
-          <div class="card wr2-card">
-            <textarea class="wr2-ta" id="wrTa" placeholder="${ph}" aria-label="${isQ ? '질문' : '발견'}">${esc(W.text)}</textarea>
-            <div class="okl" id="wrOk" aria-live="polite">${okLine()}</div>
-            ${refBox}
-            <div class="wr2-foot">
-              <button class="vc" type="button" data-act="wr-ref" aria-expanded="${W.refOpen}" aria-controls="wrRefBox">성경 위치 <span id="wrRefChip">${W.ref ? '· ' + esc(W.ref) : '+'}</span></button>
-              ${todayMode ? '' : `<label class="vc">${isQ ? '예전에 생긴 질문' : sinceLabel} <span id="wrSinceChip">${W.since ? '· ' + ymLine(W.since) : '+'}</span>${sinceInput}</label>`}
-              ${go}
-            </div>
-          </div>
+    return `<section class="card cmp cmp-w">${head}${strip}${note && !todayMode ? tnoteHtml(note, false, true) : ''}
+      <div class="cmp-seg">${seg}</div>
+      <div class="wr2-card">
+        <textarea class="wr2-ta" id="wrTa" placeholder="${ph}" aria-label="${isQ ? '질문' : '발견'}">${esc(W.text)}</textarea>
+        <div class="okl" id="wrOk" aria-live="polite">${okLine()}</div>
+        ${refBox}
+        <div class="wr2-foot">
+          <button class="vc" type="button" data-act="wr-ref" aria-expanded="${W.refOpen}" aria-controls="wrRefBox">성경 위치 <span id="wrRefChip">${W.ref ? '· ' + esc(W.ref) : '+'}</span></button>
+          ${todayMode ? '' : `<label class="vc">${isQ ? '예전에 생긴 질문' : sinceLabel} <span id="wrSinceChip">${W.since ? '· ' + ymLine(W.since) : '+'}</span>${sinceInput}</label>`}
+          ${go}
         </div>
-        <div class="wr2-side">${note ? tnoteHtml(note, false, true) : ''}
-          ${recent ? `<div class="rec-h">최근 남긴 것</div>${recent}<a class="tx rec-all" href="#/mine">내 기록에서 모두 보기 ›</a>` : ''}
-        </div>
-      </div></div>`;
+      </div></section>`;
   }
-  return `<div class="col">
-    ${pageHead('pen', '남기기')}
-    ${strip}${note && !todayMode ? tnoteHtml(note, Boolean(W.text.trim())) : ''}
+  return `<section class="card cmp">${head}${strip}${note && !todayMode ? tnoteHtml(note, Boolean(W.text.trim())) : ''}
     ${seg}
     <textarea class="field wr-ta" id="wrTa" rows="6" placeholder="${ph}" aria-label="${isQ ? '질문' : '발견'}">${esc(W.text)}</textarea>
     <div class="okl" id="wrOk" aria-live="polite">${okLine()}</div>
     <button class="wr-row sm" type="button" data-act="wr-ref" aria-expanded="${W.refOpen}" aria-controls="wrRefBox"><span>성경 위치 (선택)</span><span id="wrRefVal" class="${W.ref ? 'a' : ''}">${W.ref ? esc(W.ref) + ' ›' : '›'}</span></button>
     ${refBox}
     ${todayMode ? '' : `<label class="wr-row sm"><span>${sinceLabel}</span><span id="wrSinceVal" class="${W.since ? 'a' : ''}">${W.since ? ymLine(W.since) + ' ›' : '›'}</span>${sinceInput}</label>`}
-    <div style="margin-top:8px">${go}</div>
-  </div>`;
+    <div style="margin-top:8px">${go}</div></section>`;
 }
+const CMP_IC = '<svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m4 20 1-4L16.5 4.5a2 2 0 0 1 3 3L8 19z"/><path d="M14 7l3 3"/></svg>';
 function refOkText() { const r = parseRef(W.refRaw); return r ? '✓ ' + esc(r.text) : ''; }
 // 쓰는 칸을 다시 그리지 않고 바뀐 곳만 고친다(글 쓰는 중에 칸이 깜빡이지 않게)
 function paintWrite() {
@@ -3599,8 +3875,8 @@ function onWriteInput(e) {
 }
 // 남기고 나면 칸이 비워지고 카드가 뜬다. 오늘의 질문에서 왔으면 가운데 화면으로 돌아온 뒤에 띄운다
 function finishWrite(sheetFn) {
-  if (MAP_WRITE.test(routeKey())) { after = sheetFn; setHash('mine'); }
-  else if (TODAY_WRITE.test(routeKey())) { after = sheetFn; setHash('write'); } else { render(); sheetFn(); }
+  CMP_OPEN = false;   // 남기고 나면 칸은 다시 한 줄로 접힌다
+  if (writeRoute(routeKey())) { after = sheetFn; setHash('mine'); } else { render(); sheetFn(); }   // 지도·오늘의 질문·연재에서 왔으면 내 기록으로 돌아온 뒤에 카드를 띄운다
 }
 function saveWrite() {
   const text = W.text.trim(); if (!text) return;
@@ -3641,10 +3917,10 @@ function fNoneSheet(f) {   // 후보 없음(M5c)
 // 나의 배지: 앱을 하나씩 써 보는 일과 기념일. 기록의 양·연속은 세지 않는다(철학 ③). 숫자는 화면에 쓰지 않는다
 // kind: 'try'(써 보기) | 'mark'(기념). how: 안 한 배지를 눌렀을 때 한 문장, go: [해 보기 ›]가 가는 곳
 const BADGES = [
-  { k: 'q-first', name: '첫 질문', when: '질문(?)을 처음 남겼어요', how: '말씀을 읽다 궁금한 것을 + 남기기에 한 줄 적어 봐요.', go: '#/write', kind: 'try' },
-  { k: 'f-first', name: '첫 발견', when: '발견(!)을 처음 남겼어요', how: '알게 된 것을 + 남기기에서 ! 발견으로 적어 봐요.', go: '#/write', kind: 'try' },
+  { k: 'q-first', name: '첫 질문', when: '질문(?)을 처음 남겼어요', how: '말씀을 읽다 궁금한 것을 내 기록의 남기기에 한 줄 적어 봐요.', go: '#/write', kind: 'try' },
+  { k: 'f-first', name: '첫 발견', when: '발견(!)을 처음 남겼어요', how: '알게 된 것을 내 기록의 남기기에서 ! 발견으로 적어 봐요.', go: '#/write', kind: 'try' },
   { k: 't-hold', name: '오늘의 질문 품기', when: '오늘의 질문을 내 질문에 품었어요', how: '오늘의 질문을 [내 질문에 품기]로 내 질문에 담아 봐요.', go: '#/today', kind: 'try' },
-  { k: 'walk-first', name: '질문으로 첫 묵상', when: '질문으로 묵상하기의 한 편을 처음 마쳤어요', how: '탐구하기의 질문으로 묵상하기에서 한 편을 머묾까지 읽어 봐요.', go: '#/explore', kind: 'try' },
+  { k: 'walk-first', name: '첫 묵상', when: '연재의 한 편을 처음 마쳤어요', how: '묵상하기에서 연재의 한 편을 머묾까지 읽어 봐요.', go: '#/med', kind: 'try' },
   { k: 'x-first', name: '첫 탐구', when: '탐구 노트를 처음 시작했어요', how: '내 기록에서 질문 하나를 골라 탐구 노트를 시작해 봐요.', go: '#/mine', kind: 'try' },
   { k: 'q-found', name: '알게 된 질문', when: '품고 있던 질문이 처음 알게 된 질문이 되었어요', how: '품고 있던 질문에 ! 발견을 이어 봐요.', go: '#/mine', kind: 'try' },
   { k: 'm-map', name: '말씀 지도에서', when: '말씀 지도에서 처음 남겼어요', how: '말씀 지도에서 장소를 골라 생각을 남겨 봐요.', go: 'map.html', kind: 'try' },
@@ -3800,7 +4076,7 @@ function closeFruitScene(goVine) {
 function viewVine() {
   const trees = vineTrees();
   const orchard = trees ? `<div class="vine-copy"><h2 class="xlb2 vine-badge-title">포도원</h2><div class="vine-orchard">${Array.from({ length: trees }, () => '<img src="img/vine/badges/vine.webp" alt="" width="64" height="64" decoding="async">').join('')}</div></div>` : '';
-  return `<div class="col vine-page"><div class="vine-copy"><div class="back-row"><a class="bk" href="#/today">← 오늘의 질문</a></div><div class="vine-heading"><h1 class="tt">포도나무${DidakoTip.btn('오늘의 질문에 생각 쓰기, 남기기, 질문으로 묵상하기, 탐구 노트 쓰기를 그날 처음 하면 포도알이 하나씩 열려요. 열 알이 차면 성령의 열매 한 송이가 맺히고, 아홉 송이가 다 맺히면 포도원에 새 나무를 심어요. 쉬어도 시들지 않아요.', '포도나무')}</h1><span class="sm">요 15:1~8</span></div><p class="sm">포도알이 하나씩 열리고, 열 알이 차면 성령의 열매가 맺혀요</p></div>
+  return `<div class="col vine-page"><div class="vine-copy"><div class="back-row"><a class="bk" href="#/today">← 오늘의 질문</a></div><div class="vine-heading"><h1 class="tt">포도나무${DidakoTip.btn('오늘의 질문에 생각 쓰기, 남기기, 연재 읽기와 묵상하기, 탐구 노트 쓰기를 그날 처음 하면 포도알이 하나씩 열려요. 열 알이 차면 성령의 열매 한 송이가 맺히고, 아홉 송이가 다 맺히면 포도원에 새 나무를 심어요. 쉬어도 시들지 않아요.', '포도나무')}</h1><span class="sm">요 15:1~8</span></div><p class="sm">포도알이 하나씩 열리고, 열 알이 차면 성령의 열매가 맺혀요</p></div>
     <div class="vine-stage">${vineScene()}</div><div class="vine-fruits">${FRUITS.map((fruit, i) => {
       const n = vineBerries(i + 1), state = n === 10 ? 'earned' : n ? 'growing' : 'waiting', tag = n === 10 ? 'button' : 'div';
       return `<${tag} class="card vine-fruit ${state}"${n === 10 ? ` type="button" data-act="vine-story" data-key="${fruit.k}"` : ''}>${vineCluster(n)}<span class="vine-fruit-name">${fruit.name}</span></${tag}>`;
@@ -3865,6 +4141,13 @@ function journalEntries() {
     const t = (a && a.done) || Math.max(a ? a.at : 0, b ? b.at : 0);
     out.push({ t, head: `${walkName(w)} ${ep.title}${last > 1 ? ` · ${r === 1 ? '처음' : walkOrdinal(r)} 걷기` : ''}`, ref: ep.ref, parts: [...(m1 ? [{ name: '묵상', q: ep.ask, text: m1 }] : []), ...(m2 ? [{ name: '나의 해석', q: '', text: m2 }] : [])] });
   }); });
+  N.wk.forEach(x => {   // 묵상하기의 내가 고른 말씀('wc-<날짜>-<장절>', 글은 JSON)
+    const m = /^wc-(\d{4}-\d{2}-\d{2})-/.exec(x.id); if (!m) return;
+    let o; try { o = JSON.parse(x.mine); } catch (e) { return; }
+    if (!o || typeof o !== 'object') return;
+    const m1 = String(o.m1 || '').trim(), m2 = String(o.m2 || '').trim(), d = parseYmd(m[1]); if ((!m1 && !m2) || !d) return;
+    out.push({ t: dnDate(d.t).getTime() + DAY / 2, head: '내가 고른 말씀', ref: String(o.ref || ''), parts: [...(m1 ? [{ name: '묵상', q: String(o.ask || ''), text: m1 }] : []), ...(m2 ? [{ name: '나의 해석', q: '', text: m2 }] : [])] });
+  });
   return out.filter(e => e.t > 0).sort((a, b) => a.t - b.t);
 }
 const journalYearOf = e => new Date(e.t).getFullYear();
@@ -3879,7 +4162,7 @@ function viewJournal() {
     return head + `<div class="card xcard jn-day"><span class="sm">${walkDay(dnOfMs(e.t))}</span><span class="sf">${esc(e.head)}</span>${e.ref ? `<span class="sm">${esc(e.ref)}</span>` : ''}${e.parts.map(p => `<div class="jn-part"><div class="sm"><b>${p.name}</b>${p.q ? ` ${esc(p.q)}` : ''}</div><p class="jn-text">${esc(p.text)}</p></div>`).join('')}</div>`;
   }).join('');
   return `<div class="col"><div class="back-row"><a class="bk" href="#/mine">← 내 기록</a></div><h1 class="tt">묵상 모아 보기</h1>
-    ${years.length ? `<div class="weeks-year"><button class="ib" type="button" aria-label="이전 해" data-act="journal-year" data-year="${years[index + 1] || ''}"${index === years.length - 1 ? ' disabled' : ''}>‹</button><span>${journalYear}년</span><button class="ib" type="button" aria-label="다음 해" data-act="journal-year" data-year="${years[index - 1] || ''}"${index === 0 ? ' disabled' : ''}>›</button></div>${rows}<button class="btn lt wide" type="button" data-act="journal-export" style="margin-top:16px">${journalYear}년 묵상 내보내기</button>` : '<div class="empty"><div class="ph">질문으로 묵상하기에서 묵상이나 나의 해석을 적으면 여기에 날짜순으로 모여요</div></div>'}</div>`;
+    ${years.length ? `<div class="weeks-year"><button class="ib" type="button" aria-label="이전 해" data-act="journal-year" data-year="${years[index + 1] || ''}"${index === years.length - 1 ? ' disabled' : ''}>‹</button><span>${journalYear}년</span><button class="ib" type="button" aria-label="다음 해" data-act="journal-year" data-year="${years[index - 1] || ''}"${index === 0 ? ' disabled' : ''}>›</button></div>${rows}<button class="btn lt wide" type="button" data-act="journal-export" style="margin-top:16px">${journalYear}년 묵상 내보내기</button>` : '<div class="empty"><div class="ph">묵상하기에서 묵상이나 나의 해석을 적으면 여기에 날짜순으로 모여요</div></div>'}</div>`;
 }
 // 나의 대답은 묵상 모아 보기와 섞지 않고 질문별·해마다 따로 돌아본다.
 let answersYear = null;
@@ -3958,8 +4241,8 @@ function viewMine(sel) {
   const all = wallItems();
   if (!all.length && mineFilter !== 'x') {   // 질문도 남겨 둔 ! 발견도 없다(M12)
     return `<div class="col more">${pageHead('notes', '내 기록', mineTools(false))}
-      <div class="empty"><div class="sm">아직 모아 둔 것이 없어요. 말씀을 읽다 궁금한 것이 생기면 + 남기기에서 남겨 두세요.</div>
-      <a class="btn wide" href="#/write">남기기로 가기</a></div></div>`;
+      ${composeHtml()}
+      <div class="empty"><div class="sm">아직 모아 둔 것이 없어요. 말씀을 읽다 궁금한 것이 생기면 위의 남기기에 한 줄 적어 두세요.</div></div></div>`;
   }
   const items = wallList(), wide = isWide(), selQ = sel && getQ(sel);
   const card = it => (it.k === 'q' ? snQ(it.q, wide && selQ && selQ.id === it.q.id) : snF(it.f));
@@ -3970,6 +4253,7 @@ function viewMine(sel) {
   const panel = wide && selQ ? `<aside class="qpanel" aria-label="질문 펴기"><div style="display:flex;justify-content:flex-end;margin-right:-12px">${trashButton('q', selQ.id)}${selQ.state === 'found' ? `<button class="ib" type="button" aria-label="이 질문 더 보기" data-act="q-more" data-id="${selQ.id}">${DOTS_IC(24)}</button>` : ''}<a class="ib" href="#/mine" aria-label="닫기">${X_IC}</a></div>${qBody(selQ)}</aside>` : '';
   return `<div class="col more">
     ${pageHead('notes', '내 기록', mineTools())}
+    ${composeHtml()}
     <div class="chips" role="group" aria-label="걸러 보기">${FILTERS.map(([v, l]) => `<button class="flt${mineFilter === v ? ' on' : ''}" type="button" aria-pressed="${mineFilter === v}" data-act="mine-filter" data-v="${v}">${l}</button>`).join('')}</div>
     ${wall}</div>${panel}`;
 }
@@ -4131,21 +4415,21 @@ let undoSnap = null;   // 짝 풀기를 되돌리기 위한 직전 모습
 const VIEWS = {
   'start': viewStart, 'start/church': viewChurch, 'start/name': viewName, 'start/consent': viewConsent,
   'today': viewToday, 'today/past': viewPast, 'today/all': viewAll, 'today/write': viewWrite,
-  'explore': viewExplore, 'explore/walks': viewWalks, 'write': viewWrite, 'mine': () => viewMine(), 'mine/search': viewSearch, 'mine/badges': viewBadges, 'mine/journal': viewJournal, 'mine/answers': viewAnswers, 'mine/vine': viewVine,
+  'explore': viewExplore, 'explore/walks': viewWalks, 'med': viewMed, 'med/walks': viewWalks, 'med/today': viewMedStep, 'med/mine': viewMedStep, 'write': viewWrite, 'mine': () => viewMine(), 'mine/search': viewSearch, 'mine/badges': viewBadges, 'mine/journal': viewJournal, 'mine/answers': viewAnswers, 'mine/vine': viewVine,
   'more': viewMore, 'more/about': viewAbout, 'more/guide': viewGuide, 'more/feedback': viewFeedback, 'more/sync': viewSync, 'more/sync/delete': viewAcctDel
 };
-const MENU_OF = k => (WALK_WRITE.test(k) ? 'write' : k.startsWith('today') ? (TODAY_WRITE.test(k) ? 'write' : 'today') : k.startsWith('more') ? 'more' : k.startsWith('mine') ? 'mine' : k.startsWith('explore') ? 'explore' : k);
+const MENU_OF = k => (/^write(\/|$)/.test(k) || TODAY_WRITE.test(k) ? 'mine' : k.startsWith('today') ? 'today' : k.startsWith('more') ? 'more' : k.startsWith('mine') ? 'mine' : k.startsWith('med') ? 'med' : k.startsWith('explore') ? 'explore' : k);   // 남기기 칸은 내 기록 맨 위로 옮겼다(2026-11-23). 예전 #/write 주소들은 그대로 열리되 내 기록으로 본다
 // 질문 하나(mine/q/<id>), 짝 찾기(mine/pair/<발견 id>), 직접 고르기(mine/pick/<발견 id>)는 주소에 id가 들어간다
 function viewOf(key) {
   if (VIEWS[key]) return VIEWS[key];
   if (MAP_WRITE.test(key)) return mapContext(key) ? viewWrite : null;
   if (WALK_WRITE.test(key)) return walkContext(key) ? viewWrite : null;
-  const wm = /^explore\/walk\/([\w-]+)(?:\/(\d{1,2}))?$/.exec(key);   // 연재 목록(explore/walk/<id>), 한 토막(explore/walk/<id>/<번호>). 아직 안 열린 토막은 없는 주소로 본다
+  const wm = /^(explore|med)\/walk\/([\w-]+)(?:\/(\d{1,2}))?$/.exec(key);   // 탐구하기: 연재 목록(explore/walk/<id>)과 통독 한 편(explore/walk/<id>/<번호>), 묵상하기: 1일 1편 한 편(med/walk/<id>/<번호>). 아직 안 열린 토막은 없는 주소로 본다
   if (wm) {
-    const w = walkById(wm[1]); if (!w) return null;
-    if (!wm[2]) return () => viewWalk(w);
-    const ep = w.eps.find(e => e.n === Number(wm[2]));
-    return ep && walkIsOpen(w, ep) ? () => (walkMode(w) === 'read' ? viewWalkRead(w, ep) : viewWalkEp(w, ep)) : null;
+    const w = walkById(wm[2]); if (!w) return null;
+    if (!wm[3]) return wm[1] === 'explore' ? () => viewWalk(w) : null;
+    const ep = w.eps.find(e => e.n === Number(wm[3]));
+    return ep && walkIsOpen(w, ep) ? () => (wm[1] === 'explore' ? viewWalkRead(w, ep) : viewMedStep()) : null;
   }
   const e = /^explore\/(start|note)\/([\w-]+)(\/all)?$/.exec(key);   // 탐구 시작 고르기(explore/start/<질문 id>), 단계별로 쓰기(explore/note/<질문 id>, 모아 보기는 끝에 /all)
   if (e) {
@@ -4174,7 +4458,7 @@ function setHash(h, replace) { tapNav = performance.now(); replace ? location.re
 function guard(key) {
   const pm = /^today\/past\/(\d{4}-\d{2})$/.exec(key);
   if (me && pm && parseYm(pm[1]) && pm[1] > ymOf(demoDN())) return 'today/past';   // 앞달은 열리지 않으니 이번 달 목록으로
-  if (!viewOf(key)) return me ? (key.startsWith('today/q/') || key.startsWith('today/all/') ? 'today/all' : key.startsWith('mine') ? 'mine' : key.startsWith('explore') ? 'explore' : 'today') : 'start';
+  if (!viewOf(key)) return me ? (key.startsWith('today/q/') || key.startsWith('today/all/') ? 'today/all' : key.startsWith('mine') ? 'mine' : key.startsWith('explore') ? 'explore' : key.startsWith('med') ? 'med' : 'today') : 'start';
   if (!me) {
     if (!key.startsWith('start')) return 'start';
     if (key === 'start/church' && !ob.kakao) return 'start';
@@ -4291,12 +4575,12 @@ function render(fromHash, still) {
   const fm = /^explore\/note\/([\w-]+)$/.exec(key), freeNow = fm && getEx(fm[1]) && getEx(fm[1]).mode === 'free' ? fm[1] : '';   // 자유롭게 쓰는 노트 화면이면 그 노트 id
   const wall = k => /^mine(\/q\/[\w-]+)?$/.test(k);
   const oldFree = /^explore\/note\/([\w-]+)$/.exec(lastKey);
-  const tabs = ['today', 'explore', 'write', 'mine', 'more'];
+  const tabs = ['today', 'explore', 'med', 'mine', 'more'];
   const from = tabs.indexOf(MENU_OF(lastKey)), to = tabs.indexOf(MENU_OF(key));
   let motion = '';
   if (!still && fromHash && lastKey && key !== lastKey && !key.startsWith('start') && !lastKey.startsWith('start') &&
       !(isWide() && wall(key) && wall(lastKey)) && !freeNow && !F.id &&
-      !(oldFree && getEx(oldFree[1])?.mode === 'free') && !matchMedia('(prefers-reduced-motion: reduce)').matches && from >= 0 && to >= 0) {
+      !(oldFree && getEx(oldFree[1])?.mode === 'free') && !medStepKey(key) && !medStepKey(lastKey) && !matchMedia('(prefers-reduced-motion: reduce)').matches && from >= 0 && to >= 0) {
     const depth = k => k.split('/').length;   // 같은 탭 안에서는 주소 마디 수로 들어가는지 나오는지 본다(S-72)
     motion = to > from ? 'vt-in-r' : to < from ? 'vt-in-l' : depth(key) > depth(lastKey) ? 'vt-push' : depth(key) < depth(lastKey) ? 'vt-pop' : 'vt-fade';
   }
@@ -4312,7 +4596,10 @@ function render(fromHash, still) {
   if (F.id) leaveFree(freeNow === F.id);   // 쓰던 자유 노트를 저장하고 편집기를 내려놓는다
   if (X.id) { flushNote(); if (!key.startsWith('explore/note/')) X.id = ''; }   // 쓰던 노트를 떠날 때 쓴 것을 저장한다
   if (key !== 'mine/search') srchBack = 'mine';
-  document.body.classList.toggle('focus', /^explore\/(week$|note\/|walk\/[\w-]+\/\d{1,2}$)/.test(key));   // 쓰는 화면에는 하단 탭을 숨긴다
+  document.body.classList.toggle('focus', /^explore\/(week$|note\/|walk\/[\w-]+\/\d{1,2}$)/.test(key) || medStepKey(key));   // 쓰는 화면에는 하단 탭을 숨긴다
+  document.body.classList.toggle('med-on', medStepKey(key));   // 묵상하는 화면은 몰입 화면이 위를 덮는다(2026-11-23)
+  if (!medStepKey(key)) medStop();
+  if (!/^(med|explore\/walks?)/.test(key)) medPickBack = false;
   document.body.classList.toggle('fs', Boolean(freeNow && F.full && isWide()));   // 전체 화면(T3): 위쪽 바와 목록이 사라지고 노트만
   refreshBadges();
   const app = !key.startsWith('start');
@@ -4343,6 +4630,7 @@ function render(fromHash, still) {
   fitMore(); if (document.fonts && document.fonts.ready) document.fonts.ready.then(fitMore);
   if (freeNow) mountFree(freeNow);   // 편집기 부품은 이 화면을 처음 열 때 불러온다
   syncAwake(key);
+  medSync();   // 묵상하는 화면이면 시간 고리와 저절로 어둡게를 이어 간다
   if (LIVE) paintSyncStatus();
   if (after) { const f = after; after = null; f(); }   // 화면을 옮긴 뒤에 띄울 것(카드, 알림)
   scheduleVineMoment();
@@ -4431,7 +4719,7 @@ const acts = {
   jexp(e, el) { closeSheet(true); doJournalExport(journalYear, el.dataset.k); },
   'walk-pick'(e, el) {   // 다른 연재를 고르면 한 번 묻는다(지금 걷는 연재가 있을 때)
     const w = walkById(el.dataset.id), cur = walkById(walkCurId()); if (!w) return;
-    if (!cur || cur.id === w.id) { pickWalk(w.id); if (routeKey() === 'explore/walk/' + w.id) render(); else setHash('explore/walk/' + w.id); return; }
+    if (!cur || cur.id === w.id) { pickWalk(w.id); if (medPickBack) { medPickBack = false; after = () => toast('연재를 바꿨어요'); setHash('med'); return; } if (routeKey() === 'explore/walk/' + w.id) render(); else setHash('explore/walk/' + w.id); return; }
     openSheet(`<div class="sheet-top"><h2>연재를 바꿀까요?</h2><button class="tx" type="button" data-act="sheet-x">닫기</button></div>
       <p>${esc(josa(walkName(cur), '을', '를'))} 멈추고 ${esc(josa(walkName(w), '을', '를'))} 시작해요. 읽은 곳은 그대로 남아요.</p>
       <div class="ra"><button class="btn" type="button" data-act="walk-pick-go" data-id="${w.id}">${esc(walkName(w))} 시작하기</button><button class="btn lt" type="button" data-act="sheet-x">그대로 두기</button></div>`);
@@ -4444,16 +4732,13 @@ const acts = {
       <div class="ra"><button class="btn" type="button" data-act="walk-again-go" data-id="${w.id}">다시 걷기 시작</button><button class="btn lt" type="button" data-act="sheet-x">그대로 두기</button></div>`);
   },
   'walk-again-go'(e, el) { const w = walkById(el.dataset.id); if (!w || !walkAllDone(w)) { closeSheet(true); return; } restartWalk(w); WE = { key: '', max: 0, view: 0 }; closeSheet(true); if (routeKey() === 'explore/walk/' + w.id) render(); else setHash('explore/walk/' + w.id); },
-  'walk-pick-go'(e, el) { const w = walkById(el.dataset.id); if (!w) return; pickWalk(w.id); closeSheet(true); if (routeKey() === 'explore/walk/' + w.id) render(); else setHash('explore/walk/' + w.id); },
-  'walk-next'() { WE.view = Math.min(5, WE.view + 1); WE.max = Math.max(WE.max, WE.view); if (WE.view === 5) { const r = walkEpOfRoute(); if (r) markWalkDone(r.w, r.ep); } render(); window.scrollTo(0, 0); const h = $('#xHead'); if (h) h.focus({ preventScroll: true }); },
-  'walk-mode'(e, el) { const w = walkById(el.dataset.id); if (!w) return; setWalkMode(w, el.dataset.v); render(); },
+  'walk-pick-go'(e, el) { const w = walkById(el.dataset.id); if (!w) return; pickWalk(w.id); closeSheet(true); if (medPickBack) { medPickBack = false; after = () => toast('연재를 바꿨어요'); setHash('med'); return; } if (routeKey() === 'explore/walk/' + w.id) render(); else setHash('explore/walk/' + w.id); },
   'walk-read-next'() {
     const r = walkEpOfRoute(); if (!r) return;
     markWalkDone(r.w, r.ep);
     const next = r.w.eps[r.w.eps.indexOf(r.ep) + 1];
     setHash('explore/walk/' + r.w.id + (next ? '/' + next.n : ''));
   },
-  'walk-view'(e, el) { WE.view = Number(el.dataset.i); render(); window.scrollTo(0, 0); const h = $('#xHead'); if (h) h.focus({ preventScroll: true }); },
   'walk-share'(e, el) { const w = walkById(el.dataset.w), ep = w && w.eps.find(ep => ep.n === Number(el.dataset.n)); if (ep) walkShareSheet(w, ep); },
   'walk-share-send'() {
     const text = $('#walkSharePreview').textContent;
@@ -4461,6 +4746,42 @@ const acts = {
     (navigator.clipboard && navigator.clipboard.writeText ? navigator.clipboard.writeText(text) : Promise.reject()).then(
       () => { closeSheet(); toast('복사했어요. 카카오톡 같은 곳에 붙여 넣어 보내세요'); },
       () => toast('복사하지 못했어요. 미리 보기 글을 길게 눌러 복사해 주세요'));
+  },
+  // 묵상하기(2026-11-23)
+  'med-today'() { MED.src = 'today'; saveMed(); setHash('med'); },
+  'med-src'(e, el) { MED.src = el.dataset.v; saveMed(); render(); },
+  'med-dur'(e, el) { MED.dur = Number(el.dataset.v); saveMed(); render(); },
+  'med-sw-dim'() { MED.dim = !MED.dim; saveMed(); render(); },
+  'med-sw-music'() { MED.music = !MED.music; saveMed(); render(); },
+  'med-start'() { medStart(); },
+  'med-swap'() { medPickBack = true; setHash('med/walks'); },
+  'med-pick-q'() {
+    openSheet(`<div class="sheet-top"><h2>품고 있는 질문에서 고르기</h2><button class="tx" type="button" data-act="sheet-x">닫기</button></div>
+      <p class="sm" style="margin:0 0 10px">고르면 그 장절과 질문으로 묵상을 시작해요.</p>
+      <div class="med-pick">${N.qs.slice().sort((a, b) => b.touched - a.touched).map(q => `<button type="button" data-act="med-q-go" data-id="${q.id}"><b>${esc(q.text)}</b><small>${q.ref ? esc(q.ref) : '장절이 아직 없어요'}</small></button>`).join('')}</div>`);
+  },
+  'med-q-go'(e, el) { const q = getQ(el.dataset.id); if (q) { MED.src = 'mine'; MED.mine = { ref: q.ref || '', ask: q.text }; saveMed(); } closeSheet(true); render(); },
+  'med-next'() { medGo(WE.view + 1); },
+  'med-view'(e, el) { medGo(Number(el.dataset.i)); },
+  'med-stay'() { MS.stay = true; const u = $('#psUp'); if (u) u.remove(); },
+  'med-close'() {
+    if (WE.view >= MS.last) { setHash('med'); return; }
+    openSheet(`<h2>묵상을 마칠까요?</h2><p>쓴 글은 그대로 남아요. 오늘 편은 머묾까지 오면 마친 것으로 봐요.</p><div class="ra"><button class="btn ghost" type="button" data-act="sheet-x">계속하기</button><button class="btn" type="button" data-act="med-end">마치기</button></div>`);
+  },
+  'med-end'() { closeSheet(true); setHash('med'); },
+  'med-finish'() {
+    const c = medCtx(), more = c && c.k === 'walk' && c.w.eps.indexOf(c.ep) < c.w.eps.length - 1;
+    after = () => toast('오늘 묵상을 마쳤어요.' + (more ? ' 내일 다음 편이 열려요.' : '')); setHash('med');
+  },
+  'med-music'() {
+    MED.music = !MED.music; saveMed();
+    if (MED.music) { Music.unlock(); Music.play(MED.track); } else Music.off();
+    const y = $('#pss') ? $('#pss').scrollTop : 0; render(); const e2 = $('#pss'); if (e2) e2.scrollTop = y;
+  },
+  'med-track'() { Music.unlock(); Music.play((MED.track + 1) % HYMNS.length); document.querySelectorAll('.pss-music .trk').forEach(e => { e.textContent = HYMNS[MED.track].label; }); },
+  'med-hold'() {   // 내가 고른 말씀의 질문을 내 기록에 품는다(남기기 칸이 펴진 내 기록으로, 글은 미리 채워 둔다)
+    const c = medCtx(); if (!c) return;
+    W = newDraft('', 'q'); W.text = c.ask; const r = parseRef(c.ref); W.ref = r ? r.text : c.ref; CMP_OPEN = true; setHash('write');
   },
   'walk-notes'() { const r = walkEpOfRoute(); if (!r || !r.ep.notes || !r.ep.notes.length) return; openSheet(`<h2>원어 해설</h2><div class="wk-notes" style="margin-top:0"><ul>${r.ep.notes.map(walkNoteRow).join('')}</ul><div class="sm wk-src">원어는 <a href="https://www.stepbible.org" target="_blank" rel="noopener">STEP Bible</a>(Tyndale House, CC BY 4.0) 자료에서 뽑았어요. 틀린 곳은 <a href="#/more/feedback">의견 보내기</a>로 알려 주세요.</div></div><div class="ra"><button class="btn" type="button" data-act="sheet-x">닫기</button></div>`); },
   pray() { toast('데모라 넘어가지 않아요'); },   // 데모: 기도하는 앱으로 넘어가지 않는다
@@ -4582,6 +4903,8 @@ const acts = {
   'wr-kind'(e, el) { W.kind = el.dataset.v; render(); const t = $('#wrTa'); if (t) t.focus({ preventScroll: true }); },
   'wr-ref'() { W.refOpen = !W.refOpen; $('#wrRefBox').hidden = !W.refOpen; $$('[data-act="wr-ref"]').forEach(x => x.setAttribute('aria-expanded', String(W.refOpen))); if (W.refOpen) $('#wrRef').focus({ preventScroll: true }); },
   'wr-save'() { saveWrite(); },
+  'cmp-open'() { CMP_OPEN = true; render(); const t = $('#wrTa'); if (t) t.focus({ preventScroll: true }); },
+  'cmp-fold'() { CMP_OPEN = false; render(); },
   'old-pick'(e, el) { const f = getF(el.dataset.f), q = getQ(el.dataset.q); if (f && q) oldPickSheet(f, q); },
   'old-no'(e, el) { const q = getQ(el.dataset.q); if (q) qDoneSheet(q); },
   'fp-yes'(e, el) { pairUp(el.dataset.f, el.dataset.q); goPaired(el.dataset.q); },
@@ -4748,6 +5071,9 @@ document.addEventListener('input', e => {
   if (e.target.id === 'srchIn') { searchQ = e.target.value; $('#srchRes').innerHTML = searchResults(); }
   if (e.target.id === 'waTa') { const r = walkEpOfRoute(); if (r) setMine(walkMineId(r.w, r.ep), e.target.value); }   // 질문을 따라 걷기 묵상
   if (e.target.id === 'wbTa') { const r = walkEpOfRoute(); if (r) setMine(walkMine2Id(r.w, r.ep), e.target.value); }   // 질문을 따라 걷기 나의 해석
+  if ((e.target.id === 'waTa' || e.target.id === 'wbTa') && medStepKey(routeKey()) && !walkEpOfRoute()) { const c = medCtx(); if (c) medSet(c, e.target.id === 'waTa' ? 'm1' : 'm2', e.target.value); }   // 묵상하기: 오늘의 질문과 내가 고른 말씀의 글
+  if (e.target.id === 'medRef') { MED.mine.ref = e.target.value; saveMed(); const g = $('#medGo'); if (g) g.disabled = !MED.mine.ref.trim(); }
+  if (e.target.id === 'medAsk') { MED.mine.ask = e.target.value; saveMed(); }
   if (e.target.id === 'pkQ') { PK.q = e.target.value; pkPaint(); }
   onNoteInput(e);
   onWriteInput(e);
@@ -5551,7 +5877,7 @@ function refreshDay() {
   const key = routeKey();
   // + 남기기(지도·오늘의 질문에서 온 글 포함), 탐구의 두 편집 방식·모아 보기,
   // 이번 주의 생각과 의견 쓰기는 초점이 빠져도 작성 중인 화면으로 본다.
-  if (key === 'write' || MAP_WRITE.test(key) || TODAY_WRITE.test(key) ||
+  if (key === 'write' || MAP_WRITE.test(key) || TODAY_WRITE.test(key) || medStepKey(key) ||
       /^explore\/(note\/|week$)/.test(key) || key === 'more/feedback' || F.id || X.id || editing()) return;
   render();
 }
@@ -5584,9 +5910,9 @@ const NoteGuide = (() => {
   const onWrite = () => routeKey() === 'write' && $('#wrTa');
   const steps = () => [
     // ① 남겨 보기: 글 칸은 눌리지 않게 덮는다(직접 쓰지 않으니 키보드가 열리지 않는다)
-    { mode: 'tap', target: () => tabBtn('write'), before: () => { if (routeKey() !== 'today') go('today'); }, text: '궁금한 것을 남겨 볼까요? + 남기기를 눌러 보세요.' },
+    { mode: 'tap', target: () => tabBtn('mine'), before: () => { if (routeKey() !== 'today') go('today'); }, done: () => routeKey() === 'mine', text: '궁금한 것을 남겨 볼까요? 내 기록을 눌러 보세요. 맨 위에 남기기 칸이 있어요.' },
     { mode: 'tap', target: () => [$('#wrTa'), $('#wrGo')], inert: () => [$('#wrTa'), ...$$('.wr-row'), ...$$('.wr2-foot .vc')], wait: onWrite,
-      before: () => { if (ev && !ev.sample) { ev.sample = true; W = newDraft('', 'q'); W.text = SAMPLE_Q; const r = parseRef(SAMPLE_REF); W.ref = r ? r.text : ''; render(); } },
+      before: () => { if (routeKey() !== 'write') go('write'); if (ev && !ev.sample) { ev.sample = true; W = newDraft('', 'q'); W.text = SAMPLE_Q; const r = parseRef(SAMPLE_REF); W.ref = r ? r.text : ''; render(); } },
       done: () => N.qs.length > 0,
       text: '예시를 넣어 두었어요. 품어 두기를 눌러 보세요.' },
     // 남긴 뒤 내 기록에 어떻게 들어갔는지 먼저 보여 준다(남기고 뜬 창은 닫고 간다)
