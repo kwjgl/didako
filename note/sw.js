@@ -5,7 +5,7 @@
  * 아래 CACHE 번호는 남겨 둔 사본의 이름표다. 번호를 올리면 예전 사본을 지운다(AGENTS.md 서비스워커 캐시).
  * 데모에는 서버가 없다. 같은 주소의 파일만 다루고, 글꼴 같은 다른 주소의 요청은 건드리지 않는다.
  */
-const CACHE = 'didako-note-v187';
+const CACHE = 'didako-note-v189';
 const SHELL = ['./', 'index.html', 'config.js', 'widget-bridge.js', 'splash.js', 'practice.js', 'family-tokens.css', 'design-styles.css', 'info-tip.js', 'font-warm.js', 'family-push.js', 'family-vault.js', 'account-delete.js', 'guide.js', 'guide.css', 'usage.js', 'demo-data.js', 'questions-data.js', 'places.js', 'walks-data.js', 'map.html', 'map-places.js', 'words-ko.js', 'vendor/tiptap-2.27.3.js', 'manifest.webmanifest', 'icons/icon-192.png', 'icons/icon-512.png', 'icons/icon-maskable-512.png', 'icons/apple-touch-icon.png', 'icons/favicon-32.png'];
 // 나의 배지 그림은 처음 열 때 한꺼번에 받느라 늦게 떴다. 앱을 받을 때 함께 받아 둔다(S-60). 하나를 못 받아도 설치는 계속한다
 const PRE_IMG = ['a-home', 'a-style', 'a-sync', 'f-first', 'm-map', 'm-year', 'q-first', 'q-found', 't-hold', 'walk-first', 'x-first'].map(k => `img/badges/${k}.webp`)
@@ -25,8 +25,8 @@ self.addEventListener('fetch', e => {
   const req = e.request, url = new URL(req.url);
   if (req.method !== 'GET' || url.origin !== location.origin) return;
   if (!url.pathname.startsWith(new URL('./', location).pathname)) return;
-  // 영상은 건드리지 않는다: 새 요청으로 바꾸면 Range 헤더가 사라져 사파리가 재생하지 못하고, 부분 응답(206)은 caches.put도 안 된다. 브라우저가 직접 받게 둔다(첫 화면 영상, 코이데·디다코 앱과 같다)
-  if (/\.(mp4|webm|mov)$/i.test(url.pathname) || req.headers.has('range')) return;
+  // 영상과 음악(묵상하기의 찬송가 mp3)은 건드리지 않는다: 새 요청으로 바꾸면 Range 헤더가 사라져 사파리가 재생하지 못하고, 부분 응답(206)은 caches.put도 안 된다. 브라우저가 직접 받게 둔다(첫 화면 영상, 코이데·디다코 앱과 같다)
+  if (/\.(mp4|webm|mov|mp3)$/i.test(url.pathname) || req.headers.has('range')) return;
   if (url.pathname.includes('/img/')) {
     e.respondWith(caches.match(req).then(async cached => {
       if (cached) return cached;
