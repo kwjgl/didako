@@ -1218,7 +1218,7 @@ const pick = (v, list, d) => (list.includes(v) ? v : d);
 // ── 계정 탈퇴 뒤 이 기기의 그 계정 노트 지우기(2026-11-20) ──
 // 교회 앱(app/)에서 탈퇴하면 그 계정의 id 해시({h})를 표시(didako-wipe-note)에 남긴다. 노트가 열릴 때(기억해 둔 노트를 읽기 전에) 이 기기의 노트 주인이 그 계정('sb:'+해시)일 때만 그 노트를 지우고 표시를 치운다.
 // 같은 기기의 다른 계정 노트(보관해 둔 사본 포함)는 그대로 두고, 화면 설정과 이용 통계 끔은 남긴다. 표시가 올바르지 않으면 아무것도 지우지 않고 치우기만 한다.
-const NOTE_WIPE_KEYS = [K.notes, K.badges, K.session, K.demo, K.vine, 'didako-note-vault', 'didako-note-lock', 'didako-note-gone', 'didako-note-guide', 'didako-note-walk-open', 'didako-note-owner',
+const NOTE_WIPE_KEYS = [K.notes, K.badges, K.session, K.demo, K.vine, 'didako-note-vault', 'didako-note-lock', 'didako-note-gone', 'didako-note-guide', 'didako-note-walk-open', 'didako-note-walk-sec', 'didako-note-owner',
   'didako-read-answers', 'didako-share-memo', 'didako-live-records', 'didako-record-reflections', 'didako-record-answers', 'didako-record-edits', 'didako-weekwalk-thought', 'didako-weekwalk-meditate', 'didako-weekwalk-done',
   'didako-read-bookmark', 'didako-gbs-base', 'didako-weekwalk-read', 'didako-share-lesson', 'didako-my-book'];
 function wipeAccountNote(h) {
@@ -2734,8 +2734,26 @@ function viewWalk(w) {
 // 사실(본문 노트)은 먼저, 해석(풀이)은 내 묵상과 나의 해석 뒤에 둔다(철학 ⑪). 마친 토막은 머묾까지, 묵상이나 나의 해석만 적어 둔 토막은 풀이까지 펴진 채로 연다
 let WE = { key: '', max: 0, view: 0 };
 // 이 편을 연 때(사용 기록 note.walk-done의 머문 초용. 이 기기 메모리에만 두고, 다른 화면으로 가면 비운다)
+// 질문으로 묵상하기 한 편에 머문 시간(사용 기록 note.walk-done의 숫자, 2026-11-23): 그 편 화면이 보이는 동안만 센다.
+// 화면을 옮기거나 다른 앱으로 가면 그동안 센 만큼을 이 기기(WALK_SEC_K, 편마다 밀리초)에 더해 두고, 다시 열면 이어서 센다. 편을 마치면 더한 값을 꺼내 보내고 지운다.
+// 예전에는 마지막으로 연 때부터만 세어, 묵상을 적어 두고 다음 날 마치면 1초 안팎만 남았다. 이용 통계를 껐으면 더해 두지 않는다
 let WALK_AT = { key: '', at: 0 };
-function walkOpened(w, ep) { const k = w.id + '/' + ep.n; if (WALK_AT.key !== k) WALK_AT = { key: k, at: Date.now() }; }
+const WALK_SEC_K = 'didako-note-walk-sec';
+function walkPause() {   // 세던 것을 멈추고 이 기기에 더해 둔다(편은 기억한 채)
+  if (WALK_AT.key && WALK_AT.at && !usageOff()) { const a = readJson(WALK_SEC_K); a[WALK_AT.key] = (Number(a[WALK_AT.key]) || 0) + (Date.now() - WALK_AT.at); ls.set(WALK_SEC_K, JSON.stringify(a)); }
+  WALK_AT.at = 0;
+}
+function walkOpened(w, ep) { const k = w.id + '/' + ep.n; if (WALK_AT.key !== k) { walkPause(); WALK_AT = { key: k, at: Date.now() }; } else if (!WALK_AT.at) WALK_AT.at = Date.now(); }
+function walkSecTake(k) {   // 이 편에 머문 밀리초를 모두 꺼내고 지운다(지금 세는 중이면 그것까지)
+  const a = readJson(WALK_SEC_K); let ms = Number(a[k]) || 0;
+  if (WALK_AT.key === k && WALK_AT.at) { ms += Date.now() - WALK_AT.at; WALK_AT.at = Date.now(); }
+  if (k in a) { delete a[k]; ls.set(WALK_SEC_K, JSON.stringify(a)); }
+  return ms;
+}
+document.addEventListener('visibilitychange', () => {   // 다른 앱으로 가 있던 동안은 세지 않는다
+  if (document.hidden) walkPause();
+  else if (WALK_AT.key && !WALK_AT.at && routeKey() === 'explore/walk/' + WALK_AT.key) WALK_AT.at = Date.now();
+});
 // 본문 노트: 첫 줄은 낱말(히브리어나 그리스어) 우리말 뜻, 그 아래 풀이. 낱말 번호·나오는 절·사전 뜻·같은 낱말은 접힌 "근거"에 모은다(S-43)
 const walkNoteRow = n => `<li class="wk-note"><div><b>${esc(n.w)}</b>(<span class="wk-heb" ${n.s.startsWith('G') ? 'lang="grc"' : 'lang="he" dir="rtl"'}>${esc(n.heb)}</span>) ${esc(n.ko)}</div><p>${esc(n.t)}</p><details class="wk-why"><summary class="sm">근거</summary><p class="sm">낱말 번호 ${esc(n.s)}. 이 편에서 나오는 절 ${esc(n.at.join(', '))}. 사전의 영어 뜻 ${esc(n.gloss)}.${n.see.length ? ` 같은 낱말이 나오는 곳 ${esc(n.see.join(', '))}.` : ''}</p></details></li>`;
 // 머묾은 두 읽는 방식에서 함께 쓴다. 단계 화면에서만 제목에 초점을 옮긴다(S-70)
@@ -3391,12 +3409,13 @@ const walkWhen = n => (n === demoDN() + 1 ? '내일' : walkDay(n) + '에');   //
 function markWalkDone(w, ep) {
   const id = walkMineId(w, ep), now = Date.now(), day = dnDate(demoDN()).getTime() + DAY / 2, m = N.wk.find(x => x.id === id);
   let fresh = false;   // 이 토막을 처음 마치는 순간에만 포도알이 열린다
+  const ms = walkSecTake(w.id + '/' + ep.n);   // 마칠 때마다 더해 둔 시간은 비운다(처음 마칠 때만 보낸다)
   if (m) { if (!m.done) { m.done = day; m.at = now; fresh = true; } } else { N.wk.push({ id, mine: '', at: now, done: day }); fresh = true; }
   saveNotes();
   if (fresh) {
     markGrape('walk');
-    // 사용 기록: 질문으로 묵상하기 한 편을 끝까지 마쳤다(편마다 처음 한 번). 숫자는 이 편을 열고 마칠 때까지 머문 초(모르면 없음). 글·연재·편 이름은 보내지 않는다
-    UZ.track('walk-done', { n: WALK_AT.key === w.id + '/' + ep.n ? (Date.now() - WALK_AT.at) / 1000 : null });
+    // 사용 기록: 질문으로 묵상하기 한 편을 끝까지 마쳤다(편마다 처음 한 번). 숫자는 이 편 화면에 머문 초를 여러 번 연 것까지 더한 값(모르면 없음). 글·연재·편 이름은 보내지 않는다
+    UZ.track('walk-done', { n: ms ? ms / 1000 : null });
   }
 }
 const walkIsOpen = (w, ep) => Boolean(walkDone(w, ep)) || walkOpenDN(w, w.eps.indexOf(ep)) <= demoDN();
@@ -4219,7 +4238,7 @@ function render(fromHash, still) {
   if (window.DidakoTip) DidakoTip.close();   // 다시 그리기 전에 열린 ⓘ 말풍선을 닫는다
   const raw = routeKey(), key = guard(raw);
   if (key !== raw) { setHash(key, true); return; }
-  if (key !== lastKey) { WE.key = ''; WALK_AT.key = ''; }   // 다시 열 때 저장된 묵상이나 마친 기록에 맞춰 단계를 연다
+  if (key !== lastKey) { WE.key = ''; walkPause(); WALK_AT.key = ''; }   // 다시 열 때 저장된 묵상이나 마친 기록에 맞춰 단계를 연다
   if (me) ensureVineStart();
   const fm = /^explore\/note\/([\w-]+)$/.exec(key), freeNow = fm && getEx(fm[1]) && getEx(fm[1]).mode === 'free' ? fm[1] : '';   // 자유롭게 쓰는 노트 화면이면 그 노트 id
   const wall = k => /^mine(\/q\/[\w-]+)?$/.test(k);
@@ -4961,7 +4980,7 @@ function liveError(err) {
 function switchOwner(uid) {
   clearVineMoments();
   const owner = ls.get('didako-note-owner');
-  const keys = [K.notes, K.badges, K.session, K.demo, K.vine, VK, LK, GK, ...GBS_MAPS, ...GBS_ONE, GBS_BASE, 'didako-weekwalk-read', 'didako-share-lesson', 'didako-my-book'];
+  const keys = [K.notes, K.badges, K.session, K.demo, K.vine, VK, LK, GK, ...GBS_MAPS, ...GBS_ONE, GBS_BASE, 'didako-weekwalk-read', 'didako-share-lesson', 'didako-my-book', WALK_SEC_K];
   if (owner !== uid) {
     const old = Object.fromEntries(keys.map(k => [k, ls.get(k)]));
     const stashKey = 'didako-note-stash.' + uid, stash = ls.get(stashKey);
