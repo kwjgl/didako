@@ -3142,10 +3142,10 @@ function ppBlocksHtml(src, o) {
         const parts = readPieces(q).slice();
         // 맨 위 그림은 첫 문단과 같은 조각으로 묶어 제목이 홀로 남지 않게 한다.
         if (parts[0] && parts[0].type === 'image' && parts[1] && parts[1].type === 'text') {
-          parts.splice(0, 2, { type: 'html', html: readFigureHtml(parts[0]) + mdHtml(parts[1].text) });
+          parts.splice(0, 2, { type: 'html', html: readFigureHtml(parts[0], true) + mdHtml(parts[1].text) });
         }
         parts.forEach((part, pi) => {
-          const content = part.type === 'image' ? readFigureHtml(part) : part.type === 'html' ? part.html : mdHtml(part.text);
+          const content = part.type === 'image' ? readFigureHtml(part, true) : part.type === 'html' ? part.html : mdHtml(part.text);
           blocks.push(`<div class="pp-blk${pi ? ' pp-more pp-cont' : i ? ' pp-more' : ''}">${pi || i ? '' : `<h4>${esc(st.name || '단계')}</h4>`}${pi ? '' : ppHas(q.h) ? `<p class="pp-q">${esc(q.h)}</p>` : ''}<div class="pp-intro pp-read md">${content}</div>${pi === parts.length - 1 ? help : ''}</div>`);
         });
         return;
@@ -3247,6 +3247,12 @@ function ppFill() {
   }
   const m = /^mx-([\w-]+)\.(\d+)$/.exec(arg), b = m && mgBook(m[1]), L = b && b.lessons.find(l => l.no === Number(m[2]));
   if (L) area.innerHTML = ppPagesHtml(ppSource(b, L), o).html;
+}
+// 인쇄 창을 열기 전에 종이 안 그림이 모두 불러와질 때까지 기다린다(최대 10초). 안 기다리면 늦게 오는 그림이 빠진 채 인쇄된다
+function ppImagesReady() {
+  const imgs = Array.from(document.querySelectorAll('#ppArea img')).filter(im => !im.complete);
+  if (!imgs.length) return Promise.resolve();
+  return Promise.race([Promise.all(imgs.map(im => new Promise(r => { im.addEventListener('load', r, { once: true }); im.addEventListener('error', r, { once: true }); }))), new Promise(r => setTimeout(r, 10000))]);
 }
 // 인쇄 > 'PDF로 저장'의 기본 파일 이름은 문서 제목이다. 인쇄하는 동안만 "교재 제목 - 디다코"(과 하나면 "교재 제목 · N과 - 디다코")로 바꾸고, 끝나면 되돌린다.
 // Word로 내려받기도 같은 이름(ppDocTitle)을 쓴다. PDF와 Word의 파일 이름 규칙이 하나다.
@@ -5070,7 +5076,8 @@ function readPieces(q) {
   return result;
 }
 const readImgTag = (pic, more) => `<img src="${BOOK_IMG}${esc(pic.src)}" alt="${esc(pic.alt)}" width="${pic.w}" height="${pic.h}" style="--r: ${(pic.w / pic.h).toFixed(4)}" ${more}>`;
-const readFigureHtml = pic => `<figure class="lesson-img"><button class="lesson-zoom" type="button" data-act="img-zoom" data-src="${esc(pic.src)}" data-w="${pic.w}" data-h="${pic.h}" data-cap="${esc(pic.cap)}" aria-label="그림 크게 보기${pic.alt ? ': ' + esc(pic.alt) : ''}">${readImgTag(pic, 'loading="lazy" decoding="async" onerror="this.closest(\'figure\').hidden=true"')}</button>${pic.cap ? `<figcaption>${esc(pic.cap)}</figcaption>` : ''}</figure>`;
+// eager=true는 인쇄용: 지연 로딩이면 화면 밖 쪽의 그림이 인쇄 때 안 불러와져 빠진다(2026-11-23)
+const readFigureHtml = (pic, eager) => `<figure class="lesson-img"><button class="lesson-zoom" type="button" data-act="img-zoom" data-src="${esc(pic.src)}" data-w="${pic.w}" data-h="${pic.h}" data-cap="${esc(pic.cap)}" aria-label="그림 크게 보기${pic.alt ? ': ' + esc(pic.alt) : ''}">${readImgTag(pic, `loading="${eager ? 'eager' : 'lazy'}" decoding="async" onerror="this.closest(\'figure\').hidden=true"`)}</button>${pic.cap ? `<figcaption>${esc(pic.cap)}</figcaption>` : ''}</figure>`;
 const readBodyHtml = q => readPieces(q).map(part => part.type === 'image' ? readFigureHtml(part) : mdHtml(part.text)).join('');
 function mdPlain(text) {
   const clean = s => mdSpans(s).map(x => x.t).join('');
@@ -6477,7 +6484,7 @@ const acts = {
   'prep-member'() { readAsMember = true; readFrom = ''; if (location.hash === '#read') route(true); else location.hash = '#read'; },
   later() { toast('다음 단계에서 열려요.'); },
   // 인쇄: PDF는 기기의 인쇄 창, 대상·답변 공간을 바꾸면 종이를 다시 그린다
-  'pp-pdf'() { window.print(); },
+  async 'pp-pdf'() { await ppImagesReady(); window.print(); },
   async 'pp-word-book'() {
     const b = mgBook((parseHash().arg || '').slice(4)); if (!b) return;
     const o = { leader: PP.leader, space: PP.space, memo: null }, sources = b.lessons.map(L => ppSource(b, L));
