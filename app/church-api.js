@@ -15,7 +15,6 @@
 //   books → didako_ch_books_view (보는 사람에 맞게 서버가 걸러서 준다: 회원은 '모두' 과만 리더 칸·진행 안내 없이, 쓰는 사람은 준비 중·보관까지)
 //   bookSave → didako_ch_book_save · bookClose → didako_ch_book_close · bookDelete → didako_ch_book_delete(027) · bookCopy → didako_ch_book_copy · basicImport → didako_ch_basic_import
 //   lessonSave → didako_ch_lesson_save · lessonStatus → didako_ch_lesson_status · lessonDelete → didako_ch_lesson_delete
-//   bulletins → didako_ch_bulletins_view · bulletinSave → didako_ch_bulletin_save · bulletinStatus → didako_ch_bulletin_status · bulletinDelete → didako_ch_bulletin_delete (supabase/028, 주보: 쓰는 사람은 교회 관리자와 교역자, 회원은 공개한 가장 최근 한 호만)
 //   baseList(새 길에만 있는 일) → didako_base_list(supabase/005·007, 디다코 공동체와 같은 함수): 디다코 기본 교재 가져오기 목록이 앱 관리자의 숨김·삭제·고친 판을 따르게 한다
 //   관리 화면(3단계-4가, supabase/012): adCtx → didako_ch_ops_ctx · adRoster → didako_ch_roster · adPending → didako_ch_pending(부서) · adInvites → didako_ch_invites
 //    · adDecide·adApproveAll·adUnlink → didako_ch_decide·approve_all·unlink(부서) · adRoomSave → didako_ch_room_save · adPersonAdd·adPeopleAdd → didako_ch_person_add·people_add
@@ -185,16 +184,6 @@ window.didakoChurchApi = (() => {
         p_lesson: body.lesson && typeof body.lesson === 'object' ? body.lesson : null });
       case 'lessonStatus': return rpc('didako_ch_lesson_status', { p_book: uuid(body.bookId, '교재를 찾지 못했어요.'), p_no: lessonNo(body.no), p_status: str(body.status) });
       case 'lessonDelete': return rpc('didako_ch_lesson_delete', { p_book: uuid(body.bookId, '교재를 찾지 못했어요.'), p_no: lessonNo(body.no) });
-      // 주보(supabase/028): 교회의 이번 주 맨 위 카드와 주보 화면. 서버가 보는 사람에 맞게 걸러서 준다. 응답은 서버 모양 그대로 돌려준다
-      case 'bulletins': { const r = await rpc('didako_ch_bulletins_view') || {}; return { writer: r.writer === true, items: Array.isArray(r.items) ? r.items.filter(isObj) : [] }; }
-      case 'bulletinSave': {
-        const date = str(body.date), no = body.no == null || body.no === '' ? null : Number(body.no);
-        if (!/^\d{4}-\d{2}-\d{2}$/.test(date)) throw err('bad', '주보 날짜를 정해 주세요.');
-        if (no !== null && (!Number.isInteger(no) || no < 1 || no > 9999)) throw err('bad', '호수를 다시 적어 주세요.');
-        return rpc('didako_ch_bulletin_save', { p_id: body.id ? uuid(body.id, '주보를 찾지 못했어요.') : null, p_no: no, p_date: date, p_title: str(body.title), p_layout: Number(body.layout) === 2 ? 2 : 3, p_blocks: arr(body.blocks).filter(isObj) });
-      }
-      case 'bulletinStatus': return rpc('didako_ch_bulletin_status', { p_id: uuid(body.id, '주보를 찾지 못했어요.'), p_status: body.open === true ? 'open' : 'draft' });
-      case 'bulletinDelete': return rpc('didako_ch_bulletin_delete', { p_id: uuid(body.id, '주보를 찾지 못했어요.') });
       // 디다코 기본 교재 가져오기 목록: 앱 관리자가 서버에서 숨기거나 지운 교재와 고친 판(공동체와 같은 didako_base_list). 화면이 앱 파일 판과 맞춘다
       case 'baseList': return baseOf(await rpc('didako_base_list'));
       case 'logout': await window.DidakoSb.signOut(); return {};

@@ -32,7 +32,6 @@ try {
 <link rel="stylesheet" href="family-tokens.css">
 <link rel="stylesheet" href="family-ui.css">
 <link rel="stylesheet" href="church-survey.css">
-<link rel="stylesheet" href="church-bulletin.css">
 <style>
 .wrap { width: 100%; max-width: 1160px; margin: 0 auto; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
 .topbar .wrap { display: flex; align-items: center; gap: .6em; min-height: 51px; position: relative; }   /* 막대 높이 51px · 좌우 여백 16px · 칸 사이 .6em은 코이데와 같다(가족 앱 공용 규칙 48번) */
@@ -1417,9 +1416,6 @@ html.tutorial .demo-tag { display: none !important; }
     <symbol id="i-up" viewBox="0 0 24 24"><path d="M12 19V5M6 11l6-6 6 6"/></symbol>
     <symbol id="i-down" viewBox="0 0 24 24"><path d="M12 5v14M6 13l6 6 6-6"/></symbol>
     <symbol id="i-copy" viewBox="0 0 24 24"><rect x="8" y="8" width="11" height="11" rx="2"/><path d="M5 15V7a2 2 0 0 1 2-2h8"/></symbol>
-    <symbol id="i-print" viewBox="0 0 24 24"><path d="M7 9V4h10v5M7 17H5a1.5 1.5 0 0 1-1.5-1.5v-5A1.5 1.5 0 0 1 5 9h14a1.5 1.5 0 0 1 1.5 1.5v5A1.5 1.5 0 0 1 19 17h-2"/><rect x="7" y="14" width="10" height="6" rx="1"/></symbol>
-    <symbol id="i-edit" viewBox="0 0 24 24"><path d="M5 19l1-4 10-10 3 3-10 10z"/><path d="M14 6l3 3"/></symbol>
-    <symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
     <symbol id="i-trash" viewBox="0 0 24 24"><path d="M4.5 7h15M9.5 7V5h5v2M6.5 7l1 12h9l1-12M10.5 11v5M13.5 11v5"/></symbol>
     <symbol id="i-cord" viewBox="0 0 16 12"><path d="M.5 8.5h3.8c1.2 0 1.7-1.5 1.7-2.8C6 3.7 7.3 2.5 9 2.5s3 1.2 3 3.1-1.8 3.1-4 3.3"/><path d="M5.6 10.1C7.6 9 9.6 8.5 15.5 8.5"/></symbol>
     <symbol id="i-chevr" viewBox="0 0 16 16"><path d="M6 3.5L10.5 8 6 12.5"/></symbol>
@@ -1494,7 +1490,6 @@ html.tutorial .demo-tag { display: none !important; }
 <script src="account-delete.js"></script>
 <script src="info-tip.js"></script>
 <script src="church-survey.js"></script>
-<script src="church-bulletin.js"></script>
 <script src="koinobia-logo.js"></script>
 <script src="covers.js"></script>
 <script src="demo-data.js"></script>
@@ -1522,7 +1517,6 @@ if (TUT) document.documentElement.classList.add('tutorial');
 const CHURCH_ON = CFG.CHURCH_BACKEND === 'supabase' && !!CFG.SUPABASE_URL && !!CFG.SUPABASE_KEY && !!window.didakoChurchApi && !!window.DidakoSb;
 const LIVE = (!!CFG.HUB_URL || CHURCH_ON) && !new URLSearchParams(location.search).has('demo') && !TUT;
 const ADL = LIVE && CHURCH_ON;   // 새 길 관리 화면(3단계-4가): 관리·교회 전체·사랑방 전체 보기를 서버 자료로 그린다
-let blReady = false, blWriter = false;   // 주보(church-bulletin.js)를 앱과 이어 줬는지, 서버가 알려 준 쓸 수 있는 사람 여부
 const LA = adlFresh();   // 새 길 관리 화면의 상태: 보는 부서, 화면마다 준비됨·받는 중·못 받은 까닭
 const DEMO = !LIVE;
 const DATA = window.DIDAKO_DEMO;
@@ -1653,7 +1647,6 @@ function loadState() {
   D.before = b.before === true;
   D.readOpen = b.readOpen !== false; D.readTriple = b.readTriple !== false; D.dimSec = b.dimSec === 5 ? 5 : 15;
   D.noBooks = b.noBooks === true; D.longTitle = b.longTitle === true; D.jcoverMotif = pick(b.jcoverMotif, COVER_MOTIFS, JOHN_COVER.motif); D.jcoverColor = pick(b.jcoverColor, COVER_COLORS, JOHN_COVER.color); D.newcomer = b.newcomer === true;
-  if (b.bl && Array.isArray(b.bl.items)) D.bl = { items: b.bl.items.filter(x => x && typeof x === 'object').slice(0, 40) };   // 데모 주보(church-bulletin.js가 거른다)
 }
 const saveDisplay = () => ls.set(K.display, JSON.stringify({ ...readJson(K.display), mode: S.mode, accent: S.accent, style: S.style, big: S.big }));
 const saveDemo = () => { if (!LIVE) ls.set(K.demo, JSON.stringify(D)); };
@@ -1791,7 +1784,7 @@ function closeMenu() { const m = $('#settings'); m.hidden = true; $('#gearBtn').
 // 이름표와 어느 탭이 켜지는지는 여기에 모아 둔다. 아직 만들지 않은 화면은 차분한 안내 한 장으로 연다(막다른 길이 없게 이번 주로 가는 링크를 둔다)
 const PLACE = {
   wq: ['이번 주의 질문', 'week'], read: ['펼치기', 'week'], share: ['나눔하기', 'share'], shelf: ['책장', 'shelf'], record: ['내 기록', 'record'], records: ['모든 기록', 'record'], found: ['찾은 말씀', 'record'], gallery: ['올해의 그림', 'record'], staff: ['교역자 홈', 'week'], rooms: ['사랑방 전체 보기', 'more'], more: ['더보기', 'more'],
-  bulletin: ['주보', 'week'], survey: ['설문', 'more'], church: ['우리 사랑방', 'more'], prep: ['진행 준비', 'share'], prepprint: ['인쇄', 'share'], manage: ['교재 관리', 'more'], admin: ['관리', 'more'], 'admin-reorg': ['연도 개편', 'more'], 'church-admin': ['교회 전체', 'more'], about: ['디다코 소개', 'more'], account: ['계정과 동기화', 'more'], acctdel: ['계정 탈퇴', 'more'], guide: ['사용법', 'more'], feedback: ['의견 보내기', 'more']
+  survey: ['설문', 'more'], church: ['우리 사랑방', 'more'], prep: ['진행 준비', 'share'], prepprint: ['인쇄', 'share'], manage: ['교재 관리', 'more'], admin: ['관리', 'more'], 'admin-reorg': ['연도 개편', 'more'], 'church-admin': ['교회 전체', 'more'], about: ['디다코 소개', 'more'], account: ['계정과 동기화', 'more'], acctdel: ['계정 탈퇴', 'more'], guide: ['사용법', 'more'], feedback: ['의견 보내기', 'more']
 };
 const VIEWS = ['start', 'week'].concat(Object.keys(PLACE));
 // 책 안(#book-교재)과 기록 상세(#rec-기록)는 책장·내 기록 안의 화면이다
@@ -1799,8 +1792,6 @@ function parseHash() {
   const h = location.hash.replace(/^#/, ''), m = /^(book|rec)-([\w-]+)$/.exec(h);
   if (m) return { v: m[1] === 'book' ? 'shelf' : 'record', arg: m[2] };
   if (/^(mb|me|mp|mx|mxb)-([\w.-]+)$/.test(h)) return { v: 'manage', arg: h };
-  const bl = /^bulletin(?:-((?:edit|print)-[\w-]+|[\w-]+))?$/.exec(h);   // 주보: #bulletin(읽기), #bulletin-번호(그 호 읽기), #bulletin-edit-번호·new(고치기), #bulletin-print-번호(인쇄)
-  if (bl) return { v: 'bulletin', arg: bl[1] || '' };
   const sv = /^survey(?:-((?:s|try)-[\w-]+))?$/.exec(h);   // 교회 설문: #survey(목록), #survey-s-번호(고치기·결과), #survey-try-번호(미리 보기)
   if (sv) return { v: 'survey', arg: sv[1] || '' };
   // 실제 모드의 첫 접속 걸음(#start/dept …). 데모에서는 쓰지 않아 route가 첫 화면으로 돌린다
@@ -1808,7 +1799,7 @@ function parseHash() {
   if (sm) return { v: 'start', arg: sm[1] };
   return { v: VIEWS.includes(h) ? h : null, arg: '' };
 }
-const hashFor = (v, arg) => v === 'manage' && arg ? '#' + arg : v === 'survey' ? '#survey' + (arg ? '-' + arg : '') : v === 'bulletin' ? '#bulletin' + (arg ? '-' + arg : '') : v === 'start' && arg ? '#start/' + arg : '#' + (arg ? (v === 'shelf' ? 'book-' : 'rec-') + arg : v);
+const hashFor = (v, arg) => v === 'manage' && arg ? '#' + arg : v === 'survey' ? '#survey' + (arg ? '-' + arg : '') : v === 'start' && arg ? '#start/' + arg : '#' + (arg ? (v === 'shelf' ? 'book-' : 'rec-') + arg : v);
 const currentView = () => parseHash().v;
 
 // ── 이번 주 ──
@@ -1993,7 +1984,7 @@ function staffHomeView() {
       <p class="soft">${ic('lock')} 묵상 기록은 잠겨 있어서 교역자도 볼 수 없어요. 이름과 연결 상태, 이번 주 과만 보여요.</p>
     </div></div>`;
 }
-// 교회 [이번 주]는 맨 위에 그 주의 주보(church-bulletin.js)를 두고, 아래 "나의 한 주"에 한 주의 세 걸음(읽어요, 나눠요, 간직해요)을 세 겹 줄로 엮는 화면이다(2026-11-24).
+// 교회 [이번 주]는 "나의 한 주"에 한 주의 세 걸음(읽어요, 나눠요, 간직해요)을 세 겹 줄로 엮는 화면이다(2026-11-24).
 // 이번 주의 질문·말씀 문답·숨은 그림은 공동체(와 디다코 노트)에 있고 교회에는 두지 않는다.
 // 걸음마다 가는 곳은 그대로 펼치기·나눔하기·오늘 남길 것이라, 여기는 지금 어디쯤인지 알리고 같은 곳으로 보내기만 한다.
 // 줄은 나만 보고(이 기기의 기록으로 판단), 숫자·순위·밀린 표시는 없다
@@ -2002,7 +1993,7 @@ const weekCordHtml = on => on.every(Boolean)
   : `<svg viewBox="0 -20 240 40" aria-hidden="true">${on.map((w, k) => { const y = (k - 1) * 10; return w ? `<path class="dc-line dc-on" d="M4 ${y}Q64 ${y - 6} 120 ${y}T236 ${y}" stroke="${STRAND[k]}"/>` : `<path class="dc-off" d="M4 ${y}H236"/>`; }).join('')}</svg>`;
 function weekView() {
   const head = `<div data-sv-card>${SV_ON && window.ChurchSurvey ? ChurchSurvey.cardHtml() : ''}</div><p class="eyebrow top-eyebrow">${esc(LIVE ? (ls.get(LK.name) || '') : DATA.admin.church)}</p>
-    <div class="page-top"><h1>이번 주 ${HEAD_ICON.calendar}</h1></div>${staffHomeOn() ? staffSeg('week') : ''}${blCard()}`;
+    <div class="page-top"><h1>이번 주 ${HEAD_ICON.calendar}</h1></div>${staffHomeOn() ? staffSeg('week') : ''}`;
   const noBook = !bookById(myBookId());
   if (noBook || weekHidden()) {
     return `${head}${D.role === 'pastor' && !noBook ? statusCard() : ''}
@@ -2186,7 +2177,6 @@ function liveError(err) {
 }
 // 사람이 바뀌거나 로그아웃할 때 서버에서 받아 둔 것과 고르던 것을 모두 비운다
 function liveReset() {
-  if (window.ChurchBulletin) ChurchBulletin.reset(); blWriter = false;
   LV.epoch++; Object.assign(LA, adlFresh()); LV.me = null; LV.depts = null; LV.join = null; LV.ap = null; LV.needChurch = false; LV.repick = false; LV.err = ''; LV.notice = ''; LV.sbIn = false;
   Object.assign(ST, lvFresh()); PEND = { data: null, err: '' };
   D.entered = false; D.role = 'member';
@@ -3021,13 +3011,11 @@ function aboutView() {
       ${steps.map(([title,desc,label,target],i)=>`<div class="about-step"><span class="step-no">${i+1}.</span><div><b>${title}</b><p>${desc}</p><a href="${target}">${label}</a></div></div>`).join('')}
     </section>
     <section class="card about-card"><h2>쓴 것들</h2>
-      <div class="about-credit"><div><b>그림</b><p>주보 표지에 고르는 그림(이번 주 그림, 절기 그림, 66권 표지)은 AI로 만들고, 사람이 성경과 맞는지 확인한 뒤 내보내요.</p></div>
+      <div class="about-credit"><div><b>그림</b><p>앱 안의 그림은 AI로 만들고, 사람이 성경과 맞는지 확인한 뒤 내보내요.</p></div>
       <div><b>글꼴</b><p>고운바탕, IBM Plex Sans KR (SIL Open Font License)</p></div></div></section></div>`;
 }
 // 사용법의 "궁금한 것 찾아보기": 코이데처럼 "~는 어떻게 해요?" 질문과 풀이, 그 화면으로 가는 링크(2026-11-20). 글은 실제 동작과 같게 쓴다
 const GUIDE_FAQ = [
-  ['이번 주 주보는 어디서 봐요?', '이번 주 맨 위에 교회가 올린 주보가 있어요. 눌러서 읽고 인쇄할 수 있어요. 교회 관리자와 교역자는 같은 자리에서 주보를 만들고 고쳐요.', '이번 주로 가기', '#week'],
-  ['주보에 성경 본문을 옮겨 적어도 돼요?', '성경 번역본은 대한성서공회가 저작권을 가지고 있어서, 본문을 그대로 옮기려면 공회의 사용 허락이 필요할 수 있어요. 주보에는 말씀의 장절만 적거나 직접 풀어 쓰는 것을 권해요. 장절을 적으면 [성경 펴기] 링크로 바로 읽을 수 있어요. 올린 글의 책임은 글을 쓴 교회에 있어요.', '이번 주로 가기', '#week'],
   ['읽을 교재는 어떻게 골라요?', '책장에서 교회가 낸 교재 가운데 지금 읽을 책 한 권을 골라요. 책 안에서 과를 펼쳐요.', '책장으로 가기', '#shelf'],
   ['모임 전에 미리 읽고 생각을 남기려면 어떻게 해요?', '책장에서 과를 펼치면 모임 전에 미리 읽고 생각을 남길 수 있어요. 남기는 것은 원할 때만 해요.', '책장으로 가기', '#shelf'],
   ['나눔하기는 어떻게 해요?', '지금 읽는 책의 과로 함께 모여 질문 하나씩 나눠요. 사랑방에서는 사랑방 교재로, 가정에서는 함께 쓰는 교재로 바꿔서 해요. 이야기하는 동안에는 화면을 내려놓아요.', '나눔하기로 가기', '#share'],
@@ -4368,51 +4356,6 @@ function svInit() {
 function svFillCards(v) {
   if (!SV_ON || !D.entered || (v !== 'week' && v !== 'more')) return;
   svInit(); if (window.ChurchSurvey) ChurchSurvey.fillCards();
-}
-// ── 주보(2026-11-24): 모양과 하는 일은 church-bulletin.js가 맡고, 여기서는 저장(데모는 이 기기, 새 길은 서버 supabase/028)과 앱 이어 주기만 한다 ──
-const BL_ON = !LIVE || ADL;   // 데모와 새 길에서만. 옛 길(HUB)에는 없다
-function blSunday() { const d = new Date(); d.setDate(d.getDate() + ((7 - d.getDay()) % 7)); return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`; }
-function blDemoSeed() {   // 데모 주보: 모두 지어낸 예시
-  const B = (k, face, col, o) => Object.assign({ id: 'd' + k + face + col, k, face, col, title: '' }, o);
-  return { id: 'demo-1', no: 47, date: blSunday(), title: '대림절 첫째 주일', layout: 3, status: 'open', blocks: [
-    B('people', 'out', 1, { rows: [['담임목사', '최은혜 목사'], ['부목사', '김하준 목사'], ['교육 전도사', '박성은 전도사'], ['장로', '이도윤, 정민재 장로']] }),
-    B('way', 'out', 2, { lines: ['서울시 예시구 말씀로 77, 1층', '전화 02-1234-5678', '지하철 3호선 은혜역 2번 출구에서 걸어서 5분'] }),
-    B('cover', 'out', 3, { img: 'weekly-01', pos: 'c', verse: '시편 23:1', line: '목자 되신 주님이\n우리를 먹이세요', pastor: '최은혜', sub: '대림절 첫째 주일' }),
-    B('worship', 'in', 1, { rows: [['주일예배', '1부 오전 9:00\n2부 오전 11:00', '대예배실'], ['수요예배', '오후 7:30', '대예배실'], ['금요기도회', '오후 8:30', '대예배실'], ['영유아부', '오전 11:00', '3층 305호']] }),
-    B('news', 'in', 2, { items: [{ t: '새가족을 환영합니다', x: '처음 오신 분들은 예배 뒤 2층 안내 데스크로 와 주세요. 함께 차를 마시며 인사해요.' }, { t: '겨울성경학교 안내', x: '12월 20일(토)부터 21일(주일)까지 유치부와 초등부가 함께해요. 접수는 교육관에서 받아요.' }, { t: '전교인 기도회', x: '이번 주 금요일 저녁 8시 30분, 교회와 가정, 지역을 위해 함께 기도해요.' }] }),
-    B('free', 'in', 3, { title: '이번 주 기도', text: '오시는 주님을 기다리며,\n우리 교회와 이웃을 위해\n함께 기도해요.' })
-  ] };
-}
-const blDemoItems = () => { if (!D.bl) { D.bl = { items: [blDemoSeed()] }; saveDemo(); } return D.bl.items; };
-const blDemoSort = () => D.bl.items.sort((a, b) => (b.date > a.date ? 1 : b.date < a.date ? -1 : 0));
-const blCanWrite = () => LIVE ? blWriter : D.role === 'pastor' || D.role === 'admin';
-function blInit() {
-  if (blReady || !window.ChurchBulletin) return;
-  blReady = true;
-  const demo = {
-    async load() { const all = blDemoItems(), w = blCanWrite(); return { writer: w, items: w ? all : all.filter(i => i.status === 'open').slice(0, 1) }; },
-    async save(it) { blDemoItems(); const r = JSON.parse(JSON.stringify(it)); if (!r.id) r.id = 'd' + Date.now().toString(36); const at = D.bl.items.findIndex(x => x.id === r.id); if (at >= 0) { r.status = D.bl.items[at].status; D.bl.items[at] = r; } else { r.status = 'draft'; D.bl.items.push(r); } blDemoSort(); saveDemo(); return JSON.parse(JSON.stringify(r)); },
-    async status(id, open) { blDemoItems(); const r = D.bl.items.find(x => x.id === id); if (!r) throw { message: '주보를 찾지 못했어요.' }; if (open && !r.blocks.length) throw { message: '칸이 하나도 없는 주보는 올릴 수 없어요.' }; r.status = open ? 'open' : 'draft'; saveDemo(); return JSON.parse(JSON.stringify(r)); },
-    async remove(id) { blDemoItems(); D.bl.items = D.bl.items.filter(x => x.id !== id); saveDemo(); return {}; }
-  };
-  const live = {
-    async load() { const r = await api('bulletins'); blWriter = !!r.writer; return r; },
-    save: it => api('bulletinSave', { id: it.id || null, no: it.no, date: it.date, title: it.title, layout: it.layout, blocks: it.blocks }),
-    status: (id, open) => api('bulletinStatus', { id, open }),
-    remove: id => api('bulletinDelete', { id })
-  };
-  ChurchBulletin.init({
-    store: LIVE ? live : demo, canWrite: blCanWrite, toast, bibleUrl,
-    churchName: () => LIVE ? (ls.get(LK.name) || '') : DATA.admin.church,
-    repaint: () => { if (!['week', 'bulletin'].includes(currentView())) return; const y = window.scrollY; reflow = true; try { route(false); } finally { reflow = false; } window.scrollTo(0, y); }
-  });
-}
-const blCard = () => { if (!BL_ON) return ''; blInit(); return window.ChurchBulletin ? `<div data-bl-card>${ChurchBulletin.cardHtml()}</div>` : ''; };
-function bulletinView(arg) {
-  blInit();
-  if (!BL_ON || !window.ChurchBulletin) return `<div class="page-top"><h1>주보</h1></div>
-    <section class="card calm"><p class="calm-t">이 길에서는 아직 쓸 수 없어요</p><a class="btn ghost" href="#week">이번 주로</a></section>`;
-  return /^edit-/.test(arg) ? ChurchBulletin.editPage(arg) : /^print-/.test(arg) ? ChurchBulletin.printPage(arg) : ChurchBulletin.readPage(arg);
 }
 const svIsChurch = () => AD.svChurch != null ? !!AD.svChurch : !!(ADL && LV.me && LV.me.ops && LV.me.ops.all);   // 새로 고쳐 들어왔으면 가진 역할로
 function surveyView(arg) {
@@ -6181,7 +6124,6 @@ function vtDepth(v, arg) {
   if (v === 'shelf' || v === 'record') return arg ? 2 : 0;   // 책장 → 책 안, 내 기록 → 기록 상세
   if (v === 'prepprint' || v === 'admin-reorg') return 2;
   if (v === 'survey') return arg ? 2 : 1;
-  if (v === 'bulletin') return /^(edit|print)-/.test(arg) ? 2 : 1;
   return VT_TABS.includes(v) || v === 'staff' ? 0 : 1;   // 교역자 홈은 첫 탭 안의 같은 깊이 화면
 }
 function vtMotion() {
@@ -6235,7 +6177,6 @@ function drawRoute(moved) {
     else if (['week', 'wq', 'read', 'share', 'shelf', 'record', 'records', 'found', 'gallery', 'prep', 'prepprint'].includes(v)) ls.del(LK.lastAdmin);
   }
   if (v !== 'read') { readFrom = ''; readAsMember = false; }
-  if (window.ChurchBulletin && (v !== 'bulletin' || !/^print-/.test(arg || ''))) ChurchBulletin.leave();   // 주보 인쇄 화면을 떠나면 쪽 크기를 세로로 되돌린다
   const entering = v !== lastV;
   if (v !== lastV) { prevV = lastV; lastV = v; }
   const adv = (v === 'admin' || v === 'admin-reorg' || v === 'church-admin' || (v === 'survey' && SV_ON)) && D.role === 'admin' ? (v === 'church-admin' || (v === 'survey' && svIsChurch()) ? 'church-admin' : 'admin') : '';   // 설문은 관리·분석과 같은 탭 줄이라 같은 관리 화면으로 친다(설문 → 분석을 눌러도 전환 화면이 다시 뜨지 않는다)   // 연도 개편 마법사(#admin-reorg)는 부서 관리 안이라 전환 화면을 다시 띄우지 않는다
@@ -6244,7 +6185,7 @@ function drawRoute(moved) {
   // 없는 책, 없는 기록이면 목록으로(책이 하나도 없게 한 상태에서도)
   if (v === 'shelf' && arg && (noShelf() || !bookById(arg))) arg = '';
   if (v === 'record' && arg && !recById(arg)) arg = '';
-  if (v !== 'shelf' && v !== 'record' && v !== 'manage' && v !== 'survey' && v !== 'bulletin' && !(LIVE && v === 'start')) arg = '';
+  if (v !== 'shelf' && v !== 'record' && v !== 'manage' && v !== 'survey' && !(LIVE && v === 'start')) arg = '';
   if (location.hash !== hashFor(v, arg)) history.replaceState(null, '', hashFor(v, arg));
   if (moved && !vtNow) { closeMenu(); $('#toast').hidden = true; }   // 겹쳐 넘길 때는 route가 미리 닫았다
   vtV = v; vtArg = arg || '';
@@ -6252,7 +6193,7 @@ function drawRoute(moved) {
   $('#topbar').classList.toggle('bare', start);
   $('#topnav').hidden = start; $('#tabs').hidden = start;
   document.body.dataset.view = v;
-  $('#view').innerHTML = start ? startView(arg) : v === 'week' ? weekView() : v === 'staff' ? staffHomeView() : v === 'wq' ? wqView() : v === 'read' ? readView() : v === 'share' ? shareView() : v === 'shelf' ? shelfView(arg) : v === 'record' ? recordView(arg) : v === 'records' ? recordsView() : v === 'found' ? foundView() : v === 'gallery' ? galleryView() : v === 'more' ? moreView() : v === 'admin' ? adminView() : v === 'admin-reorg' ? adminReorgView() : v === 'church-admin' ? churchAdminView() : v === 'survey' ? surveyView(arg) : v === 'bulletin' ? bulletinView(arg) : v === 'about' ? aboutView() : v === 'account' ? accountView() : v === 'acctdel' ? acctDelView() : v === 'guide' ? guideView() : v === 'feedback' ? feedbackView() : v === 'prep' ? prepView() : v === 'prepprint' ? prepPrintView() : v === 'church' ? churchView() : v === 'rooms' ? roomsView() : v === 'manage' ? manageView(arg) : placeView(v);
+  $('#view').innerHTML = start ? startView(arg) : v === 'week' ? weekView() : v === 'staff' ? staffHomeView() : v === 'wq' ? wqView() : v === 'read' ? readView() : v === 'share' ? shareView() : v === 'shelf' ? shelfView(arg) : v === 'record' ? recordView(arg) : v === 'records' ? recordsView() : v === 'found' ? foundView() : v === 'gallery' ? galleryView() : v === 'more' ? moreView() : v === 'admin' ? adminView() : v === 'admin-reorg' ? adminReorgView() : v === 'church-admin' ? churchAdminView() : v === 'survey' ? surveyView(arg) : v === 'about' ? aboutView() : v === 'account' ? accountView() : v === 'acctdel' ? acctDelView() : v === 'guide' ? guideView() : v === 'feedback' ? feedbackView() : v === 'prep' ? prepView() : v === 'prepprint' ? prepPrintView() : v === 'church' ? churchView() : v === 'rooms' ? roomsView() : v === 'manage' ? manageView(arg) : placeView(v);
   placeStaffTip(v);
   if (v === 'survey' && SV_ON && D.role === 'admin' && window.ChurchSurvey) ChurchSurvey.mount(arg);
   svFillCards(v);
@@ -7426,8 +7367,8 @@ document.addEventListener('submit', e => {
    const view = v => document.body.dataset.view === v;
    const go = v => { if (!view(v)) location.hash = '#' + v; };
    const steps = () => [
-     { mode: 'next', target: () => $('#view .bl-main') || $('#view .wk-cord-card'), before: () => go('week'),
-       text: '이번 주예요. 맨 위에는 교회 주보가 있고, 아래에는 읽고 나누고 간직하는 한 주의 걸음이 있어요.' },
+     { mode: 'next', target: () => $('#view .wk-cord-card'), before: () => go('week'),
+       text: '이번 주예요. 읽고 나누고 간직하는 한 주의 걸음이 세 겹 줄로 엮여요.' },
      { mode: 'tap', target: () => tabBtn('shelf'), done: () => view('shelf'), text: '책장을 눌러 보세요.' },
      { mode: 'next', target: () => $('#view .shelf-home .sh-card') || $('#view .shelf-wrap'), wait: () => view('shelf'), before: () => go('shelf'),
        text: '지금 읽는 책이에요. 과를 펼쳐 모임 전에 미리 읽을 수 있어요.' },
