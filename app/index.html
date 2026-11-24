@@ -3531,13 +3531,15 @@ function mgBasicHtml() {
   return `<div class="gl">디다코 기본 교재${DidakoTip.btn('우리 교회 교재로 복제해서 읽고 고친 뒤 배포해요.', '디다코 기본 교재')}</div><div class="gc">${BASIC.books.map(b => `<div class="gr mg-row"><span class="mg-cover">${bookCover({ ...b, id: '' }, 'list')}</span><span class="gt"><b>${esc(b.title)}</b><span class="gd mg-pills">${mgChips([b.kind, b.lessons.length + '과', levelChip(b)])}</span></span><button class="btn ghost small" type="button" data-act="mg-basic" data-v="${esc(b.id)}" aria-label="${esc(b.title)} 가져오기">가져오기</button></div>`).join('')}</div>`;
 }
 const mgLongDate = v => { const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(v || ''); return m ? `${m[1]}년 ${Number(m[2])}월 ${Number(m[3])}일` : (v || ''); };
+// 교재 삭제(2026-11-24): 지금 배포 중인 과가 없는 교재만. 실제 서버(새 길)는 배포한 적이 있는지도 보고 막는다(supabase/027). 데모는 이번 주 교재를 지우지 않는다
+const mgCanDelete = b => canManage() && b.lessons.every(L => mgStatus(b, L) === 'draft') && (LIVE ? CHURCH_ON : b.id !== DATA.thisWeek.main.book);
 function mgBookView(b) {
   const row = (name, desc, act) => `<button class="gr" type="button" data-act="${act}"><span class="gt"><b>${name}</b>${desc ? `<span class="gd">${desc}</span>` : ''}</span><span class="ch" aria-hidden="true">›</span></button>`;
   return `<a class="back-link" href="#manage">${ic('back')}<span>교재 관리</span></a><p class="eyebrow top-eyebrow mg-pills">${mgChips([b.kind, b.period, levelChip(b)])}</p><div class="page-top"><h1>${esc(b.title)}</h1></div>${mgSavedText(b) ? '<p class="fine">' + esc(mgSavedText(b)) + '</p>' : ''}
     <div class="more-grid"><div>${!b.closed ? `<div class="mg-acts" style="margin-top:0"><button class="btn" type="button" data-act="mg-lesson-add">과 추가</button>${b.lessons.some(L => mgStatus(b, L) === 'draft') ? '<button class="btn ghost" type="button" data-act="mg-pub-all">한꺼번에 배포</button>' : ''}</div>` : ''}<div class="gl">과</div><div class="gc">
       ${b.lessons.map(L => { const st = mgStatus(b, L); return `<div class="gr mg-lrow"><a class="mg-lmain" href="#me-${b.id}.${L.no}"><span class="gt"><b>제${L.no}과 ${esc(L.name || '(제목을 적어 주세요)')}</b><span class="gd mg-pills">${mgChips([L.date, L.ref && [L.ref, true]])}</span></span></a><button class="btn${st === 'draft' ? '' : ' ghost'} small mg-lpub" type="button" data-act="mg-lpub" data-no="${L.no}" aria-label="제${L.no}과 배포 (지금 ${esc((STATUS.find(x => x[0] === st) || STATUS[0])[1])})">${st === 'draft' ? '배포하기' : st === 'leader' ? '리더까지 ›' : '배포됨 ›'}</button></div>`; }).join('') || '<div class="gr"><span class="gt"><span class="gd">아직 과가 없어요. 과를 더해 시작해요.</span></span></div>'}
     </div></div><div><div class="gc"><div class="gr"><span class="mg-cover big">${bookCover({ ...b, id: '' }, 'list')}</span><span class="gt"><b>${esc(b.title)}</b><span class="gd">${esc(b.kind)}</span></span></div><dl class="mg-info"><div><dt>대상 모임</dt><dd>${esc(b.target || deptLabel())}</dd></div>${b.source ? `<div><dt>출처</dt><dd>${esc(b.source)}</dd></div>` : ""}${levelName(b) ? `<div><dt>난이도</dt><dd>${esc(levelStars(levelNum(b)))} ${esc(levelName(b))}${b.levelNote ? ' · ' + esc(b.levelNote) : ''}</dd></div>` : ''}${b.start ? `<div><dt>시작 날짜</dt><dd>${esc(mgLongDate(b.start))}</dd></div>` : ''}${b.closed && b.end ? `<div><dt>끝난 날짜</dt><dd>${esc(mgLongDate(b.end))}</dd></div>` : ''}</dl></div>
-    <div class="gc">${row('교재 정보 편집', '', 'mg-edit')}${row('교재 통째로 복제', '내용만 가져오고 배포 이력은 가져오지 않아요', 'mg-dup')}${`<a class="gr" href="#mxb-${b.id}"><span class="gt"><b>인쇄용 보기</b></span><span class="ch" aria-hidden="true">›</span></a>`}${b.closed ? '' : row('교재 닫기', '오늘 날짜로 끝내고 지난 교재로 옮겨요', 'mg-close')}</div>${b.closed ? '<button class="quiet-link" type="button" data-act="mg-reopen">다시 열기</button>' : ''}</div></div>`;
+    <div class="gc">${row('교재 정보 편집', '', 'mg-edit')}${row('교재 통째로 복제', '내용만 가져오고 배포 이력은 가져오지 않아요', 'mg-dup')}${`<a class="gr" href="#mxb-${b.id}"><span class="gt"><b>인쇄용 보기</b></span><span class="ch" aria-hidden="true">›</span></a>`}${b.closed ? '' : row('교재 닫기', '오늘 날짜로 끝내고 지난 교재로 옮겨요', 'mg-close')}${mgCanDelete(b) ? row('교재 삭제', '배포하기 전 교재만 지울 수 있어요', 'mg-del') : ''}</div>${b.closed ? '<button class="quiet-link" type="button" data-act="mg-reopen">다시 열기</button>' : ''}</div></div>`;
 }
 function mgForm(b) {
   mgEditing = b ? b.id : '';
@@ -6569,6 +6571,15 @@ const acts = {
     openSheet(sheetHead('교재 닫기') + '<p>오늘 날짜로 교재를 닫아요. 닫은 교재는 지난 교재로 옮겨지고 교재 목록에 놓여요.</p><div class="set-btns"><button class="btn ghost" type="button" data-act="pop-close">그만두기</button><button class="btn" type="button" data-act="mg-close-do">교재 닫기</button></div>');
   },
   'mg-close-do'() { const b = canManage() && mgCurrent(); if (!b) return; b.closed = true; b.end = DATA.today; b.edited = true; closeSheet(); route(false); toast('교재를 닫았어요.'); },
+  'mg-del'() {
+    const b = canManage() && mgCurrent(); if (!b || !mgCanDelete(b)) return;
+    openSheet(sheetHead('교재 삭제') + `<p><b>${esc(b.title)}</b></p><p>이 교재를 지울까요? 아직 배포하지 않아서 회원에게는 보이지 않아요. 지우면 되돌릴 수 없어요. 이미 배포한 교재는 지울 수 없고 닫기만 돼요.</p><div class="set-btns"><button class="btn ghost" type="button" data-act="pop-close">그만두기</button><button class="btn" type="button" data-act="mg-del-do">지우기</button></div>`);
+  },
+  'mg-del-do'() {
+    const b = canManage() && mgCurrent(); if (!b || !mgCanDelete(b)) return;
+    MG.books = MG.books.filter(x => x !== b); DATA.books = DATA.books.filter(x => x.id !== b.id);
+    closeSheet(); mgGo('manage', '교재를 지웠어요.');
+  },
   'mg-reopen'() { const b = canManage() && mgCurrent(); if (!b) return; b.closed = false; delete b.end; b.edited = true; route(false); toast('다시 열었어요.'); },
   // 사랑방 전체 명단은 보기만 한다
   'rooms-open'(e, el) {
@@ -6969,6 +6980,12 @@ if (LIVE) {
       await liveSettle(c.b, c.L);
       applyStatus(c.b, c.L, await api('lessonStatus', { bookId: c.b.id, no: c.L.no, status: v === 'leader' ? 'leader' : 'all' }));
       closeSheet(); route(false); toast(v === 'leader' ? '리더에게 배포했어요.' : '회원에게 배포했어요.');
+    }),
+    'mg-del-do': mgRun(async () => {
+      const b = canManage() && mgCurrent(); if (!b || !mgCanDelete(b)) return;
+      await api('bookDelete', { id: b.id });
+      MG.books = MG.books.filter(x => x !== b); liveSyncData();
+      closeSheet(); mgGo('manage', '교재를 지웠어요.');
     }),
     'mg-pub-all-do': mgRun(async (e, el) => {
       const b = canManage() && mgCurrent(); const v = el.dataset.v; if (!b || !['leader', 'all'].includes(v)) return;
