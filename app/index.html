@@ -220,8 +220,33 @@ main.wrap { padding-top: 14px; padding-bottom: calc(110px + env(safe-area-inset-
 .wq-mine span { display: block; margin-bottom: 4px; font-size: .78rem; font-weight: 700; color: var(--ink-2); }
 /* 말씀 따라가기: 이번 주 카드 */
 .ltr-card { background: color-mix(in srgb, var(--accent-soft) 38%, var(--surface)); border-color: var(--accent-mid); }
-.ltr-card .lesson-title { margin: .2em 0 .35em; font-size: 1.75rem; }
+.ltr-card .lesson-title { margin: .25em 0 .4em; font-size: 1.5rem; }
 .ltr-card .act-row .btn { flex: none; min-width: 9em; }
+.ltr-hero { display: flex; gap: 16px; align-items: flex-start; }
+.ltr-cv { flex: none; width: 92px; }
+.ltr-cv .book-cover { width: 100%; }
+.ltr-hb { flex: 1; min-width: 0; }
+.ltr-hb .walk-refs { margin-top: 0; }
+.ltr-steps { list-style: none; margin: 18px 0 0; padding: 0; display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 5px; }
+.ltr-steps li { min-width: 0; }
+.ltr-steps i { display: block; height: 6px; border-radius: 999px; background: var(--line-strong); opacity: .55; }
+.ltr-steps .p i { background: var(--accent); opacity: 1; }
+.ltr-steps .n i { background: var(--accent-mid); opacity: 1; }
+.ltr-steps span { display: block; margin-top: 6px; font-size: .6875rem; line-height: 1.35; color: var(--ink-2); word-break: keep-all; }
+.ltr-steps .n span { color: var(--ink); font-weight: 600; }
+.wk-page { width: 100%; }
+.wk-grid > div:empty { display: none; }
+@media (min-width: 900px) {
+  .wk-page { max-width: 1040px; margin: 0 auto; }
+  .wk-grid { display: grid; grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr); grid-template-rows: auto auto 1fr; grid-template-areas: "letter steps" "cord steps" "next steps"; column-gap: 24px; align-items: start; }
+  .wk-mine { display: contents; }
+  .wk-letter { grid-area: letter; } .wk-cord-card { grid-area: cord; } .wk-steps { grid-area: steps; } .wk-next { grid-area: next; }
+  .wk-mine .wk-sec { display: none; }
+  .wk-letter .card, .wk-cord-card, .wk-next .card { margin: 0 0 12px; }
+  .wk-grid .wk-steps { grid-template-columns: minmax(0, 1fr); margin: 0; }
+  .ltr-cv { width: 120px; }
+  .ltr-card .lesson-title { font-size: 1.65rem; }
+}
 .ltr-segs { display: grid; grid-template-columns: repeat(5, 1fr); gap: 5px; margin: 14px 0 0; }
 .ltr-segs i { height: 6px; border-radius: 999px; background: var(--line-strong); opacity: .55; }
 .ltr-segs i.p { background: var(--accent); opacity: 1; }
@@ -392,7 +417,6 @@ body[data-view="letter"] { overflow: hidden; }
 .wk-step .btn { align-self: flex-start; }
 .wk-step:not(.now):not(.done) { opacity: .78; }
 .wk-step.done { background: var(--surface-2); }
-@media (min-width: 900px) { .wk-steps { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
 .up-list { margin-top: 8px; }
 .up-row { display: flex; align-items: center; gap: 10px; padding: 10px 0; border-top: 1px solid var(--line); line-height: 1.45; word-break: keep-all; }
 .up-row:first-child { border-top: 0; }
@@ -2059,12 +2083,12 @@ function weekView() {
     <div class="page-top"><h1>이번 주 ${HEAD_ICON.calendar}</h1></div>${staffHomeOn() ? staffSeg('week') : ''}`;
   const noBook = !bookById(myBookId());
   if (noBook || weekHidden()) {
-    return `${head}${D.role === 'pastor' && !noBook ? statusCard() : ''}
+    return `<div class="wk-page">${head}${D.role === 'pastor' && !noBook ? statusCard() : ''}
     <section class="card calm">
       <p class="calm-t">${noBook ? '아직 읽을 책이 없어요' : '이번 주 과를 준비하고 있어요'}</p>
       <p class="soft" style="margin:0">${noBook ? (LIVE && LV.writer ? '교재 관리에서 교재를 만들고 배포하면 열려요.' : '이번 주 과가 배포되면 열려요.') : '준비가 끝나면 열려요.'}</p>
       <a class="btn ghost" href="#shelf">책장으로</a>
-    </section>`;
+    </section></div>`;
   }
   const L = thisLesson(), bk = bookById(myBookId()), next = tocLessons(bk).filter(l => l.state === 'upcoming').slice(0, 3), k = readKeep();
   const done = [hasBm(), LIVE ? !!(readLive()[L.id] || {}).shared : ls.get(K.shareDone) === '1', !!(k.sentence || k.action)];
@@ -2074,21 +2098,21 @@ function weekView() {
       <p class="fine">${done[i] ? doneSub : sub}</p>${act}
     </section>`;
   const btn = (label, attrs, on) => `<${attrs.startsWith('href') ? 'a' : 'button type="button"'} class="btn${on ? '' : ' ghost'}" ${attrs}>${label}</${attrs.startsWith('href') ? 'a' : 'button'}>`;
-  return `${head}${D.role === 'pastor' ? statusCard() : ''}${letterCard()}
-    <h2 class="wk-sec">나의 한 주</h2>
-    <section class="card today wk-cord-card" aria-labelledby="lessonTitle">
-      <div class="wk-head"><span class="walk-kicker">이번 주 세 겹 줄</span>${L.date ? `<span class="wk-aside"><span class="walk-tag">${esc(L.date)}</span></span>` : ''}</div>
+  return `<div class="wk-page">${head}${D.role === 'pastor' ? statusCard() : ''}
+    <div class="wk-grid"><div class="wk-letter">${letterCard()}</div>
+    <div class="wk-mine"><h2 class="wk-sec">나의 한 주</h2>
+    <section class="card today wk-cord-card" aria-labelledby="cordT">
+      <div class="wk-head"><span class="walk-kicker" id="cordT">이번 주 세 겹 줄</span>${L.date ? `<span class="wk-aside"><span class="walk-tag">${esc(L.date)}</span></span>` : ''}</div>
       <div class="deep-cord" style="--cord-bg: var(--surface)" role="img" aria-label="${done.every(Boolean) ? '세 가닥이 엮였어요' : '세 가닥 줄, 한 걸음마다 한 가닥이 이어져요'}">${weekCordHtml(done)}</div>
       <p class="fine wk-cap">${done.every(Boolean) ? '이번 주 줄이 엮였어요.' : '읽고, 나누고, 간직하면 세 가닥이 엮여요.'}</p>
-      <div class="wk-les"><p class="lesson-book">${bookHtml()}</p><h2 class="lesson-title" id="lessonTitle">${esc(L.title)}</h2><span class="passage-chip">${esc(L.ref)}</span></div>
     </section>
     <div class="wk-steps">
       ${step(0, '읽어요', '모임 전에 본문을 미리 읽고 생각을 남겨 봐요.', '미리 읽었어요.', btn(hasBm() ? '이어서 펼치기' : '펼치기', `data-act="read-go" data-resume="1" data-from="${esc(weekSel().book)}"`, cur === 0))}
       ${step(1, '나눠요', L.date ? `모임 날은 ${esc(L.date)}이에요. 함께 모여 질문을 하나씩 나눠요.` : '함께 모여 질문을 하나씩 나눠요.', '함께 나눴어요.', btn('나눔하기', 'href="#share"', cur === 1) + (isLead() ? btn('진행 준비', 'data-act="prep"', false) : ''))}
       ${step(2, '간직해요', '마음에 남은 한 문장과 작은 실천을 남겨요.', esc(k.action || k.sentence || ''), done[2] ? '' : btn('남기기', 'href="#share"', cur === 2))}
-    </div>
-    ${next.length ? `<section class="card" aria-label="다가오는 모임"><div class="wk-head"><span class="walk-kicker">다가오는 모임</span></div>
-      <div class="up-list">${next.map(l => `<div class="up-row"><span class="walk-tag">${esc(l.date || '날짜 미정')}</span><span>[제${l.no}과] ${esc(l.name)}</span></div>`).join('')}</div></section>` : ''}`;
+    </div></div>
+    <div class="wk-next">${next.length ? `<section class="card" aria-label="다가오는 모임"><div class="wk-head"><span class="walk-kicker">다가오는 모임</span></div>
+      <div class="up-list">${next.map(l => `<div class="up-row"><span class="walk-tag">${esc(l.date || '날짜 미정')}</span><span>[제${l.no}과] ${esc(l.name)}</span></div>`).join('')}</div></section>` : ''}</div></div></div>`;
 }
 
 // ── 이번 주의 질문 단계별로 펴 보기 ──
@@ -2170,14 +2194,17 @@ function ltrInput(t) {
 }
 // 다섯 칸 진행 막대: 지난 걸음은 채우고 지금 걸음은 옅게 칠한다(점수가 아니라 걸어온 길)
 const ltrSegs = (r, now) => `<div class="ltr-segs" aria-hidden="true">${r.p.map((p, i) => `<i class="${p ? 'p' : i === now ? 'n' : ''}"></i>`).join('')}</div>`;
-// 이번 주 맨 위 카드
+// 이번 주 맨 위 카드: 책장과 같은 표지와 이번 주 과, 다섯 걸음 이름(점수가 아니라 걸어온 길)
+const ltrSteps = (r, now) => `<ol class="ltr-steps" aria-label="다섯 걸음">${LTR_STEPS.map((s, i) => `<li class="${r.p[i] ? 'p' : i === now ? 'n' : ''}"><i aria-hidden="true"></i><span>${s.name}</span></li>`).join('')}</ol>`;
 function letterCard() {
   if (!letterOk()) return '';
-  const L = thisLesson(), r = ltrGet(L.id), now = r.p.indexOf(false), fin = now < 0, started = r.p.some(Boolean) || r.t.some(Boolean);
+  const L = thisLesson(), bk = bookById(myBookId()), r = ltrGet(L.id), now = r.p.indexOf(false), fin = now < 0, started = r.p.some(Boolean) || r.t.some(Boolean);
   return `<section class="card ltr-card" aria-labelledby="ltrT">
-    <div class="wk-head"><span class="walk-kicker" id="ltrT">이번 주 말씀 따라가기</span>${L.date ? `<span class="wk-aside"><span class="walk-tag">${esc(L.date)}</span></span>` : ''}</div>
-    <h2 class="lesson-title">${esc(ltrName(L))}</h2>${L.ref ? `<div class="walk-refs"><span class="passage-chip">${esc(L.ref)}</span></div>` : ''}
-    ${ltrSegs(r, now)}<span class="vh">${fin ? '다섯 걸음을 모두 지나왔어요.' : '지금은 ' + LTR_STEPS[now].ord + ' 걸음이에요.'}</span>
+    <div class="ltr-hero">${bk ? `<span class="ltr-cv">${bookCover(bk, 'list')}</span>` : ''}
+      <div class="ltr-hb"><span class="walk-kicker" id="ltrT">이번 주 말씀 따라가기</span>
+        <h2 class="lesson-title">${esc(L.title)}</h2>
+        <div class="walk-refs">${L.ref ? `<span class="passage-chip">${esc(L.ref)}</span>` : ''}${L.date ? `<span class="walk-tag">${esc(L.date)}</span>` : ''}</div></div></div>
+    ${ltrSteps(r, now)}<span class="vh">${fin ? '다섯 걸음을 모두 지나왔어요.' : '지금은 ' + LTR_STEPS[now].ord + ' 걸음이에요.'}</span>
     <p class="fine">${fin ? '이번 주 말씀을 다 펴 봤어요.' : '한 주 동안 혼자 다섯 걸음으로 내 생각을 써 봐요.'}</p>
     <div class="act-row"><button class="btn" type="button" data-act="ltr-open">${fin ? '다시 보기' : started ? '이어서 쓰기' : '시작하기'}</button></div>
   </section>`;
