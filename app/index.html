@@ -4828,8 +4828,18 @@ function placeView(v) {
 let G = null;
 const weekHidden = () => LIVE ? liveWeekHidden() : D.before || D.status === 'draft' || (D.status === 'leader' && !isLead());
 const readyGuide = () => (weekHidden() ? null : DATA.guides[thisLesson().id] || null);
+// 지금 읽는 책을 고칠 수 있는 사람(교회 관리자·교재 담당)이면 그 책. 배포 전 과를 회원 화면처럼 "준비하고 있어요"로만 두지 않고 교재 관리로 이어 준다(2026-11-24, 가져온 직후 [읽기]가 막혀 보이던 것)
+const myBookToManage = () => { if (!LIVE || !LV.writer) return null; const b = bookById(myBookId()); return b && b.canWrite ? b : null; };
 function noGuideView(name) {
   const noBook = !bookById(myBookId());   // 교회에 책이 아직 하나도 없는 때(새 교회)
+  const mb = !noBook && weekHidden() ? myBookToManage() : null;   // 배포 전 과를 꾸릴 수 있는 사람
+  if (mb) return `<div class="page-top"><h1>${esc(name)}</h1></div>
+    <section class="card calm">
+      <p class="calm-t">이 과는 아직 배포 전이에요</p>
+      <p class="soft" style="margin:0">교재 관리에서 과를 읽고 고친 뒤 배포하면, 회원에게 열리고 여기서도 읽을 수 있어요.</p>
+      <a class="btn" href="#mb-${esc(mb.id)}">교재 관리에서 열기</a>
+      <a class="btn ghost" href="#shelf">책장으로 돌아가기</a>
+    </section>`;
   return `<div class="page-top"><h1>${esc(name)}</h1></div>
     <section class="card calm">
       <p class="calm-t">${noBook ? '아직 읽을 책이 없어요' : weekHidden() ? '이번 주 과를 준비하고 있어요' : '이 과는 데모에 질문 예시가 없어요'}</p>
@@ -5645,17 +5655,18 @@ const dotsHtml = b => `<span class="sh-dots" aria-hidden="true">${tocLessons(b).
 // 지금 읽는 책 카드: 책 모양 표지와 글, 따로 누르는 목차·읽기 단추(책갈피가 있으면 이어 읽기, 2026-11-10)
 function coverHtml(b) {
   const c = capOf(b);
+  const prep = weekHidden() && myBookToManage() === b;   // 가져온 직후처럼 배포 전이면 읽기 대신 교재 관리로 이어 준다
   return `<div class="card xcard sh-card">
     ${bookCover(b, 'current')}
     <div class="sh-body">
       <div class="sh-sm sh-kind"><span class="walk-tag">${esc(b.kind)}</span><span>${esc(b.period)}</span>${levelPill(b)}</div>
       <div class="sf xct" style="margin-top:4px">${esc(bTitle(b))}</div>
-      ${weekHidden() ? '<div class="sh-sm sh-lesson">이번 주 과를 준비하고 있어요</div>' : c ? `<div class="sh-sm sh-lesson"><span class="sh-cap">${esc(c.lead)}</span><span class="sh-cap-t">${esc(c.text)}</span></div><div class="sh-sm sh-date">${esc(c.date)}</div>` : ''}
+      ${prep ? '<div class="sh-sm sh-lesson">아직 배포 전이에요. 교재 관리에서 읽고 고친 뒤 배포하면 열려요</div>' : weekHidden() ? '<div class="sh-sm sh-lesson">이번 주 과를 준비하고 있어요</div>' : c ? `<div class="sh-sm sh-lesson"><span class="sh-cap">${esc(c.lead)}</span><span class="sh-cap-t">${esc(c.text)}</span></div><div class="sh-sm sh-date">${esc(c.date)}</div>` : ''}
       ${dotsHtml(b)}
     </div>
-    <div class="sh-actions">
+    <div class="sh-actions">${prep ? `<a class="btn sh-read" href="#mb-${esc(b.id)}">${ic('list')}교재 관리에서 열기</a>` : `
       <button class="btn ghost" type="button" data-act="open-book" data-book="${b.id}">${ic('list')}목차</button>
-      <button class="btn sh-read" type="button" data-act="read-go" data-resume="1" data-from="${b.id}">${ic('read')}${hasBm() ? '이어 읽기' : '읽기'}</button>
+      <button class="btn sh-read" type="button" data-act="read-go" data-resume="1" data-from="${b.id}">${ic('read')}${hasBm() ? '이어 읽기' : '읽기'}</button>`}
     </div>
   </div>`;
 }
