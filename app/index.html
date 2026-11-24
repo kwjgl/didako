@@ -1886,6 +1886,18 @@ function walkFoundWeek(w, read, today, alone) {
 // 예전 길(Apps Script)은 바꾸지 않아 교역자 홈이 없다(첫 탭은 지금처럼 이번 주). 데모와 새 길(CHURCH_ON)에서만 쓴다.
 const staffHomeOn = () => D.role === 'pastor' && (!LIVE || CHURCH_ON);
 const homeV = () => (staffHomeOn() ? 'staff' : 'week');
+// 앱을 열 때 처음 보이는 곳(코이데와 같다, 2026-11-24). 가정 없이 들어온 관리자는 늘 관리 화면에서 열린다(회원 화면이 없다).
+// 가정에 연결된 관리자는 이 기기에서 마지막에 본 곳이 관리 화면(부서 관리·교회 전체)이었을 때만 거기서 열린다. 이번 주 같은 회원 화면을 본 뒤에는 이번 주에서 열린다
+const adminLandV = () => {
+  const me = LV.me;
+  if (!LIVE || !CHURCH_ON || D.role !== 'admin' || !me) return '';
+  const all = !!(me.ops && me.ops.all), linked = !!me.link && me.link.status === '연결' && !me.notLinked;
+  const last = ls.get(LK.lastAdmin) || '', uid = ls.get(LK.uid) || '';
+  const view = last === uid + ':church-admin' ? 'church-admin' : last === uid + ':admin' ? 'admin' : '';
+  if (linked && !view) return '';
+  return all && (!linked || view === 'church-admin') ? 'church-admin' : 'admin';
+};
+const landV = () => adminLandV() || homeV();
 const staffSeg = cur => `<div class="seg2 sf-seg" role="group" aria-label="첫 화면 고르기">${[['staff', '교역자 홈'], ['week', '이번 주']].map(([k, l]) => `<button type="button" class="${cur === k ? 'on' : ''}" data-act="staff-go" data-v="${k}" aria-pressed="${cur === k}">${l}</button>`).join('')}</div>`;
 // 지금 읽는 교재의 이번 주 과 하나: 번호·제목·공개 범위(준비 중·리더까지·모두). 교재는 부서마다 내리므로 같은 부서 사랑방은 모두 같은 과를 한다
 function staffLesson() {
@@ -2016,7 +2028,7 @@ function wqInit() {
 // 설정 파일이 차 있을 때(LIVE)만 쓴다. 카카오 로그인과 교회 코드는 코이데 기본 서버(hub)가, 명단과 연결은 교회마다 하나인 디다코 서버가 맡는다.
 // 열쇠 이름은 디다코 노트와 같다: 노트(/note/)와 공동체 앱(/app/)은 같은 주소의 저장 자리를 써서, 한쪽에서 로그인하면 다른 쪽도 로그인되어 있고 로그아웃하면 둘 다 된다(결정 기록 2026-11-11).
 // 이번 단계에서 서버와 이어진 것은 로그인, 첫 접속, 승인 기다림, 우리 사랑방(승인·거절·연결 해제), 로그아웃, 설치 코드다. 교재·기록·관리 화면은 아직 데모 자료로 보인다.
-const LK = { hub: 'didako-hub-token', tok: 'didako-token', uid: 'didako-uid', url: 'didako-church-url', name: 'didako-church-name', kind: 'didako-church-kind', depts: 'didako-start-depts', join: 'didako-join', setup: 'didako-setup', setupTok: 'didako-setup-tok' };
+const LK = { hub: 'didako-hub-token', tok: 'didako-token', uid: 'didako-uid', url: 'didako-church-url', name: 'didako-church-name', kind: 'didako-church-kind', depts: 'didako-start-depts', join: 'didako-join', setup: 'didako-setup', setupTok: 'didako-setup-tok', lastAdmin: 'didako-last-admin' };
 // me: 서버가 알려 준 나의 정보, depts: 첫 접속에서 고르는 부서·사랑방 목록, booting: 켜지는 중, sbIn: 새 길(Supabase)로 로그인해 있는가
 // writer: 교재를 쓸 수 있는 사람인지, writeDepts: 새 교재의 대상으로 고를 수 있는 부서, hold: 못 받은 이번 주 즈음의 과(교재ID와 날짜), booksOk: 교재를 받았는지(2-3)
 const LV = { me: null, depts: null, join: null, ap: null, epoch: 0, booting: false, authBusy: false, sbIn: false, needChurch: false, repick: false, notice: '', err: '', busy: false, work: null, want: '', writer: false, writeDepts: [], hold: [], booksOk: false, booksWork: null, eraseReq: null };
@@ -6082,14 +6094,19 @@ function drawRoute(moved) {
   if (LIVE && D.entered && LV.booksOk && LV.want) { const w = LV.want; LV.want = ''; if ((!/^#start/.test(w) || w === '#start/done') && /^#start\/loading$/.test(location.hash)) history.replaceState(null, '', w); }
   let { v, arg } = parseHash();
   // 모르는 주소이거나 데모로 들어오기 전이면 첫 화면(들어온 뒤의 빈 주소는 이번 주)
-  if (!v) v = D.entered ? homeV() : 'start';
+  if (!v) v = D.entered ? landV() : 'start';
   if (v === 'staff' && !staffHomeOn()) v = 'week';   // 교역자 홈은 교역자만(예전 길에는 없다)
   if (v === 'acctdel' && !(ACCT.ad && ACCT.can())) v = 'account';   // 계정 탈퇴 확인은 계정 화면의 단추로만 들어온다(주소로 바로 열리지 않는다)
   else if (v !== 'start' && !D.entered) v = 'start';
   if (LIVE && v !== 'start' && canSetup() && LV.me && !LV.me.ops && lvIn()) { v = 'start'; arg = 'setup'; }
   if (LIVE && v !== 'start' && D.entered && !LV.booksOk) { if (!LV.want) LV.want = location.hash; v = 'start'; arg = ''; }
   // 실제 모드: 첫 접속의 어느 걸음을 보일지는 서버에서 받은 나의 정보와 고른 것으로 정한다. 이미 들어와 있으면 이번 주로
-  if (LIVE && v === 'start') { arg = liveStep(arg); if (arg === 'enter') { v = homeV(); arg = ''; } }
+  if (LIVE && v === 'start') { arg = liveStep(arg); if (arg === 'enter') { v = landV(); arg = ''; } }
+  // 관리자가 마지막에 본 곳을 기억한다: 관리 화면이면 적고, 회원 화면(이번 주·책장·나눔하기·내 기록)이면 지운다. 더보기 같은 가운데 화면은 그대로 둔다
+  if (LIVE && D.entered && D.role === 'admin' && ls.get(LK.uid)) {
+    if (v === 'admin' || v === 'church-admin') ls.set(LK.lastAdmin, ls.get(LK.uid) + ':' + v);
+    else if (['week', 'wq', 'read', 'share', 'shelf', 'record', 'records', 'found', 'gallery', 'prep', 'prepprint'].includes(v)) ls.del(LK.lastAdmin);
+  }
   if (v !== 'read') { readFrom = ''; readAsMember = false; }
   const entering = v !== lastV;
   if (v !== lastV) { prevV = lastV; lastV = v; }
@@ -6633,7 +6650,7 @@ const lvForms = {};
 async function liveLogout() {
   try { if (lvIn()) await api('logout'); } catch (_) { /* 통신에 실패해도 로그아웃한다 */ }
   // 노트와 같은 열쇠를 지운다: 이 기기에서 노트도 로그아웃된다
-  [LK.tok, LK.uid, LK.hub, LK.depts, LK.join].forEach(k => ls.del(k));
+  [LK.tok, LK.uid, LK.hub, LK.depts, LK.join, LK.lastAdmin].forEach(k => ls.del(k));
   liveClearUnsaved();   // 로그아웃하면 이 기기에 임시로 둔 교재 글도 지운다
   sset(LK.setup, null); sset(LK.setupTok, null);
   liveReset(); LV.booting = false; LV.authBusy = false;
