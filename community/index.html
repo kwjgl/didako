@@ -829,7 +829,7 @@ button.badge-btn { appearance: none; font-family: inherit; line-height: inherit;
 
 /* 나눔하기 (sharing.html) */
 .start-grid { display: grid; gap: 14px; align-items: start; margin-top: 12px; }
-@media (min-width: 760px) { .start-grid { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); } }
+@media (min-width: 760px) { .start-page { max-width: 720px; margin: 0 auto; } }   /* PC는 두 칸으로 나누면 왼쪽 과 카드가 짧아 아래가 비므로, 한 줄로 쌓고 폭만 줄인다(2026-11-24) */
 .start-grid .card { margin: 0; min-width: 0; }
 .opt { padding: .8em 0; border-top: 1px solid var(--line); }
 .opt:first-of-type { border-top: 0; padding-top: .2em; }
@@ -4340,7 +4340,7 @@ const readMemo = () => readJson(K.memo);
 function shareView() {
   G = readyGuide(); if (!G) return noGuideView('나눔하기');
   const L = thisLesson();
-  return `<p class="eyebrow top-eyebrow">${esc(groupName())} · 이번 주</p>
+  return `<div class="start-page"><p class="eyebrow top-eyebrow">${esc(groupName())} · 이번 주</p>
   <div class="page-top"><h1>나눔하기 ${HEAD_ICON.circle}</h1></div>
   ${D.role === 'pastor' ? statusCard() : ''}
   <div class="start-grid">
@@ -4361,7 +4361,7 @@ function shareView() {
       <div class="opt"><p class="opt-name">보는 방법</p><div class="seg" id="segView" style="--n:2"></div></div>
       <button class="btn wide start-btn" type="button" id="startBtn" data-act="share-start">나눔 시작</button>
     </section>
-  </div>`;
+  </div></div>`;
 }
 function renderStart() {
   $('#stageChecks').innerHTML = G.stages.map((s, i) => `<button type="button" class="chk ${R.stages[i] ? 'on' : ''}" role="checkbox" aria-checked="${R.stages[i]}" data-act="stage" data-i="${i}"><span class="box">${ic('check')}</span>${esc(s.name)}<small>${stageCaption(s)}</small></button>`).join('');
