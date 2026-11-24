@@ -4290,7 +4290,7 @@ function svInit() {
     church: () => LIVE ? (ls.get(LK.name) || '') : DATA.admin.church, toast,
     books: () => DATA.books.map(b => ({ title: b.title, note: b.levelNote || '', level: svLevel(b.level) })),
     head: () => {
-      const church = AD.svChurch != null ? !!AD.svChurch : !!(ADL && LV.me && LV.me.ops && LV.me.ops.all);   // 새로 고쳐 들어왔으면 가진 역할로
+      const church = svIsChurch();
       const back = !church && prevV === 'church-admin' ? ['#church-admin', '교회 전체'] : ['#more', '더보기'];
       return `<a class="back-link" href="${back[0]}">${ic('back')}<span>${back[1]}</span></a>
         <p class="eyebrow top-eyebrow">${esc(church ? (LIVE ? (ls.get(LK.name) || '') : DATA.admin.church) : (deptLabel() || ''))}</p>${church ? '<div class="page-top"><h1>교회 전체</h1></div>' : '<div class="page-top ad-top"><h1>관리</h1><a class="ad-link" href="#church-admin">교회 전체 ›</a></div>'}${adTabs('survey', church)}`;
@@ -4302,6 +4302,7 @@ function svFillCards(v) {
   if (!SV_ON || !D.entered || (v !== 'week' && v !== 'more')) return;
   svInit(); if (window.ChurchSurvey) ChurchSurvey.fillCards();
 }
+const svIsChurch = () => AD.svChurch != null ? !!AD.svChurch : !!(ADL && LV.me && LV.me.ops && LV.me.ops.all);   // 새로 고쳐 들어왔으면 가진 역할로
 function surveyView(arg) {
   if (!SV_ON || D.role !== 'admin') return `<div class="page-top"><h1>설문</h1></div>
     <section class="card calm"><p class="calm-t">관리자만 여는 화면이에요</p>
@@ -6045,6 +6046,7 @@ let lastV = '', prevV = '';   // 지금 화면과 바로 앞 화면(교회 전�
 //  화면 전환 기능이 있으면 옛 화면과 새 화면을 겹쳐 넘기고, 없으면 새 화면만 움직인다(.vt-*). 첫 접속 화면과 움직임 줄이기에서는 움직이지 않는다
 const VT_CLASSES = ['vt-in-r', 'vt-in-l', 'vt-fade', 'vt-push', 'vt-pop'];
 const VT_TABS = ['week', 'shelf', 'share', 'record', 'more'];
+const AD_VIEWS = ['admin', 'church-admin', 'survey'];
 let vtV = '', vtArg = '', vtNow = false, vtCur = null, vtTap = 0, vtUA = false;
 // 휴대폰의 쓸어서 뒤로 가기는 브라우저가 이미 옛 화면을 밀어 넘긴다. 거기에 또 넘기면 옛 화면이 잠깐 반짝인다.
 //  브라우저가 넘겼다고 알려 주면(hasUAVisualTransition) 움직이지 않고, 알려 주지 않는 아이폰은 누르지 않고 주소가 바뀐 때(뒤로 가기) 움직이지 않는다
@@ -6066,6 +6068,8 @@ function vtMotion() {
   if (matchMedia('(prefers-reduced-motion: reduce)').matches) return '';
   const { v, arg } = parseHash();
   if (!v || v === 'start' || (v === vtV && (arg || '') === vtArg)) return '';
+  // 관리·분석·설문(부서 관리, 교회 전체)은 한 화면의 탭이다. 탭을 누를 때 화면 전체를 겹쳐 넘기면 옛 화면이 사라지는 동안 새 화면이 아직 옅어서 한순간 어두워졌다 밝아져 깜빡인다. 움직임 없이 바로 바꾼다(2026-11-24)
+  if (AD_VIEWS.includes(vtV) && AD_VIEWS.includes(v)) return '';
   const from = VT_TABS.indexOf(vtTab(vtV)), to = VT_TABS.indexOf(vtTab(v));
   if (from < 0 || to < 0) return '';
   if (to !== from) return to > from ? 'vt-in-r' : 'vt-in-l';
@@ -6110,7 +6114,7 @@ function drawRoute(moved) {
   if (v !== 'read') { readFrom = ''; readAsMember = false; }
   const entering = v !== lastV;
   if (v !== lastV) { prevV = lastV; lastV = v; }
-  const adv = (v === 'admin' || v === 'admin-reorg' || v === 'church-admin') && D.role === 'admin' ? (v === 'church-admin' ? v : 'admin') : '';   // 연도 개편 마법사(#admin-reorg)는 부서 관리 안이라 전환 화면을 다시 띄우지 않는다
+  const adv = (v === 'admin' || v === 'admin-reorg' || v === 'church-admin' || (v === 'survey' && SV_ON)) && D.role === 'admin' ? (v === 'church-admin' || (v === 'survey' && svIsChurch()) ? 'church-admin' : 'admin') : '';   // 설문은 관리·분석과 같은 탭 줄이라 같은 관리 화면으로 친다(설문 → 분석을 눌러도 전환 화면이 다시 뜨지 않는다)   // 연도 개편 마법사(#admin-reorg)는 부서 관리 안이라 전환 화면을 다시 띄우지 않는다
   if (adShown !== adv) { adShown = ''; killAdSplash(); }   // 관리 화면(부서 관리, 교회 전체)을 떠났다 다시 들어오거나 둘 사이를 오가면 전환 화면을 다시 띄운다
   if (v !== 'share') shareAuto = false;
   // 없는 책, 없는 기록이면 목록으로(책이 하나도 없게 한 상태에서도)
@@ -6128,7 +6132,7 @@ function drawRoute(moved) {
   placeStaffTip(v);
   if (v === 'survey' && SV_ON && D.role === 'admin' && window.ChurchSurvey) ChurchSurvey.mount(arg);
   svFillCards(v);
-  if (adv && !adShown) { adShown = adv; showAdSplash(adv === 'admin' ? DATA.church.dept + ' 관리' : '교회 전체'); }
+  if (adv && !adShown) { adShown = adv; if (v !== 'survey') showAdSplash(adv === 'admin' ? DATA.church.dept + ' 관리' : '교회 전체'); }   // 설문 화면으로 바로 들어올 때는 전환 화면 없이
   reuseImgs($('#view'));
   const film = start && !!$('#view .welcome');   // 첫 화면(로그인 전)일 때만 영상. 첫 접속의 다음 걸음들에는 없다
   document.body.classList.toggle('wl-on', film); wlFilm(film);

@@ -71,7 +71,13 @@ ${BASE}${PRESS}:active { transform: scale(.96); }
     if (getComputedStyle(g).position === 'static') g.style.position = 'relative';
     g.prepend(pill); el.classList.add('seg-moving');
     pill.animate([{ transform: `translateX(${r.left - nr.left}px) scaleX(${(r.width / nr.width).toFixed(3)})` }, { transform: 'none' }],
-      { duration: 240, easing: 'cubic-bezier(.3, 1.25, .5, 1)' }).onfinish = () => { pill.remove(); el.classList.remove('seg-moving'); };
+      { duration: 240, easing: 'cubic-bezier(.3, 1.25, .5, 1)' }).onfinish = () => {
+        // 판을 치우고 버튼 바탕을 되돌릴 때 바탕색이 서서히 차오르면(.2s) 선택 표시가 잠깐 옅어져 깜빡인다(2026-11-24). 이 순간만 전환을 끈다
+        el.style.setProperty('transition', 'none');
+        pill.remove(); el.classList.remove('seg-moving');
+        void el.offsetWidth;
+        el.style.removeProperty('transition');
+      };
   }
 
   // 누른 것을 기억한다(앱의 눌림 처리보다 먼저 보도록 capture)
