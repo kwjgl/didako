@@ -100,7 +100,6 @@ input.field[type="date"]::-webkit-date-and-time-value { text-align: left; }
 @media (min-width: 1000px) { .more-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
 .gl { font-size: .8125rem; color: var(--ink-2); margin: 20px 4px 8px; }
 .mg-edit { display: grid; gap: 16px; align-items: start; }
-@media (min-width: 1000px) { .mg-edit { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); } .mg-edit-tabs { display: none; } .mg-edit > [hidden] { display: block !important; } }
 .mg-cover { flex: 0 0 40px; width: 40px; }
 .mg-cover.big { flex-basis: 72px; width: 72px; }
 .gc { background: var(--surface); border: 1px solid var(--line); border-radius: 16px; padding: 0 16px; }
@@ -1134,6 +1133,15 @@ button.gallery-cell { display: block; width: 100%; padding: 0; cursor: pointer; 
 .mg-savebar .fine { flex: 1; min-width: 0; margin: 0; }
 .mg-savebar .btn { flex: none; }
 .mg-pair { display: flex; gap: 10px; flex: 1 1 auto; }
+/* 교재 관리 과 목록 줄: 왼쪽은 편집으로, 오른쪽 단추는 그 자리에서 배포(2026-11-24) */
+.mg-lrow { cursor: default; }
+.more-grid .mg-lrow { cursor: default; }
+.mg-lmain { flex: 1; min-width: 0; color: inherit; text-decoration: none; cursor: pointer; }
+.mg-lpub { flex: none; }
+.mg-acts { display: flex; gap: 10px; margin-top: 12px; }
+.mg-acts .btn { flex: 1; min-width: 0; }
+.pop-sheet.pv { max-width: 720px; }
+.pv-seg { margin: 0 0 12px; }
 .mg-pair .btn { flex: 1; min-width: 0; }
 .mg-pub-lbl { margin: 14px 0 6px; font-size: .84em; font-weight: 700; color: var(--ink-2); }
 .mg-pub-row { display: flex; align-items: center; gap: 6px; }
@@ -1645,7 +1653,7 @@ function openSheet(html) {
   const f = $('#popSheet [data-focus]'); if (f) f.focus();
 }
 function closeSheet() {
-  $('#pop').hidden = true; document.body.classList.remove('pop-open'); $('#popSheet').classList.remove('sh');
+  $('#pop').hidden = true; document.body.classList.remove('pop-open'); $('#popSheet').classList.remove('sh', 'pv');
   if (sheetFrom && sheetFrom.focus) sheetFrom.focus();
   sheetFrom = null;
   if (shareSheet) { shareSheet = false; armDim(); }   // 나눔하기 중에 열었던 창이면 화면 내려놓기를 다시 건다
@@ -3089,13 +3097,18 @@ function manageView(arg) {
 // ── 과 배포(P-03): 이번 주 과만 데모 공개 범위와 같은 상태를 쓴다 ──
 function mgPublishCurrent() {
   if (!canManage()) return null;
-  const m = /^mp-([\w-]+)\.(\d+)$/.exec(parseHash().arg || '');
+  const m = /^mp-([\w-]+)\.(\d+)$/.exec(parseHash().arg || '') || (mgPubSel && [0, mgPubSel.book, mgPubSel.no]);
   const b = m && mgBook(m[1]), L = b && b.lessons.find(l => l.no === Number(m[2]));
   return L ? { b, L } : null;
 }
 function mgPublishMissing(b, L) {
   const qs = mgGuide(b, L).stages.flatMap(st => st.qs);
   return [...(!String(L.name || '').trim() ? ['과 제목'] : []), ...(!qs.length ? ['질문이나 읽을 글(하나 이상)'] : []), ...(qs.some(q => !isRead(q) && !String(q.t || '').trim()) ? ['비어 있는 질문'] : []), ...(qs.some(q => isRead(q) && !String(q.t || '').trim()) ? ['비어 있는 읽을 글'] : [])];
+}
+// 준비 중인 과(draft)와 그중 바로 배포할 수 있는 과(ok), 비어 있어 건너뛸 과(skip)
+function mgPubAll(b) {
+  const draft = b.lessons.filter(L => mgStatus(b, L) === 'draft'), ok = draft.filter(L => !mgPublishMissing(b, L).length);
+  return { draft, ok, skip: draft.filter(L => !ok.includes(L)) };
 }
 function mgPublishTarget(b) {
   const target = b.target || deptLabel();
@@ -3521,8 +3534,8 @@ const mgLongDate = v => { const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(v || ''); r
 function mgBookView(b) {
   const row = (name, desc, act) => `<button class="gr" type="button" data-act="${act}"><span class="gt"><b>${name}</b>${desc ? `<span class="gd">${desc}</span>` : ''}</span><span class="ch" aria-hidden="true">›</span></button>`;
   return `<a class="back-link" href="#manage">${ic('back')}<span>교재 관리</span></a><p class="eyebrow top-eyebrow mg-pills">${mgChips([b.kind, b.period, levelChip(b)])}</p><div class="page-top"><h1>${esc(b.title)}</h1></div>${mgSavedText(b) ? '<p class="fine">' + esc(mgSavedText(b)) + '</p>' : ''}
-    <div class="more-grid"><div>${!b.closed ? '<button class="btn wide" type="button" data-act="mg-lesson-add">과 추가</button>' : ''}<div class="gl">과</div><div class="gc">
-      ${b.lessons.map(L => `<a class="gr" href="#me-${b.id}.${L.no}"><span class="gt"><b>제${L.no}과 ${esc(L.name || '(제목을 적어 주세요)')}</b><span class="gd mg-pills">${mgChips([L.date, L.ref && [L.ref, true]])}</span></span>${mgPill(b, L)}</a>`).join('') || '<div class="gr"><span class="gt"><span class="gd">아직 과가 없어요. 과를 더해 시작해요.</span></span></div>'}
+    <div class="more-grid"><div>${!b.closed ? `<div class="mg-acts" style="margin-top:0"><button class="btn" type="button" data-act="mg-lesson-add">과 추가</button>${b.lessons.some(L => mgStatus(b, L) === 'draft') ? '<button class="btn ghost" type="button" data-act="mg-pub-all">한꺼번에 배포</button>' : ''}</div>` : ''}<div class="gl">과</div><div class="gc">
+      ${b.lessons.map(L => { const st = mgStatus(b, L); return `<div class="gr mg-lrow"><a class="mg-lmain" href="#me-${b.id}.${L.no}"><span class="gt"><b>제${L.no}과 ${esc(L.name || '(제목을 적어 주세요)')}</b><span class="gd mg-pills">${mgChips([L.date, L.ref && [L.ref, true]])}</span></span></a><button class="btn${st === 'draft' ? '' : ' ghost'} small mg-lpub" type="button" data-act="mg-lpub" data-no="${L.no}" aria-label="제${L.no}과 배포 (지금 ${esc((STATUS.find(x => x[0] === st) || STATUS[0])[1])})">${st === 'draft' ? '배포하기' : st === 'leader' ? '리더까지 ›' : '배포됨 ›'}</button></div>`; }).join('') || '<div class="gr"><span class="gt"><span class="gd">아직 과가 없어요. 과를 더해 시작해요.</span></span></div>'}
     </div></div><div><div class="gc"><div class="gr"><span class="mg-cover big">${bookCover({ ...b, id: '' }, 'list')}</span><span class="gt"><b>${esc(b.title)}</b><span class="gd">${esc(b.kind)}</span></span></div><dl class="mg-info"><div><dt>대상 모임</dt><dd>${esc(b.target || deptLabel())}</dd></div>${b.source ? `<div><dt>출처</dt><dd>${esc(b.source)}</dd></div>` : ""}${levelName(b) ? `<div><dt>난이도</dt><dd>${esc(levelStars(levelNum(b)))} ${esc(levelName(b))}${b.levelNote ? ' · ' + esc(b.levelNote) : ''}</dd></div>` : ''}${b.start ? `<div><dt>시작 날짜</dt><dd>${esc(mgLongDate(b.start))}</dd></div>` : ''}${b.closed && b.end ? `<div><dt>끝난 날짜</dt><dd>${esc(mgLongDate(b.end))}</dd></div>` : ''}</dl></div>
     <div class="gc">${row('교재 정보 편집', '', 'mg-edit')}${row('교재 통째로 복제', '내용만 가져오고 배포 이력은 가져오지 않아요', 'mg-dup')}${`<a class="gr" href="#mxb-${b.id}"><span class="gt"><b>인쇄용 보기</b></span><span class="ch" aria-hidden="true">›</span></a>`}${b.closed ? '' : row('교재 닫기', '오늘 날짜로 끝내고 지난 교재로 옮겨요', 'mg-close')}</div>${b.closed ? '<button class="quiet-link" type="button" data-act="mg-reopen">다시 열기</button>' : ''}</div></div>`;
 }
@@ -3553,7 +3566,8 @@ function mgPreview() {
 }
 
 // ── 과 편집(P-02): 쓰기 칸은 유지하고 미리보기만 늦춰서 갱신한다 ──
-let mgEditTab = 'write', mgPvMode = 'member', mgPvOpen = true, mgPvTimer = 0, mgQSerial = 0;
+let mgPubSel = null;   // 과 목록·편집 화면에서 배포 창을 연 과(book, no). 배포 화면(#mp-)에서는 주소가 정한다
+let mgPvMode = 'member', mgPvOpen = true, mgPvTimer = 0, mgQSerial = 0;
 const mgTouched = new Set();
 // 읽을 글은 질문과 같은 qs 배열에 두되 질문 번호에는 포함하지 않는다.
 const isRead = q => q && q.kind === 'read';
@@ -3582,9 +3596,8 @@ function mgEditView(b, L) {
   const g = mgGuide(b, L);
   return `<a class="back-link" href="#mb-${b.id}">${ic('back')}<span>${esc(b.title)}</span></a><p class="eyebrow top-eyebrow mg-pills">${mgChips([b.title, b.period])}</p><div class="page-top"><h1>제${L.no}과 편집</h1></div>
     <div class="mg-savebar"><p class="fine" id="mgSaveNote">${LIVE ? mgSaveNoteText(L) : '쓰는 대로 저장돼요. 배포하기 전까지 회원에게는 보이지 않아요.'}</p><button class="btn ghost small" type="button" data-act="mg-save-now">저장</button></div>
-    <div class="mg-edit-tabs">${mgEditSeg('mg-edit-tab', '', [['write', '쓰기'], ['preview', '미리보기']], mgEditTab)}</div>
-    <div class="mg-edit"><div id="mgWrite"${mgEditTab !== 'write' ? ' hidden' : ''}>${mgWriteHtml(b, L, g)}</div>
-      <div id="mgPvPane"${mgEditTab !== 'preview' ? ' hidden' : ''}><section class="card"><p class="opt-name">미리보기</p>${mgEditSeg('mg-pv-mode', '', [['member', '회원용'], ['leader', '리더용']], mgPvMode)}</section><div id="mgPvBody">${mgPvHtml(b, L, g)}</div></div>
+    <div class="mg-acts"><button class="btn ghost" type="button" data-act="mg-preview">미리보기</button><button class="btn${mgStatus(b, L) === 'draft' ? '' : ' ghost'}" type="button" data-act="mg-lpub" data-no="${L.no}">${mgStatus(b, L) === 'draft' ? '배포하기' : '배포 상태 ›'}</button></div>
+    <div class="mg-edit"><div id="mgWrite">${mgWriteHtml(b, L, g)}</div>
     </div>`;
 }
 function mgWriteHtml(b, L, g) {
@@ -6338,7 +6351,7 @@ const acts = {
       <div class="set-btns" style="margin:0"><button class="btn ghost" type="button" data-act="pop-close" data-focus>그대로 둘게요</button><button class="btn" type="button" data-act="demo-reset">처음으로</button></div>`);
   },
   'demo-reset'() {
-    closeSheet(); roomState = null; MG = null; mgTab = 'now'; mgEditing = ''; mgSerial = 0; clearTimeout(mgPvTimer); mgEditTab = 'write'; mgPvMode = 'member'; mgPvOpen = true; mgTouched.clear();
+    closeSheet(); roomState = null; MG = null; mgTab = 'now'; mgEditing = ''; mgSerial = 0; clearTimeout(mgPvTimer); mgPubSel = null; mgPvMode = 'member'; mgPvOpen = true; mgTouched.clear();
     ls.del(GUIDE_K); ls.del(K.demo); ls.del(K.readBook); ls.del(K.keep); ls.del(K.answers); ls.del(K.walkRead); ls.del(K.walkThought); ls.del(K.walkDone); ls.del(K.walkMeditate); ls.del(K.bookmark); ls.del(K.memo); ls.del(K.leadopen);
     [K.shareDone, K.liveRec, K.recRefl, K.recAns, K.recEdit, K.recDel, K.recHide].forEach(ls.del); loadState();
     if (location.hash === '#start') route(true); else location.hash = '#start';
@@ -6406,6 +6419,34 @@ const acts = {
   'rec-restore'() { ls.del(K.recDel); ls.del(K.recHide); rerender(); toast('예시 기록을 되살렸어요.'); },
   'rec-hide'() { ls.set(K.recHide, '1'); rerender(); toast('기록을 비웠어요.'); },
   // 배포 확인 창. 실제 회원 자료가 아닌 교재 관리 복사본만 바꾼다.
+  // 과 목록·편집 화면에서 바로 배포(2026-11-24): 과마다 배포 창을 연다. 고른 단추가 곧 확인이다
+  'mg-lpub'(e, el) {
+    const b = canManage() && (mgCurrent() || (mgEditCurrent() || {}).b); if (!b) return;
+    const L = b.lessons.find(l => l.no === Number(el.dataset.no)); if (!L) return;
+    mgPubSel = { book: b.id, no: L.no };
+    const st = mgStatus(b, L), missing = mgPublishMissing(b, L), { target, count } = mgPublishTarget(b);
+    const nm = esc(L.name || '(제목을 적어 주세요)');
+    let body;
+    if (missing.length) body = `<p class="opt-name">배포하기 전에 채워 주세요</p><ul>${missing.map(v => '<li>' + v + '</li>').join('')}</ul><button class="btn wide" type="button" data-act="mg-lpub-edit">편집으로 가서 채우기</button>`;
+    else if (st === 'draft') body = `<p class="fine">지금은 준비 중이라 회원에게 보이지 않아요.</p><button class="btn wide" type="button" data-act="mg-pub-do" data-v="both">${esc(target)} 회원에게 배포</button><button class="btn ghost wide" type="button" data-act="mg-pub-do" data-v="leader">${mgLeadWho(count)}에게만 먼저 배포</button>`;
+    else if (st === 'leader') body = `<p class="fine">${ic('check')} 리더까지 공개했어요${L.pubAt ? ` (${esc(L.pubAt)})` : ''}</p><button class="btn wide" type="button" data-act="mg-pub-do" data-v="all">${esc(target)} 회원에게도 배포</button><button class="btn ghost wide" type="button" data-act="mg-unpub">배포 중단</button>`;
+    else body = `<p class="fine">${ic('check')} 모두에게 공개했어요${L.pubAt ? ` (${esc(L.pubAt)})` : ''}</p><button class="btn ghost wide" type="button" data-act="mg-unpub">배포 중단</button>`;
+    openSheet(sheetHead('제' + L.no + '과 배포') + `<p><b>${nm}</b></p>` + body);
+  },
+  'mg-lpub-edit'() { const c = mgPublishCurrent(); closeSheet(); if (c) location.hash = '#me-' + c.b.id + '.' + c.L.no; },
+  // 한꺼번에 배포: 준비 중인 과 가운데 제목·질문이 채워진 과만 올린다
+  'mg-pub-all'() {
+    const b = canManage() && mgCurrent(); if (!b || b.closed) return;
+    const { target, count } = mgPublishTarget(b), p = mgPubAll(b);
+    if (!p.draft.length) return;
+    openSheet(sheetHead('한꺼번에 배포') + `<p>준비 중인 과 ${p.draft.length}개를 한꺼번에 배포해요.</p>${p.skip.length ? `<p class="fine">${ic('info')} 제목이나 질문이 비어 있는 ${p.skip.length}개 과(${p.skip.map(L => '제' + L.no + '과').join(', ')})는 건너뛰어요.</p>` : ''}`
+      + (p.ok.length ? `<button class="btn wide" type="button" data-act="mg-pub-all-do" data-v="all">${esc(target)} 회원에게 배포 (${p.ok.length}개)</button><button class="btn ghost wide" type="button" data-act="mg-pub-all-do" data-v="leader">${mgLeadWho(count)}에게만 먼저 배포</button>` : '<p class="fine">배포할 수 있는 과가 없어요. 과를 먼저 채워 주세요.</p>'));
+  },
+  'mg-pub-all-do'(e, el) {
+    const b = canManage() && mgCurrent(); const v = el.dataset.v; if (!b || !['leader', 'all'].includes(v)) return;
+    const p = mgPubAll(b); p.ok.forEach(L => setMgStatus(b, L, v));
+    closeSheet(); route(false); toast(p.ok.length + '개 과를 ' + (v === 'leader' ? '리더에게' : '회원에게') + ' 배포했어요.');
+  },
   'mg-pub'(e, el) {
     const c = mgPublishCurrent(); if (!c || mgPublishMissing(c.b, c.L).length) return;
     const st = mgStatus(c.b, c.L), v = el.dataset.v;
@@ -6432,12 +6473,13 @@ const acts = {
   },
   // 과 편집과 미리보기
   'mg-save-now'() { mgSaveNow(); },
-  'mg-edit-tab'(e, el) {
-    if (!mgEditCurrent()) return; mgEditTab = el.dataset.v;
-    $('#mgWrite').hidden = mgEditTab !== 'write'; $('#mgPvPane').hidden = mgEditTab !== 'preview';
-    $$('.mg-edit-tabs button').forEach(b => { const on = b.dataset.v === mgEditTab; b.classList.toggle('on', on); b.setAttribute('aria-pressed', String(on)); });
+  // 미리보기는 팝업으로(2026-11-24): 회원용·리더용을 고르면 팝업 안만 다시 그린다
+  'mg-preview'() {
+    const c = mgEditCurrent(); if (!c) return;
+    openSheet(sheetHead('미리보기') + `<div class="pv-seg">${mgEditSeg('mg-pv-mode', '', [['member', '회원용'], ['leader', '리더용']], mgPvMode)}</div><div id="mgPvBody">${mgPvHtml(c.b, c.L, c.g)}</div>`);
+    $('#popSheet').classList.add('pv');
   },
-  'mg-pv-mode'(e, el) { if (!mgEditCurrent()) return; mgPvMode = el.dataset.v; $$('#mgPvPane [data-act="mg-pv-mode"]').forEach(b => { const on = b.dataset.v === mgPvMode; b.classList.toggle('on', on); b.setAttribute('aria-pressed', String(on)); }); mgRenderPreview(); },
+  'mg-pv-mode'(e, el) { if (!mgEditCurrent()) return; mgPvMode = el.dataset.v; $$('#popSheet [data-act="mg-pv-mode"]').forEach(b => { const on = b.dataset.v === mgPvMode; b.classList.toggle('on', on); b.setAttribute('aria-pressed', String(on)); }); mgRenderPreview(); },
   'mg-pv-fold'() { if (!mgEditCurrent()) return; mgPvOpen = !mgPvOpen; mgRenderPreview(); },
   'mg-edit-seg'(e, el) { const c = mgEditCurrent(); if (!c) return; if (el.dataset.mg === 'print-on') c.L.useText = el.dataset.v === '1'; else if (el.dataset.mg === 'print-size') c.L.fs = el.dataset.v; c.b.edited = true; mgDirty(c.b, c.L); mgEditRedraw(); },
   'mg-stage-add'() {
@@ -6927,6 +6969,16 @@ if (LIVE) {
       await liveSettle(c.b, c.L);
       applyStatus(c.b, c.L, await api('lessonStatus', { bookId: c.b.id, no: c.L.no, status: v === 'leader' ? 'leader' : 'all' }));
       closeSheet(); route(false); toast(v === 'leader' ? '리더에게 배포했어요.' : '회원에게 배포했어요.');
+    }),
+    'mg-pub-all-do': mgRun(async (e, el) => {
+      const b = canManage() && mgCurrent(); const v = el.dataset.v; if (!b || !['leader', 'all'].includes(v)) return;
+      const p = mgPubAll(b); let n = 0;
+      try {
+        for (const L of p.ok) {
+          await liveSettle(b, L);
+          applyStatus(b, L, await api('lessonStatus', { bookId: b.id, no: L.no, status: v })); n++;
+        }
+      } finally { if (n) { closeSheet(); route(false); toast(n + '개 과를 ' + (v === 'leader' ? '리더에게' : '회원에게') + ' 배포했어요.'); } }
     }),
     'mg-unpub-do': mgRun(async () => {
       const c = mgPublishCurrent(); if (!c || mgStatus(c.b, c.L) === 'draft') return;
