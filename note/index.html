@@ -1155,6 +1155,32 @@ body.med-on { overflow: hidden; }
 .pss-body { flex: 1; max-width: 640px; width: 100%; margin: 0 auto; display: flex; flex-direction: column; gap: 14px; }
 .pss-body.pss-med { display: block; text-align: left; }
 .pss-body.pss-med .xhead { margin-top: 0; }
+/* 넓은 화면 묵상하기(2026-11-24): 왼쪽 길잡이(시간 고리와 단계) + 가운데 한 단계 */
+.pss-pc .pss-top, .pss-pc .pss-nav { max-width: 896px; }
+.pss-pc .pss-nav { padding-left: 256px; }
+.pss-grid { display: grid; grid-template-columns: 232px minmax(0, 640px); gap: 24px; justify-content: center; width: 100%; flex: 1; }
+.pss-rail-in { position: sticky; top: 64px; display: flex; flex-direction: column; gap: 18px; }
+.pss-clock { display: flex; align-items: center; gap: 12px; padding: 14px 16px; background: var(--surface); border: 1px solid var(--line); border-radius: 14px; }
+.pss-clock .pss-timer { gap: 12px; font-size: 1.375rem; line-height: 1.1; font-variant-numeric: tabular-nums; }
+.pss-clock .pss-ring { width: 46px; height: 46px; }
+.pss-cl-s { font-size: .75rem; color: var(--ink-2); flex: 1; }
+.pss-steps { list-style: none; margin: 0; padding: 0 0 0 4px; }
+.pss-steps li { position: relative; }
+.pss-steps button { position: relative; display: flex; align-items: center; gap: 14px; width: 100%; padding: 9px 8px 9px 0; border: 0; background: none; text-align: left; font: inherit; font-size: .9375rem; color: var(--ink-2); cursor: pointer; }
+.pss-steps button:disabled { cursor: default; }
+.pss-steps .dot { flex: none; position: relative; z-index: 1; width: 22px; height: 22px; border-radius: 50%; border: 2px solid var(--line); background: var(--page); display: grid; place-items: center; font-size: .6875rem; font-weight: 600; color: var(--ink-2); }
+.pss-steps .done .dot { background: var(--accent); border-color: var(--accent); color: var(--on-accent); }
+.pss-steps .cur .dot { border-color: var(--accent); color: var(--accent); transform: scale(1.18); }
+.pss-steps .cur button { color: var(--ink); font-weight: 600; }
+.pss-steps .done button { color: var(--ink); }
+.pss-steps li:not(:last-child)::before, .pss-steps li:not(:last-child)::after { content: ""; position: absolute; left: 10px; top: 31px; bottom: -9px; width: 2px; background: var(--line); }
+.pss-steps li:not(:last-child)::after { background: var(--accent); transform: scaleY(0); transform-origin: top; }
+.pss-steps li.done:not(:last-child)::after { transform: scaleY(1); }
+.pss.dim .pss-rail { opacity: .3; }
+/* 머묾: 천천히 숨 쉬는 빛 */
+@keyframes med-breathe { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.012); } }
+.pss-med .wk-stay { animation: med-breathe 3.6s ease-in-out infinite; }
+@media (prefers-reduced-motion: reduce) { .pss-med .wk-stay { animation: none; } }
 .pss-nav { position: sticky; bottom: 0; display: grid; grid-template-columns: 1fr 1.4fr; gap: 10px; max-width: 640px; width: 100%; margin: 0 auto; padding: 12px 0 max(16px, env(safe-area-inset-bottom)); background: linear-gradient(transparent, var(--page) 30%); }
 .pss-nav.one { grid-template-columns: 1fr; }
 .pss-nav button { font: inherit; font-weight: 600; min-height: 56px; border-radius: 14px; border: 1px solid var(--line); background: var(--surface); color: var(--ink); cursor: pointer; display: inline-flex; align-items: center; justify-content: center; gap: .4em; }
@@ -2941,6 +2967,7 @@ MED.mine = Object.assign({ ref: '', ask: '' }, MED.mine);
 const saveMed = () => ls.set(MED_K, JSON.stringify(MED));
 const MED_DUR = [[0, '시간 없이'], [300, '5분'], [600, '10분'], [1200, '20분']];
 const MED_NAME = { read: '본문 읽기', look: '보기', bg: '질문의 배경', m1: '묵상', m2: '나의 해석', p: '풀이', stay: '머묾' };
+const MED_DUR_NAME = d => (d ? `${Math.round(d / 60)}분` : '시간 없이');
 const MED_KEYS = { walk: ['read', 'look', 'm1', 'm2', 'p', 'stay'], today: ['read', 'bg', 'm1', 'stay'], mine: ['read', 'm1', 'm2', 'stay'] };
 const MED_PH = '떠오르는 대로 적어 보세요. 적지 않아도 돼요.';
 const medStepKey = key => /^med\/(walk\/[\w-]+\/\d{1,2}|today|mine)$/.test(key);
@@ -3010,7 +3037,9 @@ function viewMedStep() {
   const tr = HYMNS[MED.track % HYMNS.length].label;
   const mus = `<span class="pss-mus"><button class="pss-music${MED.music ? ' on' : ''}" type="button" data-act="med-music" aria-pressed="${MED.music}">♪ <span class="trk">${MED.music ? tr : '음악 꺼짐'}</span></button>${MED.music ? '<button class="pss-music" type="button" data-act="med-track" aria-label="다음 곡">다음 곡 ›</button>' : ''}</span>`;
   const ring = !atLast && MS.on && MS.dur ? `<span class="pss-timer"><svg class="pss-ring" viewBox="0 0 100 100" aria-hidden="true"><circle cx="50" cy="50" r="44" class="track"/><circle cx="50" cy="50" r="44" class="bar" stroke-dasharray="276.5" stroke-dashoffset="${(276.5 * (1 - MS.left / MS.dur)).toFixed(1)}"/></svg><span id="ps-time">${medFmt(MS.left)}</span></span>` : '';
-  const top = `<div class="pss-top"><button class="pss-x" type="button" data-act="med-close">끝내기</button><span class="pss-step">${ring}<span>${atLast ? '머묾' : `${WE.view + 1} / ${c.keys.length}`}</span></span>${mus}</div>`;
+  const wide = isWide();   // 넓은 화면(2026-11-24): 시간과 단계 숫자는 왼쪽 길잡이에 둔다
+  const top = `<div class="pss-top"><button class="pss-x" type="button" data-act="med-close">끝내기</button>${wide ? '' : `<span class="pss-step">${ring}<span>${atLast ? '머묾' : `${WE.view + 1} / ${c.keys.length}`}</span></span>`}${mus}</div>`;
+  const rail = !wide ? '' : `<aside class="pss-rail" aria-label="묵상 순서"><div class="pss-rail-in">${ring ? `<div class="pss-clock">${ring}<span class="pss-cl-s">${MED_DUR_NAME(MS.dur)}으로 시작했어요</span></div>` : ''}<ol class="pss-steps">${c.keys.map((kk, i) => `<li class="${i < WE.view ? 'done' : i === WE.view ? 'cur' : ''}"><button type="button" data-act="med-view" data-i="${i}"${i > WE.max ? ' disabled' : ''}${i === WE.view ? ' aria-current="step"' : ''}><span class="dot">${i < WE.view ? '✓' : i + 1}</span>${MED_NAME[kk]}</button></li>`).join('')}</ol></div></aside>`;
   const head = `<div class="card xhead"><div class="xlb" style="margin:0 0 6px">${esc(c.label)}</div><div class="sf xwq">${esc(c.k === 'mine' ? c.ref : c.title)}</div></div>`
     + (c.img ? `<img class="q-img" src="${esc(c.img)}" alt="${esc(c.alt)}" width="1200" height="675" decoding="async" style="margin-top:12px">` : '');
   const notes = c.k === 'walk' && c.ep.notes && c.ep.notes.length ? `<div class="wk-notes"><button class="tx wk-nt" type="button" data-act="walk-notes" aria-haspopup="dialog">원어 해설 보기</button></div>` : '';
@@ -3024,15 +3053,46 @@ function viewMedStep() {
   const nav = atLast
     ? `<div class="pss-nav${nx ? '' : ' one'}">${nx}<button class="pss-pray" id="psMain" type="button" data-act="med-finish">마치기</button></div>`
     : `<div class="pss-nav${skip ? '' : ' one'}">${ready ? medUpBanner() : ''}${skip ? '<button type="button" data-act="med-next">건너뛰기</button>' : ''}<button class="pss-pray${ready ? ' ready' : ''}" id="psMain" type="button" data-act="med-next">다음 →</button></div>`;
-  return `<div class="pss" id="pss" role="dialog" aria-modal="true" aria-label="묵상하기">${top}<div class="pss-body pss-med">${body}</div>${nav}</div>`;
+  return `<div class="pss${wide ? ' pss-pc' : ''}" id="pss" role="dialog" aria-modal="true" aria-label="묵상하기">${top}${wide ? `<div class="pss-grid">${rail}<div class="pss-body pss-med">${body}</div></div>` : `<div class="pss-body pss-med">${body}</div>`}${nav}</div>`;
 }
 function medGo(i) {   // 단계 열기. 새 단계로 나아가면 가장 먼 곳(max)도 따라간다. 머묾에 닿으면 그 편을 마친 것으로 센다
   const c = medCtx(); if (!c) return;
-  WE.view = Math.max(0, Math.min(c.keys.length - 1, i)); WE.max = Math.max(WE.max, WE.view);
-  if (WE.view === c.keys.length - 1 && c.k === 'walk') markWalkDone(c.w, c.ep);
-  render();
-  const e = $('#pss'); if (e) e.scrollTop = 0;
-  const h = $('#xHead'); if (h) h.focus({ preventScroll: true });
+  const from = WE.view, to = Math.max(0, Math.min(c.keys.length - 1, i));
+  if (MS.busy) return;
+  const go = () => {
+    MS.busy = false;
+    WE.view = to; WE.max = Math.max(WE.max, WE.view);
+    if (WE.view === c.keys.length - 1 && c.k === 'walk') markWalkDone(c.w, c.ep);
+    render();
+    const e = $('#pss'); if (e) e.scrollTop = 0;
+    const h = $('#xHead'); if (h) h.focus({ preventScroll: true });
+    medFx(to >= from ? 1 : -1, from, to);
+  };
+  const body = $('.pss-body');
+  // 나가는 단계: 살짝 옆으로 밀리며 흐려진 뒤 새 단계를 그린다. 움직임 줄이기를 켰거나 같은 단계면 바로
+  if (!body || to === from || medCalm()) return go();
+  MS.busy = true;
+  const dir = to >= from ? 1 : -1;
+  body.animate([{ opacity: 1, transform: 'none' }, { opacity: 0, transform: `translateX(${-dir * 18}px)` }], { duration: 160, easing: 'ease-in', fill: 'forwards' }).onfinish = go;
+  setTimeout(() => { if (MS.busy) go(); }, 400);   // 끝남 알림이 안 오는 환경 대비
+}
+const medCalm = () => window.matchMedia('(prefers-reduced-motion: reduce)').matches || !!document.querySelector('.pss.dim');
+// 들어오는 단계: 옆에서 밀려 들어오고, 덩어리가 0.055초씩 차례로 떠오른다. 길잡이는 지난 선이 채워지고 점이 톡 튄다
+function medFx(dir, from, to) {
+  if (medCalm()) return;
+  const body = $('.pss-body');
+  if (body) {
+    body.animate([{ transform: `translateX(${dir * 28}px)` }, { transform: 'none' }], { duration: 420, easing: 'cubic-bezier(.2,.9,.25,1.1)' });
+    [...body.children].forEach((e, k) => e.animate([{ opacity: 0, transform: 'translateY(14px) scale(.985)' }, { opacity: 1, transform: 'none' }], { duration: 460, delay: 40 + k * 55, easing: 'cubic-bezier(.2,.8,.2,1)', fill: 'backwards' }));
+  }
+  const li = [...document.querySelectorAll('.pss-steps li')];
+  if (li.length && dir > 0 && li[from]) {
+    try { li[from].animate([{ transform: 'scaleY(0)' }, { transform: 'scaleY(1)' }], { duration: 500, easing: 'cubic-bezier(.2,.8,.2,1)', pseudoElement: '::after' }); } catch (e) { /* 지원하지 않으면 바로 채워진 채로 */ }
+  }
+  const dot = li[to] && li[to].querySelector('.dot');
+  if (dot) dot.animate([{ transform: 'scale(.7)' }, { transform: 'scale(1.3)' }, { transform: 'scale(1.18)' }], { duration: 420, easing: 'cubic-bezier(.3,1.4,.5,1)' });
+  const n = $('.pss-step > span:last-child');
+  if (n) n.animate([{ transform: `translateY(${dir > 0 ? 60 : -60}%)`, opacity: 0 }, { transform: 'none', opacity: 1 }], { duration: 320, easing: 'cubic-bezier(.3,1.4,.5,1)' });
 }
 // 시간 고리: 다 돼도 저절로 넘기지 않는다. 알림과 반짝이는 단추만 보인다
 function medTick() {
