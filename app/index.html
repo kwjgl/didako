@@ -3021,12 +3021,13 @@ function aboutView() {
       ${steps.map(([title,desc,label,target],i)=>`<div class="about-step"><span class="step-no">${i+1}.</span><div><b>${title}</b><p>${desc}</p><a href="${target}">${label}</a></div></div>`).join('')}
     </section>
     <section class="card about-card"><h2>쓴 것들</h2>
-      <div class="about-credit"><div><b>그림</b><p>주보 표지에 고르는 이번 주 그림은 AI로 만들고, 사람이 성경과 맞는지 확인한 뒤 내보내요.</p></div>
+      <div class="about-credit"><div><b>그림</b><p>주보 표지에 고르는 그림(이번 주 그림, 절기 그림, 66권 표지)은 AI로 만들고, 사람이 성경과 맞는지 확인한 뒤 내보내요.</p></div>
       <div><b>글꼴</b><p>고운바탕, IBM Plex Sans KR (SIL Open Font License)</p></div></div></section></div>`;
 }
 // 사용법의 "궁금한 것 찾아보기": 코이데처럼 "~는 어떻게 해요?" 질문과 풀이, 그 화면으로 가는 링크(2026-11-20). 글은 실제 동작과 같게 쓴다
 const GUIDE_FAQ = [
   ['이번 주 주보는 어디서 봐요?', '이번 주 맨 위에 교회가 올린 주보가 있어요. 눌러서 읽고 인쇄할 수 있어요. 교회 관리자와 교역자는 같은 자리에서 주보를 만들고 고쳐요.', '이번 주로 가기', '#week'],
+  ['주보에 성경 본문을 옮겨 적어도 돼요?', '성경 번역본은 대한성서공회가 저작권을 가지고 있어서, 본문을 그대로 옮기려면 공회의 사용 허락이 필요할 수 있어요. 주보에는 말씀의 장절만 적거나 직접 풀어 쓰는 것을 권해요. 장절을 적으면 [성경 펴기] 링크로 바로 읽을 수 있어요. 올린 글의 책임은 글을 쓴 교회에 있어요.', '이번 주로 가기', '#week'],
   ['읽을 교재는 어떻게 골라요?', '책장에서 교회가 낸 교재 가운데 지금 읽을 책 한 권을 골라요. 책 안에서 과를 펼쳐요.', '책장으로 가기', '#shelf'],
   ['모임 전에 미리 읽고 생각을 남기려면 어떻게 해요?', '책장에서 과를 펼치면 모임 전에 미리 읽고 생각을 남길 수 있어요. 남기는 것은 원할 때만 해요.', '책장으로 가기', '#shelf'],
   ['나눔하기는 어떻게 해요?', '지금 읽는 책의 과로 함께 모여 질문 하나씩 나눠요. 사랑방에서는 사랑방 교재로, 가정에서는 함께 쓰는 교재로 바꿔서 해요. 이야기하는 동안에는 화면을 내려놓아요.', '나눔하기로 가기', '#share'],
@@ -4401,7 +4402,7 @@ function blInit() {
     remove: id => api('bulletinDelete', { id })
   };
   ChurchBulletin.init({
-    store: LIVE ? live : demo, canWrite: blCanWrite, toast,
+    store: LIVE ? live : demo, canWrite: blCanWrite, toast, bibleUrl,
     churchName: () => LIVE ? (ls.get(LK.name) || '') : DATA.admin.church,
     repaint: () => { if (!['week', 'bulletin'].includes(currentView())) return; const y = window.scrollY; reflow = true; try { route(false); } finally { reflow = false; } window.scrollTo(0, y); }
   });

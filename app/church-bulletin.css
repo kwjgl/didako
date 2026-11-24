@@ -154,3 +154,38 @@
   .bl-pgwrap .paper-cap { display: none; }
   .bl-pg { width: 297mm; height: 210mm; aspect-ratio: auto; border: 0; box-shadow: none; }
 }
+
+/* 표지 그림 고르기(2026-11-24): 고른 그림, 네 갈래 이름표, 몇 장씩 보여 주는 그림판 */
+.bl-picker { display: grid; gap: 8px; }
+.bl-cur { display: flex; gap: 10px; align-items: center; }
+.bl-cur img { width: 96px; aspect-ratio: 16 / 9; object-fit: cover; border-radius: 10px; flex: none; background: var(--surface-2); }
+.bl-cur div { display: grid; gap: 2px; font-size: .88em; min-width: 0; }
+.bl-cur span { color: var(--ink-2); }
+.bl-cur .quiet-link { justify-self: start; }
+.bl-cur-none { margin: 0; }
+.bl-tabs2, .bl-chips2 { display: flex; gap: 6px; flex-wrap: wrap; }
+.bl-tabs2 button, .bl-chips2 button { min-height: 36px; padding: 0 .85em; border-radius: 999px; border: 1px solid var(--line-strong); background: transparent; color: var(--ink); font: inherit; font-size: .85em; cursor: pointer; }
+.bl-tabs2 button.on, .bl-chips2 button.on { background: var(--accent); border-color: var(--accent); color: var(--on-accent, #fff); font-weight: 600; }
+.bl-chips2 button { min-height: 32px; font-size: .8em; }
+.bl-picker .bl-pics { grid-template-columns: repeat(auto-fill, minmax(96px, 1fr)); max-height: 260px; }
+.bl-pic { position: relative; }
+.bl-pic i { position: absolute; left: 0; right: 0; bottom: 0; padding: .5em .3em .2em; font-style: normal; font-size: .72em; line-height: 1.2; color: #fff; text-align: center; background: linear-gradient(transparent, rgba(0, 0, 0, .65)); }
+.bl-picker .btn.small { justify-self: start; }
+/* 틀 고르기 */
+.bl-tpls { display: grid; gap: 12px; margin-top: 12px; }
+.bl-tpl { display: grid; gap: 8px; text-align: left; width: 100%; cursor: pointer; font: inherit; color: var(--ink); padding: 14px 16px; margin: 0; }
+.bl-tpl b { font-family: var(--f-display, inherit); font-size: 1.05em; }
+.bl-tpl .fine { margin: 0; }
+.bl-tpl-go { color: var(--accent); font-weight: 600; font-size: .88em; }
+.bl-tpl:hover, .bl-tpl:focus-visible { border-color: var(--accent); }
+.bl-wires { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 4px 8px; align-items: center; font-size: .72em; color: var(--ink-2); }
+.bl-wf { display: grid; gap: 4px; padding: 4px; border: 1px solid var(--line-strong); border-radius: 6px; background: var(--surface-2); }
+.bl-wf.c2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.bl-wf.c3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.bl-wf > div { display: grid; gap: 3px; align-content: start; min-height: 24px; }
+.bl-wf i { font-style: normal; font-size: .95em; padding: 3px 4px; border-radius: 4px; background: var(--surface); border: 1px solid var(--line); color: var(--ink); text-align: center; overflow-wrap: anywhere; line-height: 1.25; }
+.bl-wf i.cv { background: var(--accent-soft); border-color: var(--accent-mid); color: var(--accent); font-weight: 600; }
+.bl-tpl-copy { margin: 12px 0 0; display: grid; gap: 6px; }
+.bl-tpl-copy .fine { margin: 0; }
+@media (min-width: 700px) { .bl-tpls { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (min-width: 1100px) { .bl-tpls { grid-template-columns: repeat(3, minmax(0, 1fr)); } .bl-picker .bl-pics { max-height: 340px; } }
