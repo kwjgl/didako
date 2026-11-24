@@ -218,6 +218,20 @@ main.wrap { padding-top: 14px; padding-bottom: calc(110px + env(safe-area-inset-
 .xfin { margin-top: 16px; text-align: center; padding: 16px 14px; border: 1.5px dashed var(--accent-mid); border-radius: 16px; }
 .wq-mine { margin-top: 12px; padding: 12px 14px; border-radius: 12px; background: var(--surface-2); font-size: .90625rem; line-height: 1.6; white-space: pre-wrap; word-break: keep-all; }
 .wq-mine span { display: block; margin-bottom: 4px; font-size: .78rem; font-weight: 700; color: var(--ink-2); }
+.ltr-dots { display: flex; gap: 8px; align-items: center; margin: 4px 0 0; }
+.ltr-dots i { width: 12px; height: 12px; border-radius: 50%; border: 2px solid var(--line-strong); }
+.ltr-dots i.p { background: var(--accent); border-color: var(--accent); }
+.ltr-dots i.n { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-soft); }
+.ltr-card .lesson-title { margin: .2em 0 .3em; }
+.ltr-card .act-row .btn { flex: none; min-width: 9em; }
+.ltr-frame { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-top: 10px; padding: .55em .8em; border-radius: 10px; background: var(--surface-2); font-family: var(--f-display); font-size: .95rem; }
+.ltr-frame .btn { flex: none; }
+.ltr-letter { margin-top: 12px; padding: 12px 14px; border-radius: 12px; background: var(--surface-2); font-size: .90625rem; line-height: 1.65; white-space: pre-wrap; word-break: keep-all; }
+.ltr-letter > span { display: block; margin-bottom: 4px; font-size: .78rem; font-weight: 700; color: var(--accent); white-space: normal; }
+.ltr-sum { margin-top: 14px; }
+.ltr-sum b { display: block; font-size: .8rem; color: var(--accent); }
+.ltr-sum p { margin: .2em 0 0; white-space: pre-wrap; line-height: 1.65; word-break: keep-all; }
+.ltr-sum p.none { color: var(--ink-2); font-size: .9rem; }
 .wq-end { margin-top: 16px; }
 .wq-end .btn { word-break: keep-all; line-height: 1.35; padding-top: .5em; padding-bottom: .5em; }
 .xfin .xft { font: 700 1.25rem/1.4 var(--f-display); }
@@ -1600,12 +1614,12 @@ const BUBBLE = '<svg viewBox="0 0 18 18" width="18" height="18" aria-hidden="tru
 // liveRec 실제 모드에서 과마다 남긴 기록(과 ID별 한 쪽)
 const K = { display: 'didako-note-display', demo: 'didako-demo', myBook: 'didako-my-book', shareLesson: 'didako-share-lesson', keep: 'didako-keep', answers: 'didako-read-answers', bookmark: 'didako-read-bookmark', readBook: 'didako-read-book', memo: 'didako-share-memo', leadopen: 'didako-leadopen',
   walkRead: 'didako-weekwalk-read', walkThought: 'didako-weekwalk-thought', walkDone: 'didako-weekwalk-done', walkMeditate: 'didako-weekwalk-meditate',
-  shareDone: 'didako-share-done', liveRec: 'didako-live-records', recRefl: 'didako-record-reflections', recAns: 'didako-record-answers', recEdit: 'didako-record-edits', recDel: 'didako-record-deleted', recHide: 'didako-record-hidden' };
+  shareDone: 'didako-share-done', liveRec: 'didako-live-records', recRefl: 'didako-record-reflections', recAns: 'didako-record-answers', recEdit: 'didako-record-edits', recDel: 'didako-record-deleted', recHide: 'didako-record-hidden', letter: 'didako-letter-texts' };   // letter: 성경통신(2026-11-24)에 쓴 글, 과 ID별 한 쪽
 // note/index.html switchOwner의 keys와 같게 둔다(한 휴대폰을 다른 사람이 쓸 때 기록을 섞지 않으려고)
-const GBS_MAPS = ['didako-read-answers', 'didako-share-memo', 'didako-live-records', 'didako-record-reflections', 'didako-record-answers', 'didako-record-edits', 'didako-weekwalk-thought', 'didako-weekwalk-meditate', 'didako-weekwalk-done'];
+const GBS_MAPS = ['didako-read-answers', 'didako-share-memo', 'didako-live-records', 'didako-record-reflections', 'didako-record-answers', 'didako-record-edits', 'didako-weekwalk-thought', 'didako-weekwalk-meditate', 'didako-weekwalk-done', 'didako-letter-texts'];
 const GBS_ONE = ['didako-read-bookmark'];
 const GBS_BASE = 'didako-gbs-base';
-const OWNER_KEYS = ['didako-note-notes', 'didako-note-badges', 'didako-note-session', 'didako-note-demo', 'didako-note-vine', 'didako-note-vault', 'didako-note-lock', 'didako-note-gone', 'didako-read-answers', 'didako-share-memo', 'didako-live-records', 'didako-record-reflections', 'didako-record-answers', 'didako-record-edits', 'didako-weekwalk-thought', 'didako-weekwalk-meditate', 'didako-weekwalk-done', 'didako-read-bookmark', 'didako-gbs-base', 'didako-weekwalk-read', 'didako-share-lesson', 'didako-my-book'];
+const OWNER_KEYS = ['didako-note-notes', 'didako-note-badges', 'didako-note-session', 'didako-note-demo', 'didako-note-vine', 'didako-note-vault', 'didako-note-lock', 'didako-note-gone', 'didako-read-answers', 'didako-share-memo', 'didako-live-records', 'didako-record-reflections', 'didako-record-answers', 'didako-record-edits', 'didako-weekwalk-thought', 'didako-weekwalk-meditate', 'didako-weekwalk-done', 'didako-letter-texts', 'didako-read-bookmark', 'didako-gbs-base', 'didako-weekwalk-read', 'didako-share-lesson', 'didako-my-book'];
 // 같은 기기를 쓰는 사람마다 노트와 교회 기록을 따로 둔다
 function switchOwnerApp(uid) {
   const owner = ls.get('didako-note-owner');
@@ -1784,7 +1798,7 @@ function closeMenu() { const m = $('#settings'); m.hidden = true; $('#gearBtn').
 // 이름표와 어느 탭이 켜지는지는 여기에 모아 둔다. 아직 만들지 않은 화면은 차분한 안내 한 장으로 연다(막다른 길이 없게 이번 주로 가는 링크를 둔다)
 const PLACE = {
   wq: ['이번 주의 질문', 'week'], read: ['펼치기', 'week'], share: ['나눔하기', 'share'], shelf: ['책장', 'shelf'], record: ['내 기록', 'record'], records: ['모든 기록', 'record'], found: ['찾은 말씀', 'record'], gallery: ['올해의 그림', 'record'], staff: ['교역자 홈', 'week'], rooms: ['사랑방 전체 보기', 'more'], more: ['더보기', 'more'],
-  survey: ['설문', 'more'], church: ['우리 사랑방', 'more'], prep: ['진행 준비', 'share'], prepprint: ['인쇄', 'share'], manage: ['교재 관리', 'more'], admin: ['관리', 'more'], 'admin-reorg': ['연도 개편', 'more'], 'church-admin': ['교회 전체', 'more'], about: ['디다코 소개', 'more'], account: ['계정과 동기화', 'more'], acctdel: ['계정 탈퇴', 'more'], guide: ['사용법', 'more'], feedback: ['의견 보내기', 'more']
+  letter: ['성경통신', 'week'], survey: ['설문', 'more'], church: ['우리 사랑방', 'more'], prep: ['진행 준비', 'share'], prepprint: ['인쇄', 'share'], manage: ['교재 관리', 'more'], admin: ['관리', 'more'], 'admin-reorg': ['연도 개편', 'more'], 'church-admin': ['교회 전체', 'more'], about: ['디다코 소개', 'more'], account: ['계정과 동기화', 'more'], acctdel: ['계정 탈퇴', 'more'], guide: ['사용법', 'more'], feedback: ['의견 보내기', 'more']
 };
 const VIEWS = ['start', 'week'].concat(Object.keys(PLACE));
 // 책 안(#book-교재)과 기록 상세(#rec-기록)는 책장·내 기록 안의 화면이다
@@ -2011,7 +2025,7 @@ function weekView() {
       <p class="fine">${done[i] ? doneSub : sub}</p>${act}
     </section>`;
   const btn = (label, attrs, on) => `<${attrs.startsWith('href') ? 'a' : 'button type="button"'} class="btn${on ? '' : ' ghost'}" ${attrs}>${label}</${attrs.startsWith('href') ? 'a' : 'button'}>`;
-  return `${head}${D.role === 'pastor' ? statusCard() : ''}
+  return `${head}${D.role === 'pastor' ? statusCard() : ''}${letterCard()}
     <h2 class="wk-sec">나의 한 주</h2>
     <section class="card today wk-cord-card" aria-labelledby="lessonTitle">
       <div class="wk-head"><span class="walk-kicker">이번 주 세 겹 줄</span>${L.date ? `<span class="wk-aside"><span class="walk-tag">${esc(L.date)}</span></span>` : ''}</div>
@@ -2070,6 +2084,106 @@ function wqInit() {
   if (!wqOpenPending) return;
   wqOpenPending = false;
   showOpening();
+}
+
+// ── 성경통신(2026-11-24) ──
+// 교회가 건넨 이번 주 과 하나를 한 호로 삼아, 혼자서 다섯 걸음(먼저 내 생각, 말씀 읽기, 교회에서 들은 것, 하나님께, 다시 내 생각)으로 내 생각을 써 보는 화면이다.
+// 점수·순위·맞힌 수·쓴 사람 수가 없고(철학 ③), 쓴 글은 이 기기에 두었다가 노트의 잠근 덩어리로만 맡긴다(철학 ⑤). 단계 모양은 이번 주의 질문(.xfd·.xcur·.xnm)을 그대로 쓴다.
+// 먼저 내 생각을 지나야(쓰거나 넘어가야) 셋째 걸음의 교회 글이 열린다(철학 ⑪, 이번 주의 질문과 같은 순서). 쓴 글은 K.letter에 과 ID별로 { t: 다섯 글, p: 지나온 걸음, act: 작은 실천, at }
+const LTR_STEPS = [
+  { name: '먼저 내 생각', ord: '첫째', ph: '떠오르는 대로 적어 봐요. 적지 않아도 돼요.' },
+  { name: '말씀 읽기', ord: '둘째', ph: '하나만 적어도 좋아요.' },
+  { name: '교회에서 들은 것', ord: '셋째', ph: '마음에 남은 한 줄을 적어 봐요.' },
+  { name: '하나님께', ord: '넷째', ph: '어떤 생각이 들었나요? 적지 않아도 돼요.' },
+  { name: '다시 내 생각', ord: '다섯째', ph: '지금 내 생각을 적어 봐요.' }
+];
+// 문장 틀: 내가 나에게 하는 말이라 짧은 혼잣말 반말로 쓴다(탐구 노트와 같다). 답을 대신 쓰지 않고 한 번에 하나만 보인다
+const ltrFrames = () => ['이 본문 제목을 들으면 떠오르는 건 ___야.', '요즘 내 마음에 걸리는 건 ___야.', '이 본문에서 기대하는 건 ___야.'];
+const ltrAsk = i => ['본문을 펴기 전에, 이 본문 제목에서 떠오르는 것이 있나요?', '성경을 펴서 아래 본문을 읽어 봐요. 눈에 들어온 낱말이나 장면은 무엇인가요?', '', '이 말씀을 하나님께 한 줄로 말씀드려 볼까요?', '지금은 어떻게 생각해요? “아직 모르겠어요”도 답이에요.'][i];
+let LT = { lid: '' };   // 지금 보는 호의 화면 상태: lid 과 ID, view 걸음, frame 문장 틀 번호, screen step·done·collect
+const letterOk = () => { try { return !!bookById(myBookId()) && !weekHidden(); } catch (e) { return false; } };
+const ltrName = L => String(L.title || '').replace(/^\[제\d+과\] /, '');
+function ltrGet(id) {
+  const o = readJson(K.letter)[id] || {}, t = Array.isArray(o.t) ? o.t : [], p = Array.isArray(o.p) ? o.p : [];
+  return { t: LTR_STEPS.map((_, i) => String(t[i] || '')), p: LTR_STEPS.map((_, i) => p[i] === true), act: String(o.act || '') };
+}
+function ltrPut(id, r) {
+  if (!id) return;
+  const all = readJson(K.letter);
+  all[id] = { t: r.t, p: r.p, act: r.act, at: Date.now() };
+  ls.set(K.letter, JSON.stringify(all));
+}
+function ltrInput(t) {
+  const id = LT.lid; if (!id) return;
+  const r = ltrGet(id);
+  if (t.dataset.ltr === 'act') r.act = t.value.slice(0, 300); else r.t[Number(t.dataset.ltr)] = t.value.slice(0, 5000);
+  ltrPut(id, r);
+}
+const ltrDots = (r, now) => `<div class="ltr-dots" aria-hidden="true">${r.p.map((p, i) => `<i class="${p ? 'p' : i === now ? 'n' : ''}"></i>`).join('')}</div>`;
+// 이번 주 맨 위 카드
+function letterCard() {
+  if (!letterOk()) return '';
+  const L = thisLesson(), r = ltrGet(L.id), now = r.p.indexOf(false), fin = now < 0, started = r.p.some(Boolean) || r.t.some(Boolean);
+  return `<section class="card ltr-card" aria-labelledby="ltrT">
+    <div class="wk-head"><span class="walk-kicker" id="ltrT">이번 주 성경통신</span>${L.date ? `<span class="wk-aside"><span class="walk-tag">${esc(L.date)}</span></span>` : ''}</div>
+    <h2 class="lesson-title">${esc(ltrName(L))}</h2>${L.ref ? `<div class="walk-refs"><span class="passage-chip">${esc(L.ref)}</span></div>` : ''}
+    ${ltrDots(r, now)}<span class="vh">${fin ? '다섯 걸음을 모두 지나왔어요.' : '지금은 ' + LTR_STEPS[now].ord + ' 걸음이에요.'}</span>
+    <p class="fine">${fin ? '이번 성경통신을 걸었어요.' : '한 주 동안 혼자 다섯 걸음으로 내 생각을 써 봐요.'}</p>
+    <div class="act-row"><button class="btn" type="button" data-act="ltr-open">${fin ? '다시 보기' : started ? '이어서 쓰기' : '시작하기'}</button></div>
+  </section>`;
+}
+// 열었다는 사실만 알린다(글·과 이름은 보내지 않는다): 사용 기록 church.letter-open은 하루 한 번(supabase/029), 과 열람 표시는 과마다 한 번(019, 분석의 "이번 과를 연 사람" 합계)
+function ltrOpened() {
+  if (!LIVE) return;
+  lessonSeen();
+  try { UZ.track('letter-open', { daily: 'lo' }); } catch (e) { /* 기록 못 해도 앱은 그대로 */ }
+}
+function ltrRedraw() { route(false); window.scrollTo(0, 0); const h = $('#xHead'); if (h) h.focus({ preventScroll: true }); }
+function ltrStep(d) {
+  const r = ltrGet(LT.lid);
+  if (d > 0) { r.p[LT.view] = true; ltrPut(LT.lid, r); }
+  LT.view = Math.min(4, Math.max(0, LT.view + d));
+  ltrRedraw();
+}
+function letterView() {
+  const L = thisLesson(), name = ltrName(L), r = ltrGet(L.id);
+  if (LT.lid !== L.id) LT = { lid: L.id, view: Math.max(0, r.p.indexOf(false)), frame: 0, screen: r.p.every(Boolean) ? 'done' : 'step' };
+  if (LT.view >= 2 && !r.p[0]) LT.view = 0;   // 먼저 내 생각을 지나야 교회 글이 열린다
+  const i = LT.view, st = LTR_STEPS[i];
+  const head = `<a class="back-link" href="#week">${ic('back')}<span>이번 주</span></a>
+    <section class="card"><div class="walk-head"><span class="walk-kicker">성경통신</span>${L.date ? `<span class="walk-tag">${esc(L.date)}</span>` : ''}</div>
+      <h1 class="lesson-title" style="margin:.4em 0 0">${esc(name)}</h1>${L.ref ? `<div class="walk-refs" style="margin-top:8px"><span class="passage-chip">${esc(L.ref)}</span></div>` : ''}
+      ${LT.screen === 'step' ? ltrDots(r, i) : ''}</section>`;
+  const soft = `<p class="soft fine">${ic('lock')} 쓴 글은 나만 볼 수 있어요. 교회와 교역자도 볼 수 없어요.</p>`;
+  if (LT.screen === 'collect') {
+    return `<div class="record-wrap wq-wrap">${head}<section class="card">${r.t.some(Boolean) || r.act ? '' : '<p class="soft" style="margin:0">아직 쓴 글이 없어요.</p>'}
+      ${LTR_STEPS.map((s, k) => `<div class="ltr-sum"><b>${s.ord} 걸음, ${s.name}</b>${r.t[k] ? `<p>${esc(r.t[k])}</p>` : '<p class="none">아직 비어 있어요</p>'}</div>`).join('')}
+      ${r.act ? `<div class="ltr-sum"><b>이번 주 작은 실천</b><p>${esc(r.act)}</p></div>` : ''}${soft}</section>
+      <div class="act-row wq-end"><button class="btn" type="button" data-act="ltr-back">돌아가기</button><a class="btn ghost" href="#week">이번 주로</a></div></div>`;
+  }
+  if (LT.screen === 'done') {
+    return `<div class="record-wrap wq-wrap">${head}<div class="xfin"><div class="xft">이번 성경통신을 걸었어요.</div><p class="fine">쓴 글은 나만 볼 수 있어요. 교회와 교역자도 볼 수 없어요.</p></div>
+      <div class="act-row wq-end"><button class="btn" type="button" data-act="ltr-collect">모아 보기</button><button class="btn ghost" type="button" data-act="ltr-go" data-i="0">처음부터 다시 보기</button><a class="btn ghost" href="#week">이번 주로</a></div></div>`;
+  }
+  const fold = k => { const tx = r.t[k]; return `<button class="xfd${tx ? ' full' : ''}" type="button" data-act="ltr-go" data-i="${k}" aria-label="${LTR_STEPS[k].ord} 걸음, ${LTR_STEPS[k].name}, ${tx ? '답했어요' : '건너뛰었어요'}. 누르면 다시 펴요"><i class="mk">✓</i><span class="tt"><b>${LTR_STEPS[k].name}</b><span>${esc(tx || '건너뛰었어요')}</span></span><i class="ar" aria-hidden="true">›</i></button>`; };
+  let past = '';
+  for (let k = 4; k >= 0; k--) if (r.p[k] && k !== i) past += fold(k);
+  let mid = '';
+  if (i === 0) mid = `<div class="ltr-frame"><span id="ltrFrame">${esc(ltrFrames()[(LT.frame || 0) % ltrFrames().length])}</span><button class="btn ghost" type="button" data-act="ltr-frame" style="min-height:36px;padding:0 .8em;font-size:.84rem">다른 틀</button></div>`;
+  else if (i === 1) mid = `<div class="card xvl">${L.ref ? `<div><span>${esc(L.ref)}</span>${bibleUrl(L.ref) ? `<a class="quiet-link" href="${esc(bibleUrl(L.ref))}" target="_blank" rel="noopener" aria-label="${esc(L.ref)} 성경 펴기 (새 창)">성경 펴기 ›</a>` : ''}</div>` : '<div><span>이번 주 과의 본문</span></div>'}</div>`;
+  else if (i === 2) mid = L.intro
+    ? `<div class="ltr-letter"><span>교회가 보낸 글</span>${esc(L.intro)}</div>`
+    : `<div class="ltr-letter"><span>이번 주에 들은 것</span>이번 주일 설교와 모임에서 들은 것을 떠올려 봐요.</div><div class="act-row"><button class="btn ghost" type="button" data-act="read-go" data-resume="1" data-from="${esc(weekSel().book)}">이번 주 과 펼치기</button></div>`;
+  const ask = i === 2 ? '' : `<div class="xgq sm">${esc(ltrAsk(i))}</div>`;
+  const act = i === 4 ? `<input class="field" id="ltrAct" type="text" maxlength="300" data-ltr="act" style="margin-top:10px" placeholder="이번 주 작은 실천 하나(선택)" aria-label="이번 주 작은 실천" value="${esc(r.act)}">` : '';
+  const btns = i === 4
+    ? `<button class="btn ghost" type="button" data-act="ltr-prev" aria-label="이전 걸음">‹</button><button class="btn ghost" type="button" data-act="ltr-more">더 품을게요</button><button class="btn" type="button" data-act="ltr-finish">마쳤어요</button>`
+    : `<button class="btn ghost" type="button" data-act="ltr-prev" aria-label="이전 걸음"${i === 0 ? ' disabled' : ''}>‹</button><button class="btn ghost" type="button" data-act="ltr-next">넘어가기</button><button class="btn" type="button" data-act="ltr-next">적었어요</button>`;
+  return `<div class="record-wrap wq-wrap">${head}
+    <div class="xcur"><div class="xnm s" id="xHead" tabindex="-1">${st.ord} 걸음, ${st.name}</div>${ask}${mid}
+      <textarea class="field xta" id="ltrTa" rows="4" data-ltr="${i}" placeholder="${esc(st.ph)}" aria-label="${st.name}">${esc(r.t[i])}</textarea>${act}
+      <div class="act-row">${btns}</div>${soft}</div>
+    ${past ? `<div class="xpast">${past}</div>` : ''}</div>`;
 }
 
 // ── 실제 서버(2-2) ──
@@ -2983,7 +3097,7 @@ function acctDelCleanup(h) {
   try { ls.set(window.DidakoAcctDel.wipeHint, h ? JSON.stringify({ h }) : '1'); } catch (e) { /* 표시를 못 남겨도 계정은 이미 지워졌다 */ }
   const owner = ls.get('didako-note-owner');
   if (!owner || (h && owner === 'sb:' + h)) {
-    ['didako-read-answers', 'didako-share-memo', 'didako-live-records', 'didako-record-reflections', 'didako-record-answers', 'didako-record-edits', 'didako-weekwalk-thought', 'didako-weekwalk-meditate', 'didako-weekwalk-done',
+    ['didako-read-answers', 'didako-share-memo', 'didako-live-records', 'didako-record-reflections', 'didako-record-answers', 'didako-record-edits', 'didako-weekwalk-thought', 'didako-weekwalk-meditate', 'didako-weekwalk-done', 'didako-letter-texts',
       'didako-read-bookmark', 'didako-gbs-base', 'didako-weekwalk-read', 'didako-share-lesson', 'didako-my-book'].forEach(k => { try { ls.del(k); } catch (e) { /* 무시 */ } });
   }
   ['didako-note-sb', 'didako-note-circles'].forEach(k => { try { ls.del(k); } catch (e) { /* 무시 */ } });
@@ -3017,6 +3131,7 @@ function aboutView() {
 // 사용법의 "궁금한 것 찾아보기": 코이데처럼 "~는 어떻게 해요?" 질문과 풀이, 그 화면으로 가는 링크(2026-11-20). 글은 실제 동작과 같게 쓴다
 const GUIDE_FAQ = [
   ['읽을 교재는 어떻게 골라요?', '책장에서 교회가 낸 교재 가운데 지금 읽을 책 한 권을 골라요. 책 안에서 과를 펼쳐요.', '책장으로 가기', '#shelf'],
+  ['성경통신은 무엇이에요?', '이번 주 본문을 두고 혼자서 다섯 걸음(먼저 내 생각, 말씀 읽기, 교회에서 들은 것, 하나님께, 다시 내 생각)으로 내 생각을 써 보는 곳이에요. 정답도 점수도 없고, 쓴 글은 나만 볼 수 있어요. 건너뛰어도 되고, 며칠에 걸쳐 써도 돼요. 이번 주 맨 위의 성경통신 카드에서 시작해요.', '이번 주로 가기', '#week'],
   ['모임 전에 미리 읽고 생각을 남기려면 어떻게 해요?', '책장에서 과를 펼치면 모임 전에 미리 읽고 생각을 남길 수 있어요. 남기는 것은 원할 때만 해요.', '책장으로 가기', '#shelf'],
   ['나눔하기는 어떻게 해요?', '지금 읽는 책의 과로 함께 모여 질문 하나씩 나눠요. 사랑방에서는 사랑방 교재로, 가정에서는 함께 쓰는 교재로 바꿔서 해요. 이야기하는 동안에는 화면을 내려놓아요.', '나눔하기로 가기', '#share'],
   ['모임 뒤 기록은 어떻게 남겨요?', '모임 뒤에 마음에 남은 한 문장과 작은 실천을 남겨요. 내 기록은 나만 봐요.', '내 기록으로 가기', '#record'],
@@ -6164,6 +6279,7 @@ function drawRoute(moved) {
   let { v, arg } = parseHash();
   // 모르는 주소이거나 데모로 들어오기 전이면 첫 화면(들어온 뒤의 빈 주소는 이번 주)
   if (!v) v = D.entered ? landV() : 'start';
+  if (v === 'letter' && !letterOk()) v = 'week';   // 이번 주 과가 없거나 아직 열리지 않았으면 성경통신도 열지 않는다
   if (v === 'staff' && !staffHomeOn()) v = 'week';   // 교역자 홈은 교역자만(예전 길에는 없다)
   if (v === 'acctdel' && !(ACCT.ad && ACCT.can())) v = 'account';   // 계정 탈퇴 확인은 계정 화면의 단추로만 들어온다(주소로 바로 열리지 않는다)
   else if (v !== 'start' && !D.entered) v = 'start';
@@ -6193,7 +6309,7 @@ function drawRoute(moved) {
   $('#topbar').classList.toggle('bare', start);
   $('#topnav').hidden = start; $('#tabs').hidden = start;
   document.body.dataset.view = v;
-  $('#view').innerHTML = start ? startView(arg) : v === 'week' ? weekView() : v === 'staff' ? staffHomeView() : v === 'wq' ? wqView() : v === 'read' ? readView() : v === 'share' ? shareView() : v === 'shelf' ? shelfView(arg) : v === 'record' ? recordView(arg) : v === 'records' ? recordsView() : v === 'found' ? foundView() : v === 'gallery' ? galleryView() : v === 'more' ? moreView() : v === 'admin' ? adminView() : v === 'admin-reorg' ? adminReorgView() : v === 'church-admin' ? churchAdminView() : v === 'survey' ? surveyView(arg) : v === 'about' ? aboutView() : v === 'account' ? accountView() : v === 'acctdel' ? acctDelView() : v === 'guide' ? guideView() : v === 'feedback' ? feedbackView() : v === 'prep' ? prepView() : v === 'prepprint' ? prepPrintView() : v === 'church' ? churchView() : v === 'rooms' ? roomsView() : v === 'manage' ? manageView(arg) : placeView(v);
+  $('#view').innerHTML = start ? startView(arg) : v === 'week' ? weekView() : v === 'staff' ? staffHomeView() : v === 'wq' ? wqView() : v === 'letter' ? letterView() : v === 'read' ? readView() : v === 'share' ? shareView() : v === 'shelf' ? shelfView(arg) : v === 'record' ? recordView(arg) : v === 'records' ? recordsView() : v === 'found' ? foundView() : v === 'gallery' ? galleryView() : v === 'more' ? moreView() : v === 'admin' ? adminView() : v === 'admin-reorg' ? adminReorgView() : v === 'church-admin' ? churchAdminView() : v === 'survey' ? surveyView(arg) : v === 'about' ? aboutView() : v === 'account' ? accountView() : v === 'acctdel' ? acctDelView() : v === 'guide' ? guideView() : v === 'feedback' ? feedbackView() : v === 'prep' ? prepView() : v === 'prepprint' ? prepPrintView() : v === 'church' ? churchView() : v === 'rooms' ? roomsView() : v === 'manage' ? manageView(arg) : placeView(v);
   placeStaffTip(v);
   if (v === 'survey' && SV_ON && D.role === 'admin' && window.ChurchSurvey) ChurchSurvey.mount(arg);
   svFillCards(v);
@@ -6231,6 +6347,16 @@ function rerender() {
 const acts = {
   'img-zoom'(e, el) { if (!el.closest('.paper')) openZoom(el); },   // 종이 미리보기 안의 그림은 열지 않는다
   'wq-open'() { WQ = { max: 0, view: 0 }; wqOpenPending = true; location.hash = '#wq'; },
+  // 성경통신(2026-11-24): 쓴 글은 눌러 넘길 때마다가 아니라 칸에 쓰는 대로 저장한다(input 처리)
+  'ltr-open'() { LT = { lid: '' }; ltrOpened(); if (location.hash === '#letter') route(true); else location.hash = '#letter'; },
+  'ltr-next'() { ltrStep(1); },
+  'ltr-prev'() { ltrStep(-1); },
+  'ltr-go'(e, el) { LT.view = Math.min(4, Math.max(0, Number(el.dataset.i))); LT.screen = 'step'; ltrRedraw(); },
+  'ltr-frame'() { LT.frame = (LT.frame || 0) + 1; const t = $('#ltrFrame'); if (t) t.textContent = ltrFrames()[LT.frame % ltrFrames().length]; },
+  'ltr-more'() { location.hash = '#week'; },
+  'ltr-finish'() { const r = ltrGet(LT.lid); r.p[4] = true; ltrPut(LT.lid, r); LT.screen = 'done'; ltrRedraw(); },
+  'ltr-collect'() { LT.screen = 'collect'; ltrRedraw(); },
+  'ltr-back'() { LT.screen = ltrGet(LT.lid).p.every(Boolean) ? 'done' : 'step'; ltrRedraw(); },
   'wq-next'() { const w = walkWeek(), ta = $('#wqTa'), md = $('#wqMed'); if (ta) { const thoughts = readJson(K.walkThought); thoughts[w.n] = ta.value; ls.set(K.walkThought, JSON.stringify(thoughts)); } if (md) { const meds = readJson(K.walkMeditate); meds[w.n] = md.value; ls.set(K.walkMeditate, JSON.stringify(meds)); } WQ.view = Math.min(4, WQ.view + 1); WQ.max = Math.max(WQ.max, WQ.view); if (WQ.view === 4) { const done = readJson(K.walkDone); if (done[w.n] !== true) { const h = HIDDEN.find(x => w.n >= x.from && w.n <= x.to); if (h && hiddenOpen(h) < HIDDEN_CELLS) hiddenNow = h.from + ':' + hiddenOrder[hiddenOpen(h)]; } done[w.n] = true; ls.set(K.walkDone, JSON.stringify(done)); } route(false); window.scrollTo(0, 0); const head = $('#xHead'); if (head) head.focus({ preventScroll: true }); },
   'wq-view'(e, el) { WQ.view = Math.min(WQ.max, Math.max(0, Number(el.dataset.i))); route(false); window.scrollTo(0, 0); const head = $('#xHead'); if (head) head.focus({ preventScroll: true }); },
   'wq-pray'() { toast('데모라 넘어가지 않아요.'); },
@@ -6392,7 +6518,7 @@ const acts = {
   'demo-reset'() {
     closeSheet(); roomState = null; MG = null; mgTab = 'now'; mgEditing = ''; mgSerial = 0; clearTimeout(mgPvTimer); mgPubSel = null; mgPvMode = 'member'; mgPvOpen = true; mgTouched.clear();
     ls.del(GUIDE_K); ls.del(K.demo); ls.del(K.readBook); ls.del(K.keep); ls.del(K.answers); ls.del(K.walkRead); ls.del(K.walkThought); ls.del(K.walkDone); ls.del(K.walkMeditate); ls.del(K.bookmark); ls.del(K.memo); ls.del(K.leadopen);
-    [K.shareDone, K.liveRec, K.recRefl, K.recAns, K.recEdit, K.recDel, K.recHide].forEach(ls.del); loadState();
+    [K.shareDone, K.liveRec, K.recRefl, K.recAns, K.recEdit, K.recDel, K.recHide, K.letter].forEach(ls.del); LT = { lid: '' }; loadState();
     if (location.hash === '#start') route(true); else location.hash = '#start';
   },
   'pop-close'() { closeSheet(); },
@@ -7171,6 +7297,7 @@ document.addEventListener('input', e => {
   else if (t.id === 'feedbackText') { feedbackState.text = t.value; const count = $('#feedbackCount'); if (count) count.textContent = String(t.value.length); const send = $('#feedbackSend'); if (send) send.disabled = !t.value.trim(); }
   else if (t.id === 'wqMed') { const meds = readJson(K.walkMeditate); meds[walkWeek().n] = t.value; ls.set(K.walkMeditate, JSON.stringify(meds)); }
   else if (t.id === 'wqTa') { const thought = readJson(K.walkThought); thought[walkWeek().n] = t.value; ls.set(K.walkThought, JSON.stringify(thought)); }
+  else if (t.dataset && t.dataset.ltr != null) ltrInput(t);
   else if (t.dataset && t.dataset.memoKey) { const m = readMemo(); if (t.value.trim()) m[t.dataset.memoKey] = t.value; else delete m[t.dataset.memoKey]; ls.set(K.memo, JSON.stringify(m)); }
   else if (t.matches && t.matches('textarea[data-id]')) { const id = t.dataset.id; sizeTa(t); setBookmark(id); clearTimeout(timers[id]); timers[id] = setTimeout(() => saveAns(id, t), 450); }
   else if ((t.id === 'kSentence' || t.id === 'kAction') && currentView() === 'read') { clearTimeout(keepT); keepT = setTimeout(saveKeepRead, 450); }
