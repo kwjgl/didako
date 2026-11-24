@@ -237,13 +237,8 @@ main.wrap { padding-top: 14px; padding-bottom: calc(110px + env(safe-area-inset-
 .wk-page { width: 100%; }
 .wk-grid > div:empty { display: none; }
 @media (min-width: 900px) {
-  .wk-page { max-width: 1040px; margin: 0 auto; }
-  .wk-grid { display: grid; grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr); grid-template-rows: auto auto 1fr; grid-template-areas: "letter steps" "cord steps" "next steps"; column-gap: 24px; align-items: start; }
-  .wk-mine { display: contents; }
-  .wk-letter { grid-area: letter; } .wk-cord-card { grid-area: cord; } .wk-steps { grid-area: steps; } .wk-next { grid-area: next; }
-  .wk-mine .wk-sec { display: none; }
-  .wk-letter .card, .wk-cord-card, .wk-next .card { margin: 0 0 12px; }
-  .wk-grid .wk-steps { grid-template-columns: minmax(0, 1fr); margin: 0; }
+  .wk-page { max-width: 880px; margin: 0 auto; }   /* PC는 가로가 너무 길지 않게 한 줄 폭을 줄이고, 아래에서 위로 쌓는 순서는 휴대폰과 같게 둔다 */
+  .wk-steps { grid-template-columns: repeat(3, minmax(0, 1fr)); }
   .ltr-cv { width: 120px; }
   .ltr-card .lesson-title { font-size: 1.65rem; }
 }
@@ -407,7 +402,8 @@ body[data-view="letter"] { overflow: hidden; }
 .wk-cord-card .deep-cord { margin: .9em auto .3em; }
 .wk-cap { text-align: center; margin: 0 0 .8em; }
 .wk-les { border-top: 1px solid var(--line); padding-top: 12px; }
-.wk-sec { font-family: var(--f-display); font-size: 1.05em; font-weight: 400; color: var(--ink-2); margin: 26px 0 8px; }
+.wk-sec { display: flex; align-items: center; gap: 12px; font-family: var(--f-display); font-size: 1.15em; font-weight: 700; color: var(--ink); margin: 30px 0 10px; }
+.wk-sec::after { content: ''; flex: 1; height: 1px; background: var(--line-strong); }   /* 위 카드와 "나의 한 주"가 갈리게 줄을 긋는다 */
 .wk-steps { display: grid; gap: 12px; margin: 12px 0; }
 .wk-steps .card { margin: 0; display: flex; flex-direction: column; gap: 8px; }
 .wk-sh { display: flex; align-items: center; gap: .6em; font-family: var(--f-display); font-size: 1.1em; }
