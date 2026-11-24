@@ -218,20 +218,68 @@ main.wrap { padding-top: 14px; padding-bottom: calc(110px + env(safe-area-inset-
 .xfin { margin-top: 16px; text-align: center; padding: 16px 14px; border: 1.5px dashed var(--accent-mid); border-radius: 16px; }
 .wq-mine { margin-top: 12px; padding: 12px 14px; border-radius: 12px; background: var(--surface-2); font-size: .90625rem; line-height: 1.6; white-space: pre-wrap; word-break: keep-all; }
 .wq-mine span { display: block; margin-bottom: 4px; font-size: .78rem; font-weight: 700; color: var(--ink-2); }
-.ltr-dots { display: flex; gap: 8px; align-items: center; margin: 4px 0 0; }
-.ltr-dots i { width: 12px; height: 12px; border-radius: 50%; border: 2px solid var(--line-strong); }
-.ltr-dots i.p { background: var(--accent); border-color: var(--accent); }
-.ltr-dots i.n { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-soft); }
-.ltr-card .lesson-title { margin: .2em 0 .3em; }
+/* 성경통신: 이번 주 카드 */
+.ltr-card { background: color-mix(in srgb, var(--accent-soft) 38%, var(--surface)); border-color: var(--accent-mid); }
+.ltr-card .lesson-title { margin: .2em 0 .35em; font-size: 1.75rem; }
 .ltr-card .act-row .btn { flex: none; min-width: 9em; }
-.ltr-frame { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-top: 10px; padding: .55em .8em; border-radius: 10px; background: var(--surface-2); font-family: var(--f-display); font-size: .95rem; }
+.ltr-segs { display: grid; grid-template-columns: repeat(5, 1fr); gap: 5px; margin: 14px 0 0; }
+.ltr-segs i { height: 6px; border-radius: 999px; background: var(--line-strong); opacity: .55; }
+.ltr-segs i.p { background: var(--accent); opacity: 1; }
+.ltr-segs i.n { background: var(--accent-mid); opacity: 1; }
+/* 성경통신: 걸음 화면(나눔하기처럼 온 화면). 닫기·이전·다음은 나눔하기의 .st-pill·.st-nav를 그대로 쓴다 */
+body[data-view="letter"] { overflow: hidden; }
+.ltr-stage .st-top { gap: 10px; }
+.ltr-stage .ltr-segs { flex: 1; max-width: 240px; margin: 0 auto; }
+.ltr-segs-gap { flex: 1; }
+.ltr-lock { flex: none; display: inline-flex; align-items: center; gap: .3em; min-width: 44px; justify-content: flex-end; padding-right: 8px; font-size: .78rem; font-weight: 600; color: var(--ink-2); }
+.ltr-lock .ic { width: 14px; height: 14px; }
+.ltr-grid { width: 100%; max-width: 640px; margin: 0 auto; padding: 14px 0 28px; min-width: 0; }
+.ltr-grid:has(.ltr-end) { margin: auto; }
+.ltr-stage .fl-rail { display: none; }
+.ltr-stage .fl-rail-in { top: 14px; }
+.ltr-rh b { display: block; font: 700 1.0625rem/1.35 var(--f-display); word-break: keep-all; }
+.ltr-rh span { display: block; margin-top: 2px; font-size: .8125rem; color: var(--ink-2); }
+@media (min-width: 900px) {
+  .ltr-grid.rail { max-width: 896px; display: grid; grid-template-columns: 232px minmax(0, 640px); gap: 24px; justify-content: center; }
+  .ltr-stage .fl-rail { display: block; }
+  .ltr-stage.rl .st-nav { max-width: 896px; box-sizing: border-box; padding-left: 256px; }
+}
+.ltr-ctx { display: flex; align-items: center; flex-wrap: wrap; gap: 8px; margin-bottom: 20px; }
+.ltr-ctx-t { font-size: .875rem; font-weight: 600; color: var(--ink-2); word-break: keep-all; }
+.ltr-eyebrow { display: block; font-size: .8125rem; font-weight: 700; color: var(--accent); }
+.ltr-h { margin: .15em 0 .5em; font: 700 1.75rem/1.3 var(--f-display); word-break: keep-all; outline: none; }
+.ltr-ask { margin: 0 0 16px; font-size: 1.0625rem; line-height: 1.6; word-break: keep-all; }
+.ltr-frame { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 14px; padding: 10px 10px 10px 16px; border: 1.5px dashed var(--accent-mid); border-radius: var(--r-lg); font-family: var(--f-display); font-size: 1.0625rem; line-height: 1.5; }
 .ltr-frame .btn { flex: none; }
-.ltr-letter { margin-top: 12px; padding: 12px 14px; border-radius: 12px; background: var(--surface-2); font-size: .90625rem; line-height: 1.65; white-space: pre-wrap; word-break: keep-all; }
-.ltr-letter > span { display: block; margin-bottom: 4px; font-size: .78rem; font-weight: 700; color: var(--accent); white-space: normal; }
-.ltr-sum { margin-top: 14px; }
-.ltr-sum b { display: block; font-size: .8rem; color: var(--accent); }
-.ltr-sum p { margin: .2em 0 0; white-space: pre-wrap; line-height: 1.65; word-break: keep-all; }
-.ltr-sum p.none { color: var(--ink-2); font-size: .9rem; }
+.ltr-ref { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 14px; padding: 10px 12px 10px 16px; background: var(--surface); border: 1px solid var(--line); border-radius: var(--r-lg); }
+.ltr-ref-t { font: 700 1.125rem/1.35 var(--f-display); }
+.ltr-ref .btn { flex: none; }
+.ltr-letter, .ltr-mine { margin: 0 0 14px; padding: 16px 18px; border-radius: var(--r-lg); font-family: var(--f-display); font-size: 1.0625rem; line-height: 1.9; white-space: pre-wrap; word-break: keep-all; }
+.ltr-letter { background: var(--accent-soft); }
+.ltr-mine { background: var(--surface-2); }
+.ltr-letter > span, .ltr-mine > span { display: block; margin-bottom: 6px; font: 700 .78rem/1.4 var(--f-body); color: var(--accent); white-space: normal; }
+.ltr-mine > span { color: var(--ink-2); }
+.ltr-stage .act-row { margin: 0 0 14px; }
+/* 줄 쳐진 편지지: 줄 간격(1.9em)과 줄 그림 간격을 같게 맞춘다 */
+.ltr-paper { padding: 10px 16px 12px; background: var(--surface); border: 1px solid var(--line); border-radius: var(--r-lg); }
+.ltr-paper:focus-within { border-color: var(--accent); box-shadow: 0 0 0 2px var(--accent-soft); }
+:root:root .ltr-paper textarea.field { display: block; width: 100%; min-height: 9.5em; padding: 0; border: 0; border-radius: 0; box-shadow: none; outline: none; resize: none; font-family: var(--f-display); font-size: 1.0625rem; line-height: 1.9em; background-color: transparent; background-image: repeating-linear-gradient(to bottom, transparent 0, transparent calc(1.9em - 1px), var(--line) calc(1.9em - 1px), var(--line) 1.9em); background-attachment: local; field-sizing: content; max-height: 55vh; }
+.ltr-act { margin-top: 10px; }
+.ltr-hint { margin: 10px 2px 0; font-size: .8125rem; color: var(--ink-2); }
+.ltr-end { text-align: center; }
+.ltr-end h1 { margin: .3em 0 .35em; font: 700 1.75rem/1.4 var(--f-display); word-break: keep-all; outline: none; }
+.ltr-end-p { margin: 0; color: var(--ink-2); line-height: 1.6; word-break: keep-all; }
+/* 모아 보기: 한 장의 통신 종이 */
+.ltr-sheet { padding: 22px 20px 18px; background: var(--surface); border: 1px solid var(--line); border-radius: var(--r-lg); box-shadow: 0 10px 24px -18px var(--shadow); }
+.ltr-sheet-k { display: block; font-size: .8125rem; font-weight: 700; color: var(--accent); }
+.ltr-sheet h1 { margin: .2em 0 .4em; font: 700 1.6rem/1.35 var(--f-display); word-break: keep-all; outline: none; }
+.ltr-sheet-m { display: flex; flex-wrap: wrap; gap: 6px; }
+.ltr-sheet section { margin-top: 18px; padding-top: 14px; border-top: 1px dashed var(--line-strong); }
+.ltr-sheet h2 { margin: 0 0 6px; font: 700 .8125rem/1.4 var(--f-body); color: var(--accent); }
+.ltr-sheet p { margin: 0; font-family: var(--f-display); font-size: 1.0625rem; line-height: 1.9; white-space: pre-wrap; word-break: keep-all; }
+.ltr-sheet p.none { font-family: var(--f-body); font-size: .9rem; color: var(--ink-2); }
+.ltr-sheet .ltr-note { margin-top: 20px; font: 400 .8125rem/1.5 var(--f-body); color: var(--ink-2); }
+.ltr-note .ic { width: 14px; height: 14px; vertical-align: -2px; }
 .wq-end { margin-top: 16px; }
 .wq-end .btn { word-break: keep-all; line-height: 1.35; padding-top: .5em; padding-bottom: .5em; }
 .xfin .xft { font: 700 1.25rem/1.4 var(--f-display); }
@@ -1481,6 +1529,7 @@ html.tutorial .demo-tag { display: none !important; }
 </nav>
 
 <div class="opening" id="opening" role="dialog" aria-label="말씀을 열며" hidden></div>
+<div id="ltrHost" hidden></div>
 <div class="stage pss" id="stage" hidden role="dialog" aria-label="나눔하기">
   <div class="st-top" id="stTop"></div>
   <div class="st-body" id="stBody"></div>
@@ -2119,7 +2168,8 @@ function ltrInput(t) {
   if (t.dataset.ltr === 'act') r.act = t.value.slice(0, 300); else r.t[Number(t.dataset.ltr)] = t.value.slice(0, 5000);
   ltrPut(id, r);
 }
-const ltrDots = (r, now) => `<div class="ltr-dots" aria-hidden="true">${r.p.map((p, i) => `<i class="${p ? 'p' : i === now ? 'n' : ''}"></i>`).join('')}</div>`;
+// 다섯 칸 진행 막대: 지난 걸음은 채우고 지금 걸음은 옅게 칠한다(점수가 아니라 걸어온 길)
+const ltrSegs = (r, now) => `<div class="ltr-segs" aria-hidden="true">${r.p.map((p, i) => `<i class="${p ? 'p' : i === now ? 'n' : ''}"></i>`).join('')}</div>`;
 // 이번 주 맨 위 카드
 function letterCard() {
   if (!letterOk()) return '';
@@ -2127,7 +2177,7 @@ function letterCard() {
   return `<section class="card ltr-card" aria-labelledby="ltrT">
     <div class="wk-head"><span class="walk-kicker" id="ltrT">이번 주 성경통신</span>${L.date ? `<span class="wk-aside"><span class="walk-tag">${esc(L.date)}</span></span>` : ''}</div>
     <h2 class="lesson-title">${esc(ltrName(L))}</h2>${L.ref ? `<div class="walk-refs"><span class="passage-chip">${esc(L.ref)}</span></div>` : ''}
-    ${ltrDots(r, now)}<span class="vh">${fin ? '다섯 걸음을 모두 지나왔어요.' : '지금은 ' + LTR_STEPS[now].ord + ' 걸음이에요.'}</span>
+    ${ltrSegs(r, now)}<span class="vh">${fin ? '다섯 걸음을 모두 지나왔어요.' : '지금은 ' + LTR_STEPS[now].ord + ' 걸음이에요.'}</span>
     <p class="fine">${fin ? '이번 성경통신을 걸었어요.' : '한 주 동안 혼자 다섯 걸음으로 내 생각을 써 봐요.'}</p>
     <div class="act-row"><button class="btn" type="button" data-act="ltr-open">${fin ? '다시 보기' : started ? '이어서 쓰기' : '시작하기'}</button></div>
   </section>`;
@@ -2138,52 +2188,64 @@ function ltrOpened() {
   lessonSeen();
   try { UZ.track('letter-open', { daily: 'lo' }); } catch (e) { /* 기록 못 해도 앱은 그대로 */ }
 }
-function ltrRedraw() { route(false); window.scrollTo(0, 0); const h = $('#xHead'); if (h) h.focus({ preventScroll: true }); }
+// 걸음을 옮길 때는 묵상하기·나눔하기와 같은 넘김 효과(공용 family-flow.js): dir은 앞으로 1, 뒤로 -1
+let ltrBusy = false;   // 넘김 효과가 도는 동안 눌린 단추는 무시한다(두 번 눌러 한 걸음을 건너뛰지 않게)
+function ltrRedraw(dir, from) {
+  const apply = () => {
+    ltrBusy = false;
+    route(false); window.scrollTo(0, 0);
+    const h = $('#xHead'); if (h) h.focus({ preventScroll: true });
+    if (from != null && LT.screen === 'step' && window.FamilyFlow) FamilyFlow.railFx($('#view'), from, LT.view);
+  };
+  const col = $('#ltrBody');
+  if (dir && col && window.FamilyFlow) { ltrBusy = true; setTimeout(() => { ltrBusy = false; }, 900); FamilyFlow.swap(col, dir, apply); } else apply();
+}
 function ltrStep(d) {
-  const r = ltrGet(LT.lid);
+  if (ltrBusy) return;
+  const r = ltrGet(LT.lid), from = LT.view;
   if (d > 0) { r.p[LT.view] = true; ltrPut(LT.lid, r); }
   LT.view = Math.min(4, Math.max(0, LT.view + d));
-  ltrRedraw();
+  ltrRedraw(d, from);
 }
+// 걸음 화면은 나눔하기처럼 온 화면(위 닫기·진행 막대, 가운데 한 걸음, 아래 이전·다음)이다. PC에서는 왼쪽에 길잡이가 선다
 function letterView() {
   const L = thisLesson(), name = ltrName(L), r = ltrGet(L.id);
   if (LT.lid !== L.id) LT = { lid: L.id, view: Math.max(0, r.p.indexOf(false)), frame: 0, screen: r.p.every(Boolean) ? 'done' : 'step' };
   if (LT.view >= 2 && !r.p[0]) LT.view = 0;   // 먼저 내 생각을 지나야 교회 글이 열린다
-  const i = LT.view, st = LTR_STEPS[i];
-  const head = `<a class="back-link" href="#week">${ic('back')}<span>이번 주</span></a>
-    <section class="card"><div class="walk-head"><span class="walk-kicker">성경통신</span>${L.date ? `<span class="walk-tag">${esc(L.date)}</span>` : ''}</div>
-      <h1 class="lesson-title" style="margin:.4em 0 0">${esc(name)}</h1>${L.ref ? `<div class="walk-refs" style="margin-top:8px"><span class="passage-chip">${esc(L.ref)}</span></div>` : ''}
-      ${LT.screen === 'step' ? ltrDots(r, i) : ''}</section>`;
-  const soft = `<p class="soft fine">${ic('lock')} 쓴 글은 나만 볼 수 있어요. 교회와 교역자도 볼 수 없어요.</p>`;
+  const i = LT.view, st = LTR_STEPS[i], now = r.p.indexOf(false);
+  const top = `<div class="st-top"><button class="st-pill" type="button" data-act="ltr-close">${ic('x')}닫기</button>
+    ${LT.screen === 'step' ? ltrSegs(r, i) : '<span class="ltr-segs-gap"></span>'}<span class="ltr-lock">${ic('lock')}<span>나만 봐요</span></span></div>`;
+  const ctx = `<div class="ltr-ctx"><span class="ltr-ctx-t">${esc(name)}</span>${L.ref ? `<span class="walk-tag">${esc(L.ref)}</span>` : ''}</div>`;
+  const stage = (inner, nav, rail) => `<div class="stage ltr-stage${rail ? ' rl' : ''}" role="region" aria-label="성경통신">${top}
+    <div class="st-body"><div class="ltr-grid${rail ? ' rail' : ''}">${rail || ''}<div class="ltr-col" id="ltrBody">${inner}</div></div></div>
+    <div class="st-foot"><div class="st-nav">${nav}</div></div></div>`;
   if (LT.screen === 'collect') {
-    return `<div class="record-wrap wq-wrap">${head}<section class="card">${r.t.some(Boolean) || r.act ? '' : '<p class="soft" style="margin:0">아직 쓴 글이 없어요.</p>'}
-      ${LTR_STEPS.map((s, k) => `<div class="ltr-sum"><b>${s.ord} 걸음, ${s.name}</b>${r.t[k] ? `<p>${esc(r.t[k])}</p>` : '<p class="none">아직 비어 있어요</p>'}</div>`).join('')}
-      ${r.act ? `<div class="ltr-sum"><b>이번 주 작은 실천</b><p>${esc(r.act)}</p></div>` : ''}${soft}</section>
-      <div class="act-row wq-end"><button class="btn" type="button" data-act="ltr-back">돌아가기</button><a class="btn ghost" href="#week">이번 주로</a></div></div>`;
+    const sec = (h, t) => `<section><h2>${h}</h2>${t ? `<p>${esc(t)}</p>` : '<p class="none">비워 두었어요</p>'}</section>`;
+    return stage(`<article class="ltr-sheet"><header><span class="ltr-sheet-k">성경통신</span><h1 id="xHead" tabindex="-1">${esc(name)}</h1>
+      <div class="ltr-sheet-m">${L.date ? `<span class="walk-tag">${esc(L.date)}</span>` : ''}${L.ref ? `<span class="passage-chip">${esc(L.ref)}</span>` : ''}</div></header>
+      ${LTR_STEPS.map((s, k) => sec(s.ord + ' 걸음, ' + s.name, r.t[k])).join('')}${r.act ? sec('이번 주 작은 실천', r.act) : ''}
+      <p class="ltr-note">${ic('lock')} 쓴 글은 나만 볼 수 있어요. 교회와 교역자도 볼 수 없어요.</p></article>`,
+      `<button class="btn ghost" type="button" data-act="ltr-back">돌아가기</button><button class="btn" type="button" data-act="ltr-close">이번 주로</button>`);
   }
   if (LT.screen === 'done') {
-    return `<div class="record-wrap wq-wrap">${head}<div class="xfin"><div class="xft">이번 성경통신을 걸었어요.</div><p class="fine">쓴 글은 나만 볼 수 있어요. 교회와 교역자도 볼 수 없어요.</p></div>
-      <div class="act-row wq-end"><button class="btn" type="button" data-act="ltr-collect">모아 보기</button><button class="btn ghost" type="button" data-act="ltr-go" data-i="0">처음부터 다시 보기</button><a class="btn ghost" href="#week">이번 주로</a></div></div>`;
+    return stage(`<div class="ltr-end"><span class="ltr-eyebrow">성경통신</span><h1 id="xHead" tabindex="-1">이번 성경통신을 걸었어요.</h1>
+      <p class="ltr-end-p">쓴 글은 나만 볼 수 있어요. 교회와 교역자도 볼 수 없어요.</p></div>`,
+      `<button class="btn ghost" type="button" data-act="ltr-go" data-i="0">처음부터</button><button class="btn" type="button" data-act="ltr-collect">모아 보기</button>`);
   }
-  const fold = k => { const tx = r.t[k]; return `<button class="xfd${tx ? ' full' : ''}" type="button" data-act="ltr-go" data-i="${k}" aria-label="${LTR_STEPS[k].ord} 걸음, ${LTR_STEPS[k].name}, ${tx ? '답했어요' : '건너뛰었어요'}. 누르면 다시 펴요"><i class="mk">✓</i><span class="tt"><b>${LTR_STEPS[k].name}</b><span>${esc(tx || '건너뛰었어요')}</span></span><i class="ar" aria-hidden="true">›</i></button>`; };
-  let past = '';
-  for (let k = 4; k >= 0; k--) if (r.p[k] && k !== i) past += fold(k);
+  const rail = window.FamilyFlow ? FamilyFlow.rail({ label: '성경통신 걸음', head: `<div class="ltr-rh"><b>${esc(name)}</b>${L.ref ? `<span>${esc(L.ref)}</span>` : ''}</div>`,
+    steps: LTR_STEPS.map((s, k) => ({ label: s.name, state: k === i ? 'cur' : r.p[k] ? 'done' : 'todo', attrs: k !== i && r.p[k] ? `data-act="ltr-go" data-i="${k}"` : '' })) }) : '';
   let mid = '';
-  if (i === 0) mid = `<div class="ltr-frame"><span id="ltrFrame">${esc(ltrFrames()[(LT.frame || 0) % ltrFrames().length])}</span><button class="btn ghost" type="button" data-act="ltr-frame" style="min-height:36px;padding:0 .8em;font-size:.84rem">다른 틀</button></div>`;
-  else if (i === 1) mid = `<div class="card xvl">${L.ref ? `<div><span>${esc(L.ref)}</span>${bibleUrl(L.ref) ? `<a class="quiet-link" href="${esc(bibleUrl(L.ref))}" target="_blank" rel="noopener" aria-label="${esc(L.ref)} 성경 펴기 (새 창)">성경 펴기 ›</a>` : ''}</div>` : '<div><span>이번 주 과의 본문</span></div>'}</div>`;
+  if (i === 0) mid = `<div class="ltr-frame"><span id="ltrFrame">${esc(ltrFrames()[(LT.frame || 0) % ltrFrames().length])}</span><button class="btn small ghost" type="button" data-act="ltr-frame">다른 틀</button></div>`;
+  else if (i === 1) mid = `<div class="ltr-ref"><span class="ltr-ref-t">${esc(L.ref || '이번 주 과의 본문')}</span>${L.ref && bibleUrl(L.ref) ? `<a class="btn small ghost" href="${esc(bibleUrl(L.ref))}" target="_blank" rel="noopener" aria-label="${esc(L.ref)} 성경 펴기 (새 창)">성경 펴기 ›</a>` : ''}</div>`;
   else if (i === 2) mid = L.intro
     ? `<div class="ltr-letter"><span>교회가 보낸 글</span>${esc(L.intro)}</div>`
-    : `<div class="ltr-letter"><span>이번 주에 들은 것</span>이번 주일 설교와 모임에서 들은 것을 떠올려 봐요.</div><div class="act-row"><button class="btn ghost" type="button" data-act="read-go" data-resume="1" data-from="${esc(weekSel().book)}">이번 주 과 펼치기</button></div>`;
-  const ask = i === 2 ? '' : `<div class="xgq sm">${esc(ltrAsk(i))}</div>`;
-  const act = i === 4 ? `<input class="field" id="ltrAct" type="text" maxlength="300" data-ltr="act" style="margin-top:10px" placeholder="이번 주 작은 실천 하나(선택)" aria-label="이번 주 작은 실천" value="${esc(r.act)}">` : '';
-  const btns = i === 4
-    ? `<button class="btn ghost" type="button" data-act="ltr-prev" aria-label="이전 걸음">‹</button><button class="btn ghost" type="button" data-act="ltr-more">더 품을게요</button><button class="btn" type="button" data-act="ltr-finish">마쳤어요</button>`
-    : `<button class="btn ghost" type="button" data-act="ltr-prev" aria-label="이전 걸음"${i === 0 ? ' disabled' : ''}>‹</button><button class="btn ghost" type="button" data-act="ltr-next">넘어가기</button><button class="btn" type="button" data-act="ltr-next">적었어요</button>`;
-  return `<div class="record-wrap wq-wrap">${head}
-    <div class="xcur"><div class="xnm s" id="xHead" tabindex="-1">${st.ord} 걸음, ${st.name}</div>${ask}${mid}
-      <textarea class="field xta" id="ltrTa" rows="4" data-ltr="${i}" placeholder="${esc(st.ph)}" aria-label="${st.name}">${esc(r.t[i])}</textarea>${act}
-      <div class="act-row">${btns}</div>${soft}</div>
-    ${past ? `<div class="xpast">${past}</div>` : ''}</div>`;
+    : `<div class="ltr-letter"><span>이번 주에 들은 것</span>이번 주일 설교와 모임에서 들은 것을 떠올려 봐요.</div><div class="act-row"><button class="btn small ghost" type="button" data-act="read-go" data-resume="1" data-from="${esc(weekSel().book)}">이번 주 과 펼치기</button></div>`;
+  else if (i === 4 && r.t[0]) mid = `<div class="ltr-mine"><span>처음 적은 내 생각</span>${esc(r.t[0])}</div>`;
+  const act = i === 4 ? `<input class="field ltr-act" id="ltrAct" type="text" maxlength="300" data-ltr="act" placeholder="이번 주 작은 실천 하나(선택)" aria-label="이번 주 작은 실천" value="${esc(r.act)}">` : '';
+  const nav = `<button class="btn ghost" type="button" data-act="ltr-prev"${i === 0 ? ' disabled' : ''}>이전</button>${i === 4 ? '<button class="btn" type="button" data-act="ltr-finish">마쳤어요</button>' : '<button class="btn" type="button" data-act="ltr-next">다음</button>'}`;
+  return stage(`${ctx}<span class="ltr-eyebrow">${st.ord} 걸음</span><h1 class="ltr-h" id="xHead" tabindex="-1">${st.name}</h1>${i === 2 ? '' : `<p class="ltr-ask">${esc(ltrAsk(i))}</p>`}${mid}
+    <div class="ltr-paper"><textarea class="field" id="ltrTa" rows="5" data-ltr="${i}" placeholder="${esc(st.ph)}" aria-label="${st.name}">${esc(r.t[i])}</textarea></div>${act}
+    <p class="ltr-hint">적지 않고 넘어가도 돼요.</p>`, nav, rail);
 }
 
 // ── 실제 서버(2-2) ──
@@ -6309,7 +6371,8 @@ function drawRoute(moved) {
   $('#topbar').classList.toggle('bare', start);
   $('#topnav').hidden = start; $('#tabs').hidden = start;
   document.body.dataset.view = v;
-  $('#view').innerHTML = start ? startView(arg) : v === 'week' ? weekView() : v === 'staff' ? staffHomeView() : v === 'wq' ? wqView() : v === 'letter' ? letterView() : v === 'read' ? readView() : v === 'share' ? shareView() : v === 'shelf' ? shelfView(arg) : v === 'record' ? recordView(arg) : v === 'records' ? recordsView() : v === 'found' ? foundView() : v === 'gallery' ? galleryView() : v === 'more' ? moreView() : v === 'admin' ? adminView() : v === 'admin-reorg' ? adminReorgView() : v === 'church-admin' ? churchAdminView() : v === 'survey' ? surveyView(arg) : v === 'about' ? aboutView() : v === 'account' ? accountView() : v === 'acctdel' ? acctDelView() : v === 'guide' ? guideView() : v === 'feedback' ? feedbackView() : v === 'prep' ? prepView() : v === 'prepprint' ? prepPrintView() : v === 'church' ? churchView() : v === 'rooms' ? roomsView() : v === 'manage' ? manageView(arg) : placeView(v);
+  $('#view').innerHTML = start ? startView(arg) : v === 'week' ? weekView() : v === 'staff' ? staffHomeView() : v === 'wq' ? wqView() : v === 'letter' ? '' : v === 'read' ? readView() : v === 'share' ? shareView() : v === 'shelf' ? shelfView(arg) : v === 'record' ? recordView(arg) : v === 'records' ? recordsView() : v === 'found' ? foundView() : v === 'gallery' ? galleryView() : v === 'more' ? moreView() : v === 'admin' ? adminView() : v === 'admin-reorg' ? adminReorgView() : v === 'church-admin' ? churchAdminView() : v === 'survey' ? surveyView(arg) : v === 'about' ? aboutView() : v === 'account' ? accountView() : v === 'acctdel' ? acctDelView() : v === 'guide' ? guideView() : v === 'feedback' ? feedbackView() : v === 'prep' ? prepView() : v === 'prepprint' ? prepPrintView() : v === 'church' ? churchView() : v === 'rooms' ? roomsView() : v === 'manage' ? manageView(arg) : placeView(v);
+  { const host = $('#ltrHost'); host.innerHTML = v === 'letter' ? letterView() : ''; host.hidden = v !== 'letter'; }   // 성경통신 걸음 화면은 나눔하기 창처럼 본문(main) 밖에 둔다(스타일마다 겹침 순서가 달라서)
   placeStaffTip(v);
   if (v === 'survey' && SV_ON && D.role === 'admin' && window.ChurchSurvey) ChurchSurvey.mount(arg);
   svFillCards(v);
@@ -6350,13 +6413,13 @@ const acts = {
   // 성경통신(2026-11-24): 쓴 글은 눌러 넘길 때마다가 아니라 칸에 쓰는 대로 저장한다(input 처리)
   'ltr-open'() { LT = { lid: '' }; ltrOpened(); if (location.hash === '#letter') route(true); else location.hash = '#letter'; },
   'ltr-next'() { ltrStep(1); },
+  'ltr-close'() { location.hash = '#week'; },
   'ltr-prev'() { ltrStep(-1); },
-  'ltr-go'(e, el) { LT.view = Math.min(4, Math.max(0, Number(el.dataset.i))); LT.screen = 'step'; ltrRedraw(); },
+  'ltr-go'(e, el) { if (ltrBusy) return; const from = LT.view, to = Math.min(4, Math.max(0, Number(el.dataset.i))); LT.view = to; LT.screen = 'step'; ltrRedraw(to >= from ? 1 : -1, from); },
   'ltr-frame'() { LT.frame = (LT.frame || 0) + 1; const t = $('#ltrFrame'); if (t) t.textContent = ltrFrames()[LT.frame % ltrFrames().length]; },
-  'ltr-more'() { location.hash = '#week'; },
-  'ltr-finish'() { const r = ltrGet(LT.lid); r.p[4] = true; ltrPut(LT.lid, r); LT.screen = 'done'; ltrRedraw(); },
-  'ltr-collect'() { LT.screen = 'collect'; ltrRedraw(); },
-  'ltr-back'() { LT.screen = ltrGet(LT.lid).p.every(Boolean) ? 'done' : 'step'; ltrRedraw(); },
+  'ltr-finish'() { if (ltrBusy) return; const r = ltrGet(LT.lid); r.p[4] = true; ltrPut(LT.lid, r); LT.screen = 'done'; ltrRedraw(1); },
+  'ltr-collect'() { if (ltrBusy) return; LT.screen = 'collect'; ltrRedraw(1); },
+  'ltr-back'() { if (ltrBusy) return; LT.screen = ltrGet(LT.lid).p.every(Boolean) ? 'done' : 'step'; ltrRedraw(-1); },
   'wq-next'() { const w = walkWeek(), ta = $('#wqTa'), md = $('#wqMed'); if (ta) { const thoughts = readJson(K.walkThought); thoughts[w.n] = ta.value; ls.set(K.walkThought, JSON.stringify(thoughts)); } if (md) { const meds = readJson(K.walkMeditate); meds[w.n] = md.value; ls.set(K.walkMeditate, JSON.stringify(meds)); } WQ.view = Math.min(4, WQ.view + 1); WQ.max = Math.max(WQ.max, WQ.view); if (WQ.view === 4) { const done = readJson(K.walkDone); if (done[w.n] !== true) { const h = HIDDEN.find(x => w.n >= x.from && w.n <= x.to); if (h && hiddenOpen(h) < HIDDEN_CELLS) hiddenNow = h.from + ':' + hiddenOrder[hiddenOpen(h)]; } done[w.n] = true; ls.set(K.walkDone, JSON.stringify(done)); } route(false); window.scrollTo(0, 0); const head = $('#xHead'); if (head) head.focus({ preventScroll: true }); },
   'wq-view'(e, el) { WQ.view = Math.min(WQ.max, Math.max(0, Number(el.dataset.i))); route(false); window.scrollTo(0, 0); const head = $('#xHead'); if (head) head.focus({ preventScroll: true }); },
   'wq-pray'() { toast('데모라 넘어가지 않아요.'); },
