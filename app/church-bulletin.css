@@ -1,0 +1,156 @@
+/* 디다코 교회 주보(2026-11-24): church-bulletin.js의 화면. 색·글자 크기·둥글기는 공용 이름표(family-tokens.css)만 쓴다.
+   종이(인쇄)는 화면 색 테마와 상관없이 흰 바탕에 고정한 색을 쓴다(.paper와 같은 방식). */
+.ic { vertical-align: -.2em; }
+.bl-main { padding: 16px 18px 18px; }
+.bl-main.calm { display: grid; gap: 8px; }
+.bl-main-top, .bl-head { display: flex; align-items: center; justify-content: space-between; gap: 10px; flex-wrap: wrap; }
+.bl-main .wk-aside { display: flex; gap: 6px; flex-wrap: wrap; justify-content: flex-end; }
+.bl-main-body { display: grid; grid-template-columns: minmax(0, 1fr); gap: 12px; margin-top: 12px; }
+.bl-thumb { width: 100%; aspect-ratio: 16 / 9; object-fit: cover; border-radius: var(--r-md, 12px); display: block; }
+.bl-main .lesson-title { font-size: 1.4em; margin: .1em 0 .45em; }
+.bl-main .fine { margin: .5em 0 0; }
+.bl-glance { margin-top: 14px; border-top: 1px solid var(--line); padding-top: 10px; display: grid; gap: 6px; font-size: .92em; }
+.bl-glance div { display: grid; grid-template-columns: 4.6em 1fr; gap: 8px; }
+.bl-glance b { font-weight: 600; color: var(--ink-2); }
+.bl-chips { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 12px; }
+.bl-chips a { display: inline-flex; align-items: center; min-height: 34px; padding: 0 .9em; border-radius: 999px; background: var(--accent-soft); color: var(--accent); font-size: .85em; font-weight: 600; text-decoration: none; }
+.bl-main .act-row { margin-top: 14px; }
+.bl-note { margin: .6em 0 0; }
+.bl-sub { margin: .4em 0 0; }
+@media (min-width: 900px) {
+  .bl-main { padding: 22px 26px 24px; }
+  .bl-main-body { grid-template-columns: 300px minmax(0, 1fr); gap: 24px; align-items: center; }
+  .bl-main .lesson-title { font-size: 1.8em; }
+  .bl-main-grid { display: grid; grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr); gap: 24px; margin-top: 14px; }
+  .bl-main-grid .bl-glance { margin-top: 0; border-top: 0; padding-top: 0; align-content: start; }
+}
+.bl-bar { display: flex; gap: 8px; align-items: center; margin-top: 10px; flex-wrap: wrap; }
+.bl-bar .btn { display: inline-flex; align-items: center; gap: .4em; }
+
+/* 칸과 면(읽기·인쇄 같이) */
+.bl-sheet { display: grid; background: var(--surface); border: 1px solid var(--line); border-radius: var(--r-lg, 16px); overflow: hidden; }
+.bl-sheet.c3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.bl-sheet.c2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.bl-col { display: flex; flex-direction: column; border-left: 1px solid var(--line); min-width: 0; }
+.bl-col:first-child { border-left: 0; }
+.bl-h { background: var(--accent); color: var(--on-accent); padding: .65em 1em; font-family: var(--f-display, inherit); font-weight: 700; display: flex; justify-content: space-between; align-items: center; gap: 8px; }
+.bl-b { padding: .8em 1em 1em; }
+.bl-blk-r + .bl-blk-r { border-top: 1px solid var(--line); }
+.bl-t { width: 100%; border-collapse: collapse; font-size: .88em; }
+.bl-t th { text-align: left; color: var(--accent); font-weight: 700; padding: .35em .3em; border-bottom: 1px solid var(--line-strong); }
+.bl-t td { padding: .5em .3em; border-bottom: 1px solid var(--line); vertical-align: top; }
+.bl-t tr:last-child td { border-bottom: 0; }
+.bl-news { list-style: none; margin: 0; padding: 0; display: grid; gap: 14px; }
+.bl-news li { display: grid; gap: 4px; }
+.bl-news .n { display: inline-flex; align-items: center; gap: 8px; font-family: var(--f-display, inherit); font-weight: 700; color: var(--accent); }
+.bl-news .n i { font-style: normal; display: inline-grid; place-items: center; width: 1.7em; height: 1.7em; border-radius: 50%; background: var(--accent-soft); font-size: .8em; }
+.bl-news p { margin: 0; font-size: .88em; line-height: 1.6; color: var(--ink); word-break: keep-all; }
+.bl-who { display: grid; gap: 6px; font-size: .9em; }
+.bl-who div { display: grid; grid-template-columns: 5.6em 1fr; gap: 8px; }
+.bl-who b { font-weight: 600; color: var(--ink-2); }
+.bl-way { font-size: .88em; line-height: 1.7; display: grid; gap: 4px; }
+.bl-free { margin: 0; font-size: .9em; line-height: 1.8; word-break: keep-all; }
+.bl-face { font-size: .82em; color: var(--ink-2); margin: 16px 0 6px; }
+.bl-face:first-child { margin-top: 12px; }
+.bl-pc + .bl-ph, .bl-pc { margin-top: 14px; }
+
+/* 표지: 휴대폰은 그림을 통째로 위에, 글은 아래 띠에. 단에 놓을 때(fill)는 그림이 칸을 가득 채우고 글이 그 위에 얹힌다 */
+.bl-cover { position: relative; color: #fff; display: flex; flex-direction: column; background: #3B2F25; overflow: hidden; isolation: isolate; }
+.bl-cover img { width: 100%; aspect-ratio: 16 / 9; object-fit: cover; display: block; }
+.bl-cv-row { display: flex; justify-content: space-between; font-size: .78em; padding: .7em 1.1em; opacity: .92; }
+.bl-cv-mid { padding: .2em 1.1em .9em; text-align: center; }
+.bl-cv-mid h2 { font-family: var(--f-display, inherit); font-weight: 400; font-size: 1.3em; line-height: 1.6; margin: 0 0 .3em; word-break: keep-all; }
+.bl-cv-mid span { font-size: .85em; opacity: .92; }
+.bl-cv-foot { padding: .8em 1em 1.1em; text-align: center; border-top: 1px solid rgba(255, 255, 255, .25); }
+.bl-cv-foot b { font-family: var(--f-display, inherit); font-size: 1.3em; display: block; }
+.bl-cv-foot p { margin: .2em 0 0; font-size: .8em; opacity: .92; }
+.bl-cover.fill { flex: 1 1 auto; min-height: 440px; justify-content: space-between; }
+.bl-cover.fill img { position: absolute; inset: 0; width: 100%; height: 100%; aspect-ratio: auto; z-index: -2; }
+.bl-cover.fill::before { content: ""; position: absolute; inset: 0; z-index: -1; background: linear-gradient(180deg, rgba(30, 22, 14, .38), rgba(30, 22, 14, .08) 40%, rgba(30, 22, 14, .74)); }
+.bl-cover.fill .bl-cv-row { margin: 0 1em; padding-left: 0; padding-right: 0; border-bottom: 1px solid rgba(255, 255, 255, .35); }
+.bl-cover.fill .bl-cv-mid { padding: 1.2em; }
+.bl-cover.fill .bl-cv-foot { border-top: 0; }
+.bl-cover.nopic { background: var(--accent); }
+.bl-stack { display: grid; gap: 12px; margin-top: 12px; }
+.bl-stack .bl-pcard { padding: 0; overflow: hidden; }
+.bl-pcard .bl-cover { min-height: 0; }
+.bl-ph { display: block; }
+.bl-pc { display: none; }
+@media (min-width: 900px) { .bl-ph { display: none; } .bl-pc { display: block; } .bl-ph-only { display: none; } }
+
+/* 편집 */
+.bl-meta { margin-top: 12px; }
+.bl-meta-g { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+.bl-wide { grid-column: 1 / -1; }
+.bl-fld { display: grid; gap: 4px; margin-top: 10px; align-content: start; }
+.bl-meta-g .bl-fld { margin-top: 0; }
+.bl-fld > label { font-size: .82em; font-weight: 600; color: var(--ink-2); }
+.bl-meta .status-row { margin: 0; }
+.bl-warn { display: flex; gap: 10px; align-items: flex-start; border: 1px solid var(--accent-mid); background: var(--accent-soft); color: var(--ink); border-radius: var(--r-md, 12px); padding: .7em .9em; font-size: .86em; line-height: 1.55; margin-top: 12px; }
+.bl-warn .ic { flex: none; color: var(--accent); margin-top: .15em; }
+.bl-edit { display: grid; gap: 12px; margin-top: 12px; }
+.bl-pal { display: flex; flex-wrap: wrap; gap: 8px; align-content: start; }
+.bl-pal .bl-pl { flex: 0 0 100%; margin: 4px 0 0; font-size: .82em; font-weight: 600; color: var(--ink-2); }
+.bl-pal button { display: inline-flex; align-items: center; gap: .5em; min-height: var(--touch, 44px); padding: 0 .9em; border-radius: var(--r-md, 12px); border: 1px dashed var(--line-strong); background: transparent; color: var(--ink); font: inherit; font-size: .9em; text-align: left; cursor: pointer; }
+.bl-pal button:disabled { opacity: .45; cursor: default; }
+.bl-pal select { flex: 1 1 100%; }
+.bl-faces { display: grid; gap: 6px; margin-bottom: 10px; }
+.bl-faces .seg { max-width: 220px; }
+.bl-sheet.edit { grid-template-columns: minmax(0, 1fr); }
+.bl-colh { font-size: .78em; color: var(--ink-2); text-align: center; padding: .5em; border-bottom: 1px dashed var(--line-strong); letter-spacing: .08em; }
+.bl-empty { margin: 0; padding: 1em; text-align: center; }
+.bl-blk { position: relative; border: 1px solid var(--line); border-radius: var(--r-md, 12px); background: var(--surface); margin: 8px; overflow: hidden; }
+.bl-blk.sel { border-color: var(--accent); box-shadow: 0 0 0 2px var(--accent-soft); }
+.bl-blk .bl-h { font-size: .92em; padding: .5em .8em; cursor: pointer; display: block; }
+.bl-blk .bl-h .bl-tools { margin-top: 6px; flex-wrap: wrap; }
+.bl-blk .bl-b { padding: .6em .8em; font-size: .88em; color: var(--ink-2); cursor: pointer; word-break: keep-all; overflow-wrap: anywhere; }
+.bl-tools { display: flex; gap: 4px; flex: none; }
+.bl-tools button { display: inline-grid; place-items: center; width: 30px; height: 30px; border-radius: 8px; border: 0; background: rgba(255, 255, 255, .2); color: inherit; cursor: pointer; padding: 0; }
+.bl-tools button:disabled { opacity: .35; cursor: default; }
+.bl-ins { display: grid; gap: 4px; }
+.bl-ins-empty { display: none; }
+.bl-ins-h { display: flex; justify-content: space-between; align-items: center; }
+.bl-ins-h h3 { margin: 0; font-family: var(--f-display, inherit); font-size: 1.1em; }
+.bl-x { display: inline-grid; place-items: center; width: 36px; height: 36px; border-radius: 10px; border: 0; background: transparent; color: var(--ink-2); cursor: pointer; flex: none; padding: 0; }
+.bl-ins .item { border: 1px solid var(--line); border-radius: var(--r-md, 12px); padding: 8px 10px 10px; display: grid; gap: 4px; background: var(--surface-2); margin-top: 8px; }
+.bl-ins .item.bl-row { display: flex; gap: 6px; align-items: center; padding: 6px 6px 6px 8px; }
+.bl-ins .item.bl-row .field { min-width: 0; flex: 1 1 0; }
+.bl-inl { display: flex; gap: 4px; align-items: center; }
+.bl-inl .field { flex: 1 1 auto; min-width: 0; }
+.bl-pair { display: grid; gap: 8px; }
+.bl-pics { display: grid; grid-template-columns: repeat(auto-fill, minmax(64px, 1fr)); gap: 6px; max-height: 190px; overflow: auto; padding: 2px; }
+.bl-pic { border: 2px solid transparent; border-radius: 10px; padding: 0; background: var(--surface-2); cursor: pointer; overflow: hidden; aspect-ratio: 16 / 10; display: block; color: var(--ink-2); font: inherit; font-size: .8em; }
+.bl-pic img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.bl-pic.on { border-color: var(--accent); }
+.bl-danger { margin: 18px 0 0; text-align: center; }
+/* 고치는 창: 휴대폰은 아래에서 올라오고, PC는 오른쪽 칸 */
+.bl-side { display: none; }
+.bl-side.open { display: block; position: fixed; left: 8px; right: 8px; bottom: 8px; z-index: 30; max-height: 64vh; overflow: auto; background: var(--surface); border: 1px solid var(--line-strong); border-radius: var(--r-lg, 16px); box-shadow: 0 -6px 30px rgba(0, 0, 0, .25); }
+.bl-side .card { margin: 0; box-shadow: none; border: 0; }
+@media (min-width: 900px) {
+  .bl-edit { grid-template-columns: 210px minmax(0, 1fr) 320px; align-items: start; }
+  .bl-pal { display: grid; }
+  .bl-pal button { width: 100%; }
+  .bl-sheet.edit.c3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .bl-sheet.edit.c2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .bl-side { display: block; position: sticky; top: 76px; }
+  .bl-side.open { position: sticky; left: auto; right: auto; bottom: auto; z-index: auto; max-height: none; background: none; border: 0; box-shadow: none; overflow: visible; }
+  .bl-ins-empty { display: block; }
+  .bl-ins-h .bl-x { display: none; }
+}
+
+/* 인쇄: A4 가로 한 장의 앞뒤. 글자 크기는 종이 폭에 맞춰 줄고 늘어서 화면 미리보기와 종이가 같은 모양이다 */
+.bl-print-area { --accent: #2B6A62; --on-accent: #FFFFFF; --accent-soft: #DCEBE7; --accent-mid: #8DBDB5; --ink: #1B2523; --ink-2: #5B6965; --line: #D7DEDA; --line-strong: #B9C4BF; --surface: #FFFFFF; --surface-2: #F1F4F2; color: var(--ink); }
+.bl-pgwrap { container-type: inline-size; margin-bottom: 18px; }
+.bl-pg { width: 100%; aspect-ratio: 297 / 210; box-sizing: border-box; padding: 1.68cqw; font-size: 1.4247cqw; background: #fff; border: 1px solid var(--line-strong); box-shadow: 0 6px 20px rgba(0, 0, 0, .12); overflow: hidden; }
+.bl-pg .bl-sheet { height: 100%; border: 0; border-radius: 0; }
+.bl-pg .bl-col { border-left: 1px dashed #C9D1CD; }
+.bl-pg .bl-col:first-child { border-left: 0; }
+.bl-pg .bl-cover.fill { min-height: 0; }
+@media print {
+  body:has(.bl-print-area) { background: #fff !important; }
+  .bl-pgwrap { width: 297mm; margin: 0; break-after: page; page-break-after: always; }
+  .bl-pgwrap:last-child { break-after: auto; page-break-after: auto; }
+  .bl-pgwrap .paper-cap { display: none; }
+  .bl-pg { width: 297mm; height: 210mm; aspect-ratio: auto; border: 0; box-shadow: none; }
+}
