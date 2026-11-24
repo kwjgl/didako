@@ -6157,7 +6157,8 @@ const acts = {
 
   'walk-pick'(e, el) { const w = walkWeek(), d = walkDay || walkToday(), day = w.days.find(x => x.d === d), key = w.n + '-' + d, i = Number(el.dataset.i); if (i === day.answer) { const saved = readJson(K.walkRead); if (saved[key] !== true) { lampNow = key; usageQuiz(key); const h = HIDDEN.find(x => w.n >= x.from && w.n <= x.to); if (h && hiddenOpen(h) < HIDDEN_CELLS) hiddenNow = h.from + ':' + hiddenOrder[hiddenOpen(h)]; } saved[key] = true; ls.set(K.walkRead, JSON.stringify(saved)); delete walkWrong[key]; } else walkWrong[key] = i; walkRedraw(); },
   'walk-day'(e, el) { const days = ['월', '화', '수', '목', '금'], d = el.dataset.d; if (days.indexOf(d) > days.indexOf(walkToday())) { toast(walkNames[d] + '에 열려요'); return; } walkDay = d; walkRedraw(); },
-  'ad-tab'(e, el) { if (el.dataset.v === 'survey') { AD.svChurch = false; location.hash = '#survey'; return; } AD.tab = el.dataset.v === 'analysis' ? 'analysis' : 'manage'; AD.apAsk = false; adRedraw(`[data-act="ad-tab"][data-v="${AD.tab}"]`); },
+  'ad-tab'(e, el) { if (el.dataset.v === 'survey') { AD.svChurch = false; location.hash = '#survey'; return; } AD.tab = el.dataset.v === 'analysis' ? 'analysis' : 'manage'; AD.apAsk = false; if (currentView() === 'survey') { location.hash = '#admin'; return; }   // 설문 화면에서 관리·분석을 누르면 그 화면으로 돌아간다
+   adRedraw(`[data-act="ad-tab"][data-v="${AD.tab}"]`); },
   'ad-fold'(e, el) { const k = el.dataset.v; AD.fold[k] = !AD.fold[k]; adRedraw(`[data-act="ad-fold"][data-v="${k}"]`); },
   'ad-approve'(e, el) { AD.reqs = adReqs().filter(q => q.id !== el.dataset.v); if (AD.reqs.length < 2) AD.apAsk = false; toast('승인했어요.'); adRedraw(); },
   'ad-reject'(e, el) { AD.reqs = adReqs().filter(q => q.id !== el.dataset.v); if (AD.reqs.length < 2) AD.apAsk = false; toast('거절했어요.'); adRedraw(); },
@@ -6169,7 +6170,7 @@ const acts = {
   'ad-unit'(e, el) { AD.unit = el.dataset.v === 'single' ? 'single' : 'family'; adRedraw(`[data-act="ad-unit"][data-v="${AD.unit}"]`); },
   'ad-say'(e, el) { toast(el.dataset.msg || AD_NOCHANGE); },
   // 교회 전체 관리(#church-admin): 탭, 부서 카드, 부서 만들기
-  'ad-ctab'(e, el) { if (el.dataset.v === 'survey') { AD.svChurch = true; location.hash = '#survey'; return; } AD.ctab = el.dataset.v === 'analysis' ? 'analysis' : 'manage'; adRedraw(`[data-act="ad-ctab"][data-v="${AD.ctab}"]`); },
+  'ad-ctab'(e, el) { if (el.dataset.v === 'survey') { AD.svChurch = true; location.hash = '#survey'; return; } AD.ctab = el.dataset.v === 'analysis' ? 'analysis' : 'manage'; if (currentView() === 'survey') { location.hash = '#church-admin'; return; } adRedraw(`[data-act="ad-ctab"][data-v="${AD.ctab}"]`); },
   'ad-deptgo'(e, el) { const d = DATA.admin.depts.find(x => x.id === el.dataset.v); if (!d) return; if (d.name === DATA.church.dept) location.hash = '#admin'; else toast(`데모에서는 ${DATA.church.dept}만 열어요.`); },
   'ad-cnew'() { AD.cNew = { name: '', group: '순', unit: 'single' }; adRedraw(); const f = $('#adCname'); if (f) f.focus({ preventScroll: true }); },
   'ad-cnew-x'() { AD.cNew = null; adRedraw('[data-act="ad-cnew"]'); },
