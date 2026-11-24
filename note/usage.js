@@ -1,6 +1,6 @@
 // 디다코 사용 기록 보내기: 노트(note/)·공동체(community/)·교회(app/)가 함께 쓰는 작은 부품. 공동체와 교회는 ../note/usage.js로 읽는다(places.js·guide.js와 같다).
 // 코이데 app/index.html의 track()과 church-api.js의 usage 보내기를 본떴다. 보내는 곳은 코이데와 함께 쓰는 Supabase 사용 기록(usage_event, app = 'didako')이고,
-// 서버가 받는 이름은 supabase/016_didako_usage.sql이 등록한 27개와 018_didako_core_usage.sql이 더한 6개(핵심 행동: note.walk-done·note.keep·cm/church.quiz-done·share-done), 024_didako_read_book_usage.sql이 더한 2개(cm/church.read-book), 029_didako_letter_usage.sql이 더한 1개(church.letter-open, 성경통신을 연 날 하루 한 번)뿐이다(NAMES가 같은 목록이다. 모르는 이름은 앱이 먼저 버린다).
+// 서버가 받는 이름은 supabase/016_didako_usage.sql이 등록한 27개와 018_didako_core_usage.sql이 더한 6개(핵심 행동: note.walk-done·note.keep·cm/church.quiz-done·share-done), 024_didako_read_book_usage.sql이 더한 2개(cm/church.read-book), 029_didako_letter_usage.sql이 더한 1개(church.letter-open, 말씀 따라가기를 연 날 하루 한 번)뿐이다(NAMES가 같은 목록이다. 모르는 이름은 앱이 먼저 버린다).
 //
 // 보내는 때는 셋이 모두 맞을 때뿐이다(active):
 //   ① 새 길(Supabase)로 로그인해 있다 — 앱이 init의 ok()로 알려 준다(노트 sbMode, 공동체 SB, 교회 CHURCH_ON). 예전 길(Apps Script)·데모·따라 하기(?tutorial)·?demo에서는 거짓이다.

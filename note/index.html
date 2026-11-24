@@ -5185,7 +5185,7 @@ window.matchMedia('(min-width: 1000px)').addEventListener('change', () => { rend
 
 // ── 실제 서버: 이름·기록은 기기에 두고 잠근 덩어리만 맡긴다 ──
 const VK = 'didako-note-vault', LK = 'didako-note-lock', GK = 'didako-note-gone';
-// 디다코 교회(app/) 기록(성경통신에 쓴 글 포함)도 노트 덩어리에 함께 맡긴다. 이 목록은 app/index.html의 같은 목록과 같게 둔다
+// 디다코 교회(app/) 기록(말씀 따라가기에 쓴 글 포함)도 노트 덩어리에 함께 맡긴다. 이 목록은 app/index.html의 같은 목록과 같게 둔다
 const GBS_MAPS = ['didako-read-answers', 'didako-share-memo', 'didako-live-records', 'didako-record-reflections', 'didako-record-answers', 'didako-record-edits', 'didako-weekwalk-thought', 'didako-weekwalk-meditate', 'didako-weekwalk-done', 'didako-letter-texts'];
 const GBS_ONE = ['didako-read-bookmark'];
 const GBS_BASE = 'didako-gbs-base';
@@ -5579,7 +5579,7 @@ function mergeGbs(local, remote, base) {
       let selected;
       if (equal(lv, bv)) selected = rv;
       else if (equal(rv, bv)) selected = lv;
-      else if (name === 'didako-live-records' || name === 'didako-letter-texts') selected = (Number(rv?.at || 0) > Number(lv?.at || 0)) ? rv : lv;   // 성경통신 글도 과마다 한 쪽이라 나중에 고친 쪽을 쓴다
+      else if (name === 'didako-live-records' || name === 'didako-letter-texts') selected = (Number(rv?.at || 0) > Number(lv?.at || 0)) ? rv : lv;   // 말씀 따라가기 글도 과마다 한 쪽이라 나중에 고친 쪽을 쓴다
       else if (name === 'didako-record-reflections' && Array.isArray(lv) && Array.isArray(rv)) {
         const seen = new Set();
         selected = [...lv, ...rv].filter(item => {
