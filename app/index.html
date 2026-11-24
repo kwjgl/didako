@@ -2326,7 +2326,9 @@ const lvFam = () => (Array.isArray(lvRoom().families) ? lvRoom().families : []).
 function liveStep(arg) {
   const me = LV.me;
   if (CHURCH_ON) {
-    if (!LV.sbIn) return LV.err ? 'loading' : '';   // 로그인 전: 첫 화면(세션을 못 읽었으면 안내와 다시 불러오기)
+    // 로그인 전: 첫 화면(세션을 못 읽었으면 안내와 다시 불러오기).
+    //  다만 이 기기에 로그인 기록이 있는데 켜지는 중이라 확인을 못 마쳤다면, 로그인 화면이 잠깐 비치지 않게 '불러오는 중'을 먼저 보인다(코이데도 같다. 2026-11-24).
+    if (!LV.sbIn) return LV.err || (LV.booting && ls.get('didako-note-sb')) ? 'loading' : '';
     if (LV.needChurch && !LV.authBusy) return LV.ap && (arg === 'apply' || arg === 'apply-form') ? arg : 'church';
   } else if (!ls.get(LK.tok)) return LV.needChurch && ls.get(LK.hub) && !LV.authBusy ? 'church' : '';
   if (!me) return 'loading';   // 서버에서 나의 정보를 받는 중(못 받았으면 안내와 다시 불러오기)
