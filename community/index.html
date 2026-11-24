@@ -1130,6 +1130,29 @@ button.gallery-cell { display: block; width: 100%; padding: 0; cursor: pointer; 
 .mg-savebar { display: flex; align-items: center; gap: 10px; margin-top: .8em; }
 .mg-savebar .fine { flex: 1; min-width: 0; margin: 0; }
 .mg-savebar .btn { flex: none; }
+/* 과 편집 보기 좋게(2026-11-24): 가로로 너무 길지 않게 가운데 한 줄, 단계는 색 띠 머리와 번호, 질문은 안쪽 상자, 저장은 화면 아래에 떠 있다 */
+.mg-editpage { max-width: 760px; margin: 0 auto; }
+.mg-stage-card { margin-top: var(--sp-5); }
+.mg-stage-head { display: flex; align-items: flex-end; gap: var(--sp-3); margin: calc(-1 * var(--sp-4)) calc(-1 * var(--sp-4)) 0; padding: var(--sp-3) var(--sp-4); background: var(--accent-soft); border-bottom: 1px solid color-mix(in srgb, var(--accent) 22%, transparent); border-radius: calc(var(--r-lg) - 1px) calc(var(--r-lg) - 1px) 0 0; }
+.mg-stage-head .mg-stage-row { flex: 1; min-width: 0; margin-top: 0; }
+.mg-stage-no { flex: none; display: grid; place-items: center; width: 36px; height: 36px; margin-bottom: 4px; border-radius: var(--r-pill); background: var(--accent); color: var(--on-accent); font-weight: 700; font-size: 1rem; }
+.mg-q { margin-top: var(--sp-3); padding: var(--sp-3); border: 1px solid var(--line-strong); border-radius: var(--r-md); background: var(--surface-2); }
+.mg-stage-head + .mg-q { margin-top: var(--sp-4); }
+.mg-q-head { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: var(--sp-2); }
+.mg-q-head .q-eyebrow { flex: 1; min-width: 0; margin: 0; flex-wrap: nowrap; }
+.mg-q-head .q-eyebrow .walk-tag { flex: none; white-space: nowrap; max-width: 100%; overflow: hidden; text-overflow: ellipsis; }
+.mg-q-head .q-eyebrow .walk-tag:first-child { flex: 0 1 auto; min-width: 0; }
+.mg-q .keep-form { margin-top: var(--sp-3); }
+.mg-q-head .mg-tools { margin-top: 0; gap: 2px; flex: none; }
+.mg-q-head .mg-tools .btn { min-width: 40px; }
+.mg-stage-add { display: flex; gap: var(--sp-2); margin-top: var(--sp-4); }
+.mg-stage-add .btn { flex: 1; min-width: 0; }
+.mg-stage-new { margin: var(--sp-5) 0 var(--sp-3); min-height: 52px; border-style: dashed; border-width: 2px; }
+.mg-dock { position: sticky; bottom: calc(84px + env(safe-area-inset-bottom, 0px)); z-index: 9; margin-top: var(--sp-4); pointer-events: none; transition: bottom .25s ease; }
+.mg-dock .mg-savebar { pointer-events: auto; margin: 0; padding: var(--sp-2) var(--sp-2) var(--sp-2) var(--sp-4); background: var(--surface); border: 1px solid var(--line-strong); border-radius: var(--r-lg); box-shadow: 0 8px 22px -10px rgba(0,0,0,.4); }
+body.hide-bars .mg-dock { bottom: calc(14px + env(safe-area-inset-bottom, 0px)); }
+@media (min-width: 1000px) { .mg-dock, body.hide-bars .mg-dock { bottom: 16px; } }
+.mg-editpage { max-width: none; }
 .mg-pair { display: flex; gap: 10px; flex: 1 1 auto; }
 .mg-pair .btn { flex: 1; min-width: 0; }
 /* 디다코 교재 만들기 목록 줄의 [고치기]·[숨기기] 묶음: 좁은 화면에서는 줄바꿈 */
@@ -3640,13 +3663,13 @@ function mgEditSeg(act, key, values, selected) {
 const mgDateInput = (date, L) => { if (LIVE) return (L && L.iso) || ''; if (SB && L && L.iso) return L.iso; const m = /(\d+)월\s*(\d+)일/.exec(date || ''); return m ? `2026-${m[1].padStart(2, '0')}-${m[2].padStart(2, '0')}` : ''; };
 function mgEditView(b, L) {
   const g = mgGuide(b, L);
-  return `<a class="back-link" href="#mb-${b.id}">${ic('back')}<span>${esc(b.title)}</span></a><p class="eyebrow top-eyebrow mg-pills">${mgChips([b.title, b.period])}</p><div class="page-top"><h1>제${L.no}과 편집</h1></div>
-    <div class="mg-savebar"><p class="fine" id="mgSaveNote">${SB ? sbNoteText(b) : mgBaseMode() ? '쓰는 대로 이 기기에 남아요. 숨겨 둔 동안에는 공동체에 보이지 않아요.' : '쓰는 대로 이 기기에 남고, 이 공동체 책장에 바로 보여요.'}</p><button class="btn ghost small" type="button" data-act="mg-save-now">저장</button></div>
+  return `<div class="mg-editpage"><a class="back-link" href="#mb-${b.id}">${ic('back')}<span>${esc(b.title)}</span></a><p class="eyebrow top-eyebrow mg-pills">${mgChips([b.title, b.period])}</p><div class="page-top"><h1>제${L.no}과 편집</h1></div>
     <p class="mg-warn">${ic('info')}<span>성경 본문은 붙여 넣지 말고 장절만 적어 주세요.</span></p>
     <div class="mg-edit-tabs">${mgEditSeg('mg-edit-tab', '', [['write', '쓰기'], ['preview', '미리보기']], mgEditTab)}</div>
     <div class="mg-edit"><div id="mgWrite"${mgEditTab !== 'write' ? ' hidden' : ''}>${mgWriteHtml(b, L, g)}</div>
       <div id="mgPvPane"${mgEditTab !== 'preview' ? ' hidden' : ''}><section class="card"><p class="opt-name">미리보기</p></section><div id="mgPvBody">${mgPvHtml(b, L, g)}</div></div>
-    </div>`;
+    </div>
+    <div class="mg-dock"><div class="mg-savebar"><p class="fine" id="mgSaveNote">${SB ? sbNoteText(b) : mgBaseMode() ? '쓰는 대로 이 기기에 남아요. 숨겨 둔 동안에는 공동체에 보이지 않아요.' : '쓰는 대로 이 기기에 남고, 이 공동체 책장에 바로 보여요.'}</p><button class="btn" type="button" data-act="mg-save-now">저장</button></div></div></div>`;
 }
 function mgWriteHtml(b, L, g) {
   const key = b.id + ':' + L.no;
@@ -3657,8 +3680,8 @@ function mgWriteHtml(b, L, g) {
   return `<section class="card"><p class="opt-name">기본 정보</p><div class="keep-form">
       ${field('name', '과 제목', L.name, { hint: key + ':name' })}${field('date', '날짜', mgDateInput(L.date, L), { type: 'date' })}${field('ref', '본문 장절', L.ref, { placeholder: '예: 요한복음 15:1~8' })}${field('intro', '소개', L.intro, { ta: true })}
     </div></section>
-    ${g.stages.map((st, si) => `<section class="card" data-mg-stage="${si}"><div class="keep-form mg-stage-row">${field('stage-name', '단계 이름', st.name, { id: 'mge-stage-' + si, si })}${g.stages.length > 1 ? `<button class="btn ghost small mg-stage-del" type="button" data-act="mg-stage-del" data-si="${si}" aria-label="${esc(st.name)} 단계 지우기" title="단계 지우기">${ic('trash')}</button>` : ''}</div>
-      ${st.qs.map((q, qi) => `<div class="gr" data-mg-question="${q.id}"><div class="gt"><p class="q-eyebrow mg-pills"><span class="walk-tag" data-mg-stage-label="${si}">${esc(st.name || '단계')}</span><span class="walk-tag">${isRead(q) ? '읽을 글' : qNo(st, qi)}</span></p><div class="keep-form">
+    ${g.stages.map((st, si) => `<section class="card mg-stage-card" data-mg-stage="${si}"><div class="mg-stage-head"><span class="mg-stage-no" aria-hidden="true">${si + 1}</span><div class="keep-form mg-stage-row">${field('stage-name', '단계 이름', st.name, { id: 'mge-stage-' + si, si })}${g.stages.length > 1 ? `<button class="btn ghost small mg-stage-del" type="button" data-act="mg-stage-del" data-si="${si}" aria-label="${esc(st.name)} 단계 지우기" title="단계 지우기">${ic('trash')}</button>` : ''}</div></div>
+      ${st.qs.map((q, qi) => `<div class="mg-q" data-mg-question="${q.id}"><div class="mg-q-head"><p class="q-eyebrow mg-pills"><span class="walk-tag" data-mg-stage-label="${si}">${esc(st.name || '단계')}</span><span class="walk-tag">${isRead(q) ? '읽을 글' : qNo(st, qi)}</span></p><div class="mg-tools">${[['up', '위로', 'up'], ['down', '아래로', 'down'], ['dup', '복제', 'copy'], ['del', '지우기', 'trash']].map(([act, label, symbol]) => `<button class="btn ghost small" type="button" data-act="mg-q-${act}" data-si="${si}" data-qi="${qi}" aria-label="${esc(st.name)} ${isRead(q) ? '읽을 글' : qNo(st, qi) + '번 질문'} ${label}" title="${label}"${act === 'up' && qi === 0 || act === 'down' && qi === st.qs.length - 1 ? ' disabled' : ''}>${ic(symbol)}</button>`).join('')}</div></div><div class="keep-form">
         ${isRead(q) ? `${field('q-h', '제목 (선택)', q.h, { id: 'mge-' + q.id + '-h', si, qi })}
           ${field('q-t', '글', q.t, { id: 'mge-' + q.id + '-t', ta: true, rows: 6, si, qi })}
           <div class="mg-md"><span class="mg-md-lbl">쓸 수 있는 꾸미기</span><code>**굵게**</code><code>*기울임*</code><code>### 소제목</code><code>- 목록</code><code>&gt; 인용</code><code>| 표 |</code></div>
@@ -3667,11 +3690,10 @@ function mgWriteHtml(b, L, g) {
           `${field('q-t', '질문', q.t, { id: 'mge-' + q.id + '-t', ta: true, si, qi, hint: key + ':' + q.id })}
           ${field('q-sub', '보조 설명', q.sub, { id: 'mge-' + q.id + '-sub', si, qi })}
           ${field('q-vs', '관련 구절', (q.vs || []).join(', '), { id: 'mge-' + q.id + '-vs', si, qi, placeholder: '예: 요한복음 10:11, 이사야 5:1~2' })}`}
-        <div class="mg-tools">${[['up', '위로', 'up'], ['down', '아래로', 'down'], ['dup', '복제', 'copy'], ['del', '지우기', 'trash']].map(([act, label, symbol]) => `<button class="btn ghost small" type="button" data-act="mg-q-${act}" data-si="${si}" data-qi="${qi}" aria-label="${esc(st.name)} ${isRead(q) ? '읽을 글' : qNo(st, qi) + '번 질문'} ${label}" title="${label}"${act === 'up' && qi === 0 || act === 'down' && qi === st.qs.length - 1 ? ' disabled' : ''}>${ic(symbol)}</button>`).join('')}</div>
-      </div></div></div>`).join('')}
-      <button class="btn ghost small" type="button" data-act="mg-q-add" data-si="${si}">질문 추가</button>
-      <button class="btn ghost small" type="button" data-act="mg-read-add" data-si="${si}">읽을 글 추가</button></section>`).join('')}
-    <button class="btn ghost wide" type="button" data-act="mg-stage-add">단계 추가</button>
+      </div></div>`).join('')}
+      <div class="mg-stage-add"><button class="btn ghost small" type="button" data-act="mg-q-add" data-si="${si}">질문 추가</button>
+      <button class="btn ghost small" type="button" data-act="mg-read-add" data-si="${si}">읽을 글 추가</button></div></section>`).join('')}
+    <button class="btn ghost wide mg-stage-new" type="button" data-act="mg-stage-add">단계 추가</button>
     <section class="card"><p class="opt-name">깊이 묵상하기${DidakoTip.btn('깊이 묵상하기 질문은 교재마다 같아요.', '깊이 묵상하기')}</p>${g.triple.map(t => `<div class="tri-item"><span class="who">${esc(t.who)}</span><p class="q-t">${esc(t.t)}</p></div>`).join('')}</section>
     <section class="card"><div class="keep-form">${field('wrap', '마무리 적용·기도 안내 (선택)', L.wrap, { ta: true })}</div></section>
     <div class="gc"><a class="gr" href="#mx-${b.id}.${L.no}"><span class="gt"><b>인쇄용 보기</b></span><span class="ch" aria-hidden="true">›</span></a></div>
