@@ -13,7 +13,7 @@
 //   where(옛 기본 서버가 하던 "내 교회 찾기") → didako_ch_me의 교회 소속 · join(옛 기본 서버의 교회 코드로 들어가기) → church_join(코이데 공용 함수)
 //   logout → DidakoSb.signOut(로그인 세션을 끊는다. 노트·공동체도 같은 세션이라 함께 로그아웃된다)
 //   books → didako_ch_books_view (보는 사람에 맞게 서버가 걸러서 준다: 회원은 '모두' 과만 리더 칸·진행 안내 없이, 쓰는 사람은 준비 중·보관까지)
-//   bookSave → didako_ch_book_save · bookClose → didako_ch_book_close · bookCopy → didako_ch_book_copy · basicImport → didako_ch_basic_import
+//   bookSave → didako_ch_book_save · bookClose → didako_ch_book_close · bookDelete → didako_ch_book_delete(027) · bookCopy → didako_ch_book_copy · basicImport → didako_ch_basic_import
 //   lessonSave → didako_ch_lesson_save · lessonStatus → didako_ch_lesson_status · lessonDelete → didako_ch_lesson_delete
 //   baseList(새 길에만 있는 일) → didako_base_list(supabase/005·007, 디다코 공동체와 같은 함수): 디다코 기본 교재 가져오기 목록이 앱 관리자의 숨김·삭제·고친 판을 따르게 한다
 //   관리 화면(3단계-4가, supabase/012): adCtx → didako_ch_ops_ctx · adRoster → didako_ch_roster · adPending → didako_ch_pending(부서) · adInvites → didako_ch_invites
@@ -177,6 +177,7 @@ window.didakoChurchApi = (() => {
           p_meta: { cover: body.cover, coverName: body.coverName, range: body.range, period: body.period, start: body.start, level: body.level, levelNote: body.levelNote } });   // 보내지 않은 칸(undefined)은 빠져서 서버가 있던 값을 지킨다
       }
       case 'bookClose': return rpc('didako_ch_book_close', { p_id: uuid(body.id, '교재를 찾지 못했어요.'), p_closed: body.closed !== false });
+      case 'bookDelete': return rpc('didako_ch_book_delete', { p_id: uuid(body.id, '교재를 찾지 못했어요.') });   // supabase/027: 배포한 적 없는 교재만
       case 'bookCopy': return rpc('didako_ch_book_copy', { p_id: uuid(body.id, '교재를 찾지 못했어요.') });
       case 'basicImport': return rpc('didako_ch_basic_import', { p_dept: deptOf(body.deptId), p_book: body.book && typeof body.book === 'object' ? body.book : {}, p_lessons: Array.isArray(body.lessons) ? body.lessons : [] });
       case 'lessonSave': return rpc('didako_ch_lesson_save', { p_book: uuid(body.bookId, '교재를 찾지 못했어요.'), p_no: body.no == null || body.no === '' ? null : lessonNo(body.no),
