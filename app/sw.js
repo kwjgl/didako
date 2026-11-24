@@ -4,8 +4,8 @@
  * 아래 CACHE 번호는 남겨 둔 사본의 이름표다. 번호를 올리면 예전 사본을 지운다(AGENTS.md 서비스워커 캐시).
  * 데모에는 서버가 없다. 같은 주소의 파일만 다루고, 글꼴 같은 다른 주소의 요청은 건드리지 않는다.
  */
-const CACHE = 'didako-v207';
-const SHELL = ['./', 'index.html', 'config.js', 'sb.js', 'church-api.js', 'account-delete.js', 'family-tokens.css', 'family-ui.css', 'design-styles.css', 'church-survey.css', 'church-survey.js', 'church-survey-qr.js', 'info-tip.js', 'koinobia-logo.js', 'font-warm.js', 'family-tap.js', 'family-flow.js', 'covers.js', 'demo-data.js', 'book-prophets.js', '../community/book-trinity.js', '../community/book-family.js', '../community/book-jesus-walk.js', '../community/book-hebrew-eyes.js', '../community/book-second-temple.js', '../community/book-feasts.js', '../community/book-gospel.js', '../note/places.js', '../note/splash.js', '../note/guide.js', '../note/guide.css', '../note/usage.js', 'practice.js', 'manifest.webmanifest', 'icons/icon-192.png', 'icons/icon-512.png', 'icons/icon-maskable-512.png', 'icons/apple-touch-icon.png', 'icons/favicon-32.png'];
+const CACHE = 'didako-v208';
+const SHELL = ['./', 'index.html', 'config.js', 'sb.js', 'church-api.js', 'account-delete.js', 'family-tokens.css', 'family-ui.css', 'design-styles.css', 'church-survey.css', 'church-survey.js', 'church-survey-qr.js', 'church-bulletin.css', 'church-bulletin.js', 'info-tip.js', 'koinobia-logo.js', 'font-warm.js', 'family-tap.js', 'family-flow.js', 'covers.js', 'demo-data.js', 'book-prophets.js', '../community/book-trinity.js', '../community/book-family.js', '../community/book-jesus-walk.js', '../community/book-hebrew-eyes.js', '../community/book-second-temple.js', '../community/book-feasts.js', '../community/book-gospel.js', '../note/places.js', '../note/splash.js', '../note/guide.js', '../note/guide.css', '../note/usage.js', 'practice.js', 'manifest.webmanifest', 'icons/icon-192.png', 'icons/icon-512.png', 'icons/icon-maskable-512.png', 'icons/apple-touch-icon.png', 'icons/favicon-32.png'];
 
 self.addEventListener('install', e => {
   // GitHub Pages가 파일을 잠시 그대로 쓰라고 해도 새로 받도록 사본을 쓰지 않고 요청한다
