@@ -3572,7 +3572,7 @@ async function baseHideServer(id, hidden) {
 // 책 정보(펴낸 곳, 만든 날, ISBN, 표4 소개 글 등)는 앱 관리자만 고친다. 실제 서버는 서버(didako_base_print_save, supabase/032)에 두고,
 // 서버에 아직 칸이 없거나 데모이면 이 기기에만 둔다. 마지막으로 만든 본문 쪽수도 이 기기에만 둔다(표지의 책등 폭을 셈하는 데 쓴다).
 const BIND_INFO = 'didako-bind-info', BIND_PAGES = 'didako-bind-pages';
-const BIND = { info: readJson(BIND_INFO), pages: readJson(BIND_PAGES), ready: !SB, serverOff: false };
+const BIND = { info: readJson(BIND_INFO), pages: readJson(BIND_PAGES), ready: !SB, loaded: !SB, serverOff: false };
 const bindInfoOf = id => DidakoBookPrint.infoOf(id, BIND.info[id]);
 async function bindLoad() {
   if (!SB || BIND.ready) return;
@@ -3582,6 +3582,7 @@ async function bindLoad() {
     if (r && typeof r === 'object' && !Array.isArray(r)) Object.keys(r).forEach(k => { BIND.info[k] = r[k]; });
     ls.set(BIND_INFO, JSON.stringify(BIND.info));
   } catch (e) { BIND.serverOff = true; }
+  BIND.loaded = true;
   if (currentView() === 'admin/bind') route(false);
 }
 function bindInit() { bindLoad(); }
@@ -3594,8 +3595,18 @@ function bindSource(id) {
   });
   return { b, lessons };
 }
+// ISBN 칸 아래 안내: 올바른 번호이면 바코드를 그린다고, 아니면 어디가 문제인지 바로 알려 준다
+function isbnHintText(v) {
+  const t = String(v || '').trim();
+  if (!t) return '숫자 13자리(978 또는 979로 시작)를 적으면 표4에 번호와 바코드를 그려요. 하이픈은 있어도 없어도 돼요.';
+  const d = DidakoBookPrint.isbn13(t);
+  if (d) return d !== t.replace(/\D/g, '').slice(0, 13) ? `바코드는 ${d}로 그려요.` : '올바른 번호예요. 표4에 번호와 바코드를 그려요.';
+  return `올바른 ISBN이 아니에요(끝자리 확인 숫자가 맞지 않거나 자릿수가 달라요). 번호는 표4에 적히지만 바코드는 그리지 않아요.`;
+}
 function bindView(id) {
   const b = isAppAdmin() && baseManaged().find(x => x.id === id); if (!b) return baseBooksView();
+  // 서버에서 책 정보를 받기 전에 칸을 열면 받은 값이 쓰던 글을 덮거나 쓰던 글이 서버 값을 덮으니, 다 받은 뒤에 연다
+  if (!BIND.loaded) return `<a class="back-link" href="#admin/books">${ic('back')}<span>디다코 교재 만들기</span></a><div class="page-top"><h1>제본용 PDF 만들기</h1></div><p class="hint">책 정보를 불러오는 중이에요…</p>`;
   const i = bindInfoOf(id), pages = Number(BIND.pages[id]) || 0, named = b.lessons.filter(L => String(L.name || '').trim()).length;
   const sel = (key, rows, val) => `<select class="field" id="${key}">${rows.map(([v, n]) => `<option value="${v}"${String(val) === String(v) ? ' selected' : ''}>${esc(n)}</option>`).join('')}</select>`;
   const isbnBad = String(i.isbn || '').trim() && !DidakoBookPrint.isbnOk(i.isbn);
@@ -3604,7 +3615,7 @@ function bindView(id) {
     <div class="more-grid"><div><section class="card"><p class="eyebrow" style="margin:0">책 정보</p><div class="keep-form">
       <div><label for="bdPub">펴낸 곳 <span class="hint">선택</span></label><input class="field" id="bdPub" maxlength="60" value="${esc(i.publisher)}"></div>
       <div><label for="bdMade">만든 날 <span class="hint">비우면 PDF를 만드는 날</span></label><input class="field" id="bdMade" maxlength="30" value="${esc(i.madeAt)}" placeholder="예: 2026년 11월 26일"></div>
-      <div><label for="bdIsbn">ISBN <span class="hint">선택</span></label><input class="field" id="bdIsbn" maxlength="30" inputmode="numeric" value="${esc(i.isbn)}" placeholder="예: 979-11-000000-0-0"><p class="hint">13자리 ISBN이면 표4에 바코드를 그려요.${isbnBad ? ' 지금 적힌 번호는 올바르지 않아 바코드를 그리지 않아요.' : ''}</p></div>
+      <div><label for="bdIsbn">ISBN <span class="hint">선택</span></label><input class="field" id="bdIsbn" maxlength="30" inputmode="numeric" value="${esc(i.isbn)}" placeholder="예: 979-11-000000-0-0"><p class="hint" id="bdIsbnHint">${isbnHintText(i.isbn)}</p></div>
       <div><label for="bdBlurb">표4 소개 글 <span class="hint">선택, 500자까지</span></label><textarea class="field" id="bdBlurb" rows="5" maxlength="500">${esc(i.blurb)}</textarea><p class="hint">첫 줄은 크게, 줄을 바꾼 뒤의 글은 작게 보여요.</p></div>
       <div><label for="bdLines">질문 밑 쓰는 줄</label>${sel('bdLines', [[0, '없음(읽는 책)'], [2, '두 줄'], [3, '세 줄']], i.lines)}</div>
       <div><label for="bdSpine">책등 폭 <span class="hint">mm, 비우면 쪽수로 셈해요</span></label><input class="field" id="bdSpine" inputmode="decimal" maxlength="8" value="${esc(i.spine)}" placeholder="${pages ? `지금은 ${spine}mm` : '본문을 만들면 알려 드려요'}"></div>
@@ -6118,6 +6129,7 @@ document.addEventListener('error', e => {
 document.addEventListener('input', e => {
   if (e.target.id === 'mgCoverName') { mgPreview(); return; }
   const t = e.target;
+  if (t.id === 'bdIsbn') { const h = $('#bdIsbnHint'); if (h) h.textContent = isbnHintText(t.value); return; }
   if (t.id === 'lvCode') { const g = $('#lvGo'); if (g) g.disabled = t.value.trim().length < 4; return; }   // 교회 코드는 네 글자부터
   if (t.dataset && t.dataset.mg) { mgEditInput(t); return; }
   if (t.id === 'mgTitle') { const h = $('#mgTitleHint'); if (h && t.value.trim()) h.hidden = true; }
