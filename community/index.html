@@ -1476,6 +1476,7 @@ html.tutorial .demo-tag { display: none !important; }
 <script src="book-church-path-3.js"></script>
 <script src="book-church-path-4.js"></script>
 <script src="book-church-path-5.js"></script>
+<script src="book-print.js"></script>
 <script src="../note/guide.js"></script>
 <script src="../note/places.js"></script>
 <script src="../note/usage.js"></script>
@@ -1907,7 +1908,7 @@ function closeMenu() { const m = $('#settings'); m.hidden = true; $('#gearBtn').
 // 이름표와 어느 탭이 켜지는지는 여기에 모아 둔다. 아직 만들지 않은 화면은 차분한 안내 한 장으로 연다(막다른 길이 없게 이번 주로 가는 링크를 둔다)
 const PLACE = {
   wq: ['이번 주의 질문', 'week'], read: ['펼치기', 'week'], share: ['나눔하기', 'share'], shelf: ['책장', 'shelf'], record: ['내 기록', 'record'], records: ['모든 기록', 'record'], found: ['찾은 말씀', 'record'], gallery: ['올해의 그림', 'record'], more: ['더보기', 'more'],
-  church: ['우리 공동체', 'more'], prep: ['진행 준비', 'share'], prepprint: ['인쇄', 'share'], manage: ['교재 관리', 'more'], 'admin/books': ['디다코 교재 만들기', 'more'], about: ['디다코 소개', 'more'], account: ['계정과 동기화', 'more'], acctdel: ['계정 탈퇴', 'more'], guide: ['사용법', 'more'], feedback: ['의견 보내기', 'more']
+  church: ['우리 공동체', 'more'], prep: ['진행 준비', 'share'], prepprint: ['인쇄', 'share'], manage: ['교재 관리', 'more'], 'admin/books': ['디다코 교재 만들기', 'more'], 'admin/bind': ['제본용 PDF 만들기', 'more'], about: ['디다코 소개', 'more'], account: ['계정과 동기화', 'more'], acctdel: ['계정 탈퇴', 'more'], guide: ['사용법', 'more'], feedback: ['의견 보내기', 'more']
 };
 const VIEWS = ['start', 'week'].concat(Object.keys(PLACE));
 // 책 안(#book-교재)과 기록 상세(#rec-기록)는 책장·내 기록 안의 화면이다
@@ -1916,6 +1917,8 @@ function parseHash() {
   const am = /^shelf\/all\/(own|walk|didako)$/.exec(h);   // 책장의 모두 보기 화면
   if (am) return { v: 'shelf', arg: 'all:' + am[1] };
   if (m) return { v: m[1] === 'book' ? 'shelf' : 'record', arg: m[2] };
+  const bm = /^bind-([\w-]+)$/.exec(h);   // 제본용 PDF 만들기(앱 관리자): #bind-교재 id
+  if (bm) return { v: 'admin/bind', arg: bm[1] };
   if (/^(mb|me|mp|mx|mxb)-([\w.-]+)$/.test(h)) return { v: 'manage', arg: h };
   // 실제 모드의 첫 접속 걸음(#start/dept …). 데모에서는 쓰지 않아 route가 첫 화면으로 돌린다
   const sm = /^start\/(dept|room|family|who|name|new|consent|wait|done|church|setup|list|join)$/.exec(h);
@@ -1923,7 +1926,7 @@ function parseHash() {
   return { v: VIEWS.includes(h) ? h : null, arg: '' };
 }
 const isAllArg = arg => typeof arg === 'string' && arg.startsWith('all:');
-const hashFor = (v, arg) => v === 'shelf' && isAllArg(arg) ? '#shelf/all/' + arg.slice(4) : v === 'manage' && arg ? '#' + arg : v === 'start' && arg ? '#start/' + arg : '#' + (arg ? (v === 'shelf' ? 'book-' : 'rec-') + arg : v);
+const hashFor = (v, arg) => v === 'shelf' && isAllArg(arg) ? '#shelf/all/' + arg.slice(4) : v === 'manage' && arg ? '#' + arg : v === 'start' && arg ? '#start/' + arg : v === 'admin/bind' && arg ? '#bind-' + arg : '#' + (arg ? (v === 'shelf' ? 'book-' : 'rec-') + arg : v);
 const currentView = () => parseHash().v;
 
 // ── 이번 주 ──
@@ -3501,7 +3504,7 @@ function baseBooksView() {
     const del = `<button class="btn ghost small warn-line" type="button" data-act="base-del" data-v="${esc(b.id)}" aria-label="${esc(b.title)} 지우기">지우기</button>`;
     return `<div class="gr mg-row"><span class="mg-cover"${hidden ? ' style="opacity:.5"' : ''}>${bookCover({ ...b, id: '' }, 'list')}</span>
       <span class="gt"><b>${esc(b.title)}</b>${b.id.startsWith('db') ? ' <span class="walk-tag">새로 쓴 교재</span>' : baseAppId(b.id) && b.baseOwn ? ' <span class="walk-tag">편집함</span>' : ''}${hidden ? ' <span class="walk-tag">숨김</span>' : ''}<span class="gd">${b.lessons.length}과</span></span>
-      <span class="base-btns">${edit}${toggle}${del}</span></div>`;
+      <span class="base-btns">${edit}<a class="btn ghost small" href="#bind-${esc(b.id)}" aria-label="${esc(b.title)} 제본용 PDF">제본</a>${toggle}${del}</span></div>`;
   }).join('');
   return `<div class="col-n"><a class="back-link" href="#more">${ic('back')}<span>더보기</span></a>
     <h1>디다코 교재 만들기${DidakoTip.btn('디다코가 내는 교재예요. 숨긴 교재는 공동체가 새로 고르는 곳에서 빠지고, 이미 읽고 있는 공동체는 그대로 읽어요.', '디다코 교재 만들기')}</h1>
@@ -3564,6 +3567,95 @@ async function baseHideServer(id, hidden) {
   roomRedraw();
   toast(hidden ? '숨겼어요.' : '다시 보여요.');
 }
+// ══ 제본용 PDF 만들기(2026-11-26, 앱 관리자) ══
+// 디다코 교재 한 권을 B5 책의 본문과 표지(표1~표4, 책등)로 엮는다. 글은 book-print.js가 만들고, 쪽 나누기와 인쇄는 새 창(book-print.html)이 한다.
+// 책 정보(펴낸 곳, 만든 날, ISBN, 표4 소개 글 등)는 앱 관리자만 고친다. 실제 서버는 서버(didako_base_print_save, supabase/032)에 두고,
+// 서버에 아직 칸이 없거나 데모이면 이 기기에만 둔다. 마지막으로 만든 본문 쪽수도 이 기기에만 둔다(표지의 책등 폭을 셈하는 데 쓴다).
+const BIND_INFO = 'didako-bind-info', BIND_PAGES = 'didako-bind-pages';
+const BIND = { info: readJson(BIND_INFO), pages: readJson(BIND_PAGES), ready: !SB, serverOff: false };
+const bindInfoOf = id => DidakoBookPrint.infoOf(id, BIND.info[id]);
+async function bindLoad() {
+  if (!SB || BIND.ready) return;
+  BIND.ready = true;
+  try {
+    const r = await DidakoCm.basePrintList();
+    if (r && typeof r === 'object' && !Array.isArray(r)) Object.keys(r).forEach(k => { BIND.info[k] = r[k]; });
+    ls.set(BIND_INFO, JSON.stringify(BIND.info));
+  } catch (e) { BIND.serverOff = true; }
+  if (currentView() === 'admin/bind') route(false);
+}
+function bindInit() { bindLoad(); }
+// 본문에 실을 과: 제목이 있는 과만. 질문 자료는 고친 판이 있으면 그것을 쓴다
+function bindSource(id) {
+  const b = baseManaged().find(x => x.id === id); if (!b) return null;
+  const lessons = b.lessons.filter(L => String(L.name || '').trim()).map(L => {
+    const g = BASE_OWN.guides[id + ':' + L.no] || CM_BASE.guides[id + ':' + L.no] || { stages: [], triple: [] };
+    return { no: L.no, name: L.name, ref: L.ref, intro: L.intro, wrap: L.wrap, stages: g.stages || [], triple: g.triple || [] };
+  });
+  return { b, lessons };
+}
+function bindView(id) {
+  const b = isAppAdmin() && baseManaged().find(x => x.id === id); if (!b) return baseBooksView();
+  const i = bindInfoOf(id), pages = Number(BIND.pages[id]) || 0, named = b.lessons.filter(L => String(L.name || '').trim()).length;
+  const sel = (key, rows, val) => `<select class="field" id="${key}">${rows.map(([v, n]) => `<option value="${v}"${String(val) === String(v) ? ' selected' : ''}>${esc(n)}</option>`).join('')}</select>`;
+  const isbnBad = String(i.isbn || '').trim() && !DidakoBookPrint.isbnOk(i.isbn);
+  const spine = DidakoBookPrint.spineOf(pages, i);
+  return `<a class="back-link" href="#admin/books">${ic('back')}<span>디다코 교재 만들기</span></a><p class="eyebrow top-eyebrow mg-pills">${mgChips([b.title, b.kind])}</p><div class="page-top"><h1>제본용 PDF 만들기</h1></div>
+    <div class="more-grid"><div><section class="card"><p class="eyebrow" style="margin:0">책 정보</p><div class="keep-form">
+      <div><label for="bdPub">펴낸 곳 <span class="hint">선택</span></label><input class="field" id="bdPub" maxlength="60" value="${esc(i.publisher)}"></div>
+      <div><label for="bdMade">만든 날 <span class="hint">비우면 PDF를 만드는 날</span></label><input class="field" id="bdMade" maxlength="30" value="${esc(i.madeAt)}" placeholder="예: 2026년 11월 26일"></div>
+      <div><label for="bdIsbn">ISBN <span class="hint">선택</span></label><input class="field" id="bdIsbn" maxlength="30" inputmode="numeric" value="${esc(i.isbn)}" placeholder="예: 979-11-000000-0-0"><p class="hint">13자리 ISBN이면 표4에 바코드를 그려요.${isbnBad ? ' 지금 적힌 번호는 올바르지 않아 바코드를 그리지 않아요.' : ''}</p></div>
+      <div><label for="bdBlurb">표4 소개 글 <span class="hint">선택, 500자까지</span></label><textarea class="field" id="bdBlurb" rows="5" maxlength="500">${esc(i.blurb)}</textarea><p class="hint">첫 줄은 크게, 줄을 바꾼 뒤의 글은 작게 보여요.</p></div>
+      <div><label for="bdLines">질문 밑 쓰는 줄</label>${sel('bdLines', [[0, '없음(읽는 책)'], [2, '두 줄'], [3, '세 줄']], i.lines)}</div>
+      <div><label for="bdSpine">책등 폭 <span class="hint">mm, 비우면 쪽수로 셈해요</span></label><input class="field" id="bdSpine" inputmode="decimal" maxlength="8" value="${esc(i.spine)}" placeholder="${pages ? `지금은 ${spine}mm` : '본문을 만들면 알려 드려요'}"></div>
+      <div><label for="bdReview">감수 전 표시</label>${sel('bdReview', [['false', '넣지 않기'], ['true', '판권 쪽에 넣기']], i.review)}</div>
+      <div><label for="bdGuide">이 책을 읽는 법 쪽</label>${sel('bdGuide', [['true', '넣기'], ['false', '넣지 않기']], i.guide)}</div>
+      <button class="btn ghost" type="button" data-act="bind-save" data-v="${esc(id)}">책 정보 저장</button>
+      <p class="hint" id="bdSaved" aria-live="polite">${BIND.serverOff ? '서버에 책 정보 칸이 아직 없어서(SQL 032) 이 기기에만 저장돼요.' : '앱 관리자만 보고 고칠 수 있어요.'}</p>
+    </div></section></div>
+    <div><section class="card"><p class="eyebrow" style="margin:0">1 본문</p>
+      <p style="margin:.4em 0 .8em">${named}과를 B5 책 쪽으로 나눠요. 한 권이라 1~2분 걸려요. 새 창이 열리면 [PDF로 저장]을 눌러 주세요.</p>
+      <button class="btn wide" type="button" data-act="bind-body" data-v="${esc(id)}">본문 PDF 만들기</button>
+      <p class="hint" id="bdPages">${pages ? `마지막으로 만든 본문은 ${pages}쪽이에요.` : '아직 본문을 만들지 않았어요.'}</p></section>
+    <section class="card"><p class="eyebrow" style="margin:0">2 표지</p>
+      <p style="margin:.4em 0 .8em">표1(앞표지), 표4(뒤표지), 책등, 표2와 표3(안쪽)이 한 파일이에요. 책등 폭은 본문 쪽수로 셈하니 본문을 먼저 만들어 주세요.</p>
+      <button class="btn wide" type="button" id="bdCoverBtn" data-act="bind-cover" data-v="${esc(id)}"${pages || Number(i.spine) > 0 ? '' : ' disabled'}>표지 PDF 만들기</button>
+      <p class="hint">B5(176×250mm), 자르는 선 3mm를 더한 크기예요. 색은 화면 색이라 인쇄소에서 조금 달라질 수 있어요.</p></section></div></div>`;
+}
+function bindRead(id) {
+  const g = k => { const el = $('#' + k); return el ? el.value : ''; };
+  return Object.assign({}, bindInfoOf(id), {
+    publisher: g('bdPub').trim(), madeAt: g('bdMade').trim(), isbn: g('bdIsbn').trim(), blurb: g('bdBlurb').trim().replace(/[ \t]+\n/g, '\n'), lines: Number(g('bdLines')),
+    spine: g('bdSpine').trim().replace(/[^\d.]/g, '').slice(0, 8), review: g('bdReview') === 'true', guide: g('bdGuide') !== 'false' });
+}
+// 책 정보를 이 기기에 먼저 두고, 실제 서버면 서버에도 맡긴다(서버에 칸이 없으면 이 기기에만)
+async function bindPut(id, info) {
+  BIND.info[id] = info; ls.set(BIND_INFO, JSON.stringify(BIND.info));
+  if (!SB) return true;
+  try { const r = await DidakoCm.basePrintSave(id, info); if (r && r.info) { BIND.info[id] = r.info; ls.set(BIND_INFO, JSON.stringify(BIND.info)); } BIND.serverOff = false; return true; }
+  catch (e) { if (e && e.code === 'login') throw e; if (e && e.code === 'bad' && !/^서버가 받지 못했어요/.test(String(e.message || ''))) throw e; BIND.serverOff = true; return false; }
+}
+function bindOpen(kind, id) {
+  const src = bindSource(id); if (!src) return;
+  const info = bindRead(id);
+  BIND.info[id] = info; ls.set(BIND_INFO, JSON.stringify(BIND.info));
+  const abs = rel => new URL(rel, location.href).href;
+  const motif = (src.b.cover || {}).motif || 'star';
+  const common = () => ({ book: src.b, info: BIND.info[id], logoHtml: window.KoinobiaLogo ? window.KoinobiaLogo.html() : '', symbolSrc: abs('img/covers-print/' + motif + '.webp') });
+  window.DidakoBookJob = {
+    kind, title: src.b.title + (kind === 'cover' ? ' 표지' : ' 본문'),
+    build: memo => kind === 'cover' ? DidakoBookPrint.cover({ ...common(), pages: Number(BIND.pages[id]) || 0 })
+      : DidakoBookPrint.body({ ...common(), lessons: src.lessons, md: mdHtml, imgBase: abs('img/books/'), memo, today: new Date() }),
+    done: n => {
+      BIND.pages[id] = n; ls.set(BIND_PAGES, JSON.stringify(BIND.pages));
+      const el = $('#bdPages'); if (el) el.textContent = `마지막으로 만든 본문은 ${n}쪽이에요.`;
+      const b = $('#bdCoverBtn'); if (b) b.disabled = false;
+    }
+  };
+  const w = window.open('book-print.html', '_blank');
+  if (!w) { toast('새 창이 막혔어요. 이 사이트의 팝업을 허용해 주세요.'); return; }
+  bindPut(id, info).then(ok => { if (!ok) { const el = $('#bdSaved'); if (el) el.textContent = '서버에 책 정보 칸이 아직 없어서(SQL 032) 이 기기에만 저장돼요.'; } }).catch(e => toast(String(e && e.message || '').replace(/^bad:\s*/, '') || '저장하지 못했어요.'));
+}
 const mgLongDate = v => { const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(v || ''); return m ? `${m[1]}년 ${Number(m[2])}월 ${Number(m[3])}일` : (v || ''); };
 function mgBookView(b) {
   const base = mgBaseMode();   // 디다코 교재를 쓰는 중이면 돌아가기·출처·복제·지우기 글을 디다코 교재에 맞추고, 교재 닫기는 두지 않는다
@@ -3572,7 +3664,7 @@ function mgBookView(b) {
     <div class="more-grid"><div>${!b.closed ? '<button class="btn wide" type="button" data-act="mg-lesson-add">과 추가</button>' : ''}<div class="gl">과</div><div class="gc">
       ${b.lessons.map(L => `<a class="gr" href="#me-${b.id}.${L.no}"><span class="gt"><b>제${L.no}과 ${esc(L.name || '(제목을 적어 주세요)')}</b><span class="gd mg-pills">${mgChips([L.date, L.ref && [L.ref, true]])}</span></span></a>`).join('') || '<div class="gr"><span class="gt"><span class="gd">아직 과가 없어요. 과를 더해 시작해요.</span></span></div>'}
     </div></div><div><div class="gc"><div class="gr"><span class="mg-cover big">${bookCover({ ...b, id: '' }, 'list')}</span><span class="gt"><b>${esc(b.title)}</b><span class="gd">${esc(b.kind)}</span></span></div><dl class="mg-info"><div><dt>출처</dt><dd><span class="mg-pills">${mgChips([base ? '디다코 교재' : '모임장이 쓴 교재', b.source])}</span></dd></div>${levelName(b) ? `<div><dt>난이도</dt><dd>${esc(levelStars(levelNum(b)))} ${esc(levelName(b))}${b.levelNote ? ' · ' + esc(b.levelNote) : ''}</dd></div>` : ''}${b.start ? `<div><dt>시작 날짜</dt><dd>${esc(mgLongDate(b.start))}</dd></div>` : ''}${b.closed && b.end ? `<div><dt>끝난 날짜</dt><dd>${esc(mgLongDate(b.end))}</dd></div>` : ''}</dl></div>${base ? `<p class="hint">${baseHidden(b.id) ? '지금은 숨겨져 있어 공동체에 보이지 않아요.' : '모든 공동체의 책장에 보여요.'}</p>` : ''}
-    <div class="gc">${row('교재 정보 편집', '', 'mg-edit')}${row('교재 통째로 복제', base ? '디다코 교재로 한 권 더 만들어요' : '이 공동체 안에 한 권 더 만들어요', 'mg-dup', mgFull())}${`<a class="gr" href="#mxb-${b.id}"><span class="gt"><b>인쇄용 보기</b></span><span class="ch" aria-hidden="true">›</span></a>`}${b.closed || base ? '' : row('교재 닫기', '오늘 날짜로 끝내고 지난 교재로 옮겨요', 'mg-close')}</div>${mgFull() ? `<p class="hint">${MG_FULL}</p>` : ''}${b.closed && !base ? '<button class="quiet-link" type="button" data-act="mg-reopen">다시 열기</button>' : ''}
+    <div class="gc">${row('교재 정보 편집', '', 'mg-edit')}${row('교재 통째로 복제', base ? '디다코 교재로 한 권 더 만들어요' : '이 공동체 안에 한 권 더 만들어요', 'mg-dup', mgFull())}${`<a class="gr" href="#mxb-${b.id}"><span class="gt"><b>인쇄용 보기</b></span><span class="ch" aria-hidden="true">›</span></a>`}${base ? `<a class="gr" href="#bind-${b.id}"><span class="gt"><b>제본용 PDF 만들기</b><span class="gd">B5 책의 본문과 표지를 만들어요</span></span><span class="ch" aria-hidden="true">›</span></a>` : ''}${b.closed || base ? '' : row('교재 닫기', '오늘 날짜로 끝내고 지난 교재로 옮겨요', 'mg-close')}</div>${mgFull() ? `<p class="hint">${MG_FULL}</p>` : ''}${b.closed && !base ? '<button class="quiet-link" type="button" data-act="mg-reopen">다시 열기</button>' : ''}
     <div class="gc">${base && baseAppId(b.id) && b.baseOwn ? row('복원', '앱에 들어 있던 원래 판으로 되돌려요. 고친 내용은 사라져요', 'base-revert') : ''}${row(base ? '<span class="warn-text">교재 지우기</span>' : '<span class="warn-text">교재 지우기</span>', base ? '디다코 교재에서 지워요. 되살릴 수 없어요' : '이 공동체에서 지워요. 되살릴 수 없어요', 'mg-del', mgIsNow(b))}</div>${mgIsNow(b) ? `<p class="hint">${base ? MG_BASE_NOW : MG_NOW}</p>` : ''}</div></div>`;
 }
 function mgForm(b) {
@@ -5139,7 +5231,7 @@ function drawRoute(moved) {
   // 모르는 주소이거나 데모로 들어오기 전이면 첫 화면(들어온 뒤의 빈 주소는 이번 주)
   if (!v) v = D.entered ? 'week' : 'start';
   else if (v !== 'start' && !D.entered) v = 'start';
-  if (v === 'admin/books' && !isAppAdmin()) v = 'more';
+  if ((v === 'admin/books' || v === 'admin/bind') && !isAppAdmin()) v = 'more';
   if (v === 'account' && !SB) v = 'more';   // 계정과 동기화는 실제 서버(로그인)에서만
   if (v === 'acctdel' && !(SB && ACCT_AD)) v = SB ? 'account' : 'more';   // 계정 탈퇴 확인은 계정과 동기화의 단추로만 들어온다(주소로 바로 열리지 않는다)
   if (!LIVE && v === 'manage' && /^(mb|me|mp|mx|mxb)-db/.test(arg || '') && !isAppAdmin()) v = 'more';   // 디다코 교재(id가 db로 시작)를 고치는 화면은 앱 관리자만
@@ -5162,7 +5254,7 @@ function drawRoute(moved) {
   // 없는 책, 없는 기록이면 목록으로(책이 하나도 없게 한 상태에서도)
   if (v === 'shelf' && arg && (isAllArg(arg) ? !shelfAllOk(arg.slice(4)) : (D.noBooks || !bookById(arg)))) arg = '';
   if (v === 'record' && arg && !recById(arg)) arg = '';
-  if (v !== 'shelf' && v !== 'record' && v !== 'manage' && v !== 'start') arg = '';
+  if (v !== 'shelf' && v !== 'record' && v !== 'manage' && v !== 'start' && v !== 'admin/bind') arg = '';
   if (location.hash !== hashFor(v, arg)) history.replaceState(null, '', hashFor(v, arg));
   if (moved && !vtNow) { closeMenu(); $('#toast').hidden = true; }   // 겹쳐 넘길 때는 route가 미리 닫았다
   vtV = v; vtArg = arg || '';
@@ -5170,7 +5262,7 @@ function drawRoute(moved) {
   $('#topbar').classList.toggle('bare', start);
   $('#topnav').hidden = start; $('#tabs').hidden = start;
   document.body.dataset.view = v;
-  $('#view').innerHTML = start ? startView(arg) : v === 'week' ? weekView() : v === 'wq' ? wqView() : v === 'read' ? readView() : v === 'share' ? shareView() : v === 'shelf' ? shelfView(arg) : v === 'record' ? recordView(arg) : v === 'records' ? recordsView() : v === 'found' ? foundView() : v === 'gallery' ? galleryView() : v === 'more' ? moreView() : v === 'admin/books' ? baseBooksView() : v === 'about' ? aboutView() : v === 'guide' ? guideView() : v === 'feedback' ? feedbackView() : v === 'account' ? accountView() : v === 'acctdel' ? acctDelView() : v === 'prep' ? prepView() : v === 'prepprint' ? prepPrintView() : v === 'church' ? churchView() : v === 'manage' ? manageView(arg) : placeView(v);
+  $('#view').innerHTML = start ? startView(arg) : v === 'week' ? weekView() : v === 'wq' ? wqView() : v === 'read' ? readView() : v === 'share' ? shareView() : v === 'shelf' ? shelfView(arg) : v === 'record' ? recordView(arg) : v === 'records' ? recordsView() : v === 'found' ? foundView() : v === 'gallery' ? galleryView() : v === 'more' ? moreView() : v === 'admin/books' ? baseBooksView() : v === 'admin/bind' ? bindView(arg) : v === 'about' ? aboutView() : v === 'guide' ? guideView() : v === 'feedback' ? feedbackView() : v === 'account' ? accountView() : v === 'acctdel' ? acctDelView() : v === 'prep' ? prepView() : v === 'prepprint' ? prepPrintView() : v === 'church' ? churchView() : v === 'manage' ? manageView(arg) : placeView(v);
   reuseImgs($('#view'));
   const film = start && !!$('#view .welcome');   // 첫 화면(로그인 전)일 때만 영상. 첫 접속의 다음 걸음들에는 없다
   document.body.classList.toggle('wl-on', film); wlFilm(film);
@@ -5186,7 +5278,7 @@ function drawRoute(moved) {
   if (LIVE && entering) liveEnter(v);
   usageRoute(v, arg);
   if (SB && D.entered) sbEnter(v, arg);
-  if (v === 'wq') wqInit(); else if (v === 'read') readInit(); else if (v === 'share') shareInit(); else if (v === 'shelf') shelfInit(arg); else if (v === 'manage' || v === 'prepprint') ppFill();
+  if (v === 'wq') wqInit(); else if (v === 'read') readInit(); else if (v === 'share') shareInit(); else if (v === 'shelf') shelfInit(arg); else if (v === 'manage' || v === 'prepprint') ppFill(); else if (v === 'admin/bind') bindInit();
   if (v === 'share' && shareAuto) { shareAuto = false; if (G) startShare(); }
   if (!TUT && !start && D.entered && (!SB || sbReady) && cmCur()) window.didakoPlace && window.didakoPlace.used('community', cmCur().id);
   CmGuide.maybe();   // 이번 주에서 처음 온 회원이라면 연습 페이지로   // 마지막으로 연 공동체(D-59)
@@ -5532,6 +5624,16 @@ const acts = {
   },
   'base-hide-do'(e, el) { baseBookVisibility(el.dataset.v, true); },
   'base-show'(e, el) { baseBookVisibility(el.dataset.v, false); },
+  'bind-save'(e, el) {
+    if (!isAppAdmin()) return;
+    const id = el.dataset.v; if (!baseManaged().some(b => b.id === id)) return;
+    const info = bindRead(id), msg = $('#bdSaved');
+    if (msg) msg.textContent = '저장하는 중이에요…';
+    bindPut(id, info).then(ok => { const m = $('#bdSaved'); if (m) m.textContent = ok ? '저장했어요.' : '서버에 책 정보 칸이 아직 없어서(SQL 032) 이 기기에만 저장했어요.'; toast('저장했어요.'); })
+      .catch(err => { const m = $('#bdSaved'); if (m) m.textContent = ''; toast(String(err && err.message || '').replace(/^bad:\s*/, '') || '저장하지 못했어요.'); });
+  },
+  'bind-body'(e, el) { if (isAppAdmin()) bindOpen('body', el.dataset.v); },
+  'bind-cover'(e, el) { if (isAppAdmin()) bindOpen('cover', el.dataset.v); },
   'mg-edit'() { const b = canManage() && mgCurrent(); if (b) mgForm(b); },
   'mg-save'() {
     if (!canManage()) return;
