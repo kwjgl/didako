@@ -25,13 +25,26 @@ window.DidakoBookPrint = (() => {
   // ── ISBN과 바코드(EAN-13) ──
   const digits = s => String(s || '').replace(/\D/g, '');
   const ean13Ok = d => d.length === 13 && ((10 - d.slice(0, 12).split('').reduce((a, c, i) => a + Number(c) * (i % 2 ? 3 : 1), 0) % 10) % 10) === Number(d[12]);
-  const isbnOk = s => { const d = digits(s); return ean13Ok(d) && /^97[89]/.test(d); };
+  // 입력한 ISBN에서 바코드에 쓸 13자리를 뽑는다. 하이픈·공백·'ISBN' 글자는 무시하고, 10자리 옛 번호는 978을 붙여 13자리로 바꾸며,
+  // 13자리 뒤에 부가기호(5자리 등)가 붙어 있으면 앞 13자리만 쓴다. 올바른 번호가 아니면 빈 글자를 돌려준다
+  const isbn13 = s => {
+    const t = String(s || '').replace(/isbn/gi, '').replace(/[\s-]/g, '');
+    if (/^\d{9}[\dXx]$/.test(t)) {
+      const sum = t.split('').reduce((a, c, i) => a + (/x/i.test(c) ? 10 : Number(c)) * (10 - i), 0);
+      if (sum % 11) return '';
+      const b = '978' + t.slice(0, 9);
+      return b + ((10 - b.split('').reduce((a, c, i) => a + Number(c) * (i % 2 ? 3 : 1), 0) % 10) % 10);
+    }
+    const d = digits(t).slice(0, 13);
+    return ean13Ok(d) && /^97[89]/.test(d) ? d : '';
+  };
+  const isbnOk = s => !!isbn13(s);
   const L = ['0001101', '0011001', '0010011', '0111101', '0100011', '0110001', '0101111', '0111011', '0110111', '0001011'];
   const G = ['0100111', '0110011', '0011011', '0100001', '0011101', '0111001', '0000101', '0010001', '0001001', '0010111'];
   const R = ['1110010', '1100110', '1101100', '1000010', '1011100', '1001110', '1010000', '1000100', '1001000', '1110100'];
   const PAR = ['LLLLLL', 'LLGLGG', 'LLGGLG', 'LLGGGL', 'LGLLGG', 'LGGLLG', 'LGGGLL', 'LGLGLG', 'LGLGGL', 'LGGLGL'];
   function barcodeSvg(isbn) {
-    const d = digits(isbn); if (!isbnOk(isbn)) return '';
+    const d = isbn13(isbn); if (!d) return '';
     let bits = '101';
     for (let i = 0; i < 6; i++) bits += (PAR[d[0]][i] === 'L' ? L : G)[d[i + 1]];
     bits += '01010';
@@ -214,7 +227,7 @@ figcaption { font: 400 8.2pt/1.6 'IBM Plex Sans KR'; color: var(--mut); margin-t
     const A = COLORS[(book.cover || {}).color] || COLORS.amber;
     const spine = spineOf(opts.pages, info), spreadW = +(B + W + spine + W + B).toFixed(1), spreadH = H + 2 * B;
     const [tMain, tSub] = splitTitle(book.title);
-    const bar = barcodeSvg(info.isbn);
+    const bar = barcodeSvg(info.isbn), isbnText = String(info.isbn || '').trim().replace(/^isbn[\s:]*/i, '');
     const g = true;   // 보기용 재단선·표 이름·바코드 자리는 화면에만 보이고 인쇄에서는 빠진다
     const st = Math.min(13, Math.max(8, spine * 1.3)).toFixed(1);
     const css = `
@@ -237,6 +250,7 @@ html { -webkit-print-color-adjust: exact; print-color-adjust: exact; font-family
 .f4 .brand .k { width: 7.4mm; height: 7.4mm; } .f4 .brand .wm { height: 2.8mm; }
 .f4 .bc { position: absolute; right: 26mm; bottom: ${B + 14}mm; width: 46mm; height: 29mm; }
 .f4 .bc svg { display: block; width: 100%; height: 100%; }
+.f4 .bt { position: absolute; right: 26mm; bottom: ${B + 14 + 30.5}mm; width: 70mm; text-align: right; font: 500 7.6pt/1.4 'IBM Plex Sans KR'; color: #33332f; letter-spacing: .02em; }
 .f4 .bcg { position: absolute; right: 26mm; bottom: ${B + 14}mm; width: 46mm; height: 26mm; border: .3mm dashed #a69c8c; display: grid; place-items: center; font: 400 7pt/1.5 'IBM Plex Sans KR'; color: #a69c8c; text-align: center; }
 .pS { background: color-mix(in srgb, ${A} 52%, #F7F8F6); }
 .spine-t { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%) rotate(90deg); white-space: nowrap; font: 700 ${st}pt 'Gowun Batang'; color: #2E1A0C; }
@@ -253,7 +267,7 @@ html { -webkit-print-color-adjust: exact; print-color-adjust: exact; font-family
     const bl = blurb.split(/\n+/).filter(Boolean);
     const outside = `<section class="spread">
       <div class="panel pL f4"><div class="blurb">${bl.length ? `<span class="q1">${esc(bl[0])}</span>${bl.slice(1).map(x => `<p>${esc(x)}</p>`).join('')}` : ''}</div>
-        <div class="brand">${logoHtml || ''}</div>${bar ? `<div class="bc">${bar}</div>` : g ? '<div class="bcg">ISBN과 바코드 자리</div>' : ''}</div>
+        <div class="brand">${logoHtml || ''}</div>${isbnText ? `<p class="bt">ISBN ${esc(isbnText)}</p>` : ''}${bar ? `<div class="bc">${bar}</div>` : g ? `<div class="bcg">${isbnText ? '입력한 ISBN이 올바르지 않아 바코드를 그리지 않았어요.<br>끝자리(확인 숫자)를 다시 봐 주세요.' : 'ISBN과 바코드 자리'}</div>` : ''}</div>
       <div class="panel pS"><div class="spine-t">${esc(book.title)}</div><div class="spine-k">${logoHtml || ''}</div></div>
       <div class="panel pR f1"><div class="name"><h1>${esc(tMain)}</h1>${tSub ? `<p class="st">${esc(tSub)}</p>` : ''}</div>
         ${opts.symbolSrc ? `<img src="${esc(opts.symbolSrc)}" alt="">` : ''}<div class="brand">${logoHtml || ''}</div></div>${g ? guideHtml : ''}</section>`;
@@ -264,5 +278,5 @@ html { -webkit-print-color-adjust: exact; print-color-adjust: exact; font-family
     return { css, html: outside + inside, title: `${book.title} 표지 B5`, spine, spreadW, spreadH };
   }
 
-  return { body, cover, infoOf, spineOf, isbnOk, barcodeSvg, splitTitle, INFO_DEFAULT };
+  return { body, cover, infoOf, spineOf, isbnOk, isbn13, barcodeSvg, splitTitle, INFO_DEFAULT };
 })();
