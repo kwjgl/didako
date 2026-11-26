@@ -1590,6 +1590,7 @@ html.tutorial .demo-tag { display: none !important; }
 <script src="../community/book-church-path-2.js"></script>
 <script src="../community/book-church-path-3.js"></script>
 <script src="../community/book-church-path-4.js"></script>
+<script src="../community/book-church-path-5.js"></script>
 <script src="../note/guide.js"></script>
 <script src="../note/places.js"></script>
 <script src="../note/usage.js"></script>
@@ -1613,7 +1614,7 @@ const clone = x => JSON.parse(JSON.stringify(x));
 // 디다코 기본 교재(공동체와 같은 디다코 교재 세 권: 《삼위일체 하나님》·가정예배·《예수님과 함께 걷기》, 2026-11-19 사용자 결정). 자료는 ../community/book-*.js에 있고
 //  그 파일들이 DIDAKO_DEMO.books·guides에 더하는 것을 여기서 바로 떼어 낸다. 그래서 교회 데모 책장(DATA.books)과 데모 화면은 예전 그대로다(12소예언서 파일은 데모에서 그대로 쓴다. 옛 GOSPEL 9과는 2026-11-24에 새 기본 교재 「복음」으로 바꿨다).
 //  교재 관리의 "디다코 기본 교재"에서 [가져오기]를 누르면 우리 교회 교재로 복제된다(서버 basicImport). 실제 모드에서는 DATA.books를 서버 교재로 바꾸니 떼어 둔 것이 따로 남는다
-const BASIC_IDS = ['trinity', 'family', 'jesus-walk', 'hebrew-eyes', 'second-temple', 'feasts', 'gospel', 'lords-prayer', 'creeds', 'church-path-1', 'church-path-2', 'church-path-3', 'church-path-4'];
+const BASIC_IDS = ['trinity', 'family', 'jesus-walk', 'hebrew-eyes', 'second-temple', 'feasts', 'gospel', 'lords-prayer', 'creeds', 'church-path-1', 'church-path-2', 'church-path-3', 'church-path-4', 'church-path-5'];
 const BASIC_FILE = { books: DATA.books.filter(b => BASIC_IDS.includes(b.id)), guides: {} };
 DATA.books = DATA.books.filter(b => !BASIC_IDS.includes(b.id));
 Object.keys(DATA.guides).forEach(k => { if (BASIC_IDS.includes(k.split(':')[0])) { BASIC_FILE.guides[k] = DATA.guides[k]; delete DATA.guides[k]; } });
