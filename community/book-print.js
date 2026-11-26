@@ -137,7 +137,9 @@ window.DidakoBookPrint = (() => {
 @page :right { margin-left: 22mm; margin-right: 16mm; }
 @page lesson:left { @top-left { content: "${titleText}"; } @bottom-left { content: counter(page); } }
 @page lesson:right { @top-right { content: string(lt); } @bottom-right { content: counter(page); } }
-@page lesson:first { @top-right { content: ""; } @bottom-right { content: ""; } }`;   // 과의 첫 쪽은 늘 오른쪽 쪽이라 :first 하나로 충분하다
+@page lesson:first { @top-right { content: ""; } }
+@page memo:left { @bottom-left { content: counter(page); } }
+@page memo:right { @bottom-right { content: counter(page); } }`;   // 과의 첫 쪽은 늘 오른쪽 쪽이라 :first 하나로 충분하다. 첫 쪽에는 머리말만 빼고 쪽 번호는 넣는다(2026-11-26, 사용자). 메모 쪽도 쪽 번호를 넣는다
     const css = `${pageRules}
 :root { --ac: ${color}; --ink: #1d1a16; --mut: #5f594f; --line: #cfc7b8; --tint: color-mix(in srgb, ${color} 9%, #fff); }
 * { box-sizing: border-box; }
@@ -214,7 +216,7 @@ figcaption { font: 400 8.2pt/1.6 'IBM Plex Sans KR'; color: var(--mut); margin-t
 .notes p { text-align: left; }
 .notes ol { margin: 0; padding-left: 4.6mm; } .notes li { margin: 0 0 1mm; text-align: left; }
 .notes em { background: none; font-style: italic; }
-.memo { page: front; break-before: page; }
+.memo { page: memo; break-before: page; }
 .memo .grid { height: 186mm; background-image: repeating-linear-gradient(to bottom, transparent 0 7.7mm, #d9d2c5 7.7mm 8mm); }
 .memo p { font: 600 8.4pt 'IBM Plex Sans KR'; letter-spacing: .14em; color: var(--ac); margin-bottom: 4mm; }`;
     return { css, html: `${front}${toc}${guide}${lessonsHtml}${memoHtml}`, title: `${book.title} 본문 B5` };
