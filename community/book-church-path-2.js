@@ -5,18 +5,18 @@
   const D = window.DIDAKO_DEMO;
   D.books.push({
   "id": "church-path-2",
-  "title": "서로 다른 길에서: 중세 교회 이야기",
+  "title": "두 갈래 길, 중세 교회 이야기",
   "coverName": "중세 교회 이야기",
   "period": "",
   "closed": false,
   "kind": "자유 모임",
   "level": "2",
-  "levelNote": "갈라진 뒤 중세 교회가 걸은 길을 읽어요",
+  "levelNote": "중세 교회가 동서로 양분된 뒤 교회가 걸은 길을 읽어요",
   "cover": {
     "motif": "lattice",
     "color": "blue"
   },
-  "range": "1054년부터 1517년 직전까지 12과",
+  "range": "1054년부터 1517년 직전까지",
   "source": "",
   "startHidden": true,
   "lessons": [

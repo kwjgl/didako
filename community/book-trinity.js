@@ -10,8 +10,8 @@
   "period": "",
   "closed": false,
   "kind": "자유 모임",
-  "level": "5",
-  "levelNote": "교리를 천천히 곱씹는 교재예요",
+  "level": "3",
+  "levelNote": "삼위일체 하나님에 대한 지식이 약간 필요해요.",
   "cover": {
     "motif": "cord",
     "color": "blue"

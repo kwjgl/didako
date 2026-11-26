@@ -11,7 +11,7 @@
   "closed": false,
   "kind": "자유 모임",
   "level": "4",
-  "levelNote": "제2성전기 역사라 낯설 수 있어요",
+  "levelNote": "고대 중동사 지식이 약간 필요해요.",
   "cover": {
     "motif": "rays",
     "color": "paper"
