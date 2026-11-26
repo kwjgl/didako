@@ -27,6 +27,8 @@ body { margin: 0; font: 400 14px/1.6 'IBM Plex Sans KR', 'Apple SD Gothic Neo', 
 .pagedjs_page { background: #fff; box-shadow: 0 4px 18px rgba(0, 0, 0, .35); flex: none; }
 /* 표지는 펼침면이 가로로 넓어 화면에서만 줄여 보인다 */
 @media screen { body.cover #stage { display: flex; flex-direction: column; align-items: center; gap: 16px; } body.cover .spread { zoom: .5; box-shadow: 0 4px 18px rgba(0, 0, 0, .35); } }
+/* 표지의 안내선과 표 이름은 보기용이다. 인쇄 미디어 규칙(book-print.js)에 더해, 인쇄가 시작될 때 body에 printing 표시를 달아 한 번 더 감춘다 */
+body.printing .g, body.printing .tag, body.printing .bcg { display: none !important; }
 @media print {
   html, body { background: #fff; }
   #bar, #err { display: none !important; }
@@ -74,7 +76,9 @@ body { margin: 0; font: 400 14px/1.6 'IBM Plex Sans KR', 'Apple SD Gothic Neo', 
     addStyle(r.css); $('#stage').innerHTML = r.html;
     await settle($('#stage'));
     $('#go').disabled = false; $('#go').onclick = () => window.print();
-    msg(`펼침면 ${r.spreadW} × ${r.spreadH}mm(재단선 3mm 포함), 책등 ${r.spine}mm. 붉은 점선이 자르는 선이고 파란 점선이 책등이에요. 점선은 인쇄하지 않아요.`);
+    window.addEventListener('beforeprint', () => document.body.classList.add('printing'));
+    window.addEventListener('afterprint', () => document.body.classList.remove('printing'));
+    msg(`펼침면 ${r.spreadW} × ${r.spreadH}mm(재단선 3mm 포함), 책등 ${r.spine}mm. 이 화면의 붉은 점선(자르는 선), 파란 점선(책등), '표 2'·'표 3' 글자는 위치를 보여 주는 표시예요. 저장하는 PDF에는 들어가지 않아요.`);
     return;
   }
 
