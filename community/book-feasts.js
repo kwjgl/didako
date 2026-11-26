@@ -10,8 +10,8 @@
   "period": "",
   "closed": false,
   "kind": "자유 모임",
-  "level": "3",
-  "levelNote": "절기마다 성경과 그 시대 자료를 함께 읽어요",
+  "level": "5",
+  "levelNote": "절기마다 성경과 그 시대 자료를 함께 읽어요.",
   "cover": {
     "motif": "leaf",
     "color": "rose"

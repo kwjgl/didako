@@ -5,18 +5,18 @@
   const D = window.DIDAKO_DEMO;
   D.books.push({
   "id": "church-path-4",
-  "title": "오늘의 교회: 여러 집 둘러보기",
-  "coverName": "오늘의 교회",
+  "title": "다양한 스펙트럼, 오늘날의 교회",
+  "coverName": "오늘날의 교회",
   "period": "",
   "closed": false,
   "kind": "자유 모임",
   "level": "2",
-  "levelNote": "여러 교회가 자기를 말하는 글을 읽어요",
+  "levelNote": "여러 교회가 자신을 소개하는 글을 읽어요",
   "cover": {
     "motif": "leaf",
     "color": "blue"
   },
-  "range": "오늘의 교회 12과",
+  "range": "오늘날의 교회",
   "source": "",
   "startHidden": true,
   "lessons": [

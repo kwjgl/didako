@@ -10,13 +10,13 @@
   "period": "",
   "closed": false,
   "kind": "자유 모임",
-  "level": "3",
-  "levelNote": "구약을 다른 눈으로 읽어 봐요",
+  "level": "5",
+  "levelNote": "고대 근동의 사회와 문화 지식이 필요해요.",
   "cover": {
     "motif": "star",
     "color": "amber"
   },
-  "range": "구약 성경 · 16과",
+  "range": "구약 성경",
   "source": "",
   "startHidden": true,
   "lessons": [

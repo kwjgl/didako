@@ -5,18 +5,18 @@
   const D = window.DIDAKO_DEMO;
   D.books.push({
   "id": "church-path-1",
-  "title": "첫 천 년: 한 교회로 걷다",
+  "title": "첫 천 년, 한 교회",
   "coverName": "첫 천 년",
   "period": "",
   "closed": false,
   "kind": "자유 모임",
   "level": "2",
-  "levelNote": "하나인 교회가 걸어온 첫 천 년을 읽어요",
+  "levelNote": "하나인 교회가 걸어온 첫 천 년을 읽어요.",
   "cover": {
     "motif": "wave",
     "color": "green"
   },
-  "range": "오순절에서 1054년까지 12과",
+  "range": "오순절에서 1054년까지",
   "source": "",
   "startHidden": true,
   "lessons": [

@@ -5,18 +5,18 @@
   const D = window.DIDAKO_DEMO;
   D.books.push({
   "id": "church-path-3",
-  "title": "다시 갈라지다: 종교개혁의 시대",
+  "title": "여러 갈래의 길, 종교개혁의 시대",
   "coverName": "종교개혁의 시대",
   "period": "",
   "closed": false,
   "kind": "자유 모임",
   "level": "2",
-  "levelNote": "교회가 여러 집이 되어 간 길을 읽어요",
+  "levelNote": "교회가 여러 갈래가 되어 걸어간 길을 읽어요",
   "cover": {
     "motif": "rays",
     "color": "rose"
   },
-  "range": "1517년부터 1750년 무렵까지 12과",
+  "range": "1517년부터 1750년 무렵까지",
   "source": "",
   "startHidden": true,
   "lessons": [
