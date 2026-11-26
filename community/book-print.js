@@ -185,8 +185,8 @@ p { margin: 0; }
 h4.stage { font: 600 8.4pt/1.4 'IBM Plex Sans KR'; letter-spacing: .14em; color: var(--ac); margin: 9mm 0 3.4mm; padding-bottom: 1.6mm; border-bottom: .3mm solid var(--ac); break-after: avoid; }
 .q { display: grid; grid-template-columns: 8mm 1fr; margin: 4.6mm 0 0; break-inside: avoid; }
 .q .n { font: 700 10.4pt 'Gowun Batang'; color: var(--ac); }
-.q .who { font: 600 8.4pt/2 'IBM Plex Sans KR'; color: var(--ac); }
-.q.tri { grid-template-columns: 11mm 1fr; }
+.q .who { font: 600 8.4pt/2 'IBM Plex Sans KR'; color: var(--ac); white-space: nowrap; }
+.q.tri { grid-template-columns: 14mm 1fr; }
 .q .t { font-weight: 700; word-break: keep-all; line-height: 1.7; }
 .q .help { font: 400 8.6pt/1.65 'IBM Plex Sans KR'; color: var(--mut); margin-top: .8mm; word-break: keep-all; }
 .vs { font: 500 8.4pt/1.6 'IBM Plex Sans KR'; color: var(--ac); margin-top: .8mm; }
