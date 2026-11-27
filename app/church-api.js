@@ -131,12 +131,13 @@ window.didakoChurchApi = (() => {
         okOrThrow(r, '맞는 교회 코드가 없어요. 받은 코드를 다시 확인해 주세요.');
         return { church: { id: r.church.id, name: str(r.church.name), kind: str(r.church.kind) } };
       }
-      // 교회 신청(코이데 035·043, 디다코 021). applyState는 던지지 않는다(교회 코드 화면은 이 값이 없어도 지금 모양 그대로 그려진다): 신청을 받는지(open)와 내 신청(mine), 로그인 이름(nick)
+      // 교회 신청(코이데 035·043, 디다코 021). applyState는 던지지 않는다(안내 화면은 이 값이 없어도 그려진다): 신청을 받는지(open, 로그인 없이도 묻는다)와 내 신청(mine), 로그인 이름(nick), 로그인했는지(auth)
       case 'applyState': {
+        let s = null; try { s = await window.DidakoSb.session(); } catch (e) { s = null; }
         let open = false, mine = null;
-        try { open = !!(await rpc('church_apply_open')); } catch (e) { open = false; }
-        try { const r = await rpc('church_apply_mine'); mine = (r && r.apply) || null; } catch (e) { mine = null; }
-        return { open, mine, nick: (await ident()).nick };
+        try { open = !!(await (s ? rpc : window.DidakoSb.rpcAnon)('church_apply_open')); } catch (e) { open = false; }
+        if (s) { try { const r = await rpc('church_apply_mine'); mine = (r && r.apply) || null; } catch (e) { mine = null; } }
+        return { open, mine, nick: (await ident()).nick, auth: !!s };   // auth: 로그인했는지(로그인 전 안내 링크 ?cinfo에서는 false)
       }
       case 'applySend': return rpc('church_apply_send', { p_region: str(body.region), p_name: str(body.name), p_denom: str(body.denom), p_pastor: str(body.pastor),
         p_contact: str(body.contact), p_size: str(body.size), p_site: str(body.site), p_agree: body.agree === true, p_app: 'didako' });

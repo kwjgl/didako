@@ -515,6 +515,31 @@ button.badge-btn { appearance: none; font-family: inherit; line-height: inherit;
 .col-n .btn.wide { margin-top: 12px; }
 .col-n .field { margin-top: 12px; }
 .col-n .msg { margin: 8px 0 0; }
+/* 교회 안내 화면(introView): 코이데 cintro와 같은 모양. 띠·상자는 .ci-note-box */
+.col-n.ci { max-width: 720px; }
+.ci-note-box { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: .8em 1em; margin: 0; font-size: .84em; line-height: 1.55; }
+.ci-band { background: var(--warn-soft); color: var(--warn); border-color: transparent; margin: 0 0 4px; }
+.ci-sub { margin: .2em 0 0; word-break: keep-all; }
+.ci-card { margin: 14px 0 0; }
+.ci-h2 { margin: 0 0 .5em; }
+.ci-role { display: flex; flex-direction: column; gap: .7em; padding: .9em 0; border-top: 1px solid var(--line); }
+.ci-h2 + .ci-role { border-top: 0; padding-top: 0; }
+.ci-role:last-child { padding-bottom: 0; }
+.ci-h3 { margin: 0 0 .3em; }
+.ci-list, .ci-steps { margin: 0; padding-left: 1.2em; font-size: .92em; line-height: 1.6; word-break: keep-all; }
+.ci-list li, .ci-steps li { margin-top: .25em; }
+.ci-shot { display: block; width: 100%; max-width: 240px; height: auto; margin: 0 auto; border: 1px solid var(--line); border-radius: 14px; }
+@media (min-width: 600px) { .ci-role { flex-direction: row; align-items: flex-start; justify-content: space-between; } .ci-shot { flex: none; width: 200px; margin: 0; } }
+.ci-note { margin: .6em 0 0; font-size: .92em; word-break: keep-all; }
+.ci-trial { margin: 14px 0 0; word-break: keep-all; }
+.ci-box { margin: 0 0 12px; }
+.ci-box p { margin: 0; word-break: keep-all; }
+.ci-box .link { margin-top: .4em; }
+.cc-nocode { margin: 1.2em 0 0; text-align: center; }
+.choice-sub { display: block; font-size: .8em; color: var(--ink-2); margin-top: .15em; }
+.start-pick .choice { padding-block: .95em; line-height: 1.45; }
+.start-pick .choice-sub { margin-top: .35em; }
+.ci-foot { margin: 8px 0 0; text-align: center; font-size: .88em; color: var(--ink-2); }
 .msg { color: var(--warn); font-size: .875em; min-height: 1.4em; }
 
 /* ── 관리(A-01): 코이데 app/index.html의 관리 화면 CSS를 옮겼다. 앱에 이미 있는 이름(.fold)과 겹치는 것은 ad-로 시작하게 바꿨다 ── */
@@ -1886,7 +1911,7 @@ function parseHash() {
   const sv = /^survey(?:-((?:s|try)-[\w-]+))?$/.exec(h);   // 교회 설문: #survey(목록), #survey-s-번호(고치기·결과), #survey-try-번호(미리 보기)
   if (sv) return { v: 'survey', arg: sv[1] || '' };
   // 실제 모드의 첫 접속 걸음(#start/dept …). 데모에서는 쓰지 않아 route가 첫 화면으로 돌린다
-  const sm = /^start\/(dept|room|family|who|name|new|consent|wait|done|church|setup|apply|apply-form)$/.exec(h);
+  const sm = /^start\/(dept|room|family|who|name|new|consent|wait|done|church|setup|apply|apply-form|intro)$/.exec(h);
   if (sm) return { v: 'start', arg: sm[1] };
   return { v: VIEWS.includes(h) ? h : null, arg: '' };
 }
@@ -2286,7 +2311,7 @@ function letterView() {
 const LK = { hub: 'didako-hub-token', tok: 'didako-token', uid: 'didako-uid', url: 'didako-church-url', name: 'didako-church-name', kind: 'didako-church-kind', depts: 'didako-start-depts', join: 'didako-join', setup: 'didako-setup', setupTok: 'didako-setup-tok', lastAdmin: 'didako-last-admin' };
 // me: 서버가 알려 준 나의 정보, depts: 첫 접속에서 고르는 부서·사랑방 목록, booting: 켜지는 중, sbIn: 새 길(Supabase)로 로그인해 있는가
 // writer: 교재를 쓸 수 있는 사람인지, writeDepts: 새 교재의 대상으로 고를 수 있는 부서, hold: 못 받은 이번 주 즈음의 과(교재ID와 날짜), booksOk: 교재를 받았는지(2-3)
-const LV = { me: null, depts: null, join: null, ap: null, epoch: 0, booting: false, authBusy: false, sbIn: false, needChurch: false, closed: false, introPick: '', repick: false, notice: '', err: '', busy: false, work: null, want: '', writer: false, writeDepts: [], hold: [], booksOk: false, booksWork: null, eraseReq: null };
+const LV = { me: null, depts: null, join: null, ap: null, epoch: 0, booting: false, authBusy: false, sbIn: false, needChurch: false, cinfo: false, closed: false, introPick: '', repick: false, notice: '', err: '', busy: false, work: null, want: '', writer: false, writeDepts: [], hold: [], booksOk: false, booksWork: null, eraseReq: null };
 // 사용 기록(설계서 3장 "사용 기록에 담을 것", 결정 기록 2026-11-19): 행동 이름과 날 수만 ../note/usage.js가 모아 두었다가 묶어서 usage_track(supabase/016)으로 보낸다.
 //  보내는 때는 셋이 모두 맞을 때뿐이다: 새 길로 로그인해 있고(ok) · 데모·따라 하기(?tutorial)·?demo가 아니고(LIVE) · 앱 설정 "이용 통계 보내기"가 켜져 있다. 글·이름·교회·사랑방·교재 이름은 어디에도 넣지 않는다.
 const UZ = window.DidakoUsage || { init() {}, track() {}, open() {}, timed() {}, dayDiff() { return null; }, flush() {}, clear() {} };
@@ -2384,7 +2409,7 @@ function liveError(err) {
 }
 // 사람이 바뀌거나 로그아웃할 때 서버에서 받아 둔 것과 고르던 것을 모두 비운다
 function liveReset() {
-  LV.epoch++; Object.assign(LA, adlFresh()); LV.me = null; LV.depts = null; LV.join = null; LV.ap = null; LV.needChurch = false; LV.closed = false; LV.introPick = ''; LV.repick = false; LV.err = ''; LV.notice = ''; LV.sbIn = false;
+  LV.epoch++; Object.assign(LA, adlFresh()); LV.me = null; LV.depts = null; LV.join = null; LV.ap = null; LV.needChurch = false; LV.cinfo = false; LV.closed = false; LV.introPick = ''; LV.repick = false; LV.err = ''; LV.notice = ''; LV.sbIn = false;
   Object.assign(ST, lvFresh()); PEND = { data: null, err: '' };
   D.entered = false; D.role = 'member';
   // 앞사람이 받은 교재와 과가 남지 않게 비운다
@@ -2459,10 +2484,24 @@ async function findChurch() {
 }
 // 교회 신청(코이데 035·043, 디다코 021): 교회 코드 화면에 "교회 신청하기"를 보일지, 내 신청이 있는지를 조용히 확인한다.
 // 신청을 받지 않고 내 신청도 없으면 화면은 지금 모양 그대로다(코이데 안내 화면과 같은 약속). 새 길(Supabase)에서만 한다
+// 안내 화면(introView)의 상태 저장 칸: ?cinfo(로그인 전 안내 링크)와 [로그인하고 신청하기](15분 안에 돌아오면 신청서로)
+const CINFO = 'didako-cinfo', APPLY_GO = 'didako-capply';
+const applyMark = () => { const t = Number(ls.get(APPLY_GO)); ls.del(APPLY_GO); return t > 0 && Date.now() - t < 15 * 60e3; };   // 로그인하고 신청하기를 누른 지 15분 안인가(읽고 지운다)
+// 로그인한 사람이 교회 코드 화면에 닿았을 때: 내 신청이 있거나(결과를 알려야 한다) 방금 로그인하고 신청하기를 눌렀으면 안내 화면·신청서로 보낸다. 아니면 아무 일도 없다
 function apPeek() {
-  if (!CHURCH_ON || LV.ap) return;
+  if (!CHURCH_ON || (LV.ap && LV.ap.auth)) return;
   const e = LV.epoch;
-  api('applyState').then(r => { if (e !== LV.epoch) return; LV.ap = r; if (LV.needChurch && currentView() === 'start') route(true); }).catch(() => {});
+  api('applyState').then(r => {
+    if (e !== LV.epoch) return;
+    const go = applyMark();
+    LV.ap = Object.assign({}, r, LV.ap && LV.ap.draft ? { draft: LV.ap.draft } : {});
+    if (!LV.needChurch || currentView() !== 'start') return;
+    if (LV.closed || r.mine || (go && r.open)) { LV.introPick = 'staff'; lvGo(!r.mine && go && r.open && !LV.closed ? 'apply-form' : 'intro'); } else route(true);
+  }).catch(() => {});
+}
+// 로그인 전 안내 링크(?cinfo)로 온 사람: 신청을 받는지만 로그인 없이 묻는다
+async function introLoad() {
+  try { const r = await api('applyState'); LV.ap = Object.assign({}, r, LV.ap && LV.ap.draft ? { draft: LV.ap.draft } : {}); } catch (e) { /* 안내 글은 이 값 없이도 그려진다 */ }
 }
 // 교회 서버 로그인이 끝났을 때 조용히 다시 들어간다
 function recoverLogin() {
@@ -2484,12 +2523,17 @@ async function sbEnter() {
   await findChurch();
 }
 async function bootLiveSb() {
+  // 교회 안내 공유 링크(?cinfo): 로그인 없이 안내 화면. 로그인한 사람은 지운다
+  const q = new URLSearchParams(location.search);
+  if (q.has('cinfo')) { ls.set(CINFO, '1'); q.delete('cinfo'); history.replaceState(null, '', location.pathname + (q.toString() ? '?' + q.toString() : '') + location.hash); }
+  LV.cinfo = ls.get(CINFO) === '1';
   const re = DidakoSb.returnError();
   if (re) setTimeout(() => toast(re === 'cancel' ? '로그인을 취소했어요.' : '로그인을 마치지 못했어요. 다시 해 주세요.'), 300);
   try { await sbEnter(); }
   catch (err) {
     if (!err.cancelled) { LV.err = err.code && err.message ? err.message : '서버가 답하지 않아요. 잠시 뒤 다시 해 주세요.'; if (!LV.sbIn) liveError(err); }
   } finally { LV.booting = false; LV.authBusy = false; }
+  if (LV.sbIn) { LV.cinfo = false; ls.del(CINFO); } else if (LV.cinfo) await introLoad();
   if (D.entered && LV.want && !/^#start/.test(LV.want)) history.replaceState(null, '', LV.want);
   LV.want = '';
   route(true);
@@ -2537,9 +2581,9 @@ function liveStep(arg) {
   if (CHURCH_ON) {
     // 로그인 전: 첫 화면(세션을 못 읽었으면 안내와 다시 불러오기).
     //  다만 이 기기에 로그인 기록이 있는데 켜지는 중이라 확인을 못 마쳤다면, 로그인 화면이 잠깐 비치지 않게 '불러오는 중'을 먼저 보인다(코이데도 같다. 2026-11-24).
-    if (!LV.sbIn) return LV.err || (LV.booting && ls.get('didako-note-sb')) ? 'loading' : '';
+    if (!LV.sbIn) return LV.cinfo ? 'intro' : LV.err || (LV.booting && ls.get('didako-note-sb')) ? 'loading' : '';
     if (LV.needChurch && !LV.authBusy) {
-      if (LV.ap && (arg === 'apply' || arg === 'apply-form')) return arg;
+      if (LV.ap && arg === 'apply-form') return arg;
       // 교회 문이 닫혀 있으면(코이데처럼) 교회 코드 화면보다 안내 화면을 먼저 보인다. [교회 코드 넣기]는 #start/church
       return arg === 'intro' || (LV.closed && arg !== 'church') ? 'intro' : 'church';
     }
@@ -2778,75 +2822,57 @@ function lvFirstBack() {
   return '<button class="link" type="button" data-act="lv-logout">로그아웃</button>';
 }
 // ── 교회 신청(코이데 035·043, 디다코 021): 교회 코드가 없는 교역자가 첫 화면에서 신청서를 쓴다. 교회 등록은 코이데 앱 관리자가 한다(결정 기록 2026-11-20) ──
-// 신청을 받지 않고(스위치 off) 내 신청도 없으면 입구가 보이지 않는다(교회 코드 화면은 지금 모양 그대로)
-function apEntry() {
-  const A = LV.ap;
-  if (!A || !(A.open || A.mine)) return '';
-  const M = A.mine, txt = !M ? '' : M.status === '대기' ? '신청한 교회가 있어요 · 확인 중이에요' : M.status === '만듦' ? '신청한 교회가 만들어졌어요' : '신청 결과가 도착했어요';
-  return M ? `<p class="hint">${txt} · <button class="link" type="button" data-act="lv-apply-open" style="display:inline;min-height:0">신청 상태 보기</button></p>`
-    : '<p class="hint">교회 코드가 없나요? 교역자는 교회를 신청할 수 있어요 · <button class="link" type="button" data-act="lv-apply-open" style="display:inline;min-height:0">교회 신청하기</button></p>';
-}
-// 디다코 교회 안내(코이데 안내 화면과 같은 짜임, 글만): 교회에 들어오지 않은 사람에게 역할별로 하는 일·지키는 것·쓰려면·이용료.
-// 교회 문이 닫혀 있으면(LV.closed) 로그인 뒤 교회 코드 화면 대신 이것을 먼저 보인다. 신청서는 신청 화면(applyView)이 받는다
+// 디다코 교회 안내(코이데 안내 화면 cintro와 같은 모양·같은 흐름, 앱 이름과 앱 고유 내용만 다르다): 교회에 들어오지 않은 사람에게
+// 역할별로 하는 일·지키는 것·쓰려면·이용료를 보이고, 교역자는 여기서 신청서를 쓴다. 다음에 보인다: 로그인 전 안내 링크(?cinfo), 로그인 뒤 교회 코드 화면의
+// "디다코 교회 안내 보기", 서버의 교회 문이 닫혀 있을 때(LV.closed). 신청 상태(LV.ap)는 applyState가 준다: open(신청을 받는지)·mine(내 신청)·auth(로그인했는지)
 function introView() {
-  const A = LV.ap || {}, M = A.mine, pick = LV.introPick;
-  const li = t => `<li>${t}</li>`, ul = items => `<ul style="margin:0;padding-left:1.2em;display:flex;flex-direction:column;gap:.35em;word-break:keep-all">${items.map(li).join('')}</ul>`;
-  const role = (t, items) => `<div style="padding:.8em 0;border-top:1px solid var(--line)"><h3 style="margin:0 0 .4em;font-size:1em">${t}</h3>${ul(items)}</div>`;
-  const card = (h, body) => `<section class="card calm" style="margin-top:16px;align-items:stretch"><h2 class="calm-t" style="font-size:1.1em">${h}</h2>${body}</section>`;
-  const p = t => `<p style="margin:0;word-break:keep-all">${t}</p>`;
-  const staffBox = M ? p(M.status === '대기' ? '신청한 교회가 있어요. 확인 중이에요.' : M.status === '만듦' ? '신청한 교회가 만들어졌어요.' : '신청 결과가 도착했어요.')
-      + '<button class="btn small" type="button" data-act="lv-apply-open" style="align-self:flex-start;margin-top:8px">신청 상태 보기</button>'
-    : A.open ? p('신청서는 5분이면 써요. 디다코가 확인한 뒤 적어 주신 연락처로 연락해요.') + '<button class="btn small" type="button" data-act="lv-apply-open" style="align-self:flex-start;margin-top:8px">신청서 쓰기</button>'
-    : p('신청서는 곧 이 앱에서 받을 수 있어요.');
-  const box = pick === 'staff' ? staffBox
-    : pick === 'member' ? p('디다코 교회는 교역자가 신청해요. 아래 링크를 우리 교회 교역자에게 보내 주세요.') + '<button class="link" type="button" data-act="lv-intro-copy" style="margin-top:6px">링크 복사</button>' : '';
-  return `<div class="col-n" style="max-width:40rem">
-    ${LV.closed ? '<p class="hint" role="status" style="margin:0 0 12px;padding:.7em .9em;border-radius:12px;background:var(--surface);border:1px solid var(--line)">지금은 시범 운영 중이에요. 신청을 받아 두고, 준비되는 대로 열어 드려요.</p>' : ''}
+  const I = LV.ap || {}, auth = !!LV.sbIn, M = I.mine, pick = LV.introPick, closed = LV.closed;
+  const TRIAL = '지금은 시범 운영 중이에요. 신청을 받아 두고, 준비되는 대로 열어 드려요.';
+  const role = (title, img, alt, h, items) => `<div class="ci-role"><div><h3 class="ci-h3">${title}</h3><ul class="ci-list">${items.map(t => `<li>${t}</li>`).join('')}</ul></div><img class="ci-shot" src="intro/${img}.webp" alt="${alt}" width="420" height="${h}" loading="lazy"></div>`;
+  // 신청 스위치가 켜져 있을 때만(I.open) 신청서 갈래. 꺼져 있고 내 신청도 없으면 "곧 받아요" 한 줄
+  const apBox = pick !== 'staff' || !I.open ? null : M ? ''
+    : !auth ? '<div class="ci-note-box ci-box"><p>신청서는 로그인한 뒤에 써요. 구글이나 카카오로 로그인하면 이 화면으로 돌아와요.</p><div class="ci-note"><button class="btn small" type="button" data-act="lv-apply-login">로그인하고 신청하기</button></div></div>'
+    : '<div class="ci-note-box ci-box"><p>신청서는 5분이면 써요. 디다코가 확인한 뒤 적어 주신 연락처로 연락해요.</p><div class="ci-note"><button class="btn small" type="button" data-act="lv-apply-form">신청서 쓰기</button></div></div>';
+  const mineCard = !M ? '' : M.status === '대기'
+    ? `<section class="card ci-card"><h2 class="ci-h2">신청을 받았어요</h2><p style="margin:0;word-break:keep-all">${esc(M.name)} · ${esc(M.at)}에 신청했어요. 디다코가 확인한 뒤 적어 주신 연락처로 연락드려요.</p>
+      ${I.cancelAsk ? `<p style="margin:0;word-break:keep-all">신청서를 취소하면 적어 주신 내용이 바로 지워져요.</p><div class="actions"><button class="btn small ghost" type="button" data-act="lv-apply-cancel">취소하기</button><button class="link" type="button" data-act="lv-apply-cancel-no">아니요</button></div>`
+      : '<div class="actions"><button class="link" type="button" data-act="lv-apply-cancel-ask">신청 취소</button></div>'}</section>`
+    : M.status === '만듦' && (M.app || 'koide') !== 'didako'
+      ? `<section class="card ci-card"><h2 class="ci-h2">교회가 만들어졌어요</h2><p style="margin:0;word-break:keep-all">${esc(M.churchName)}는 코이데 앱에서 신청한 교회예요. 코이데 앱에서 첫 관리자로 시작해 주세요.</p></section>`
+    : M.status === '만듦'
+      ? `<section class="card ci-card"><h2 class="ci-h2">교회가 만들어졌어요</h2>${closed
+        ? `<p style="margin:0;word-break:keep-all">${esc(M.churchName)}가 만들어졌어요. 지금은 시범 운영 중이라 문이 닫혀 있어요. 문이 열리면 이 화면에서 첫 관리자로 시작할 수 있어요.</p>`
+        : `<p style="margin:0;word-break:keep-all">${esc(M.churchName)}의 첫 교회 관리자로 시작할 수 있어요. 시작하면 부서와 사랑방을 만들고 초대 링크를 나눠 줘요.</p>
+          <label class="f" for="lvClaimName" style="margin-top:4px">관리자 이름 · 목록에 보여요</label><input id="lvClaimName" class="field" maxlength="20" autocomplete="name" value="${esc(String(I.nick || '').slice(0, 20))}">
+          <div class="actions"><button class="btn wide" type="button" data-act="lv-apply-claim">첫 관리자로 시작하기</button></div><p class="msg" id="liveMsg" role="alert"></p>`}</section>`
+    : `<section class="card ci-card"><h2 class="ci-h2">이번에는 열어 드리지 못했어요</h2>${M.reason ? `<p style="margin:0;word-break:keep-all">사유: ${esc(M.reason)}</p>` : ''}<p style="margin:0;word-break:keep-all">궁금한 점은 koinobia.admin@gmail.com 으로 물어봐 주세요.</p>${I.open && auth ? '<div class="actions"><button class="btn small" type="button" data-act="lv-apply-form">다시 신청하기</button></div>' : ''}</section>`;
+  const box = apBox != null ? apBox : pick === 'staff' ? '<div class="ci-note-box ci-box"><p>신청서는 곧 이 앱에서 받을 수 있어요.</p></div>'
+    : pick === 'member' ? '<div class="ci-note-box ci-box"><p>디다코 교회는 교역자가 신청해요. 아래 링크를 우리 교회 교역자에게 보내 주세요.</p><button class="link" type="button" data-act="lv-intro-copy">링크 복사</button></div>' : '';
+  return `<div class="col-n ci">${closed ? `<div class="ci-note-box ci-band" role="status">${TRIAL}</div>` : ''}
     <p class="eyebrow">디다코 교회</p><h1>디다코 교회</h1>
-    <p class="hint" style="font-size:.95em">교회와 부서, 사랑방 단위로 같은 말씀을 함께 펼치고 나누는 교회용 공간</p>
-    ${card('역할별로 하는 일', role('회원', ['이번 주 과를 펼쳐 질문마다 내 생각 쓰기', '사랑방 모임에서 나눔하기 화면으로 함께 나누기', '책장과 나의 기록에서 지난 말씀과 기록 돌아보기'])
-      + role('리더', ['나눔하기에서 리더용 해설과 진행 메모 보기', '사랑방 연결 신청 승인'])
-      + role('목사님·교역자', ['맡은 부서와 사랑방, 연결 현황 보기', '리더용 해설 보기'])
-      + role('관리자', ['부서·사랑방 편성, 초대 링크 만들기, 교재와 과 정하기', '연도 개편, 결혼한 가정 합치기, 다른 부서로 옮기기', '변경 기록, 의견함, 개인정보 요청 처리']))}
-    ${card('지키는 것', ul(['순위, 숫자 비교, 작성률, 댓글이 없어요', '교회 전체 분석은 명단 숫자만 보여 줘요']))}
-    ${card('쓰려면', `<ol style="margin:0;padding-left:1.2em;display:flex;flex-direction:column;gap:.4em;word-break:keep-all"><li>교역자가 신청해요: 지역, 교회 이름, 교단, 대표 목사님, 연락처, 대략 인원, 교회 소개 주소(선택)</li><li>디다코가 확인한 뒤 연락해요. 교회가 만들어지면 신청한 분이 첫 교회 관리자가 돼요</li><li>관리자가 부서와 사랑방을 만들고 초대 링크를 나눠 줘요</li></ol>` + p('성도는 직접 신청할 수 없어요. 이 안내의 링크를 교역자에게 전해 주세요.'))}
-    ${card('이용료', ul(['시범 기간: 무료', '정식 출시 뒤 이용료는 시범 교회 의견을 듣고 정해요']))}
-    <div style="display:flex;flex-direction:column;gap:8px;margin-top:20px">
-      <button class="choice" type="button" data-act="lv-intro-pick" data-v="staff"><b>교역자예요</b><small class="choice-sub" style="display:block">신청하기</small></button>
-      <button class="choice" type="button" data-act="lv-intro-pick" data-v="member"><b>성도예요</b><small class="choice-sub" style="display:block">교역자에게 알리기</small></button>
+    <p class="ci-sub">부서와 사랑방 단위로 같은 말씀을 함께 펼치고 나누는 교회용 공간</p>${mineCard}
+    <section class="card ci-card"><h2 class="ci-h2">역할별로 하는 일</h2>
+      ${role('회원(가정)', 'member', '회원 홈 화면: 이번 주 말씀 따라가기와 시작하기 단추', 420, ['이번 주 과를 펼쳐 질문마다 내 생각 쓰기', '사랑방 모임에서는 나눔하기 화면으로 함께 나누기', '책장과 나의 기록에서 지난 말씀과 기록 돌아보기'])}
+      ${role('리더', 'leader', '리더의 나눔하기 화면: 나눌 단계와 진행 준비 단추', 909, ['나눔하기에서 리더용 해설과 진행 메모 보기', '사랑방 연결 신청 승인'])}
+      ${role('목사님·교역자', 'pastor', '교역자 홈 화면: 사랑방과 가정 수, 사랑방별 이번 주 현황', 909, ['맡은 부서와 사랑방, 연결 현황 보기', '리더용 해설 보기'])}
+      ${role('관리자', 'admin', '관리 화면: 연결 신청 승인과 부서 관리', 909, ['부서·사랑방 편성, 초대 링크 만들기, 교재와 과 정하기', '연도 개편, 결혼한 가정 합치기, 다른 부서로 옮기기', '변경 기록, 의견함, 개인정보 요청 처리'])}
+    </section>
+    <section class="card ci-card"><h2 class="ci-h2">지키는 것</h2>
+      <ul class="ci-list"><li>순위, 숫자 비교, 작성률, 댓글이 없어요</li><li>교회 전체 분석은 명단 숫자만 보여 줘요</li></ul></section>
+    <section class="card ci-card"><h2 class="ci-h2">쓰려면</h2>
+      <ol class="ci-steps"><li>교역자가 신청해요: 지역, 교회 이름, 교단, 대표 목사님, 연락처, 대략 인원, 교회 소개 주소(선택)</li><li>디다코가 확인한 뒤 연락해요. 교회가 만들어지면 신청한 분이 첫 교회 관리자가 돼요</li><li>관리자가 부서와 사랑방을 만들고 초대 링크를 나눠 줘요</li></ol>
+      <p class="ci-note">성도는 직접 신청할 수 없어요. 이 안내의 링크를 교역자에게 전해 주세요.</p></section>
+    <section class="card ci-card"><h2 class="ci-h2">이용료</h2>
+      <ul class="ci-list"><li>시범 기간: 무료</li><li>정식 출시 뒤 이용료는 시범 교회 의견을 듣고 정해요</li></ul></section>
+    ${closed ? '' : `<p class="ci-trial"><b>지금은 시범 운영 중이에요.</b> 신청을 받아 두고, 준비되는 대로 열어 드려요.</p>`}
+    <div class="choices start-pick">
+      <button class="choice" type="button" data-act="lv-intro-pick" data-v="staff"><b>교역자예요</b><small class="choice-sub">신청하기</small></button>
+      <button class="choice" type="button" data-act="lv-intro-pick" data-v="member"><b>성도예요</b><small class="choice-sub">교역자에게 알리기</small></button>
     </div>
-    ${box ? `<section class="card calm" style="margin-top:12px;align-items:stretch">${box}</section>` : ''}
-    <p class="hint" style="margin-top:16px">${LV.closed ? '이미 교회 코드가 있어요 · ' : ''}<button class="link" type="button" data-act="lv-intro-code" style="display:inline;min-height:0">교회 코드 넣기</button></p>
-    <button class="link" type="button" data-act="lv-logout">${LV.closed ? '다른 계정으로 로그인' : '로그아웃'}</button>
-  </div>`;
-}
-function applyView() {
-  const A = LV.ap || {}, M = A.mine, back = `<button class="link" type="button" data-act="lv-apply-back">${LV.closed ? '안내로 돌아가기' : '교회 코드 넣기'}</button>`;
-  const head = '<p class="eyebrow">디다코 교회</p><h1>교회 신청</h1>';
-  if (A.loading) return `<div class="col-n">${head}<section class="card calm"><p class="calm-t">${A.err ? '잠시 문제가 생겼어요' : '불러오는 중…'}</p>${A.err
-    ? `<p class="soft" style="margin:0">${esc(A.err)}</p><button class="btn" type="button" data-act="lv-apply-open">다시 불러오기</button>` : '<p class="soft" style="margin:0">잠시만 기다려 주세요.</p>'}</section>${back}</div>`;
-  const p = t => `<p style="margin:0;word-break:keep-all">${t}</p>`;
-  const card = (h, body) => `<section class="card calm" style="margin-top:16px;align-items:stretch"><h2 class="calm-t" style="font-size:1.1em">${h}</h2>${body}</section>`;
-  let mine = '';
-  if (M && M.status === '대기') {
-    mine = card('신청을 받았어요', p(`${esc(M.name)} · ${esc(M.at)}에 신청했어요. 디다코가 확인한 뒤 적어 주신 연락처로 연락드려요.`)
-      + (A.cancelAsk ? `${p('신청서를 취소하면 적어 주신 내용이 바로 지워져요.')}<div class="set-btns"><button class="btn small ghost" type="button" data-act="lv-apply-cancel">취소하기</button><button class="link" type="button" data-act="lv-apply-cancel-no" style="display:inline;min-height:0">아니요</button></div>`
-        : '<button class="link" type="button" data-act="lv-apply-cancel-ask" style="display:inline;min-height:0">신청 취소</button>'));
-  } else if (M && M.status === '만듦') {
-    mine = (M.app || 'koide') === 'didako'
-      ? card('교회가 만들어졌어요', p(`${esc(M.churchName)}의 첫 교회 관리자로 시작할 수 있어요. 시작하면 부서와 사랑방을 만들고 초대 링크를 나눠 줘요.`)
-        + `<label class="f" for="lvClaimName" style="margin-top:4px">관리자 이름 · 목록에 보여요</label><input id="lvClaimName" class="field" maxlength="20" autocomplete="name" value="${esc(String(A.nick || '').slice(0, 20))}">`
-        + '<button class="btn wide" type="button" data-act="lv-apply-claim">첫 관리자로 시작하기</button><p class="msg" id="liveMsg" role="alert"></p>')
-      : card('교회가 만들어졌어요', p(`${esc(M.churchName)}는 코이데 앱에서 신청한 교회예요. 코이데 앱에서 첫 관리자로 시작해 주세요.`));
-  } else if (M) {
-    mine = card('이번에는 열어 드리지 못했어요', (M.reason ? p(`사유: ${esc(M.reason)}`) : '') + p('궁금한 점은 koinobia.admin@gmail.com 으로 물어봐 주세요.')
-      + (A.open ? '<button class="btn small" type="button" data-act="lv-apply-form" style="align-self:flex-start">다시 신청하기</button>' : ''));
-  }
-  const first = M ? '' : !A.open
-    ? card('아직 신청을 받지 않아요', p('지금은 시범 운영 중이에요. 교회 코드를 받은 분은 코드를 넣어 주세요.'))
-    : card('쓰려면', `<ol style="margin:0;padding-left:1.2em;display:flex;flex-direction:column;gap:.4em;word-break:keep-all"><li>교역자가 신청해요: 지역, 교회 이름, 교단, 대표 목사님, 연락처, 대략 인원, 교회 소개 주소(선택)</li><li>디다코가 확인한 뒤 연락해요. 교회가 만들어지면 신청한 분이 첫 교회 관리자가 돼요</li><li>관리자가 부서와 사랑방을 만들고 초대 링크를 나눠 줘요</li></ol>`
-      + p('성도는 직접 신청할 수 없어요. 우리 교회 교역자에게 알려 주세요.') + '<button class="btn wide" type="button" data-act="lv-apply-form">신청서 쓰기</button>');
-  return `<div class="col-n">${head}<p class="hint">교회 코드 없이 시작하려는 교역자를 위한 신청이에요.</p>${mine}${first}${back}</div>`;
+    ${box}
+    <p class="ci-foot">${closed ? '<button class="link" type="button" data-act="lv-logout">다른 계정으로 로그인</button>'
+      : auth ? '<button class="link" type="button" data-act="lv-intro-code">교회 코드 넣기</button>'
+      : '이미 교회 코드나 초대 링크가 있어요 · <button class="link" type="button" data-act="lv-intro-login">로그인</button>'}</p></div>`;
 }
 function applyFormView() {
   const D = (LV.ap && LV.ap.draft) || {}, v = k => esc(D[k] || ''), sizes = ['30명 이하', '31~50명', '51~100명', '101~300명', '301명 이상'];
@@ -2864,7 +2890,7 @@ function applyFormView() {
     <label style="display:flex;align-items:flex-start;gap:8px;margin:16px 0;text-align:left;word-break:keep-all"><input type="checkbox" name="agree" style="margin-top:3px;flex:none"${D.agree ? ' checked' : ''}><span>신청서의 개인정보(교회 이름·대표 목사님·연락처 등)를 신청 확인과 연락에 쓰는 데 동의해요 (필수)<a class="quiet-link" href="https://koinobia.com/privacy/" target="_blank" rel="noopener" style="display:block;margin-top:4px;min-height:0">개인정보 처리방침 전체 보기</a></span></label>
     <button class="btn wide" type="submit">신청하기</button>
     <p class="msg" id="liveMsg" role="alert"></p>
-    <button class="link" type="button" data-act="lv-apply-open">뒤로</button>
+    <button class="link" type="button" data-act="lv-apply-back">뒤로</button>
   </form>`;
 }
 function liveStartView(arg) {
@@ -2875,12 +2901,11 @@ function liveStartView(arg) {
       <input class="field" id="lvCode" placeholder="교회 코드" aria-label="교회 코드" autocapitalize="characters" autocomplete="off" spellcheck="false">
       <button class="btn wide" id="lvGo" type="submit" disabled>들어가기</button>
       <p class="msg" id="liveMsg" role="alert">${esc(LV.notice)}</p>
-      ${apEntry()}
-      <p class="hint">디다코 교회가 처음이세요? <button class="link" type="button" data-act="lv-intro" style="display:inline;min-height:0">디다코 교회 안내 보기</button></p>
+      <p class="hint cc-nocode">교회 코드가 없나요? <button class="link" type="button" data-act="lv-intro" style="display:inline;min-height:0">디다코 교회 안내 보기</button></p>
       <button class="link" type="button" data-act="lv-logout">로그아웃</button>
     </form>`;
   if (arg === 'intro') return introView();
-  if (arg === 'apply') return applyView();
+  if (arg === 'apply') return introView();   // 옛 주소(#start/apply)는 안내 화면으로
   if (arg === 'apply-form') return applyFormView();
   if (arg === 'loading') return `<div class="col-n"><section class="card calm">${LV.err
       ? `<p class="calm-t">잠시 문제가 생겼어요</p><p class="soft" style="margin:0">${esc(LV.err)}</p><button class="btn" type="button" data-act="lv-reload">다시 불러오기</button>`
@@ -7117,16 +7142,12 @@ if (LIVE) {
     // 교회 안내(introView): 안내 보기 · 교역자/성도 고르기 · 링크 복사 · 교회 코드 화면으로
     'lv-intro'() { LV.introPick = ''; lvGo('intro'); },
     'lv-intro-pick'(e, el) { LV.introPick = el.dataset.v === 'member' ? 'member' : 'staff'; route(true); },
-    'lv-intro-copy'() { adlCopy(location.origin + location.pathname + '#start/intro', '링크를 복사했어요'); },
+    'lv-intro-copy'() { adlCopy('디다코 교회 안내: ' + location.origin + location.pathname + '?cinfo', '링크를 복사했어요'); },
     'lv-intro-code'() { lvGo('church'); },
-    // 교회 신청: 열 때마다 서버에서 신청을 받는지와 내 신청을 새로 받는다(신청서 쓰기 화면에서 뒤로 와도 같다)
-    'lv-apply-open': lvRun(async () => {
-      LV.ap = { loading: true, ...(LV.ap && LV.ap.draft ? { draft: LV.ap.draft } : {}) }; lvGo('apply');
-      try { const r = await api('applyState'); LV.ap = { ...r, ...(LV.ap && LV.ap.draft ? { draft: LV.ap.draft } : {}) }; }
-      catch (err) { if (err.cancelled) return; LV.ap = { loading: true, err: err.code && err.message ? err.message : '서버가 답하지 않아요. 잠시 뒤 다시 해 주세요.' }; }
-      route(true);
-    }),
-    'lv-apply-back'() { lvGo(''); },
+    'lv-intro-login'() { LV.cinfo = false; ls.del(CINFO); lvGo(''); },
+    'lv-apply-login'() { ls.set(APPLY_GO, String(Date.now())); LV.cinfo = false; ls.del(CINFO); lvGo(''); },
+    // 교회 신청(안내 화면에서): 서류 쓰기 · 뒤로(안내 화면) · 취소
+    'lv-apply-back'() { LV.introPick = 'staff'; lvGo('intro'); },
     'lv-apply-form'() { LV.ap = Object.assign({}, LV.ap, { cancelAsk: false }); lvGo('apply-form'); },
     'lv-apply-cancel-ask'() { LV.ap = Object.assign({}, LV.ap, { cancelAsk: true }); route(true); },
     'lv-apply-cancel-no'() { LV.ap = Object.assign({}, LV.ap, { cancelAsk: false }); route(true); },
@@ -7365,8 +7386,8 @@ if (LIVE) {
     if (!body.agree) { msg('개인정보 수집·이용에 동의해 주세요.'); return; }
     msg('');
     const r = await api('applySend', body);
-    LV.ap = { open: true, mine: r.apply || null, nick: LV.ap && LV.ap.nick };
-    lvGo('apply'); toast('신청서를 보냈어요. 디다코가 확인한 뒤 연락드려요.');
+    LV.ap = { open: true, mine: r.apply || null, nick: LV.ap && LV.ap.nick, auth: true };
+    LV.introPick = 'staff'; lvGo('intro'); toast('신청서를 보냈어요. 디다코가 확인한 뒤 연락드려요.');
   });
   // 설치 코드: 처음 한 번 첫 교회 관리자를 세운다. 맞으면 관리자 역할로 앱에 들어간다
   lvForms.setup = lvRun(async () => {
