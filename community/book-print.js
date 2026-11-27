@@ -196,7 +196,7 @@ h4.stage { font: 600 8.4pt/1.4 'IBM Plex Sans KR'; letter-spacing: .14em; color:
 .read { margin: 5.4mm 0 0; }
 .read h3 { font: 700 11pt/1.55 'Gowun Batang'; margin: 0 0 1.6mm; break-after: avoid; word-break: keep-all; }
 .md p { text-align: justify; word-break: keep-all; orphans: 2; widows: 2; }
-.md p + p { text-indent: 1em; }
+.md p { text-indent: 1em; }   /* 소제목·인용·목록·표 다음 문단도, 묶음의 첫 문단도 들여쓴다(2026-11-27, 사용자) */
 .md strong { font-weight: 700; }
 .md em { font-style: normal; font-weight: 400; background: linear-gradient(transparent 62%, color-mix(in srgb, var(--ac) 18%, transparent) 62%); }
 .md blockquote { margin: 2.4mm 0; padding: .6mm 0 .6mm 4mm; border-left: .6mm solid var(--ac); color: #3d382f; }
