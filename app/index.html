@@ -443,6 +443,8 @@ a:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
 .topbar.bare { background: transparent; border-bottom-color: transparent; box-shadow: none; position: absolute; left: 0; right: 0; }
 :root[data-style="neu"] .topbar.bare, :root[data-style="glass"] .topbar.bare { background: transparent; box-shadow: none; backdrop-filter: none; border-color: transparent; }
 .topbar.bare .brand { visibility: hidden; }
+.topbar.plain .icon-btn, .topbar.plain .badge-btn, .topbar.plain .demo-tag, .topbar.plain .menu { display: none; }
+.topbar.plain .brand { pointer-events: none; }
 .ab-mark .mk { --s1: var(--on-accent); --s2: color-mix(in srgb, var(--on-accent) 72%, var(--accent)); --s3: color-mix(in srgb, var(--on-accent) 48%, var(--accent)); --cord-bg: var(--accent); }
 .ab-words span { display: flex; flex-direction: column; align-items: center; gap: .1em; padding: .5em .7em; border: 1px solid var(--line); border-radius: 12px; background: var(--page); min-width: 6.4em; }
 .wl-or { display: flex; align-items: center; gap: .8em; margin: 6px 0 0; color: var(--ink-2); font-size: .8em; }
@@ -516,7 +518,7 @@ button.badge-btn { appearance: none; font-family: inherit; line-height: inherit;
 .col-n .field { margin-top: 12px; }
 .col-n .msg { margin: 8px 0 0; }
 /* 교회 안내 화면(introView): 코이데 cintro와 같은 모양. 띠·상자는 .ci-note-box */
-.col-n.ci { max-width: 720px; }
+.col-n.ci { max-width: 720px; padding-top: 16px; }
 .ci-note-box { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: .8em 1em; margin: 0; font-size: .84em; line-height: 1.55; }
 .ci-band { background: var(--warn-soft); color: var(--warn); border-color: transparent; margin: 0 0 4px; }
 .ci-sub { margin: .2em 0 0; word-break: keep-all; }
@@ -540,6 +542,7 @@ button.badge-btn { appearance: none; font-family: inherit; line-height: inherit;
 .start-pick .choice { padding-block: .95em; line-height: 1.45; }
 .start-pick .choice-sub { margin-top: .35em; }
 .ci-foot { margin: 8px 0 0; text-align: center; font-size: .88em; color: var(--ink-2); }
+.ci-foot .link { display: inline-block; }
 .msg { color: var(--warn); font-size: .875em; min-height: 1.4em; }
 
 /* ── 관리(A-01): 코이데 app/index.html의 관리 화면 CSS를 옮겼다. 앱에 이미 있는 이름(.fold)과 겹치는 것은 ad-로 시작하게 바꿨다 ── */
@@ -2852,7 +2855,7 @@ function introView() {
     <p class="eyebrow">디다코 교회</p><h1>디다코 교회</h1>
     <p class="ci-sub">부서와 사랑방 단위로 같은 말씀을 함께 펼치고 나누는 교회용 공간</p>${mineCard}
     <section class="card ci-card"><h2 class="ci-h2">역할별로 하는 일</h2>
-      ${role('회원(가정)', 'member', '회원 홈 화면: 이번 주 말씀 따라가기와 시작하기 단추', 420, ['이번 주 과를 펼쳐 질문마다 내 생각 쓰기', '사랑방 모임에서는 나눔하기 화면으로 함께 나누기', '책장과 나의 기록에서 지난 말씀과 기록 돌아보기'])}
+      ${role('회원(가정)', 'member', '회원 홈 화면: 이번 주 말씀 따라가기와 시작하기 단추', 909, ['이번 주 과를 펼쳐 질문마다 내 생각 쓰기', '사랑방 모임에서는 나눔하기 화면으로 함께 나누기', '책장과 나의 기록에서 지난 말씀과 기록 돌아보기'])}
       ${role('리더', 'leader', '리더의 나눔하기 화면: 나눌 단계와 진행 준비 단추', 909, ['나눔하기에서 리더용 해설과 진행 메모 보기', '사랑방 연결 신청 승인'])}
       ${role('목사님·교역자', 'pastor', '교역자 홈 화면: 사랑방과 가정 수, 사랑방별 이번 주 현황', 909, ['맡은 부서와 사랑방, 연결 현황 보기', '리더용 해설 보기'])}
       ${role('관리자', 'admin', '관리 화면: 연결 신청 승인과 부서 관리', 909, ['부서·사랑방 편성, 초대 링크 만들기, 교재와 과 정하기', '연도 개편, 결혼한 가정 합치기, 다른 부서로 옮기기', '변경 기록, 의견함, 개인정보 요청 처리'])}
@@ -6476,7 +6479,8 @@ function drawRoute(moved) {
   if (moved && !vtNow) { closeMenu(); $('#toast').hidden = true; }   // 겹쳐 넘길 때는 route가 미리 닫았다
   vtV = v; vtArg = arg || '';
   const start = v === 'start';
-  $('#topbar').classList.toggle('bare', start);
+  const introBar = LIVE && start && arg === 'intro';   // 교회 안내 화면은 코이데처럼 로고 상단 바(톱니·메뉴 없이)
+  $('#topbar').classList.toggle('bare', start && !introBar); $('#topbar').classList.toggle('plain', introBar);
   $('#topnav').hidden = start; $('#tabs').hidden = start;
   document.body.dataset.view = v;
   $('#view').innerHTML = start ? startView(arg) : v === 'week' ? weekView() : v === 'staff' ? staffHomeView() : v === 'wq' ? wqView() : v === 'letter' ? '' : v === 'read' ? readView() : v === 'share' ? shareView() : v === 'shelf' ? shelfView(arg) : v === 'record' ? recordView(arg) : v === 'records' ? recordsView() : v === 'found' ? foundView() : v === 'gallery' ? galleryView() : v === 'more' ? moreView() : v === 'admin' ? adminView() : v === 'admin-reorg' ? adminReorgView() : v === 'church-admin' ? churchAdminView() : v === 'survey' ? surveyView(arg) : v === 'about' ? aboutView() : v === 'account' ? accountView() : v === 'acctdel' ? acctDelView() : v === 'guide' ? guideView() : v === 'feedback' ? feedbackView() : v === 'prep' ? prepView() : v === 'prepprint' ? prepPrintView() : v === 'church' ? churchView() : v === 'rooms' ? roomsView() : v === 'manage' ? manageView(arg) : placeView(v);
