@@ -2314,7 +2314,7 @@ function letterView() {
 const LK = { hub: 'didako-hub-token', tok: 'didako-token', uid: 'didako-uid', url: 'didako-church-url', name: 'didako-church-name', kind: 'didako-church-kind', depts: 'didako-start-depts', join: 'didako-join', setup: 'didako-setup', setupTok: 'didako-setup-tok', lastAdmin: 'didako-last-admin' };
 // me: 서버가 알려 준 나의 정보, depts: 첫 접속에서 고르는 부서·사랑방 목록, booting: 켜지는 중, sbIn: 새 길(Supabase)로 로그인해 있는가
 // writer: 교재를 쓸 수 있는 사람인지, writeDepts: 새 교재의 대상으로 고를 수 있는 부서, hold: 못 받은 이번 주 즈음의 과(교재ID와 날짜), booksOk: 교재를 받았는지(2-3)
-const LV = { me: null, depts: null, join: null, ap: null, epoch: 0, booting: false, authBusy: false, sbIn: false, needChurch: false, cinfo: false, closed: false, introPick: '', repick: false, notice: '', err: '', busy: false, work: null, want: '', writer: false, writeDepts: [], hold: [], booksOk: false, booksWork: null, eraseReq: null };
+const LV = { me: null, depts: null, join: null, ap: null, epoch: 0, booting: false, authBusy: false, sbIn: false, needChurch: false, copied: null, cinfo: false, closed: false, introPick: '', repick: false, notice: '', err: '', busy: false, work: null, want: '', writer: false, writeDepts: [], hold: [], booksOk: false, booksWork: null, eraseReq: null };
 // 사용 기록(설계서 3장 "사용 기록에 담을 것", 결정 기록 2026-11-19): 행동 이름과 날 수만 ../note/usage.js가 모아 두었다가 묶어서 usage_track(supabase/016)으로 보낸다.
 //  보내는 때는 셋이 모두 맞을 때뿐이다: 새 길로 로그인해 있고(ok) · 데모·따라 하기(?tutorial)·?demo가 아니고(LIVE) · 앱 설정 "이용 통계 보내기"가 켜져 있다. 글·이름·교회·사랑방·교재 이름은 어디에도 넣지 않는다.
 const UZ = window.DidakoUsage || { init() {}, track() {}, open() {}, timed() {}, dayDiff() { return null; }, flush() {}, clear() {} };
@@ -2828,6 +2828,7 @@ function lvFirstBack() {
 // 디다코 교회 안내(코이데 안내 화면 cintro와 같은 모양·같은 흐름, 앱 이름과 앱 고유 내용만 다르다): 교회에 들어오지 않은 사람에게
 // 역할별로 하는 일·지키는 것·쓰려면·이용료를 보이고, 교역자는 여기서 신청서를 쓴다. 다음에 보인다: 로그인 전 안내 링크(?cinfo), 로그인 뒤 교회 코드 화면의
 // "디다코 교회 안내 보기", 서버의 교회 문이 닫혀 있을 때(LV.closed). 신청 상태(LV.ap)는 applyState가 준다: open(신청을 받는지)·mine(내 신청)·auth(로그인했는지)
+const cinfoText = () => '우리 교회 말씀 나눔을 함께하는 앱이에요. 신청한 교회만 쓸 수 있어요: ' + location.origin + location.pathname + '?cinfo';
 function introView() {
   const I = LV.ap || {}, auth = !!LV.sbIn, M = I.mine, pick = LV.introPick, closed = LV.closed;
   const TRIAL = '지금은 시범 운영 중이에요. 신청을 받아 두고, 준비되는 대로 열어 드려요.';
@@ -2850,7 +2851,7 @@ function introView() {
           <div class="actions"><button class="btn wide" type="button" data-act="lv-apply-claim">첫 관리자로 시작하기</button></div><p class="msg" id="liveMsg" role="alert"></p>`}</section>`
     : `<section class="card ci-card"><h2 class="ci-h2">이번에는 열어 드리지 못했어요</h2>${M.reason ? `<p style="margin:0;word-break:keep-all">사유: ${esc(M.reason)}</p>` : ''}<p style="margin:0;word-break:keep-all">궁금한 점은 koinobia.admin@gmail.com 으로 물어봐 주세요.</p>${I.open && auth ? '<div class="actions"><button class="btn small" type="button" data-act="lv-apply-form">다시 신청하기</button></div>' : ''}</section>`;
   const box = apBox != null ? apBox : pick === 'staff' ? '<div class="ci-note-box ci-box"><p>신청서는 곧 이 앱에서 받을 수 있어요.</p></div>'
-    : pick === 'member' ? '<div class="ci-note-box ci-box"><p>디다코 교회는 교역자가 신청해요. 아래 링크를 우리 교회 교역자에게 보내 주세요.</p><button class="link" type="button" data-act="lv-intro-copy">링크 복사</button></div>' : '';
+    : pick === 'member' ? `<div class="ci-note-box ci-box"><p>디다코 교회는 교역자가 신청해요. 아래 링크를 우리 교회 교역자에게 보내 주세요.</p><button class="link" type="button" data-act="lv-intro-copy">링크 복사</button>${LV.copied && !LV.copied.ok ? `<p class="hint">자동 복사가 막혀 있어요. 아래 문구를 길게 눌러 복사하세요.</p><pre class="copybox">${esc(cinfoText())}</pre>` : ''}</div>` : '';
   return `<div class="col-n ci">${closed ? `<div class="ci-note-box ci-band" role="status">${TRIAL}</div>` : ''}
     <p class="eyebrow">디다코 교회</p><h1>디다코 교회</h1>
     <p class="ci-sub">부서와 사랑방 단위로 같은 말씀을 함께 펼치고 나누는 교회용 공간</p>${mineCard}
@@ -7145,8 +7146,9 @@ if (LIVE) {
     'lv-logout'() { liveLogout(); },
     // 교회 안내(introView): 안내 보기 · 교역자/성도 고르기 · 링크 복사 · 교회 코드 화면으로
     'lv-intro'() { LV.introPick = ''; lvGo('intro'); },
-    'lv-intro-pick'(e, el) { LV.introPick = el.dataset.v === 'member' ? 'member' : 'staff'; route(true); },
-    'lv-intro-copy'() { adlCopy('디다코 교회 안내: ' + location.origin + location.pathname + '?cinfo', '링크를 복사했어요'); },
+    'lv-intro-pick'(e, el) { LV.introPick = el.dataset.v === 'member' ? 'member' : 'staff'; LV.copied = null; route(true); },
+    // 성도가 교역자에게 보낼 안내 링크 복사(코이데와 같다): 막힌 기기에서는 문구를 보여 줘 길게 눌러 복사하게 한다
+    'lv-intro-copy': async () => { let ok = false; try { await navigator.clipboard.writeText(cinfoText()); ok = true; } catch (err) { /* 막힌 기기 */ } LV.copied = { ok }; route(true); if (ok) toast('링크를 복사했어요. 우리 교회 교역자에게 보내 주세요.'); },
     'lv-intro-code'() { lvGo('church'); },
     'lv-intro-login'() { LV.cinfo = false; ls.del(CINFO); lvGo(''); },
     'lv-apply-login'() { ls.set(APPLY_GO, String(Date.now())); LV.cinfo = false; ls.del(CINFO); lvGo(''); },
