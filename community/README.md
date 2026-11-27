@@ -8,7 +8,7 @@
 - 노트·교회에서 공동체로 오면 세 겹 끈과 '디다코 공동체' 전환 화면을 1.5초 보여 줘요(움직임 줄이기는 0.6초). 같은 곳을 새로고침하면 조용히 열려요.
 - 위쪽 이름표는 공동체 이름과 역할이고, 누르면 내 공동체 사이를 바꿔요. 데모에는 모임장인 곳(금요 말씀 모임)과 회원인 곳(새벽 창세기 모임)이 들어 있어요.
 - 첫 접속(`#start/list`, `#start/new`, `#start/join`, `#start/wait`): 내 공동체 목록, 공동체 만들기, 초대 링크로 들어오기 신청.
-- 책장: 질문으로 묵상하기 연재(`../note/walks-data.js`를 `walks-books.js`가 교재 모양으로 바꿔요) + 디다코 기본 교재(`book-trinity.js`, `book-family.js`, `book-jesus-walk.js`, `book-hebrew-eyes.js`, `book-second-temple.js`, `book-feasts.js`, `book-gospel.js`, `book-lords-prayer.js`, `book-creeds.js`, `book-church-path-1.js`, `book-church-path-2.js`, `book-church-path-3.js`, `book-church-path-4.js`) + 모임장이 이 공동체에서 쓴 교재. 지금 읽는 책과 과는 모임장만 바꿔요.
+- 책장: 질문으로 묵상하기 연재(`../note/walks-data.js`를 `walks-books.js`가 교재 모양으로 바꿔요) + 디다코 기본 교재(`book-trinity.js`, `book-family.js`, `book-jesus-walk.js`, `book-hebrew-eyes.js`, `book-second-temple.js`, `book-feasts.js`, `book-gospel.js`, `book-lords-prayer.js`, `book-creeds.js`, `book-church-path-1.js`, `book-church-path-2.js`, `book-church-path-3.js`, `book-church-path-4.js`, `book-church-path-5.js`, `book-heresy.js`) + 모임장이 이 공동체에서 쓴 교재. 지금 읽는 책과 과는 모임장만 바꿔요.
 - 교재 관리와 과 편집은 모임장만 열어요. 배포·공개 범위·대상 모임이 없고, 쓰면 그 공동체 책장에 바로 보여요. 쓴 교재는 그 공동체 안에서만 보여요. 한 공동체의 교재는 5권까지(복제한 교재도 세요)이고, 지금 읽는 책은 지울 수 없어요. 실제 서버에서는 교재 한 권을 통째로 서버에 저장해요(`supabase/004_didako_community_book.sql`).
 - 배포, 사랑방 전체 보기, 관리(부서 관리, 교회 전체, 연도 개편) 화면은 없어요.
 - 기록은 이 기기에만 남아요. 디다코 노트의 동기화에 맡기지 않아요.
