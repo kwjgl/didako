@@ -206,7 +206,8 @@ h4.stage { font: 600 8.4pt/1.4 'IBM Plex Sans KR'; letter-spacing: .14em; color:
 .md th { background: var(--tint); font-weight: 600; text-align: left; }
 .md th, .md td { border: .2mm solid var(--line); padding: 1.5mm 2.2mm; vertical-align: top; word-break: keep-all; }
 .md tr { break-inside: avoid; }
-.md .md-tw { overflow: visible; }
+.md .md-tw { overflow: visible; break-inside: avoid; }   /* 표가 쪽 끝에서 갈라지면 표 전체를 다음 쪽으로 넘긴다(2026-11-27, 사용자) */
+.md table { break-inside: avoid; }
 figure { margin: 4.4mm auto; text-align: center; break-inside: avoid; }
 figure img { display: block; margin: 0 auto; width: min(100%, calc(100mm * var(--r)), 138mm); height: auto; max-height: 104mm; object-fit: contain; }
 figcaption { font: 400 8.2pt/1.6 'IBM Plex Sans KR'; color: var(--mut); margin-top: 1.8mm; }
