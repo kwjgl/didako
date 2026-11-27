@@ -2437,7 +2437,18 @@ async function enterChurch(result) {
   await loadStart();
 }
 async function findChurch() {
-  const r = await hubApi('where');
+  let r;
+  try { r = await hubApi('where'); }
+  catch (e) {
+    // 서버의 교회 문이 닫혀 있고(church_open이 관리자만·꺼짐) 이 계정이 앱 관리자가 아니면 오류 화면 대신 교회 코드 화면을 보인다(코이데 안내 화면과 같다). 교회 신청은 따로 열려 있을 수 있다
+    if (CHURCH_ON && e && e.code === 'bad' && /아직 열리지 않았어요/.test(e.message || '')) {
+      LV.notice = '디다코 교회는 아직 열리지 않았어요. 교회 코드가 있어도 문이 열린 뒤에 들어올 수 있어요.';
+      LV.me = null; LV.needChurch = true;
+      apPeek();
+      return;
+    }
+    throw e;
+  }
   if (r.church) await enterChurch(r);
   else {
     LV.notice = r.notYet ? `${r.notYet.name}은 아직 디다코 노트를 쓰지 않아요. 교회 관리자에게 알려 주세요.` : '';
