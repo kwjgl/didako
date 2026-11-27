@@ -2829,6 +2829,8 @@ function lvFirstBack() {
 // 역할별로 하는 일·지키는 것·쓰려면·이용료를 보이고, 교역자는 여기서 신청서를 쓴다. 다음에 보인다: 로그인 전 안내 링크(?cinfo), 로그인 뒤 교회 코드 화면의
 // "디다코 교회 안내 보기", 서버의 교회 문이 닫혀 있을 때(LV.closed). 신청 상태(LV.ap)는 applyState가 준다: open(신청을 받는지)·mine(내 신청)·auth(로그인했는지)
 const cinfoText = () => '우리 교회 말씀 나눔을 함께하는 앱이에요. 신청한 교회만 쓸 수 있어요: ' + location.origin + location.pathname + '?cinfo';
+// 안내 화면 안에서 고른 것이 바뀔 때는 맨 위로 올리지 않고 그 자리에서 다시 그린다(코이데와 같다)
+function introRedraw() { const y = window.scrollY; route(false); window.scrollTo(0, y); }
 function introView() {
   const I = LV.ap || {}, auth = !!LV.sbIn, M = I.mine, pick = LV.introPick, closed = LV.closed;
   const TRIAL = '지금은 시범 운영 중이에요. 신청을 받아 두고, 준비되는 대로 열어 드려요.';
@@ -7146,20 +7148,20 @@ if (LIVE) {
     'lv-logout'() { liveLogout(); },
     // 교회 안내(introView): 안내 보기 · 교역자/성도 고르기 · 링크 복사 · 교회 코드 화면으로
     'lv-intro'() { LV.introPick = ''; lvGo('intro'); },
-    'lv-intro-pick'(e, el) { LV.introPick = el.dataset.v === 'member' ? 'member' : 'staff'; LV.copied = null; route(true); },
+    'lv-intro-pick'(e, el) { LV.introPick = el.dataset.v === 'member' ? 'member' : 'staff'; LV.copied = null; introRedraw(); },
     // 성도가 교역자에게 보낼 안내 링크 복사(코이데와 같다): 막힌 기기에서는 문구를 보여 줘 길게 눌러 복사하게 한다
-    'lv-intro-copy': async () => { let ok = false; try { await navigator.clipboard.writeText(cinfoText()); ok = true; } catch (err) { /* 막힌 기기 */ } LV.copied = { ok }; route(true); if (ok) toast('링크를 복사했어요. 우리 교회 교역자에게 보내 주세요.'); },
+    'lv-intro-copy': async () => { let ok = false; try { await navigator.clipboard.writeText(cinfoText()); ok = true; } catch (err) { /* 막힌 기기 */ } LV.copied = { ok }; introRedraw(); if (ok) toast('링크를 복사했어요. 우리 교회 교역자에게 보내 주세요.'); },
     'lv-intro-code'() { lvGo('church'); },
     'lv-intro-login'() { LV.cinfo = false; ls.del(CINFO); lvGo(''); },
     'lv-apply-login'() { ls.set(APPLY_GO, String(Date.now())); LV.cinfo = false; ls.del(CINFO); lvGo(''); },
     // 교회 신청(안내 화면에서): 서류 쓰기 · 뒤로(안내 화면) · 취소
     'lv-apply-back'() { LV.introPick = 'staff'; lvGo('intro'); },
     'lv-apply-form'() { LV.ap = Object.assign({}, LV.ap, { cancelAsk: false }); lvGo('apply-form'); },
-    'lv-apply-cancel-ask'() { LV.ap = Object.assign({}, LV.ap, { cancelAsk: true }); route(true); },
-    'lv-apply-cancel-no'() { LV.ap = Object.assign({}, LV.ap, { cancelAsk: false }); route(true); },
+    'lv-apply-cancel-ask'() { LV.ap = Object.assign({}, LV.ap, { cancelAsk: true }); introRedraw(); },
+    'lv-apply-cancel-no'() { LV.ap = Object.assign({}, LV.ap, { cancelAsk: false }); introRedraw(); },
     'lv-apply-cancel': lvRun(async () => {
       await api('applyCancel'); LV.ap = Object.assign({}, LV.ap, { mine: null, cancelAsk: false });
-      toast('신청을 취소했어요. 적어 주신 내용은 지워졌어요.'); route(true);
+      toast('신청을 취소했어요. 적어 주신 내용은 지워졌어요.'); introRedraw();
     }),
     // 만들어진 교회의 첫 교회 관리자로 시작하기: 같은 거래에서 교회 관리자가 되고 교회에 들어간다. 끝나면 첫 화면(이번 주)으로
     'lv-apply-claim': lvRun(async () => {
