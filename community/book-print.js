@@ -7,7 +7,12 @@ window.DidakoBookPrint = (() => {
   const COLORS = { green: '#2B6A62', amber: '#A9561B', blue: '#2F5D95', rose: '#A8435C', ink: '#33332F', paper: '#6B4A2E' };
   const PAGE = { w: 176, h: 250, bleed: 3 };   // B5
   // 책 정보의 처음 값. 서버에 맡긴 값(info)이 있으면 그것이 우선이다
-  const INFO_DEFAULT = { publisher: '', madeAt: '', isbn: '', blurb: '', review: false, guide: true, lines: 2, spine: '' };
+  // 지은이 소개(표2)와 만든 과정(표3)은 모든 교재에 같은 글로 시작하고, 책 정보 화면에서 교재마다 고친다(2026-11-28, 사용자)
+  const AUTHOR_DEFAULT = '이준유 + Claude.ai';
+  const BIO_DEFAULT = '이준유\n학습과학을 전공하는 박사과정에 있으며, 서울 동작구에 있는 대한예수교장로회(합동) 소속 교회에 속해 있습니다. 교회 소그룹이 성경을 함께 묻고 나눌 수 있도록 돕는 앱 디다코를 만들고 있습니다.\nClaude.ai\nAnthropic이 만든 인공지능입니다. 이 책의 원고를 이준유와 함께 썼습니다.';
+  // 만든 과정은 한 줄이 한 단계다. '제목 | 설명'으로 쓰고, 줄 앞에 +를 붙이면 앞 단계와 나란히 서며, ※로 시작하면 아래 덧붙임 글이다
+  const PROCESS_DEFAULT = '기획 | 이준유가 교재의 주제, 방향, 질문의 틀을 정합니다.\n원고 | Claude.ai 에이전트가 과마다 나눠 초안을 씁니다.\n+그림 | 원고에 맞는 그림을 따로 만들어 붙입니다.\n검토 | 다른 에이전트가 원고와 구성을 따로 살핍니다.\n고치기 | 이준유가 읽고 고칩니다.\n앱에 싣기 | 디다코에 올려 앱 화면에서 확인합니다.\n감수 | 교역자 감수를 받습니다. (아직 받기 전입니다)\n※ 성경 본문은 싣지 않고 장절만 적었습니다. 각자 성경을 펴서 읽어 주세요.';
+  const INFO_DEFAULT = { publisher: '', madeAt: '', isbn: '', blurb: '', review: false, guide: true, lines: 2, spine: '', author: AUTHOR_DEFAULT, bio: BIO_DEFAULT, process: PROCESS_DEFAULT };
   // 교재마다 처음부터 들어 있는 표4 소개 글. 서버에 맡긴 글이 있으면 그것이 우선이다
   const BLURB = {
     'hebrew-eyes': '성경이 처음 들렸던 세계의 사람들은 하나님과 세상과 사람을 어떻게 보았을까요?\n그 눈을 하나씩 빌려 구약 성경을 다시 읽어 봅니다.'
@@ -119,6 +124,7 @@ window.DidakoBookPrint = (() => {
       `<p><b>${esc(book.title)}</b></p>`, '<div class="sep"></div>',
       '<p>성경 본문은 싣지 않았습니다. 각 과의 본문은 각자 성경에서 펴서 읽습니다.</p>',
       info.review ? '<p>이 책은 감수 전 시범 인쇄본입니다.</p>' : '', '<div class="sep"></div>',
+      String(info.author || '').trim() ? `<p>지은이 ${esc(info.author)}</p>` : '',
       String(info.publisher || '').trim() ? `<p>펴낸 곳 ${esc(info.publisher)}</p>` : '', `<p>만든 날 ${esc(madeAt)}</p>`,
       String(info.isbn || '').trim() ? `<p>ISBN ${esc(info.isbn)}</p>` : ''
     ].join('');
@@ -230,6 +236,22 @@ figcaption { font: 400 8.2pt/1.6 'IBM Plex Sans KR'; color: var(--mut); margin-t
     const A = COLORS[(book.cover || {}).color] || COLORS.amber;
     const spine = spineOf(opts.pages, info), spreadW = +(B + W + spine + W + B).toFixed(1), spreadH = H + 2 * B;
     const [tMain, tSub] = splitTitle(book.title);
+    // 표2(지은이)와 표3(만든 과정)의 글: 한 줄이 짧고 문장으로 끝나지 않으면 이름 줄로 보인다
+    const lineHtml = t => String(t || '').split(/\n+/).map(x => x.trim()).filter(Boolean).map(x => (x.length <= 20 && !/[.!?]$|[다요]$/.test(x) ? `<p class="nm">${esc(x)}</p>` : `<p>${esc(x)}</p>`)).join('');
+    // 만든 과정을 흐름도로 그린다: 단계 상자를 화살표로 잇고, +줄은 앞 단계와 나란히 놓는다
+    const flowHtml = t => {
+      const rows = [], notes = [];
+      String(t || '').split(/\n+/).map(x => x.trim()).filter(Boolean).forEach(line => {
+        if (line.startsWith('※')) { notes.push(line.replace(/^※\s*/, '')); return; }
+        const par = line.startsWith('+'), body = line.replace(/^\+\s*/, ''), k = body.indexOf('|');
+        const node = { t: (k < 0 ? body : body.slice(0, k)).trim(), d: (k < 0 ? '' : body.slice(k + 1)).trim() };
+        if (par && rows.length) rows[rows.length - 1].push(node); else rows.push([node]);
+      });
+      if (!rows.length && !notes.length) return '';
+      const flow = rows.map((r, ri) => `<div class="fl-row">${r.map(n => `<div class="fl-node"><span class="n">${String(ri + 1).padStart(2, '0')}</span><b>${esc(n.t)}</b>${n.d ? `<span class="d">${esc(n.d)}</span>` : ''}</div>`).join('')}</div>`).join('<div class="fl-arr"></div>');
+      return `<div class="fl">${flow}</div>${notes.map(x => `<p class="fl-note">${esc(x)}</p>`).join('')}`;
+    };
+    const authorName = String(info.author || '').trim(), bioHtml = lineHtml(info.bio), processHtml = flowHtml(info.process);
     const bar = barcodeSvg(info.isbn), isbnText = String(info.isbn || '').trim().replace(/^isbn[\s:]*/i, '');
     const g = true;   // 보기용 재단선·표 이름·바코드 자리는 화면에만 보이고 인쇄에서는 빠진다
     const st = Math.min(13, Math.max(8, spine * 1.3)).toFixed(1);
@@ -262,6 +284,20 @@ html { -webkit-print-color-adjust: exact; print-color-adjust: exact; font-family
 .in { background: color-mix(in srgb, ${A} 7%, #fff); }
 .in .brand { position: absolute; left: 0; right: 0; bottom: ${B + 14}mm; display: flex; justify-content: center; align-items: center; gap: 2.4mm; color: #8a8378; }
 .in .brand .k { width: 7mm; height: 7mm; } .in .brand .wm { height: 2.6mm; }
+.in .tx { position: absolute; top: ${B + 40}mm; font: 400 10.4pt/1.95 'Gowun Batang'; color: #2E261C; word-break: keep-all; }
+.in .tx .lab2 { font: 600 7.6pt/1.4 'IBM Plex Sans KR'; letter-spacing: .3em; color: ${A}; margin-bottom: 4mm; }
+.in .tx .ttl { font: 700 15pt/1.6 'Gowun Batang'; color: color-mix(in srgb, ${A} 72%, #1b1b1b); margin-bottom: 7mm; }
+.in .tx p + p { margin-top: 2.6mm; } .in .tx p.nm { font-weight: 700; margin-top: 6mm; color: color-mix(in srgb, ${A} 72%, #1b1b1b); } .in .tx .lab2 + .ttl + p.nm { margin-top: 0; }
+.in .fl { margin-top: 5mm; } .in .fl-row { display: grid; grid-auto-flow: column; grid-auto-columns: 1fr; gap: 3mm; }
+.in .fl-node { background: #fff; border: .3mm solid color-mix(in srgb, ${A} 35%, #fff); border-left: 1.2mm solid ${A}; border-radius: 1.6mm; padding: 2.2mm 3.2mm 2.4mm; break-inside: avoid; }
+.in .fl-node .n { display: block; font: 600 6.4pt/1.2 'IBM Plex Sans KR'; letter-spacing: .22em; color: ${A}; margin-bottom: .6mm; }
+.in .fl-node b { display: block; font: 700 10pt/1.5 'Gowun Batang'; color: #2E261C; }
+.in .fl-node .d { display: block; font: 400 8.6pt/1.55 'Gowun Batang'; color: #4a4137; margin-top: .4mm; }
+.in .fl-arr { height: 5mm; position: relative; }
+.in .fl-arr::before { content: ""; position: absolute; left: 50%; top: 0; width: .3mm; height: 3mm; margin-left: -.15mm; background: ${A}; }
+.in .fl-arr::after { content: ""; position: absolute; left: 50%; top: 2.6mm; margin-left: -1.1mm; border: 1.1mm solid transparent; border-top: 1.5mm solid ${A}; border-bottom: 0; }
+.in .fl-note { margin-top: 5mm; font: 400 8.6pt/1.7 'Gowun Batang'; color: #6b6458; }
+.in .t2 { left: ${B + 20}mm; right: 20mm; } .in .t3 { left: 20mm; right: ${B + 20}mm; }
 .in .tag { position: absolute; left: 0; right: 0; top: ${B + 14}mm; text-align: center; font: 600 7.6pt 'IBM Plex Sans KR'; letter-spacing: .3em; color: ${A}; }
 .g { position: absolute; pointer-events: none; }
 @media print { .g, .tag, .bcg { display: none !important; } }`;
@@ -275,9 +311,9 @@ html { -webkit-print-color-adjust: exact; print-color-adjust: exact; font-family
       <div class="panel pR f1"><div class="name"><h1>${esc(tMain)}</h1>${tSub ? `<p class="st">${esc(tSub)}</p>` : ''}</div>
         ${opts.symbolSrc ? `<img src="${esc(opts.symbolSrc)}" alt="">` : ''}<div class="brand">${logoHtml || ''}</div></div>${g ? guideHtml : ''}</section>`;
     const inside = `<section class="spread in">
-      <div class="panel pL in">${g ? '<p class="tag">표 2</p>' : ''}</div>
+      <div class="panel pL in">${g ? '<p class="tag">표 2</p>' : ''}${authorName || bioHtml ? `<div class="tx t2"><p class="lab2">지은이</p>${authorName ? `<p class="ttl">${esc(authorName)}</p>` : ''}${bioHtml}</div>` : ''}</div>
       <div class="panel pS" style="background:color-mix(in srgb, ${A} 14%, #fff)"></div>
-      <div class="panel pR in">${g ? '<p class="tag">표 3</p>' : ''}<div class="brand">${logoHtml || ''}</div></div>${g ? guideHtml : ''}</section>`;
+      <div class="panel pR in">${g ? '<p class="tag">표 3</p>' : ''}${processHtml ? `<div class="tx t3"><p class="lab2">만든 과정</p>${processHtml}</div>` : ''}<div class="brand">${logoHtml || ''}</div></div>${g ? guideHtml : ''}</section>`;
     return { css, html: outside + inside, title: `${book.title} 표지 B5`, spine, spreadW, spreadH };
   }
 
