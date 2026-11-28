@@ -3618,6 +3618,9 @@ function bindView(id) {
       <div><label for="bdMade">만든 날 <span class="hint">비우면 PDF를 만드는 날</span></label><input class="field" id="bdMade" maxlength="30" value="${esc(i.madeAt)}" placeholder="예: 2026년 11월 26일"></div>
       <div><label for="bdIsbn">ISBN <span class="hint">선택</span></label><input class="field" id="bdIsbn" maxlength="30" inputmode="numeric" value="${esc(i.isbn)}" placeholder="예: 979-11-000000-0-0"><p class="hint" id="bdIsbnHint">${isbnHintText(i.isbn)}</p></div>
       <div><label for="bdBlurb">표4 소개 글 <span class="hint">선택, 500자까지</span></label><textarea class="field" id="bdBlurb" rows="5" maxlength="500">${esc(i.blurb)}</textarea><p class="hint">첫 줄은 크게, 줄을 바꾼 뒤의 글은 작게 보여요.</p></div>
+      <div><label for="bdAuthor">지은이 <span class="hint">판권 쪽과 표2에 보여요</span></label><input class="field" id="bdAuthor" maxlength="60" value="${esc(i.author)}"></div>
+      <div><label for="bdBio">지은이 소개 <span class="hint">표2, 600자까지</span></label><textarea class="field" id="bdBio" rows="7" maxlength="600">${esc(i.bio)}</textarea><p class="hint">짧은 한 줄(이름)은 굵게, 줄을 바꾼 글은 문단으로 보여요. 비우면 표2에 아무것도 넣지 않아요.</p></div>
+      <div><label for="bdProcess">만든 과정 <span class="hint">표3 흐름도, 800자까지</span></label><textarea class="field" id="bdProcess" rows="10" maxlength="800">${esc(i.process)}</textarea><p class="hint">한 줄이 한 단계예요. '제목 | 설명'으로 쓰고, 줄 앞에 +를 붙이면 앞 단계와 나란히 서요. ※로 시작하는 줄은 아래 덧붙임 글이에요. 교역자 감수를 받으면 '감수' 줄을 고쳐 주세요. 비우면 표3에 아무것도 넣지 않아요.</p></div>
       <div><label for="bdLines">질문 밑 쓰는 줄</label>${sel('bdLines', [[0, '없음(읽는 책)'], [2, '두 줄'], [3, '세 줄']], i.lines)}</div>
       <div><label for="bdSpine">책등 폭 <span class="hint">mm, 비우면 쪽수로 셈해요</span></label><input class="field" id="bdSpine" inputmode="decimal" maxlength="8" value="${esc(i.spine)}" placeholder="${pages ? `지금은 ${spine}mm` : '본문을 만들면 알려 드려요'}"></div>
       <div><label for="bdReview">감수 전 표시</label>${sel('bdReview', [['false', '넣지 않기'], ['true', '판권 쪽에 넣기']], i.review)}</div>
@@ -3637,7 +3640,7 @@ function bindView(id) {
 function bindRead(id) {
   const g = k => { const el = $('#' + k); return el ? el.value : ''; };
   return Object.assign({}, bindInfoOf(id), {
-    publisher: g('bdPub').trim(), madeAt: g('bdMade').trim(), isbn: g('bdIsbn').trim(), blurb: g('bdBlurb').trim().replace(/[ \t]+\n/g, '\n'), lines: Number(g('bdLines')),
+    publisher: g('bdPub').trim(), madeAt: g('bdMade').trim(), isbn: g('bdIsbn').trim(), blurb: g('bdBlurb').trim().replace(/[ \t]+\n/g, '\n'), lines: Number(g('bdLines')), author: g('bdAuthor').trim(), bio: g('bdBio').trim().replace(/[ \t]+\n/g, '\n'), process: g('bdProcess').trim().replace(/[ \t]+\n/g, '\n'),
     spine: g('bdSpine').trim().replace(/[^\d.]/g, '').slice(0, 8), review: g('bdReview') === 'true', guide: g('bdGuide') !== 'false' });
 }
 // 책 정보를 이 기기에 먼저 두고, 실제 서버면 서버에도 맡긴다(서버에 칸이 없으면 이 기기에만)
